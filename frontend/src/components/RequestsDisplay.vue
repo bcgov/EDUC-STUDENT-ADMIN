@@ -69,41 +69,17 @@
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
-            <v-menu
-              ref="dateMenu"
-              v-model="dateMenu"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template #activator="{ on }">
-                <v-text-field
-                  id="date-picker-text-field"
-                  :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
-                  outlined
-                  density="compact"
-                  readonly
-                  clearable
-                  class="header-text"
-                  @click:clear="headerSearchParams.initialSubmitDate = []"
-                />
-              </template>
-              <v-date-picker
-                id="date-picker"
-                v-model="headerSearchParams.initialSubmitDate"
-                no-title
-                range
-              >
-                <v-spacer />
-                <PrimaryButton
-                  id="date-picker-ok-button"
-                  text="OK"
-                  :click-action="dateMenu=false"
-                />
-              </v-date-picker>
-            </v-menu>
+            <v-text-field
+              id="date-picker-text-field"
+              :value="headerSearchParams.initialSubmitDate"
+              outlined
+              density="compact"
+              clearable
+              class="header-text"
+              @click:clear="headerSearchParams.initialSubmitDate = []"
+              type="date"
+              @update:model-value="validateForm"
+            />
           </template>
           <template #[penSlotName]="{ header }">
             <th
@@ -194,7 +170,7 @@
               @click="viewRequestDetails(item)"
             >
               <td>{{ item[`${requestType}StatusCode`].label }}</td>
-              <td>{{ item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
+              <td>{{ item.initialSubmitDate ? moment(item.initialSubmitDate).format('YYYY/MM/DD LT') : '' }}</td>
               <td>
                 {{ item[`${penName}`] }}
                 <ClipboardButton
@@ -228,7 +204,7 @@ import {requestStore} from '@/store/modules/request';
 
 export default {
   name: 'RequestsDisplay',
-  components: {FilterTag, PrimaryButton, ClipboardButton},
+  components: {FilterTag, ClipboardButton},
   props: {
     requestType: {
       type: String,
@@ -298,15 +274,15 @@ export default {
           value: this.requestStatusHeaderName,
           sortable: false
         },
-        { text: 'Submitted Time', value: 'initialSubmitDate', sortable: false },
+        {text: 'Submitted Time', value: 'initialSubmitDate', sortable: false},
         {
           text: 'PEN',
           value: this.penName,
           sortable: false
         },
-        { text: 'Last Name', value: 'legalLastName', sortable: false },
-        { text: 'First Name', value: 'legalFirstName', sortable: false },
-        { text: 'Reviewer', value: 'reviewer', sortable: false }
+        {text: 'Last Name', value: 'legalLastName', sortable: false},
+        {text: 'First Name', value: 'legalFirstName', sortable: false},
+        {text: 'Reviewer', value: 'reviewer', sortable: false}
       ];
     },
     penSlotName() {
@@ -387,7 +363,7 @@ export default {
             break;
           }
         }
-        if(sagaCompletedForThisRequest && elementOfRequests){
+        if (sagaCompletedForThisRequest && elementOfRequests) {
           ApiService.apiAxios
             .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + elementOfRequests[`${this.requestType}ID`])
             .then(response => {
@@ -412,6 +388,10 @@ export default {
     remove(item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
+    },
+    async validateForm() {
+      const isValid = await this.$refs.form.validate();
+      this.validForm = isValid.valid;
     },
     runInit() {
       this.requests = [];
@@ -490,7 +470,10 @@ export default {
     viewRequestDetails(request) {
       this.setSelectedRequest(request[this.requestIdName]);
       this.setRequest();
-      router.push({ name: REQUEST_TYPES[this.requestType].detailName, params: { requestId: request[this.requestType + 'ID'] } });
+      router.push({
+        name: REQUEST_TYPES[this.requestType].detailName,
+        params: {requestId: request[this.requestType + 'ID']}
+      });
     },
     sort(sortHeader) {
       if (sortHeader === this.headerSortParams.currentSort) {
@@ -515,70 +498,71 @@ export default {
 };
 </script>
 <style scoped>
-  .header {
+.header {
     background-color: #96c0e6;
     top: -24px;
-  }
+}
 
-  .v-input {
+.v-input {
     padding-bottom: 15px;
     padding-top: 20px;
-  }
+}
 
-  .v-data-table /deep/ .v-text-field__details {
+.v-data-table /deep/ .v-text-field__details {
     display: none;
-  }
+}
 
-  label {
+label {
     color: white;
-  }
+}
 
-  .v-card {
+.v-card {
     background-color: #fafafa;
-  }
+}
 
-  .v-combobox {
+.v-combobox {
     background-color: #5475a7 !important;
-  }
+}
 
-  .theme--light .v-label {
+.theme--light .v-label {
     color: white;
-  }
+}
 
-  .saga-in-progress {
+.saga-in-progress {
     color: dimgrey;
-  }
+}
 
-  .header-text {
+.header-text {
     padding-top: 0;
-  }
+}
 
-  th {
+th {
     border: none !important;
     padding-bottom: 0;
     padding-left: 0;
     padding-right: 0;
-  }
+}
 
-  /deep/ th.text-start:nth-child(1) {
+/deep/ th.text-start:nth-child(1) {
     vertical-align: sub;
     padding-top: 10px;
-  }
+}
 
-  .active {
+.active {
     color: rgba(0, 0, 0, 0.87) !important;
-  }
+}
 
-  .table-header {
+.table-header {
     cursor: pointer;
     padding-top: 10px;
     margin-bottom: 0;
-  }
+}
 
-  .v-icon {
+.v-icon {
     font-size: 18px;
-  }
-  .tableRow {
+}
+
+.tableRow {
     cursor: pointer;
-  }
+}
 </style>

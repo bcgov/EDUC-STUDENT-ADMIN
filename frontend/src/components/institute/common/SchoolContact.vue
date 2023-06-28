@@ -1,6 +1,8 @@
 <template>
   <span>
-    <v-card bg height="100%">
+    <v-card bg
+            height="100%"
+    >
       <v-card-title class="pb-0">
         <v-row no-gutters>
           <v-col>
@@ -19,8 +21,8 @@
                   mdi-circle
                 </v-icon>
                 <strong style="word-break: break-word;">{{
-                  formatContactName(contact)
-                }}</strong>
+                    formatContactName(contact)
+                  }}</strong>
               </v-col>
               <v-col
                 cols="4"
@@ -33,7 +35,7 @@
                   color="white"
                   width="0.5em"
                   min-width="0.5em"
-                  depressed
+                  variant="flat"
                   small
                   class="mr-2"
                   @click="callDoShowEditSchoolContactForm()"
@@ -51,7 +53,7 @@
                   color="white"
                   width="0.5em"
                   min-width="0.5em"
-                  depressed
+                  variant="flat"
                   small
                   class="mr-2"
                   @click="callShowRemoveContactConfirmation"
@@ -70,8 +72,8 @@
                 class="pt-1"
               >
                 <strong style="word-break: break-word;">{{
-                  contact.jobTitle
-                }}</strong>
+                    contact.jobTitle
+                  }}</strong>
               </v-col>
               <v-col
                 v-if="!contact.email && !contact.phoneNumber"
@@ -95,8 +97,8 @@
                 class="pt-1"
               >
                 <span id="contactEmail"> {{
-                  contact.email
-                }}</span>
+                    contact.email
+                  }}</span>
               </v-col>
               <v-col
                 v-if="contact.phoneNumber"
@@ -104,8 +106,8 @@
                 class="pt-1"
               >
                 <span id="contactPhoneNumber">{{
-                  formatPhoneNumber(contact.phoneNumber)
-                }}</span><span v-if="contact.phoneExtension"> ext. {{
+                    formatPhoneNumber(contact.phoneNumber)
+                  }}</span><span v-if="contact.phoneExtension"> ext. {{
                   contact.phoneExtension
                 }}</span>
               </v-col>
@@ -115,8 +117,8 @@
                 class="pt-1"
               >
                 <span id="contactAlternatePhoneNumber">{{
-                  formatPhoneNumber(contact.alternatePhoneNumber)
-                }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{
+                    formatPhoneNumber(contact.alternatePhoneNumber)
+                  }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{
                   contact.alternatePhoneExtension
                 }}</span>
               </v-col>
@@ -135,10 +137,10 @@
               mdi-calendar-today
             </v-icon>
             <span id="contactEffectiveAndExpiryDate"> {{
-              formatDate(contact.effectiveDate)
-            }} - {{
-              formatDate(contact.expiryDate)
-            }}</span>
+                formatDate(contact.effectiveDate)
+              }} - {{
+                formatDate(contact.expiryDate)
+              }}</span>
           </v-col>
           <v-col
             v-else
@@ -149,8 +151,8 @@
               mdi-calendar-today
             </v-icon>
             <span id="contactEffectiveDate"> {{
-              formatDate(contact.effectiveDate)
-            }}</span>
+                formatDate(contact.effectiveDate)
+              }}</span>
           </v-col>
         </v-row>
       </v-card-text>
@@ -193,7 +195,6 @@ export default {
 .editField {
     font-size: 16px;
     color: rgb(0, 51, 102);
-    vertical-align: super;
 }
 
 .editField:hover {

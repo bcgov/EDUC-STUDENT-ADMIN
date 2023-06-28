@@ -10,8 +10,8 @@
                 class="justify-start"
               >
                 <v-icon
-                  class="pb-1"
-                  small
+                  class="pb-1 pr-1"
+                  size="x-small"
                   :color="getStatusColor(contact)"
                   left
                   dark
@@ -33,7 +33,7 @@
                   color="white"
                   width="0.5em"
                   min-width="0.5em"
-                  depressed
+                  variant="flat"
                   small
                   class="mr-2"
                   @click="callDoShowEditDistrictContactForm()"
@@ -51,7 +51,7 @@
                   color="white"
                   width="0.5em"
                   min-width="0.5em"
-                  depressed
+                  variant="flat"
                   small
                   class="mr-2"
                   @click="callShowRemoveContactConfirmation"
@@ -193,7 +193,6 @@ export default {
 .editField {
     font-size: 16px;
     color: rgb(0, 51, 102);
-    vertical-align: super;
 }
 
 .editField:hover {

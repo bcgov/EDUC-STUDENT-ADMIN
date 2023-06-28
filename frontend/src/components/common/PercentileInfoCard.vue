@@ -7,7 +7,7 @@
       class="ml-auto text-right"
       two-line
     >
-      <v-list-item-avatar
+      <v-list-item-action
         rounded
         size="80"
         color="cyan"
@@ -19,7 +19,7 @@
         >
           {{ icon }}
         </v-icon>
-      </v-list-item-avatar>
+      </v-list-item-action>
       <v-list-item>
         <v-list-item-subtitle>{{ subTitle }}</v-list-item-subtitle>
         <v-list-item-title class="text-h5 mb-1">

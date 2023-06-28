@@ -1,13 +1,17 @@
+<template>
+  <Doughnut
+    :data="chartData"
+  />
+</template>
+
 <script>
-import { Doughnut } from 'vue-chartjs';
-import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
+import {Doughnut} from 'vue-chartjs';
+// import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
+
 export default {
-  components: {ChartJsPluginDataLabels},
-  extends: Doughnut,
-  props: ['chartData', 'options'],
-  mounted () {
-    this.addPlugin(ChartJsPluginDataLabels);
-    this.renderChart(this.chartdata, this.options);
-  }
+  name: 'DoughnutChart',
+  components: {Doughnut},
+  props: ['chartData', 'options']
 };
+
 </script>

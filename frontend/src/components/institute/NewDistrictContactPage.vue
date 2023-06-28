@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New District Contact
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="newContactForm"
@@ -29,6 +29,7 @@
               v-model="newContact.firstName"
               :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
               class="pt-0"
+              variant="underlined"
               :maxlength="255"
               label="First Name"
             />
@@ -37,6 +38,7 @@
               v-model="newContact.lastName"
               :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
               class="pt-0"
+              variant="underlined"
               :maxlength="255"
               label="Last Name"
             />
@@ -45,12 +47,14 @@
               v-model="newContact.jobTitle"
               :rules="[rules.noSpecialCharactersContactTitle()]"
               class="pt-0"
+              variant="underlined"
               :maxlength="255"
               label="Position Title"
             />
             <v-text-field
               id="newContactEmailInput"
               v-model="newContact.email"
+              variant="underlined"
               :rules="[rules.required(), rules.email()]"
               class="pt-0"
               :maxlength="255"
@@ -63,6 +67,7 @@
                   v-model="newContact.phoneNumber"
                   :rules="[rules.required(), rules.phoneNumber()]"
                   class="pt-0"
+                  variant="underlined"
                   :maxlength="10"
                   label="Phone Number"
                   @keypress="isNumber($event)"
@@ -73,6 +78,7 @@
                   id="newContactPhoneExtensionInput"
                   v-model="newContact.phoneExtension"
                   :rules="[rules.number()]"
+                  variant="underlined"
                   :maxlength="10"
                   class="pt-0"
                   label="Ext."
@@ -86,6 +92,7 @@
                   id="newContactAltPhoneNumberInput"
                   v-model="newContact.alternatePhoneNumber"
                   :rules="[rules.phoneNumber()]"
+                  variant="underlined"
                   class="pt-0"
                   :maxlength="10"
                   label="Alt. Phone Number"
@@ -97,6 +104,7 @@
                   id="newContactAltPhoneExtensionInput"
                   v-model="newContact.alternatePhoneExtension"
                   :rules="[rules.number()]"
+                  variant="underlined"
                   class="pt-0"
                   :maxlength="10"
                   label="Alt. Phone Ext."
@@ -106,62 +114,30 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-menu
-                  id="newContactEffectiveDatePicker"
-                  ref="newContactEffectiveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newContactEffectiveDateTextField"
-                      v-model="newContact.effectiveDate"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      label="Start Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="newContact.effectiveDate"
-                    v-model:active-picker="newContactEffectiveDatePicker"
-                    @update:model-value="saveNewContactEffectiveDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="newContactEffectiveDateTextField"
+                  v-model="newContact.effectiveDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  label="Start Date"
+                  variant="underlined"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="newContactExpiryDatePicker"
-                  ref="newContactExpiryDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newContactExpiryDateTextField"
-                      v-model="newContact.expiryDate"
-                      :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
-                      class="pt-0 mt-0"
-                      label="End Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="newContact.expiryDate"
-                    v-model:active-picker="newContactExpiryDatePicker"
-                    @update:model-value="saveNewContactExpiryDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="newContactExpiryDateTextField"
+                  v-model="newContact.expiryDate"
+                  :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
+                  class="pt-0 mt-0"
+                  label="End Date"
+                  variant="underlined"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -274,8 +250,8 @@ export default {
     resetForm() {
       this.$refs.newContactForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.newContactForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.newContactForm.validate();
       this.isFormValid = isValid.valid;
     },
     isNumber,

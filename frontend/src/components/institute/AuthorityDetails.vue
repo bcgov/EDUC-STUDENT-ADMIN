@@ -202,7 +202,7 @@
                 }}</span>
                 <a
                   v-if="showEditLinks(authority.faxNumber)"
-                  class="editField"
+                  class="editField mt-n1"
                   @click="toggleEdit"
                 >+Fax</a>
               </div>
@@ -815,11 +815,13 @@
                     dense
                   >
                     <v-timeline-item
-                      right
                       icon="mdi-message-bulleted"
+                      dot-color="white"
+                      fill-dot
+                      elevation="1"
                       icon-color="#003366"
-                      large
-                      color="white"
+                      size="large"
+                      width="100%"
                     >
                       <v-card width="40em">
                         <v-card-text class="activityContent">
@@ -1298,7 +1300,6 @@ export default {
 .editField {
     font-size: 14px;
     color: rgb(0, 51, 102);
-    vertical-align: super;
 }
 
 .editField:hover {

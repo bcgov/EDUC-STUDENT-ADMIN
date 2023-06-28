@@ -115,8 +115,8 @@
       <v-toolbar-title class="ml-4 nav-title pl-4">
         {{ title }}
       </v-toolbar-title>
-      <v-spacer />
-      <SetNavigation />
+      <v-spacer/>
+      <SetNavigation/>
     </v-app-bar>
     <v-app-bar
       v-if="bannerColor !== ''"
@@ -136,10 +136,11 @@
 
 <script>
 import {PAGE_TITLES, REQUEST_TYPES} from '../../utils/constants';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import SetNavigation from './SetNavigation.vue';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
+
 export default {
   name: 'NavBar',
   components: {
@@ -154,165 +155,164 @@ export default {
   data() {
     return {
       drawer: null,
-      items: [],
       bannerEnvironment: null,
       bannerColor: null
     };
   },
-  async created(){
+  async created() {
     appStore().getConfig().then(() => {
       this.bannerEnvironment = this.config.BANNER_ENVIRONMENT;
       this.bannerColor = this.config.BANNER_COLOR;
     });
   },
-  mounted() {
-    this.items = [
-      {
-        title: PAGE_TITLES.DASHBOARD,
-        link: 'home',
-        authorized: this.isAuthorizedUser
-      },
-      {
-        title: PAGE_TITLES.STUDENT_REQUESTS,
-        authorized: (this.VIEW_GMP_REQUESTS_ROLE || this.VIEW_UMP_REQUESTS_ROLE),
-        items: [
-          {
-            title: PAGE_TITLES.GMP,
-            link: REQUEST_TYPES.penRequest.label,
-            authorized: this.VIEW_GMP_REQUESTS_ROLE
-          },
-          {
-            title: PAGE_TITLES.UMP,
-            link: REQUEST_TYPES.studentRequest.label,
-            authorized: this.VIEW_UMP_REQUESTS_ROLE
-          }
-        ],
-      },
-      {
-        title: PAGE_TITLES.STUDENT_SEARCH,
-        link: 'basicSearch',
-        authorized: this.ADVANCED_SEARCH_ROLE
-      },
-      {
-        title: PAGE_TITLES.COMPARE_PENS,
-        link: 'compare',
-        authorized: this.PROCESS_STUDENT_ROLE
-      },
-      {
-        title: PAGE_TITLES.PEN_REQ_FILES,
-        link: 'penRequestBatch',
-        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
-      },
-      {
-        title: PAGE_TITLES.ARCHIVED_REQ_FILES,
-        link: 'archivedRequestBatch',
-        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
-      },
-      {
-        title: PAGE_TITLES.PEN_COORDINATORS,
-        link: 'penCoordinators',
-        newTab: true,
-        authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
-      },
-      {
-        title: PAGE_TITLES.EXCHANGE,
-        authorized: this.EXCHANGE_ROLE,
-        items: [
-          {
-            title: 'PEN Team Inbox',
-            link: 'exchange_inbox_PEN_TEAM_ROLE',
-            authorized: this.PEN_TEAM_ROLE
-          }
-        ]
-      },
-      {
-        title: PAGE_TITLES.ADMINISTRATION,
-        authorized: this.STAFF_ADMINISTRATION_ADMIN,
-        items: [
-          {
-            title: 'Macro Management',
-            link: 'macros',
-            authorized: this.EDIT_MACROS_ROLE
-          },
-          {
-            title: 'EDX School Access',
-            link: 'exchangeAccess',
-            authorized: this.EXCHANGE_ACCESS_ROLE
-          },
-          {
-            title: 'EDX District Access',
-            link: 'exchangeDistrictAccess',
-            authorized: this.EXCHANGE_ACCESS_ROLE
-          }
-        ],
-      },
-      {
-        title: 'Institutions',
-        authorized: this.isAuthorizedUser,
-        items: [
-          {
-            title: 'Schools',
-            link: 'instituteSchoolList',
-            authorized: this.isAuthorizedUser
-          },
-          {
-            title: 'Districts',
-            link: 'instituteDistrict',
-            authorized: this.isAuthorizedUser
-          },
-          {
-            title: 'Authorities',
-            link: 'instituteAuthoritiesList',
-            authorized: this.isAuthorizedUser
-          }
-        ],
-      },
-      {
-        title: 'Nominal Roll',
-        link: 'nominal-roll',
-        authorized: this.NOMINAL_ROLL_ROLE
-      },
-      {
-        title: PAGE_TITLES.ANALYTICS,
-        authorized: this.HAS_STATS_ROLE,
-        items: [
-          {
-            title: 'Dashboard',
-            link: 'stats-dashboard',
-            authorized: this.HAS_STATS_ROLE
-          },
-          {
-            title: 'Get My PEN',
-            link: 'analytics-gmp-stats',
-            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
-          },
-          {
-            title: 'Update My PEN',
-            link: 'analytics-ump-stats',
-            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
-          },
-          {
-            title: 'New PENs',
-            link: 'new-pens',
-            authorized: this.STUDENT_ANALYTICS_BATCH
-          },
-          {
-            title: 'Merges',
-            link: 'merges',
-            authorized: this.STUDENT_ANALYTICS_BATCH
-          }
-        ],
-      }
-    ];
-  },
   computed: {
     ...mapState(appStore, ['config']),
-    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE'])
+    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE']),
+    items() {
+      return [
+        {
+          title: PAGE_TITLES.DASHBOARD,
+          link: 'home',
+          authorized: this.isAuthorizedUser
+        },
+        {
+          title: PAGE_TITLES.STUDENT_REQUESTS,
+          authorized: (this.VIEW_GMP_REQUESTS_ROLE || this.VIEW_UMP_REQUESTS_ROLE),
+          items: [
+            {
+              title: PAGE_TITLES.GMP,
+              link: REQUEST_TYPES.penRequest.label,
+              authorized: this.VIEW_GMP_REQUESTS_ROLE
+            },
+            {
+              title: PAGE_TITLES.UMP,
+              link: REQUEST_TYPES.studentRequest.label,
+              authorized: this.VIEW_UMP_REQUESTS_ROLE
+            }
+          ],
+        },
+        {
+          title: PAGE_TITLES.STUDENT_SEARCH,
+          link: 'basicSearch',
+          authorized: this.ADVANCED_SEARCH_ROLE
+        },
+        {
+          title: PAGE_TITLES.COMPARE_PENS,
+          link: 'compare',
+          authorized: this.PROCESS_STUDENT_ROLE
+        },
+        {
+          title: PAGE_TITLES.PEN_REQ_FILES,
+          link: 'penRequestBatch',
+          authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
+        },
+        {
+          title: PAGE_TITLES.ARCHIVED_REQ_FILES,
+          link: 'archivedRequestBatch',
+          authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
+        },
+        {
+          title: PAGE_TITLES.PEN_COORDINATORS,
+          link: 'penCoordinators',
+          newTab: true,
+          authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
+        },
+        {
+          title: PAGE_TITLES.EXCHANGE,
+          authorized: this.EXCHANGE_ROLE,
+          items: [
+            {
+              title: 'PEN Team Inbox',
+              link: 'exchange_inbox_PEN_TEAM_ROLE',
+              authorized: this.PEN_TEAM_ROLE
+            }
+          ]
+        },
+        {
+          title: PAGE_TITLES.ADMINISTRATION,
+          authorized: this.STAFF_ADMINISTRATION_ADMIN,
+          items: [
+            {
+              title: 'Macro Management',
+              link: 'macros',
+              authorized: this.EDIT_MACROS_ROLE
+            },
+            {
+              title: 'EDX School Access',
+              link: 'exchangeAccess',
+              authorized: this.EXCHANGE_ACCESS_ROLE
+            },
+            {
+              title: 'EDX District Access',
+              link: 'exchangeDistrictAccess',
+              authorized: this.EXCHANGE_ACCESS_ROLE
+            }
+          ],
+        },
+        {
+          title: 'Institutions',
+          authorized: this.isAuthorizedUser,
+          items: [
+            {
+              title: 'Schools',
+              link: 'instituteSchoolList',
+              authorized: this.isAuthorizedUser
+            },
+            {
+              title: 'Districts',
+              link: 'instituteDistrict',
+              authorized: this.isAuthorizedUser
+            },
+            {
+              title: 'Authorities',
+              link: 'instituteAuthoritiesList',
+              authorized: this.isAuthorizedUser
+            }
+          ],
+        },
+        {
+          title: 'Nominal Roll',
+          link: 'nominal-roll',
+          authorized: this.NOMINAL_ROLL_ROLE
+        },
+        {
+          title: PAGE_TITLES.ANALYTICS,
+          authorized: this.HAS_STATS_ROLE,
+          items: [
+            {
+              title: 'Dashboard',
+              link: 'stats-dashboard',
+              authorized: this.HAS_STATS_ROLE
+            },
+            {
+              title: 'Get My PEN',
+              link: 'analytics-gmp-stats',
+              authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
+            },
+            {
+              title: 'Update My PEN',
+              link: 'analytics-ump-stats',
+              authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
+            },
+            {
+              title: 'New PENs',
+              link: 'new-pens',
+              authorized: this.STUDENT_ANALYTICS_BATCH
+            },
+            {
+              title: 'Merges',
+              link: 'merges',
+              authorized: this.STUDENT_ANALYTICS_BATCH
+            }
+          ],
+        }
+      ];
+    }
   },
   methods: {
     setActive(item) {
       let index = this.items.findIndex(obj => obj.title === item.title);
-      if(item.active) {
+      if (item.active) {
         this.items[index].active = false;
       } else {
         this.items.filter(obj => obj.items && obj.active).forEach(obj => obj.active = !obj.active);
@@ -326,50 +326,59 @@ export default {
 };
 </script>
 <style scoped>
-  #navBar {
+#navBar {
     z-index: 7;
-  }
-  .router {
+}
+
+.router {
     width: 100%;
-  }
-  .menuItem {
+}
+
+.menuItem {
     color: #003366;
-  }
-  .menuRow, .groupMenu {
+}
+
+.menuRow, .groupMenu {
     border-bottom: 2px solid #d2d2d2;
-  }
-  .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
+}
+
+.router:hover .v-list-item__content, /deep/ .v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
     text-decoration: underline #003366;
-  }
-  .subMenuRow {
+}
+
+.subMenuRow {
     border-top: 2px solid #d2d2d2;
     border-left: 4px solid #FCBA19;
     background-color: white;
-  }
-  .menuRow /deep/ i {
+}
+
+.menuRow /deep/ i {
     color: #003366;
-  }
-  /deep/ .active {
+}
+
+/deep/ .active {
     border-left: 4px solid #FCBA19;
     background-color: white;
-  }
-  header /deep/ .v-toolbar__content {
+}
+
+header /deep/ .v-toolbar__content {
     padding-left: 0 !important;
-  }
-  /deep/ .v-list-group__header:before {
+}
+
+/deep/ .v-list-group__header:before {
     background-color: #E9EBEF;
-  }
+}
 
-  :deep(.subMenuRow > div.v-list-item__append > i){
+:deep(.subMenuRow > div.v-list-item__append > i) {
     display: none;
-  }
+}
 
-  :deep(.subMenuRow > div.v-list-item__content > a > div > div.v-list-item__append > i){
+:deep(.subMenuRow > div.v-list-item__content > a > div > div.v-list-item__append > i) {
     display: none;
-  }
+}
 
-  .nav-title {
+.nav-title {
     font-size: 1.4rem;
     color: white;
-  }
+}
 </style>

@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New Authority
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="newAuthorityForm"
@@ -35,37 +35,17 @@
                 />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="newAuthorityOpenDatePicker"
-                  ref="newAuthorityOpenDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newAuthorityOpenDateTextField"
-                      v-model="newAuthority.openDateMoment"
-                      :rules="[rules.required()]"
-                      class="mt-0"
-                      variant="underlined"
-                      label="Open Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                      @click="openDatePicker"
-                    />
-                  </template>
-                </v-menu>
-                <VueDatePicker
-                  ref="newAuthorityDatePicker"
+                <v-text-field
+                  id="newAuthorityOpenDateTextField"
                   v-model="newAuthority.openDate"
-                  :enable-time-picker="false"
-                  format="yyyy-MM-dd"
-                  :max-date="new Date(localDate.now().toString()).toISOString().substr(0, 10)"
-                  @update:model-value="saveNewAuthorityOpenDate"
+                  :rules="[rules.required()]"
+                  class="mt-0"
+                  variant="underlined"
+                  label="Open Date"
+                  :max="new Date(localDate.now().toString()).toISOString().substr(0, 10)"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
                 />
               </v-col>
             </v-row>
@@ -289,15 +269,12 @@ import {isNumber} from '@/utils/institute/formInput';
 import {LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 import moment from 'moment';
 
 export default {
   name: 'NewAuthorityPage',
   components: {
-    PrimaryButton,
-    VueDatePicker
+    PrimaryButton
   },
   mixins: [alertMixin],
   data() {
@@ -309,7 +286,6 @@ export default {
         authorityName: null,
         authorityTypeCode: null,
         openDate: this.calculateDefaultOpenDate(),
-        openDateMoment: moment(this.calculateDefaultOpenDate().toString()).format('YYYY-MM-DD').toString(),
         email: null,
         phoneNumber: null,
         faxNumber: null,
@@ -371,20 +347,12 @@ export default {
     openDatePicker() {
       this.$refs.newAuthorityDatePicker.openMenu();
     },
-    saveNewAuthorityOpenDate() {
-      this.newAuthority.openDateMoment = moment(this.newAuthority.openDate).format('YYYY-MM-DD').toString();
-      this.validateForm();
-    },
     closeNewAuthorityPage() {
       this.resetForm();
       this.$emit('newAuthority:closeNewAuthorityPage');
     },
     addNewAuthority() {
       this.processing = true;
-
-      if (this.newAuthority.openDateMoment) {
-        this.newAuthority.openDate = this.newAuthority.openDateMoment;
-      }
 
       ApiService.apiAxios.post(`${Routes.institute.ROOT_ENDPOINT}/authority`, this.newAuthority)
         .then((response) => {

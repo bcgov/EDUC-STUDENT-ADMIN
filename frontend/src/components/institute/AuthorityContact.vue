@@ -185,7 +185,6 @@ export default {
 .editField {
     font-size: 16px;
     color: rgb(0, 51, 102);
-    vertical-align: super;
 }
 
 .editField:hover {

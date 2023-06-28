@@ -15,7 +15,7 @@
       >
         <strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong>
       </h3>
-      <v-spacer />
+      <v-spacer/>
       <v-flex class="select ml-3 mr-1">
         <v-select
           id="selectStatus"
@@ -80,7 +80,7 @@
         />
       </div>
     </v-row>
-    <v-divider class="mb-1 subheader-divider" />
+    <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
@@ -293,36 +293,17 @@
                 />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-menu
-                  v-model="dateMenu"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                >
-                  <template #activator="{ on }">
-                    <v-text-field
-                      id="date-picker-text-field"
-                      :value="editedRecord.birthDate"
-                      outlined
-                      dense
-                      readonly
-                      :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
-                      :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
-                    />
-                  </template>
-                  <v-date-picker
-                    id="date-picker"
-                    v-model="editedRecord.birthDate"
-                    no-title
-                  >
-                    <v-spacer />
-                    <PrimaryButton
-                      id="date-picker-ok-button"
-                      text="OK"
-                      :click-action="dateMenu=false"
-                    />
-                  </v-date-picker>
-                </v-menu>
+                <v-text-field
+                  id="date-picker-text-field"
+                  :value="editedRecord.birthDate"
+                  variant="underlined"
+                  dense
+                  :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
+                  :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete
@@ -367,11 +348,12 @@
         id="currentItemsDisplay"
         cols="4"
       >
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0 }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0
+        }}
       </v-col>
     </v-row>
     <ConfirmationDialog ref="confirmationDialogIgnore">
-      <template #message />
+      <template #message/>
     </ConfirmationDialog>
   </div>
 </template>
@@ -422,16 +404,22 @@ export default {
       required: true
     },
   },
-  data () {
+  data() {
     return {
       dateMenu: false,
       expanded: [],
       editedRecord: {},
       itemsPerPage: 10,
       headers: [
-        {id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
-        {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District', format: formatDistrictNumber},
+        {id: 'table-checkbox', type: 'select', sortable: false},
+        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode'},
+        {
+          text: 'School District',
+          value: 'schoolDistrictNumber',
+          sortable: false,
+          tooltip: 'School District',
+          format: formatDistrictNumber
+        },
         {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
         {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
         {text: 'LEA/Provincial', value: 'leaProvincial', sortable: false, tooltip: 'LEA/Provincial'},
@@ -441,14 +429,20 @@ export default {
         {text: 'Surname', value: 'surname', sortable: false, tooltip: 'Legal Surname'},
         {text: 'Given Name(s)', value: 'givenNames', sortable: false, tooltip: 'Legal Given Name'},
         {text: 'Gender', value: 'gender', sortable: false, tooltip: 'Gender'},
-        {text: 'Birth Date', value: 'birthDate', sortable: false, tooltip: 'Birth Date', format: partialRight(formatDob,'uuuu-MM-dd','uuuu/MM/dd')},
+        {
+          text: 'Birth Date',
+          value: 'birthDate',
+          sortable: false,
+          tooltip: 'Birth Date',
+          format: partialRight(formatDob, 'uuuu-MM-dd', 'uuuu/MM/dd')
+        },
         {text: 'Grade', value: 'grade', sortable: false, tooltip: 'Grade Code', format: formatGrade},
-        { text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen },
-        { text: 'Status', value: 'status', sortable: false, tooltip: 'Status' }
+        {text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen},
+        {text: 'Status', value: 'status', sortable: false, tooltip: 'Status'}
       ],
       leaProvincialItems: ['LEA', 'PROVINCIAL'],
       loadingRequestIDs: false,
-      sysMatchedStatuses: ['AA','B1','C1','D1'],
+      sysMatchedStatuses: ['AA', 'B1', 'C1', 'D1'],
       updating: false,
       validationErrors: {},
       validForm: true,
@@ -457,7 +451,7 @@ export default {
     };
   },
   watch: {
-    dateMenu (val) {
+    dateMenu(val) {
       val && setTimeout(() => (this.activePicker = 'YEAR'));
     },
     editedRecord: {
@@ -469,7 +463,7 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId  && notificationData.sagaStatus === 'COMPLETED') {
+        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
             this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
             this.$emit('update:isPosted', true);
@@ -480,50 +474,50 @@ export default {
     },
   },
   async beforeMount() {
-    if(!this.gradeCodeObjects || !this.genders) {
+    if (!this.gradeCodeObjects || !this.genders) {
       studentStore().getCodes();
     }
-    if(this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
+    if (this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
       appStore().getCodes();
     }
   },
   computed: {
     ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
-    ...mapState(studentStore, ['genders','gradeCodeObjects']),
+    ...mapState(studentStore, ['genders', 'gradeCodeObjects']),
     ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes', 'schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
-    ...mapState(authStore, ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(authStore, ['EDIT_NOMINAL_ROLL_ROLE', 'NOMINAL_ROLL_READ_ONLY_ROLE']),
     ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     ...mapState(notificationsStore, ['notification']),
     pageNumber: {
-      get(){
+      get() {
         return nominalRollStudentSearchStore().pageNumber;
       },
-      set(newPage){
+      set(newPage) {
         nominalRollStudentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
-      get(){
+      get() {
         return nominalRollStudentSearchStore().selectedRecords;
       },
-      set(newRecords){
+      set(newRecords) {
         nominalRollStudentSearchStore().setSelectedRecords(newRecords);
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + ((this.nomRollStudentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
+      return ((this.pageNumber - 1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + ((this.nomRollStudentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + (this.nomRollStudentSearchResponse.numberOfElements || 0));
+      return ((this.pageNumber - 1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + (this.nomRollStudentSearchResponse.numberOfElements || 0));
     },
     studentStatuses() {
       return NOMINAL_ROLL_STUDENT_STATUSES.filter(status => status.value !== 'LOADED');
     },
     selectedStudentStatus: {
-      get(){
+      get() {
         return nominalRollStudentSearchStore().selectedStudentStatus;
       },
-      set(status){
+      set(status) {
         nominalRollStudentSearchStore().setSelectedStudentStatus(status);
       }
     },
@@ -543,7 +537,7 @@ export default {
       return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     rowExpandedIcon() {
-      return !this.isEmpty(this.expanded)?'mdi-chevron-up':'mdi-chevron-down';
+      return !this.isEmpty(this.expanded) ? 'mdi-chevron-up' : 'mdi-chevron-down';
     }
   },
   methods: {
@@ -553,7 +547,7 @@ export default {
       return (format && column) ? format(column) : (column || ' ');
     },
     getSchoolName(request) {
-      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ', ''));
     },
     hasNoEditRoleAccess() {
       return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();
@@ -564,43 +558,47 @@ export default {
     hasFilterOnlyIgnored() {
       return this.selectedStudentStatus === 'IGNORED';
     },
-    hasErrorRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
-      if(filteredError.length > 0) {
+    hasErrorRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'ERROR');
+      if (filteredError.length > 0) {
         return true;
       }
       return false;
     },
-    hasIgnoreRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
-      if(filteredError.length > 0) {
+    hasIgnoreRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
+      if (filteredError.length > 0) {
         return true;
       }
       return false;
     },
-    hasCanIgnoreRecordsSelectedOnly(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'FIXABLE' || record.status === 'ERROR');
-      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
+    hasCanIgnoreRecordsSelectedOnly() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'FIXABLE' || record.status === 'ERROR');
+      if (filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
         return true;
       }
       return false;
     },
-    hasRecoverOnlyRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
-      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
+    hasRecoverOnlyRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
+      if (filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
         return true;
       }
       return false;
     },
-    hasOnlyErrorRecordsInList(){
-      let filteredError = this.nomRollStudentSearchResponse.content.filter(record =>  record.status === 'ERROR');
-      if(filteredError.length === this.nomRollStudentSearchResponse.content.length) {
+    hasOnlyErrorRecordsInList() {
+      let filteredError = this.nomRollStudentSearchResponse.content.filter(record => record.status === 'ERROR');
+      if (filteredError.length === this.nomRollStudentSearchResponse.content.length) {
         return true;
       }
       return false;
+    },
+    async validateForm() {
+      const isValid = await this.$refs.form.validate();
+      this.validForm = isValid.valid;
     },
     async clickIgnore() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         const result = await this.confirmToProceedIgnore();
         if (!result) {
           return;
@@ -611,7 +609,7 @@ export default {
       }
     },
     async clickRecover() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         this.selectedRecords.forEach(obj => {
           this.recoverStudent(obj);
         });
@@ -651,7 +649,7 @@ export default {
     async recoverStudent(student) {
       let payload;
 
-      if(!this.isEmpty(student.validationErrors)) {
+      if (!this.isEmpty(student.validationErrors)) {
         payload = {
           ...student,
           status: NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR,
@@ -691,7 +689,7 @@ export default {
       return result;
     },
     clickViewSelected() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         this.setSelectedIDs(this.selectedRecords);
         this.setRequestType('nominalRoll');
         this.setMultiFiles(false);
@@ -708,7 +706,7 @@ export default {
       this.nomRollStudentSearchCriteria[0].searchCriteriaList.forEach(obj => {
         switch (obj.key) {
         case ('status'):
-          if(obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
+          if (obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
             statusCodes = Object.values(NOMINAL_ROLL_STUDENT_STATUS_CODES).filter(code => code !== obj.value && code !== 'ERROR').join(',');
           } else {
             statusCodes = obj.value;
@@ -779,7 +777,7 @@ export default {
       if (index === -1) {
         this.validationErrors = item?.validationErrors || {};
         this.editedRecord = deepCloneObject(item);
-        if(this.editedRecord.schoolDistrictNumber) {
+        if (this.editedRecord.schoolDistrictNumber) {
           this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
         }
         this.editedRecord.grade = formatGrade(this.editedRecord.grade);
@@ -796,7 +794,7 @@ export default {
     async updateRequest(item) {
       this.updating = true;
       try {
-        if(!this.isEmpty(this.validationErrors)) {
+        if (!this.isEmpty(this.validationErrors)) {
           this.setWarningAlert('Cannot update record due to validation errors. Please fix and try again.');
         } else {
           const matchResult = await getPossibleMatches(constructPenMatchObjectFromNominalRollStudent(this.editedRecord));
@@ -823,7 +821,7 @@ export default {
               this.setFailureAlert('Failed to update record. Please try again later.');
             });
         }
-      } catch(e) {
+      } catch (e) {
         console.log(e);
         this.setFailureAlert('Failed to update record. There was an error during pen match. Please try again later.');
       }
@@ -863,8 +861,20 @@ export default {
     },
     retrieveAndDownloadIgnoredPenRequests() {
       let optionalCriteriaList = [];
-      optionalCriteriaList.push({key: 'status', operation: SEARCH_FILTER_OPERATION.EQUAL, value: 'IGNORED', valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
-      optionalCriteriaList.push({key: 'processingYear', operation: SEARCH_FILTER_OPERATION.EQUAL, value: '' + LocalDate.now().year(), valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
+      optionalCriteriaList.push({
+        key: 'status',
+        operation: SEARCH_FILTER_OPERATION.EQUAL,
+        value: 'IGNORED',
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
+      });
+      optionalCriteriaList.push({
+        key: 'processingYear',
+        operation: SEARCH_FILTER_OPERATION.EQUAL,
+        value: '' + LocalDate.now().year(),
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
+      });
       const params = {
         params: {
           pageNumber: 0,
@@ -876,7 +886,7 @@ export default {
             surname: 'ASC',
             givenNames: 'ASC',
           },
-          searchQueries:  [{searchCriteriaList: [...optionalCriteriaList]}],
+          searchQueries: [{searchCriteriaList: [...optionalCriteriaList]}],
         }
       };
       return ApiService.apiAxios
@@ -886,8 +896,8 @@ export default {
             'Recipient Name,FTE,Surname,Given Name(s),Gender,Birth Date,Grade,Band of Residence\n';
           response.data.content.forEach((s) => {
             csv += s.schoolDistrictNumber + ',' + s.schoolNumber + ','
-              + s.schoolName+ ',' + s.leaProvincial + ',' + s.recipientNumber + ','
-              + s.recipientName + ',' + s.fte + ',' + s.surname+ ',' + s.givenNames
+              + s.schoolName + ',' + s.leaProvincial + ',' + s.recipientNumber + ','
+              + s.recipientName + ',' + s.fte + ',' + s.surname + ',' + s.givenNames
               + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence;
             csv += '\n';
           });
@@ -908,71 +918,79 @@ export default {
 </script>
 
 <style scoped>
-  #currentItemsDisplay {
+#currentItemsDisplay {
     text-align: right;
     font-size: 0.875rem;
-  }
-  .column-item {
+}
+
+.column-item {
     float: left;
-  }
-  .table-checkbox {
+}
+
+.table-checkbox {
     margin-top: 0;
     padding-top: 0;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
-  }
-  .table-checkbox /deep/ .v-input__slot {
+}
+
+.table-checkbox /deep/ .v-input__slot {
     padding-top: 0;
-  }
-  .table-cell {
+}
+
+.table-cell {
     cursor: pointer;
-  }
+}
 
-  #searchResults /deep/ .v-pagination__navigation > i {
+#searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
-  }
+}
 
-  .subheader-divider {
+.subheader-divider {
     border-width: 0.25ex 0 0 0;
-  }
+}
 
-  #dataTable /deep/ table th{
+#dataTable /deep/ table th {
     font-size: 0.875rem;
-  }
-  #dataTable /deep/ table tr.selected-record,
-  #dataTable /deep/ table tbody tr:hover {
+}
+
+#dataTable /deep/ table tr.selected-record,
+#dataTable /deep/ table tbody tr:hover {
     background-color: #E1F5FE
-  }
+}
 
-  #dataTable /deep/ table {
+#dataTable /deep/ table {
     border-bottom: thin solid #d7d7d7;
-  }
+}
 
-  #dataTable /deep/ table tr td{
+#dataTable /deep/ table tr td {
     text-align: center !important;
     vertical-align: top;
     padding-top: 0.5rem;
     padding-bottom: 0.3rem;
-  }
+}
 
-  .record-checkbox {
+.record-checkbox {
     margin-top: 0;
-  }
-  .record-checkbox /deep/ .v-input__slot {
+}
+
+.record-checkbox /deep/ .v-input__slot {
     margin-bottom: 0;
-  }
-  .record-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
+}
+
+.record-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
     margin-right: 0;
-  }
+}
 
-  .header-checkbox {
+.header-checkbox {
     padding-top: 0;
-  }
-  .header-checkbox /deep/ .v-input__slot {
-    padding-top: 0;
-  }
+}
 
-  .select {
+.header-checkbox /deep/ .v-input__slot {
+    padding-top: 0;
+}
+
+.select {
     max-width: 245px;
-  }
+}
 </style>

@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New Authority Contact
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="newContactForm"
@@ -105,64 +105,30 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-menu
-                  id="newContactEffectiveDatePicker"
-                  ref="newContactEffectiveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newContactEffectiveDateTextField"
-                      v-model="newContact.effectiveDate"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      variant="underlined"
-                      label="Start Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="newContact.effectiveDate"
-                    v-model:active-picker="newContactEffectiveDatePicker"
-                    @update:model-value="saveNewContactEffectiveDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="newContactEffectiveDateTextField"
+                  v-model="newContact.effectiveDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  variant="underlined"
+                  label="Start Date"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="newContactExpiryDatePicker"
-                  ref="newContactExpiryDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newContactExpiryDateTextField"
-                      v-model="newContact.expiryDate"
-                      :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
-                      class="pt-0 mt-0"
-                      variant="underlined"
-                      label="End Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="newContact.expiryDate"
-                    v-model:active-picker="newContactExpiryDatePicker"
-                    @update:model-value="saveNewContactExpiryDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="newContactExpiryDateTextField"
+                  v-model="newContact.expiryDate"
+                  :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
+                  class="pt-0 mt-0"
+                  variant="underlined"
+                  label="End Date"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -276,8 +242,8 @@ export default {
     resetForm() {
       this.$refs.newContactForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.newContactForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.newContactForm.validate();
       this.isFormValid = isValid.valid;
     },
     isNumber,

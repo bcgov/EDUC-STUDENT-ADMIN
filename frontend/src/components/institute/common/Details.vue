@@ -136,7 +136,7 @@
                       variant="outlined"
                       density="compact"
                       class="mt-1 mb-1"
-                      :click-action="openSchoolStatusEdit"
+                      @click="openSchoolStatusEdit"
                       :secondary="true"
                     >
                       <v-icon
@@ -1604,7 +1604,6 @@ export default {
 .editField {
     font-size: 14px;
     color: rgb(0, 51, 102);
-    vertical-align: super;
 }
 
 .editField:hover {

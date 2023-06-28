@@ -47,34 +47,15 @@
             </v-row>
             <v-row>
               <v-col cols="4">
-                <v-menu
-                  id="moveDatePicker"
-                  ref="moveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="moveDateTextField"
-                      v-model="moveSchoolObject.moveDate"
-                      :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
-                      class="pt-0"
-                      label="Move Date"
-                      variant="underlined"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="moveSchoolObject.moveDate"
-                    v-model:active-picker="moveDatePicker"
-                    @update:model-value="saveMoveSchoolDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="moveDateTextField"
+                  v-model="moveSchoolObject.moveDate"
+                  :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
+                  class="pt-0"
+                  label="Move Date"
+                  variant="underlined"
+                  type="date"
+                />
               </v-col>
               <v-col cols="4">
                 <v-autocomplete

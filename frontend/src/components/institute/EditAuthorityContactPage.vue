@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Edit Authority Contact
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="editAuthorityContactForm"
@@ -105,64 +105,30 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-menu
-                  id="editAuthorityContactEffectiveDatePicker"
-                  ref="editAuthorityContactEffectiveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editAuthorityContactEffectiveDateTextField"
-                      v-model="authorityContactEffectiveDateFormatted"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      label="Start Date"
-                      variant="underlined"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.effectiveDate"
-                    v-model:active-picker="editAuthorityContactEffectiveDatePicker"
-                    @update:model-value="saveEditAuthorityContactEffectiveDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editAuthorityContactEffectiveDateTextField"
+                  v-model="editContact.effectiveDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  label="Start Date"
+                  variant="underlined"
+                  clearable
+                  type="date"
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="editAuthorityContactExpiryDatePicker"
-                  ref="editAuthorityContactExpiryDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editAuthorityContactExpiryDateTextField"
-                      v-model="authorityContactExpiryDateFormatted"
-                      :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                      class="pt-0 mt-0"
-                      variant="underlined"
-                      label="End Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.expiryDate"
-                    v-model:active-picker="editAuthorityContactExpiryDatePicker"
-                    @update:model-value="saveEditAuthorityContactExpiryDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editAuthorityContactExpiryDateTextField"
+                  v-model="editContact.expiryDate"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  class="pt-0 mt-0"
+                  variant="underlined"
+                  label="End Date"
+                  clearable
+                  type="date"
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -281,17 +247,11 @@ export default {
           this.processing = false;
         });
     },
-    saveEditAuthorityContactEffectiveDate(date) {
-      this.$refs.editAuthorityContactEffectiveDateFilter.save(date);
-    },
-    saveEditAuthorityContactExpiryDate(date) {
-      this.$refs.editAuthorityContactExpiryDateFilter.save(date);
-    },
     resetForm() {
       this.$refs.editAuthorityContactForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.editAuthorityContactForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.editAuthorityContactForm.validate();
       this.isFormValid = isValid.valid;
     },
     isNumber,

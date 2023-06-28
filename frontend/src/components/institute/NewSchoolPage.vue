@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New School
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="newSchoolForm"
@@ -65,37 +65,16 @@
                 />
               </v-col>
               <v-col cols="4">
-                <v-menu
-                  id="newSchoolOpenDatePicker"
-                  ref="newSchoolOpenDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  variant="underlined"
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="newSchoolOpenDateTextField"
-                      v-model="newSchool.openedDateMoment"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      label="Open Date"
-                      variant="underlined"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                      @click="openEffectiveDatePicker"
-                    />
-                  </template>
-                </v-menu>
-                <VueDatePicker
-                  ref="newSchoolDatePicker"
+                <v-text-field
+                  id="newSchoolOpenDateTextField"
                   v-model="newSchool.openedDate"
-                  :enable-time-picker="false"
-                  format="yyyy-MM-dd"
-                  @update:model-value="saveNewSchoolOpenDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  label="Open Date"
+                  variant="underlined"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
                 />
               </v-col>
             </v-row>
@@ -266,8 +245,8 @@
                   class="ml-1 toggle"
                   @click="toggleAddressForm"
                 >{{
-                  addressButton.label
-                }}</a>
+                    addressButton.label
+                  }}</a>
               </v-col>
             </v-row>
 
@@ -513,16 +492,13 @@ import {findUpcomingDate} from '@/utils/dateHelpers';
 import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 import moment from 'moment';
 
 
 export default {
   name: 'NewSchoolPage',
   components: {
-    PrimaryButton,
-    VueDatePicker
+    PrimaryButton
   },
   mixins: [alertMixin],
   props: {
@@ -557,7 +533,6 @@ export default {
         displayName: null,
         displayNameNoSpecialChars: null,
         openedDate: this.calculateDefaultOpenDate(),
-        openedDateMoment: moment(this.calculateDefaultOpenDate().toString()).format('YYYY-MM-DD').toString(),
         schoolCategoryCode: null,
         facilityTypeCode: null,
         schoolOrganizationCode: null,
@@ -690,19 +665,12 @@ export default {
     calculateDefaultOpenDate() {
       return findUpcomingDate(7, 1).toString();
     },
-    saveNewSchoolOpenDate() {
-      this.newSchool.openedDateMoment = moment(this.newSchool.openedDate).format('YYYY-MM-DD').toString();
-      this.validateForm();
-    },
     closeNewSchoolPage() {
       this.resetForm();
       this.$emit('newSchool:closeNewSchoolPage');
     },
     addNewSchool() {
       this.processing = true;
-      if (this.newSchool.openedDateMoment) {
-        this.newSchool.openedDate = this.newSchool.openedDateMoment;
-      }
 
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then((response) => {

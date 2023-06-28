@@ -55,33 +55,17 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-menu
-                      id="newOpenDatePicker"
-                      ref="newOpenDateFilter"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ on, attrs }">
-                        <v-text-field
-                          id="newOpenDateTextField"
-                          v-model="newOpenDateFormatted"
-                          :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, `The open date must occur on or prior to ${currentDateFormatted}.`)]"
-                          class="pt-0 mt-0"
-                          label="Open Date"
-                          prepend-inner-icon="mdi-calendar"
-                          clearable
-                          readonly
-                          v-bind="attrs"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="newOpenDate"
-                        :max="currentDate"
-                        @update:model-value="saveNewOpenDate"
-                      />
-                    </v-menu>
+                    <v-text-field
+                      id="newOpenDateTextField"
+                      v-model="newOpenDate"
+                      :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, `The open date must occur on or prior to ${currentDateFormatted}.`)]"
+                      class="pt-0 mt-0"
+                      label="Open Date"
+                      :max="currentDate"
+                      type="date"
+                      clearable
+                      @update:model-value="validateForm"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
@@ -153,36 +137,20 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-menu
-                      id="newCloseDatePicker"
-                      ref="newCloseDateFilter"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ on, attrs }">
-                        <v-text-field
-                          id="newCloseDateTextField"
-                          v-model="newCloseDateFormatted"
-                          :rules="[rules.required(),
-                                   rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
-                                   rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                          class="pt-0 mt-0"
-                          label="Close Date"
-                          prepend-inner-icon="mdi-calendar"
-                          clearable
-                          readonly
-                          v-bind="attrs"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="newCloseDate"
-                        :min="dateOfLastSchoolClosure"
-                        :show-current="dateOfLastSchoolClosure"
-                        @update:model-value="saveNewCloseDate"
-                      />
-                    </v-menu>
+                    <v-text-field
+                      id="newCloseDateTextField"
+                      v-model="newCloseDate"
+                      :rules="[rules.required(),
+                               rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                               rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
+                      class="pt-0 mt-0"
+                      label="Close Date"
+                      :min="dateOfLastSchoolClosure"
+                      :show-current="dateOfLastSchoolClosure"
+                      type="date"
+                      clearable
+                      @update:model-value="validateForm"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
@@ -229,35 +197,19 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-menu
-                      id="updatedCloseDatePicker"
-                      ref="updatedCloseDateFilter"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template #activator="{ on, attrs }">
-                        <v-text-field
-                          id="updatedCloseDateTextField"
-                          v-model="updatedCloseDateFormatted"
-                          :rules="[rules.required(),
-                                   rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
-                                   rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                          class="pt-0 mt-0"
-                          label="Close Date"
-                          prepend-inner-icon="mdi-calendar"
-                          clearable
-                          readonly
-                          v-bind="attrs"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="updatedCloseDate"
-                        :min="dateOfLastSchoolClosure"
-                        @update:model-value="saveUpdatedCloseDate"
-                      />
-                    </v-menu>
+                    <v-text-field
+                      id="updatedCloseDateTextField"
+                      v-model="updatedCloseDate"
+                      :min="dateOfLastSchoolClosure"
+                      :rules="[rules.required(),
+                               rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                               rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
+                      class="pt-0 mt-0"
+                      label="Close Date"
+                      type="date"
+                      clearable
+                      @update:model-value="validateForm"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
@@ -493,8 +445,8 @@ export default {
     resetForm() {
       this.$refs.authorityStatusForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.authorityStatusForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.authorityStatusForm.validate();
       this.isFormValid = isValid.valid;
     },
     formatDate,

@@ -34,8 +34,7 @@
     </a>
 
     <v-spacer />
-
-    <div v-if="authStore().isAuthenticated && dataReady">
+    <div v-if="authStore().isAuthenticated && this.user">
       <v-menu
         name="user_options"
         offset-y
@@ -52,9 +51,9 @@
               left
               color="info"
             >
-              {{ userInfo.userName[0] }}
+              {{ this.user.userName[0] }}
             </v-avatar>
-            <span class="display-name pl-1">{{ userInfo.userName }}</span>
+            <span class="display-name pl-1">{{ this.user.userName }}</span>
           </v-chip>
         </template>
         <v-list
@@ -84,17 +83,17 @@ export default {
     return {
       appTitle: import.meta.env.VITE_VUE_APP_TITLE,
       secureAppTitle: import.meta.env.VITE_VUE_APP_TITLE,
-      routes: Routes
+      routes: Routes,
+      user: null
     };
   },
   created() {
-    authStore().getUserInfo();
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
+    });
   },
   computed: {
     ...mapState(authStore, ['userInfo', 'isAuthenticated']),
-    dataReady: function () {
-      return this.userInfo;
-    }
   },
   methods: {
     authStore

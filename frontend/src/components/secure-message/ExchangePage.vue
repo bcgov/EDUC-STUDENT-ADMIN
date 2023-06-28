@@ -178,36 +178,14 @@
                   md="4"
                   class="pt-0 pl-12 pr-12"
                 >
-                  <v-menu
-                    id="messageDate"
-                    ref="messageDateFilter"
-                    v-model="messageDateFilter"
-                    variant="underlined"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    min-width="auto"
-                  >
-                    <template #activator="{ on, attrs }">
-                      <v-text-field
-                        id="messageDateTextField"
-                        v-model="messageDateMoment"
-                        variant="underlined"
-                        label="Message Date"
-                        prepend-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                        @keyup.enter="filterRequests()"
-                        @click="openMessageDatePicker"
-                      />
-                    </template>
-                  </v-menu>
-                  <VueDatePicker
-                    ref="messageDatePicker"
+                  <v-text-field
+                    id="messageDateTextField"
                     v-model="messageDate"
-                    :enable-time-picker="false"
-                    format="yyyy-MM-dd"
-                    @update:model-value="saveMessageDate"
+                    variant="underlined"
+                    label="Message Date"
+                    type="date"
+                    clearable
+                    @keyup.enter="filterRequests()"
                   />
                 </v-col>
               </v-row>
@@ -537,15 +515,13 @@ import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
-import VueDatePicker from '@vuepic/vue-datepicker';
 import moment from 'moment/moment';
 
 export default {
   name: 'ExchangeInbox',
   components: {
     PrimaryButton,
-    NewMessagePage,
-    VueDatePicker
+    NewMessagePage
   },
   mixins: [alertMixin],
   props: {
@@ -563,7 +539,6 @@ export default {
       messageDateFilter: false,
       activeMessageDatePicker: null,
       messageDate: null,
-      messageDateMoment: null,
       subjectFilter: '',
       messageIDFilter: '',
       studentIDFilter: '',
@@ -740,7 +715,6 @@ export default {
       this.claimedByFilter = null;
       this.contactNameFilter = null;
       this.messageDate = null;
-      this.messageDateMoment = null;
       this.messageDateFilter = null;
       this.statusSelectFilter = null;
       if (runSearch) {
@@ -750,7 +724,6 @@ export default {
       }
     },
     onExpansionPanelClick() {
-      console.log('Panel Click');
       if (this.filterText !== 'More Filters') {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
@@ -767,9 +740,6 @@ export default {
         this.clearSearch();
       }
 
-    },
-    saveMessageDate() {
-      this.messageDateMoment = moment(this.messageDate).format('YYYY-MM-DD').toString();
     },
     getStatusColor(status) {
       if (status === 'Open') {
@@ -829,10 +799,6 @@ export default {
       const sort = {
         createDate: 'DESC'
       };
-
-      if (this.messageDateMoment) {
-        this.messageDate = this.messageDateMoment;
-      }
 
       this.headerSearchParams.subject = this.subjectFilter;
       this.headerSearchParams.contactIdentifier = this.contactNameFilter;
@@ -984,7 +950,7 @@ export default {
     display: none;
 }
 
-:deep(.v-input__details){
+:deep(.v-input__details) {
     display: none;
 }
 

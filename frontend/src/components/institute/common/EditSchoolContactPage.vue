@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Edit School Contact
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="editSchoolContactForm"
@@ -114,64 +114,29 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-menu
-                  id="editSchoolContactEffectiveDatePicker"
-                  ref="editSchoolContactEffectiveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editSchoolContactEffectiveDateTextField"
-                      v-model="schoolContactEffectiveDateFormatted"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      label="Start Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      variant="underlined"
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.effectiveDate"
-                    v-model:active-picker="editSchoolContactEffectiveDatePicker"
-                    @update:model-value="saveEditSchoolContactEffectiveDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editSchoolContactEffectiveDateTextField"
+                  v-model="editContact.effectiveDate"
+                  :rules="[rules.required()]"
+                  label="Start Date"
+                  clearable
+                  type="date"
+                  variant="underlined"
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="editSchoolContactExpiryDatePicker"
-                  ref="editSchoolContactExpiryDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editSchoolContactExpiryDateTextField"
-                      v-model="schoolContactExpiryDateFormatted"
-                      :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                      class="pt-0 mt-0"
-                      label="End Date"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      variant="underlined"
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.expiryDate"
-                    v-model:active-picker="editSchoolContactExpiryDatePicker"
-                    @update:model-value="saveEditSchoolContactExpiryDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editSchoolContactExpiryDateTextField"
+                  v-model="editContact.expiryDate"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  class="pt-0 mt-0"
+                  label="End Date"
+                  type="date"
+                  clearable
+                  variant="underlined"
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -290,18 +255,17 @@ export default {
           this.processing = false;
         });
     },
-    saveEditSchoolContactEffectiveDate(date) {
-      this.$refs.editSchoolContactEffectiveDateFilter.save(date);
-    },
     saveEditSchoolContactExpiryDate(date) {
       this.$refs.editSchoolContactExpiryDateFilter.save(date);
     },
     resetForm() {
       this.$refs.editSchoolContactForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.editSchoolContactForm.validate();
-      this.isFormValid = isValid.valid;
+    async validateForm() {
+      if(this.$refs.editSchoolContactForm){
+        const isValid = await this.$refs.editSchoolContactForm.validate();
+        this.isFormValid = isValid.valid;
+      }
     },
     isNumber,
     formatDate,

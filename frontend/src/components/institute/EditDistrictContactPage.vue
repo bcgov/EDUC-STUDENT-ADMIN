@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Edit District Contact
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-form
         ref="editDistrictContactForm"
@@ -114,64 +114,30 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-menu
-                  id="editDistrictContactEffectiveDatePicker"
-                  ref="editDistrictContactEffectiveDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editDistrictContactEffectiveDateTextField"
-                      v-model="districtContactEffectiveDateFormatted"
-                      :rules="[rules.required()]"
-                      class="pt-0 mt-0"
-                      label="Start Date"
-                      variant="underlined"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.effectiveDate"
-                    v-model:active-picker="editDistrictContactEffectiveDatePicker"
-                    @update:model-value="saveEditDistrictContactEffectiveDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editDistrictContactEffectiveDateTextField"
+                  v-model="editContact.effectiveDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  label="Start Date"
+                  variant="underlined"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  id="editDistrictContactExpiryDatePicker"
-                  ref="editDistrictContactExpiryDateFilter"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      id="editDistrictContactExpiryDateTextField"
-                      v-model="districtContactExpiryDateFormatted"
-                      :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                      class="pt-0 mt-0"
-                      label="End Date"
-                      variant="underlined"
-                      prepend-inner-icon="mdi-calendar"
-                      clearable
-                      readonly
-                      v-bind="attrs"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="editContact.expiryDate"
-                    v-model:active-picker="editDistrictContactExpiryDatePicker"
-                    @update:model-value="saveEditDistrictContactExpiryDate"
-                  />
-                </v-menu>
+                <v-text-field
+                  id="editDistrictContactExpiryDateTextField"
+                  v-model="editContact.expiryDate"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  class="pt-0 mt-0"
+                  label="End Date"
+                  variant="underlined"
+                  clearable
+                  type="date"
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -299,8 +265,8 @@ export default {
     resetForm() {
       this.$refs.editDistrictContactForm.reset();
     },
-    validateForm() {
-      const isValid = this.$refs.editDistrictContactForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.editDistrictContactForm.validate();
       this.isFormValid = isValid.valid;
     },
     isNumber,
