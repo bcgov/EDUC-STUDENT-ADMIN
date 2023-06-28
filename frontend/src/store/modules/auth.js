@@ -300,6 +300,12 @@ export const authStore = defineStore('auth', {
       this.isAuthenticated = false;
     },
     async getUserInfo() {
+      const token = localStorage.getItem('jwtToken');
+
+      if(!token){
+        await this.getJwtToken();
+      }
+
       if(localStorage.getItem('jwtToken')) {
         const response = await ApiService.apiAxios.get(Routes.USER);
         await this.setUserInfo(response.data);
@@ -308,8 +314,9 @@ export const authStore = defineStore('auth', {
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken() {
       try {
-        if (this.isAuthenticated && !!this.jwtToken) {
-          const response = await AuthService.refreshAuthToken(this.jwtToken);
+        const token = localStorage.getItem('jwtToken');
+        if (this.isAuthenticated && !!token) {
+          const response = await AuthService.refreshAuthToken(token);
           await this.setAuthorizations(response);
         } else {
           const response = await AuthService.getAuthToken();
