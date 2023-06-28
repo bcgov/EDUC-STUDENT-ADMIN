@@ -119,7 +119,7 @@
       <SetNavigation />
     </v-app-bar>
     <v-app-bar
-      v-if="bannerColor !== ''"
+      v-if="bannerColor"
       style="color: white; z-index: 1000;"
       :color="bannerColor"
       absolute
