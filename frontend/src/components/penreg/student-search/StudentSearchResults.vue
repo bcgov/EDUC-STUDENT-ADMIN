@@ -38,10 +38,10 @@
     >
       <template
         v-for="h in headers"
+        :key="h.id"
         #[`header.${h.value}`]="{ header }"
       >
         <span
-          :key="h.id"
           class="top-column-item"
           :title="header.topTooltip"
           @click="updateSortParams(header.topValue)"
@@ -49,24 +49,20 @@
           {{ header.topText }}
         </span>
         <span
-          :key="h.id"
           @click="updateSortParams(header.topValue)"
         >
           <em
             v-if="header.sortable && headerSortParams.currentSort === header.topValue"
-            :key="h.id"
             :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"
           />
         </span>
         <span
-          :key="h.id"
           class="double-column-item"
           :title="header.doubleTooltip"
           @click="updateSortParams(header.topValue)"
         >{{ header.doubleText }}</span>
-        <br :key="h.id">
+        <br>
         <span
-          :key="h.id"
           class="bottom-column-item"
           :title="header.bottomTooltip"
           @click="updateSortParams(header.topValue)"

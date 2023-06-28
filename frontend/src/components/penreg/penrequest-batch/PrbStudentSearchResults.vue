@@ -78,23 +78,21 @@
     >
       <template
         v-for="h in headers"
+        :key="h.id"
         #[`header.${h.value}`]="{ header }"
       >
         <span
-          :key="h.id"
           :title="header.topTooltip"
           class="top-column-item"
         >
           {{ header.topText }}
         </span>
         <span
-          :key="h.id"
           :title="header.doubleTooltip"
           class="double-column-item"
         >{{ header.doubleText }}</span>
         <br :key="h.id">
         <span
-          :key="h.id"
           :title="header.bottomTooltip"
           class="bottom-column-item"
         >{{ header.bottomText }}</span>

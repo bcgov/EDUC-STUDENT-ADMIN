@@ -19,19 +19,18 @@
     >
       <template
         v-for="h in headers"
+        :key="h.id"
         #[`header.${h.value}`]="{ header }"
       >
         <span
-          :key="h.id"
           :title="header.tooltip"
           :class="{'file-column' : !header.countable}"
         >
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
-          <br :key="h.id">
+          <br>
           <span
-            :key="h.id"
             :class="header.countable ? 'countable-column-header' : 'file-column'"
           >
             <v-checkbox

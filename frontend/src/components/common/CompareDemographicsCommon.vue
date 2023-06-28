@@ -114,7 +114,7 @@
             density="compact"
             class="studentCheckbox pa-0 ma-0"
             color="#606060"
-            @change.native="validateAction"
+            @update:model-value="validateAction"
           />
           <a
             class="ml-2"

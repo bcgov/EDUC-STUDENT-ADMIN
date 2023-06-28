@@ -91,7 +91,7 @@
                     :tabindex="'4'"
                     maxlength="8"
                     @input="searchHasValues"
-                    @keyup.enter.native="enterPushed()"
+                    @keyup.enter="enterPushed()"
                   />
                 </v-col>
                 <v-col
@@ -110,7 +110,7 @@
                     :tabindex="'5'"
                     maxlength="8"
                     @input="searchHasValues"
-                    @keyup.enter.native="enterPushed()"
+                    @keyup.enter="enterPushed()"
                   />
                 </v-col>
               </v-row>
@@ -199,7 +199,7 @@
                     :tabindex="'10'"
                     maxlength="8"
                     @input="searchHasValues"
-                    @keyup.enter.native="enterPushed()"
+                    @keyup.enter="enterPushed()"
                   />
                 </v-col>
                 <v-col

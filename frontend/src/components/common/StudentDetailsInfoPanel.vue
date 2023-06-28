@@ -57,10 +57,10 @@
         >
           <template
             v-for="h in headers"
+            :key="h.id || h.topText"
             #[`header.${h.value}`]="{ header }"
           >
             <span
-              :key="h.id || h.topText"
               :title="header.topTooltip"
               class="top-column-item"
               :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}"
@@ -69,18 +69,15 @@
             </span>
             <StudentValidationWarningHint
               v-if="header.topValue && isFieldValueWarned(header.topValue)"
-              :key="h.topValue"
               :has-double-text="!!header.doubleText"
               :validation-warnings="getValidationWarnings(header.topValue)"
             />
             <span
-              :key="h.id || h.doubleValue"
               :title="header.doubleTooltip"
               class="double-column-item"
             >{{ header.doubleText }}</span>
             <StudentValidationWarningHint
               v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)"
-              :key="h.doubleValue"
               :has-double-text="!!header.doubleText"
               :validation-warnings="getValidationWarnings(header.doubleValue)"
             />
@@ -115,17 +112,16 @@
         >
           <template
             v-for="h in bottomTableHeaders"
+            :key="h.id || h.text"
             #[`header.${h.value}`]="{ header }"
           >
             <span
-              :key="h.id || h.text"
               :title="header.tooltip"
             >
               {{ header.text }}
             </span>
             <StudentValidationWarningHint
               v-if="header.value && isFieldValueWarned(header.value)"
-              :key="h.id || h.value"
               :validation-warnings="getValidationWarnings(header.value)"
             />
           </template>

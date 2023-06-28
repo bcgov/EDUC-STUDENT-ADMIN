@@ -36,10 +36,10 @@
         >
           <template
             v-for="h in headers"
+            :key="h.id"
             #[`header.${h.value}`]="{ header }"
           >
             <span
-              :key="h.id"
               :title="header.tooltip"
               :class="{'file-column' : !header.countable}"
             >
