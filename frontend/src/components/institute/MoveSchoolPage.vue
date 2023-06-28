@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Move School
     </v-card-title>
-    <v-divider/>
+    <v-divider />
     <v-card-text>
       <v-row class="move-description">
         <v-col>

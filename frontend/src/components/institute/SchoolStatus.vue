@@ -4,7 +4,7 @@
       <v-card-title class="sheetHeader pt-1 pb-1">
         Update School Status
       </v-card-title>
-      <v-divider/>
+      <v-divider />
       <v-card-text>
         <v-row class="d-flex justify-start">
           <v-col>
@@ -33,7 +33,7 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           Update School Status
         </v-card-title>
-        <v-divider/>
+        <v-divider />
         <v-card-text>
           <v-row class="pl-3 pr-3 d-flex justify-center">
             <v-col>
@@ -77,7 +77,7 @@
                 </v-radio-group>
               </v-row>
               <v-row class="d-flex justify-start">
-                <v-divider class="mt-1"/>
+                <v-divider class="mt-1" />
               </v-row>
               <v-row
                 v-if="action === 'cancelOpening'"

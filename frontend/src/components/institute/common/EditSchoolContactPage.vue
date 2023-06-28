@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Edit School Contact
     </v-card-title>
-    <v-divider/>
+    <v-divider />
     <v-card-text>
       <v-form
         ref="editSchoolContactForm"

@@ -22,19 +22,19 @@
       >
         <v-select
           :id="name"
-          :tabindex="tabIndex"
           v-model="fieldModel"
+          :tabindex="tabIndex"
           class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
           :class="{darkBackgound: hovering || hasEdits(name)}"
           color="#FFFFFF"
           :items="items"
           :outlined="hovering || editing || hasEdits(name)"
           dense
-          @keyup.tab="[editing = true, hovering = true]"
           type="solo"
-          @change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
           :disabled="fieldDisabled"
           :rules="rules"
+          @keyup.tab="[editing = true, hovering = true]"
+          @change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
         >
           <template #selection="{ item }">
             <v-chip

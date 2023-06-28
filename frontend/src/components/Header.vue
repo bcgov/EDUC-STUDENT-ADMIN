@@ -34,7 +34,7 @@
     </a>
 
     <v-spacer />
-    <div v-if="authStore().isAuthenticated && this.user">
+    <div v-if="authStore().isAuthenticated && user">
       <v-menu
         name="user_options"
         offset-y
@@ -51,9 +51,9 @@
               left
               color="info"
             >
-              {{ this.user.userName[0] }}
+              {{ user.userName[0] }}
             </v-avatar>
-            <span class="display-name pl-1">{{ this.user.userName }}</span>
+            <span class="display-name pl-1">{{ user.userName }}</span>
           </v-chip>
         </template>
         <v-list

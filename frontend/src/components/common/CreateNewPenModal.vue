@@ -60,8 +60,8 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormLegalLastName"
-                      outlined
                       v-model="student.legalLastName"
+                      outlined
                       density="compact"
                       filled
                       readonly
@@ -76,8 +76,8 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormLegalFirstName"
-                      outlined
                       v-model="student.legalFirstName"
+                      outlined
                       density="compact"
                       filled
                       readonly
@@ -92,9 +92,9 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormLegalMiddleNames"
+                      v-model="student.legalMiddleNames"
                       outlined
                       density="compact"
-                      v-model="student.legalMiddleNames"
                       filled
                       tabindex="3"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -128,8 +128,8 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormUsualLastName"
-                      outlined
                       v-model="student.usualLastName"
+                      outlined
                       density="compact"
                       filled
                       tabindex="4"
@@ -145,8 +145,8 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormUsualFirstName"
-                      outlined
                       v-model="student.usualFirstName"
+                      outlined
                       density="compact"
                       filled
                       tabindex="5"
@@ -162,8 +162,8 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormUsualMiddleNames"
-                      outlined
                       v-model="student.usualMiddleNames"
+                      outlined
                       density="compact"
                       filled
                       tabindex="6"

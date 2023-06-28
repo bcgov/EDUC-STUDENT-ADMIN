@@ -24,11 +24,20 @@
           </v-row>
         </template>
         <template #item="{ item, index }">
-          <tr no-gutters class="hoverTable" :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">
-            <td v-for="header in getHeaders()" :key="header" :class="header">
-                  <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
-                      formatTableColumn(header.format, item.columns[header.key])
-                    }}</span>
+          <tr
+            no-gutters
+            class="hoverTable"
+            :class="tableRowClass(item.raw)"
+            @click="selectHistoryItem(item.raw)"
+          >
+            <td
+              v-for="header in getHeaders()"
+              :key="header"
+              :class="header"
+            >
+              <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
+                formatTableColumn(header.format, item.columns[header.key])
+              }}</span>
             </td>
           </tr>
         </template>
@@ -58,7 +67,10 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="6" v-if="showRecordDetail">
+    <v-col
+      v-if="showRecordDetail"
+      cols="6"
+    >
       <SchoolHistoryDetailPanel
         :next-school-history="nextSchoolHistory"
         :school-history="schoolHistory"

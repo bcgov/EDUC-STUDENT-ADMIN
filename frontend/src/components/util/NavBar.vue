@@ -115,8 +115,8 @@
       <v-toolbar-title class="ml-4 nav-title pl-4">
         {{ title }}
       </v-toolbar-title>
-      <v-spacer/>
-      <SetNavigation/>
+      <v-spacer />
+      <SetNavigation />
     </v-app-bar>
     <v-app-bar
       v-if="bannerColor !== ''"

@@ -1,12 +1,15 @@
 <template>
   <v-app id="app">
-    <Header/>
-    <SnackBar/>
-    <NavBar v-if="pageTitle && authStore().isAuthenticated" :title="pageTitle"></NavBar>
+    <Header />
+    <SnackBar />
+    <NavBar
+      v-if="pageTitle && authStore().isAuthenticated"
+      :title="pageTitle"
+    />
     <v-btn
-      v-scroll="onScroll"
-      id="toTopBtn"
       v-show="showToTopBtn"
+      id="toTopBtn"
+      v-scroll="onScroll"
       fab
       tile
       x-small
@@ -22,11 +25,17 @@
         mdi-format-vertical-align-top
       </v-icon>
     </v-btn>
-    <v-main fluid class="align-start">
-      <ModalIdle class="align-start px-8 mb-0" v-if="authStore().isAuthenticated"/>
-      <router-view class="align-start px-8 mb-0"/>
+    <v-main
+      fluid
+      class="align-start"
+    >
+      <ModalIdle
+        v-if="authStore().isAuthenticated"
+        class="align-start px-8 mb-0"
+      />
+      <router-view class="align-start px-8 mb-0" />
     </v-main>
-    <Footer/>
+    <Footer />
   </v-app>
 </template>
 
@@ -42,7 +51,7 @@ import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     SnackBar,
     NavBar,

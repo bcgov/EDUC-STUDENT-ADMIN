@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New Authority
     </v-card-title>
-    <v-divider/>
+    <v-divider />
     <v-card-text>
       <v-form
         ref="newAuthorityForm"
@@ -269,7 +269,6 @@ import {isNumber} from '@/utils/institute/formInput';
 import {LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import moment from 'moment';
 
 export default {
   name: 'NewAuthorityPage',

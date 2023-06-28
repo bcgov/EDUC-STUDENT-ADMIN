@@ -15,7 +15,7 @@
       >
         <strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong>
       </h3>
-      <v-spacer/>
+      <v-spacer />
       <v-flex class="select ml-3 mr-1">
         <v-select
           id="selectStatus"
@@ -80,7 +80,7 @@
         />
       </div>
     </v-row>
-    <v-divider class="mb-1 subheader-divider"/>
+    <v-divider class="mb-1 subheader-divider" />
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
@@ -353,7 +353,7 @@
       </v-col>
     </v-row>
     <ConfirmationDialog ref="confirmationDialogIgnore">
-      <template #message/>
+      <template #message />
     </ConfirmationDialog>
   </div>
 </template>
@@ -560,38 +560,23 @@ export default {
     },
     hasErrorRecordsSelected() {
       let filteredError = this.selectedRecords.filter(record => record.status === 'ERROR');
-      if (filteredError.length > 0) {
-        return true;
-      }
-      return false;
+      return filteredError.length > 0;
     },
     hasIgnoreRecordsSelected() {
       let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
-      if (filteredError.length > 0) {
-        return true;
-      }
-      return false;
+      return filteredError.length > 0;
     },
     hasCanIgnoreRecordsSelectedOnly() {
       let filteredError = this.selectedRecords.filter(record => record.status === 'FIXABLE' || record.status === 'ERROR');
-      if (filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
-        return true;
-      }
-      return false;
+      return (filteredError.length > 0 && filteredError.length === this.selectedRecords.length);
     },
     hasRecoverOnlyRecordsSelected() {
       let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
-      if (filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
-        return true;
-      }
-      return false;
+      return (filteredError.length > 0 && filteredError.length === this.selectedRecords.length);
     },
     hasOnlyErrorRecordsInList() {
       let filteredError = this.nomRollStudentSearchResponse.content.filter(record => record.status === 'ERROR');
-      if (filteredError.length === this.nomRollStudentSearchResponse.content.length) {
-        return true;
-      }
-      return false;
+      return (filteredError.length === this.nomRollStudentSearchResponse.content.length);
     },
     async validateForm() {
       const isValid = await this.$refs.form.validate();

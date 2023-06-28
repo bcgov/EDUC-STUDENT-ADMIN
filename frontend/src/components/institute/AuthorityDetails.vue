@@ -731,9 +731,9 @@
                                     id="sameAsMailingCheckbox"
                                     v-model="sameAsMailingCheckbox"
                                     dense
-                                    @update:model-value="clickSameAsAddressButton"
                                     label="Same as Mailing Address"
                                     class="mt-n3 pt-0"
+                                    @update:model-value="clickSameAsAddressButton"
                                   />
                                 </v-col>
                               </v-row>

@@ -74,7 +74,7 @@
                             :rules="requireRoleRules"
                             class="mb-3 mt-0 pt-0"
                           >
-                            <template #no-data/>
+                            <template #no-data />
                             <template #selection="{item, index}">
                               {{ getRoleNameFromCode(item, index) }}
                             </template>
@@ -98,7 +98,7 @@
                                   >
                                     <template #prepend="{ isActive }">
                                       <v-list-item-action>
-                                        <v-checkbox-btn :model-value="isActive"/>
+                                        <v-checkbox-btn :model-value="isActive" />
                                       </v-list-item-action>
                                     </template>
 
@@ -139,7 +139,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <ConfirmationDialog ref="confirmationDialog"/>
+      <ConfirmationDialog ref="confirmationDialog" />
     </v-form>
   </v-container>
 </template>

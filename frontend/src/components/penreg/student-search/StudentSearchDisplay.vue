@@ -43,9 +43,9 @@
             style="background-color:#d7d7d7;"
           >
             <StudentAdvancedSearch
+              v-model:use-d-o-b="useDOB"
               :enter-pushed="enterPushed"
               :run-p-e-n-search-if-possible="runPENSearchIfPossible"
-              v-model:use-d-o-b="useDOB"
               :search-has-values="searchHasValues"
               :validate-pen="validatePen"
               :uppercase-gender="uppercaseGender"

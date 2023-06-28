@@ -22,8 +22,7 @@
         icon="mdi-arrow-left-bold"
         size="small"
         @click="clickPrevious"
-      >
-      </v-btn>
+      />
       <v-btn
         id="nextHistoryDetail"
         :disabled="nextDisabled"
@@ -32,8 +31,7 @@
         size="small"
         icon="mdi-arrow-right-bold"
         @click="clickNext"
-      >
-      </v-btn>
+      />
     </span>
   </div>
 </template>

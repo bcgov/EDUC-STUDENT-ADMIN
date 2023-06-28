@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       New School
     </v-card-title>
-    <v-divider/>
+    <v-divider />
     <v-card-text>
       <v-form
         ref="newSchoolForm"
@@ -245,8 +245,8 @@
                   class="ml-1 toggle"
                   @click="toggleAddressForm"
                 >{{
-                    addressButton.label
-                  }}</a>
+                  addressButton.label
+                }}</a>
               </v-col>
             </v-row>
 
@@ -492,8 +492,6 @@ import {findUpcomingDate} from '@/utils/dateHelpers';
 import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import moment from 'moment';
-
 
 export default {
   name: 'NewSchoolPage',

@@ -14,8 +14,8 @@
         size="x-small"
         class="ml-1"
         v-bind="attrs"
-        @click.prevent.stop="copy(copyText)"
         :title="`Copy ${copyText} to clipboard`"
+        @click.prevent.stop="copy(copyText)"
       >
         <v-icon
           v-if="icon"

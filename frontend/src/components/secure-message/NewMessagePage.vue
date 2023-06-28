@@ -53,8 +53,7 @@
                               <v-list-item
                                 v-bind="props"
                                 :prepend-icon="item.raw.districtNumber ? 'mdi-domain' : 'mdi-school'"
-                              >
-                              </v-list-item>
+                              />
                             </template>
                           </v-autocomplete>
                           <v-text-field
@@ -252,7 +251,7 @@
       </v-col>
     </v-row>
 
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 

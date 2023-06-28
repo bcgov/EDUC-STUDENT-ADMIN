@@ -62,8 +62,8 @@
           </v-col>
         </v-row>
         <v-row
-          no-gutters
           v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)"
+          no-gutters
           class="d-flex justify-start"
         >
           <v-col class="d-flex">
@@ -81,8 +81,8 @@
           </v-col>
         </v-row>
         <v-row
-          no-gutters
           v-else
+          no-gutters
           class="d-flex justify-start"
         >
           <v-col class="d-flex">
@@ -99,7 +99,10 @@
             </div>
           </v-col>
         </v-row>
-        <v-row no-gutters class="mt-1 d-flex justify-start">
+        <v-row
+          no-gutters
+          class="mt-1 d-flex justify-start"
+        >
           <v-col class="d-flex">
             <v-icon
               :color="getStatusColorAuthorityOrSchool(school.status)"

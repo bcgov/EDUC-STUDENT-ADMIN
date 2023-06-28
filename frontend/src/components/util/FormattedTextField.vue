@@ -1,11 +1,11 @@
 <template>
   <v-text-field
     :id="id"
+    v-model="data"
     :disabled="disabled"
     :outlined="outlined"
     :dense="dense"
     :filled="filled"
-    v-model="data"
     :readonly="readonly"
     :rules="rules"
     :maxlength="maxlength"

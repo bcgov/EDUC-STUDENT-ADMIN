@@ -67,8 +67,7 @@
               text="Generate"
               class="ml-2 pl-2 pr-2"
               :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
-            >
-            </PrimaryButton>
+            />
           </v-col>
         </v-row>
         <v-expand-transition>
@@ -98,21 +97,19 @@
                     class="ml-2"
                     text="No"
                     :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
-                  >
-                  </PrimaryButton>
+                  />
                   <PrimaryButton
                     id="doGeneratePrimaryEdxActivationCodeButton"
                     class="ml-2"
                     text="Yes"
                     :click-action="doGeneratePrimaryEdxActivationCode"
-                  >
-                  </PrimaryButton>
+                  />
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
         </v-expand-transition>
-        <v-divider class="divider"/>
+        <v-divider class="divider" />
 
         <!--    search filter -->
         <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
@@ -154,20 +151,18 @@
               secondary
               text="Clear"
               :click-action="clearButtonClick"
-            >
-            </PrimaryButton>
+            />
             <PrimaryButton
               id="user-search-button"
               class="ml-2"
               text="Search"
               :click-action="searchButtonClick"
               :disabled="searchEnabled()"
-            >
-            </PrimaryButton>
+            />
           </v-col>
         </v-row>
         <!-- user info -->
-        <Spinner v-if="loadingUsers"/>
+        <Spinner v-if="loadingUsers" />
         <v-row
           v-else
           class="d-flex align-stretch"
@@ -254,7 +249,7 @@
         >
           New User
         </v-card-title>
-        <v-divider/>
+        <v-divider />
         <v-card-text>
           <InviteUserPage
             :user-roles="districtRoles"

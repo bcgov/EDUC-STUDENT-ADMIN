@@ -49,8 +49,7 @@
           text="Generate"
           class="ml-2 pl-2 pr-2"
           :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
-        >
-        </PrimaryButton>
+        />
       </v-col>
     </v-row>
     <v-expand-transition>
@@ -80,15 +79,13 @@
                 class="ml-2"
                 text="No"
                 :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
-              >
-              </PrimaryButton>
+              />
               <PrimaryButton
                 id="doGeneratePrimaryEdxActivationCodeButton"
                 class="ml-2"
                 text="Yes"
                 :click-action="doGeneratePrimaryEdxActivationCode"
-              >
-              </PrimaryButton>
+              />
             </v-col>
           </v-row>
         </v-col>
@@ -136,16 +133,14 @@
           secondary
           text="Clear"
           :click-action="clearButtonClick"
-        >
-        </PrimaryButton>
+        />
         <PrimaryButton
           id="user-search-button"
           class="ml-2"
           text="Search"
           :click-action="searchButtonClick"
           :disabled="searchEnabled()"
-        >
-        </PrimaryButton>
+        />
       </v-col>
     </v-row>
     <!--    user info -->

@@ -14,7 +14,7 @@
         <div class="text-h6 font-weight-light mb-2">
           {{ title }}
         </div>
-        <v-divider class="my-2"/>
+        <v-divider class="my-2" />
         <v-icon
           class="mr-2"
           small

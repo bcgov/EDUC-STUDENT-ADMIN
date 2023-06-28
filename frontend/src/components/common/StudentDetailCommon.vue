@@ -222,8 +222,8 @@
             label="Legal Surname"
             colspan="5"
             :async-messages="err.legalLastNameError"
-            @changeStudentObjectValue="changeStudentObjectValue"
             :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+            @changeStudentObjectValue="changeStudentObjectValue"
           />
 
           <StudentDetailsTextField
@@ -390,25 +390,25 @@
               :class="{textFieldColumn: !dobError}"
             >
               <FormattedTextField
-                v-model="shortDOB"
                 :id="STUDENT_DETAILS_FIELDS.DOB"
+                v-model="shortDOB"
                 tabindex="8"
                 :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}]"
                 :filled="false"
                 :clearable="false"
-                @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
                 :format="formatDob"
-                @mouseover.native="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
                 :async-messages="err.birthDateError"
-                @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
                 :rules="validateDOB()"
-                @blur="[editingDOB = false, hoveringDOB = false]"
                 maxlength="8"
-                @focus="[editingDOB = true, hoveringDOB = true]"
                 :readonly="!hoveringDOB || !editingDOB"
-                @input="clearDOBRuleErrors"
                 :outlined="hoveringDOB || editingDOB || dobHasChanged()"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
+                @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
+                @mouseover.native="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
+                @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
+                @blur="[editingDOB = false, hoveringDOB = false]"
+                @focus="[editingDOB = true, hoveringDOB = true]"
+                @input="clearDOBRuleErrors"
               />
             </v-col>
             <v-col
@@ -520,9 +520,9 @@
             max-length="7"
             :revert-field="revertField"
             :async-messages="[]"
-            @changeStudentObjectValue="changeStudentObjectValue"
             revert-id="revertPostalCode"
             tab-index="10"
+            @changeStudentObjectValue="changeStudentObjectValue"
           />
 
           <v-row
@@ -539,24 +539,24 @@
               :class="{textFieldColumn: !mincodeError}"
             >
               <FormattedTextField
+                :id="STUDENT_DETAILS_FIELDS.MINCODE"
                 v-model="studentCopy.mincode"
                 tabindex="11"
-                :id="STUDENT_DETAILS_FIELDS.MINCODE"
                 :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !mincodeHasChanged(), darkBackgound: hoveringMincode || mincodeHasChanged()}]"
                 :async-messages="mincodeErrors"
                 :filled="false"
                 :clearable="false"
-                @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
                 :format="formatMincode"
-                @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
                 :rules="validateMincode()"
-                @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
                 maxlength="8"
-                @blur="[editingMincode = false, hoveringMincode = false]"
                 :readonly="!hoveringMincode || !editingMincode"
-                @focus="[editingMincode = true, hoveringMincode = true]"
                 :outlined="hoveringMincode || editingMincode || mincodeHasChanged() || false"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
+                @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
+                @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
+                @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
+                @blur="[editingMincode = false, hoveringMincode = false]"
+                @focus="[editingMincode = true, hoveringMincode = true]"
               />
             </v-col>
             <v-col
@@ -607,9 +607,9 @@
             max-length="12"
             :revert-field="revertField"
             :async-messages="[]"
-            @changeStudentObjectValue="changeStudentObjectValue"
             revert-id="revertLocalID"
             tab-index="12"
+            @changeStudentObjectValue="changeStudentObjectValue"
           />
 
 
@@ -673,24 +673,24 @@
             </v-col>
             <v-col class="textAreaColumn memo-style">
               <v-textarea
-                tabindex="13"
-                v-model="studentCopy.memo"
-                class="onhoverEdit bolder customNoBorder"
                 :id="STUDENT_DETAILS_FIELDS.MEMO"
+                v-model="studentCopy.memo"
+                tabindex="13"
+                class="onhoverEdit bolder customNoBorder"
                 :class="{onhoverPad: !hoveringMemo && !hasEdits('memo'), darkBackgound: hoveringMemo || hasEdits('memo')}"
                 color="#000000"
-                @keyup.tab="[editingMemo = true, hoveringMemo = true]"
                 maxlength="4000"
-                @mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
                 dense
-                @mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
                 rows="3"
-                @blur="[editingMemo = false, hoveringMemo = false]"
                 no-resize
-                @click="[editingMemo = true, hoveringMemo = true]"
                 :readonly="!hoveringMemo || !editingMemo"
                 :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MEMO)"
+                @keyup.tab="[editingMemo = true, hoveringMemo = true]"
+                @mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
+                @mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
+                @blur="[editingMemo = false, hoveringMemo = false]"
+                @click="[editingMemo = true, hoveringMemo = true]"
               />
             </v-col>
             <v-col

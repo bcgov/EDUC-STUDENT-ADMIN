@@ -47,10 +47,10 @@
         >
           <v-checkbox
             id="useDOBCheckbox"
+            v-model="useDOBValue"
             class="ma-0 pa-0"
             height="100%"
             label=""
-            v-model="useDOBValue"
             color="#606060"
             @change="searchHasValues"
           />
@@ -113,10 +113,10 @@
         >
           <v-checkbox
             id="useDOBRangeCheckbox"
+            v-model="advancedSearchCriteria.useDOBRange"
             class="ma-0 pa-0"
             height="100%"
             label="Use range"
-            v-model="advancedSearchCriteria.useDOBRange"
             color="#606060"
             @change="[searchHasValues(), $emit('valueChange')]"
           />

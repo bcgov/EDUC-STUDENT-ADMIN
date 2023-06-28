@@ -136,8 +136,8 @@
                       variant="outlined"
                       density="compact"
                       class="mt-1 mb-1"
-                      @click="openSchoolStatusEdit"
                       :secondary="true"
+                      @click="openSchoolStatusEdit"
                     >
                       <v-icon
                         class="ml-n1 pr-3"
@@ -147,8 +147,8 @@
                         mdi-circle-medium
                       </v-icon>
                       <span>{{
-                          schoolDetailsCopy.status
-                        }}</span>
+                        schoolDetailsCopy.status
+                      }}</span>
                     </v-btn>
                   </v-col>
                 </v-col>
@@ -214,15 +214,15 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      formatDate(school.closedDate) || '-'
-                    }}</span>
+                    formatDate(school.closedDate) || '-'
+                  }}</span>
                   <span
                     v-else
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      formatDate(schoolDetailsCopy.closedDate) || '-'
-                    }}</span>
+                    formatDate(schoolDetailsCopy.closedDate) || '-'
+                  }}</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -255,8 +255,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      school.schoolCategory
-                    }}</span>
+                    school.schoolCategory
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.schoolCategoryCode"
@@ -299,8 +299,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      school.facilityType
-                    }}</span>
+                    school.facilityType
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.facilityTypeCode"
@@ -344,8 +344,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      getGradesOffered(school.grades)
-                    }}</span>
+                    getGradesOffered(school.grades)
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.grades"
@@ -392,8 +392,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      getSchoolOrganization(school)
-                    }}</span>
+                    getSchoolOrganization(school)
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.schoolOrganizationCode"
@@ -436,8 +436,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      schoolReportingRequirementType.label || ''
-                    }}</span>
+                    schoolReportingRequirementType.label || ''
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.schoolReportingRequirementCode"
@@ -480,8 +480,8 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                      getNLCActivity(school)
-                    }}</span>
+                    getNLCActivity(school)
+                  }}</span>
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.neighborhoodLearning"
@@ -498,7 +498,10 @@
               </v-row>
             </v-col>
           </v-row>
-          <v-row no-gutters class="mt-6 d-flex justify-start">
+          <v-row
+            no-gutters
+            class="mt-6 d-flex justify-start"
+          >
             <v-col
               cols="12"
               class="d-flex justify-start"
@@ -538,8 +541,8 @@
                       v-if="school.phoneNumber"
                       class="ministryLine"
                     >{{
-                        formatPhoneNumber(school.phoneNumber)
-                      }}</span>
+                      formatPhoneNumber(school.phoneNumber)
+                    }}</span>
                     <a
                       v-if="showEditLinks(school.phoneNumber)"
                       class="editField"
@@ -590,8 +593,8 @@
                       v-if="school.faxNumber"
                       class="ministryLine"
                     >{{
-                        formatPhoneNumber(school.faxNumber)
-                      }}</span>
+                      formatPhoneNumber(school.faxNumber)
+                    }}</span>
                     <a
                       v-if="showEditLinks(school.faxNumber)"
                       class="editField"
@@ -642,8 +645,8 @@
                       style="word-break: break-all;"
                       class="ministryLine"
                     >{{
-                        school.email
-                      }}</span>
+                      school.email
+                    }}</span>
                     <a
                       v-if="showEditLinks(school.email)"
                       class="editField"
@@ -695,8 +698,8 @@
                       :href="cleanWebsiteUrl"
                       target="_blank"
                     >{{
-                        cleanWebsiteUrl
-                      }}</a>
+                      cleanWebsiteUrl
+                    }}</a>
                     <a
                       v-if="showEditLinks(cleanWebsiteUrl)"
                       class="editField"
@@ -773,29 +776,29 @@
                     >
                       <v-col>
                         <span style="word-break: break-all;">{{
-                            getMailingAddressItem('addressLine1')
-                          }}</span>
+                          getMailingAddressItem('addressLine1')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getMailingAddressItem('addressLine2')
-                          }}</span>
+                          getMailingAddressItem('addressLine2')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode') + ', ' + getMailingAddressItem('countryCode')
-                          }}</span>
+                          getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode') + ', ' + getMailingAddressItem('countryCode')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getMailingAddressItem('postal')
-                          }}</span>
+                          getMailingAddressItem('postal')
+                        }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -824,29 +827,29 @@
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getPhysicalAddressItem('addressLine1')
-                          }}</span>
+                          getPhysicalAddressItem('addressLine1')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getPhysicalAddressItem('addressLine2')
-                          }}</span>
+                          getPhysicalAddressItem('addressLine2')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode') + ', ' + getPhysicalAddressItem('countryCode')
-                          }}</span>
+                          getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode') + ', ' + getPhysicalAddressItem('countryCode')
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
                         <span style="word-break: break-all;">{{
-                            getPhysicalAddressItem('postal')
-                          }}</span>
+                          getPhysicalAddressItem('postal')
+                        }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -888,8 +891,8 @@
                   class="ml-1 toggle"
                   @click="toggleAddressForm"
                 >{{
-                    addressButton.label
-                  }}</a>
+                  addressButton.label
+                }}</a>
               </v-col>
             </v-row>
             <v-row v-if="showAddress">

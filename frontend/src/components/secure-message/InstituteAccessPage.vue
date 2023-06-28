@@ -54,8 +54,7 @@
                     :to="`/edx/exchange/access/${instituteTypeLabel.toLowerCase()}/${instituteCode}`"
                     :disabled="!instituteCode"
                     :text="'Manage ' + instituteTypeLabel + ' Access'"
-                  >
-                  </PrimaryButton>
+                  />
                 </v-col>
               </v-row>
             </v-col>

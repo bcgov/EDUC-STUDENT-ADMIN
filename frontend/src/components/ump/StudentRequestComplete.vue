@@ -176,9 +176,9 @@
           <v-form ref="completeForm">
             <v-textarea
               id="complete-comment-textarea"
+              ref="completeCommentTextarea"
               v-model="request.completeComment"
               name="description"
-              ref="completeCommentTextarea"
               label="Enter comment"
               :rules="completedRules"
               filled

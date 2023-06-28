@@ -152,8 +152,7 @@
                       <v-list-item
                         v-bind="props"
                         :prepend-icon="item.raw.districtNumber ? 'mdi-domain' : 'mdi-school'"
-                      >
-                      </v-list-item>
+                      />
                     </template>
                   </v-autocomplete>
                 </v-col>
@@ -332,8 +331,7 @@
                   </v-col>
                 </v-row>
               </template>
-              <template #headers>
-              </template>
+              <template #headers />
               <template #item="{ item, index }">
                 <v-row
                   class="hoverTable pa-2"
@@ -344,8 +342,7 @@
                     <v-checkbox
                       v-model="selectedExchanges"
                       :value="item.raw"
-                    >
-                    </v-checkbox>
+                    />
                   </v-col>
                   <v-col
                     cols="7"
@@ -359,7 +356,7 @@
                           class="subjectHeading"
                           :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
                         >{{ getSubject(item.raw.subject)
-                          }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                        }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -375,8 +372,9 @@
                     class="d-flex justify-end"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
-                    <v-row no-gutters
-                           class="d-flex justify-end"
+                    <v-row
+                      no-gutters
+                      class="d-flex justify-end"
                     >
                       <v-col cols="2">
                         <v-row no-gutters>
@@ -488,7 +486,7 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           New Message
         </v-card-title>
-        <v-divider/>
+        <v-divider />
         <v-card-text>
           <NewMessagePage
             @secure-exchange:messageSent="messageSent"
@@ -515,7 +513,6 @@ import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
-import moment from 'moment/moment';
 
 export default {
   name: 'ExchangeInbox',

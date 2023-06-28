@@ -485,8 +485,8 @@
               >
                 <v-textarea
                   :id="STUDENT_DETAILS_FIELDS.MEMO"
-                  v-model="student.memo"
                   ref="memoTextarea"
+                  v-model="student.memo"
                   tabindex="12"
                   :disabled="mergeSagaComplete"
                   class="memoscroll true-pen-data"

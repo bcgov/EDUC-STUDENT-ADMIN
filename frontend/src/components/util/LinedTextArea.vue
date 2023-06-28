@@ -20,12 +20,12 @@
     <div class="lined-textarea__box">
       <label>
         <textarea
+          ref="textarea"
           v-model="content"
           v-resize="recalculate"
           :disabled="disabled"
           :placeholder="placeholder"
           class="lined-textarea__content"
-          ref="textarea"
           :class="{'lined-textarea__content--wrap': !nowrap,
                    'lined-textarea__content--nowrap': nowrap }"
           readonly

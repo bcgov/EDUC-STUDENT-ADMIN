@@ -21,7 +21,7 @@
           cols="2"
           class="d-flex justify-end"
         >
-          <v-spacer/>
+          <v-spacer />
           <PrimaryButton
             v-if="hasAccess"
             id="addNewNoteButton"
@@ -74,8 +74,8 @@
                       </v-col>
                       <v-col class="d-flex justify-end">
                         <span class="activityDisplayDate mr-2">{{
-                            formatDate(note.createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', to = 'uuuu/MM/dd')
-                          }}</span>
+                          formatDate(note.createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', to = 'uuuu/MM/dd')
+                        }}</span>
                         <v-btn
                           v-if="hasAccess"
                           class="mr-2"
@@ -173,7 +173,7 @@
         @editSchoolNote:schoolNoteSaved="schoolNoteSaved"
       />
     </v-bottom-sheet>
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -248,11 +248,11 @@ export default {
         .then(response => {
           this.school = response.data;
         }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-      }).finally(() => {
-        this.loading = false;
-      });
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     showSchoolNoteEditForm(schoolNote) {
       this.editSchoolNote = schoolNote;

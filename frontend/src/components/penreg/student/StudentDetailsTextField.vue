@@ -14,26 +14,26 @@
       :cols="colspan"
     >
       <v-text-field
+        :id="name"
         v-model="fieldModel"
         :tabindex="tabIndex"
         class="onhoverEdit bolder customNoBorder"
         :class="{onhoverPad: !hovered && !hasEdits(name), darkBackgound: (hovered || hasEdits(name))}"
-        :id="name"
-        @keyup.tab="[edited=true, hovered=true]"
         color="#000000"
-        @mouseover="fieldDisabled?hovered=false:hovered=true"
         dense
-        @mouseout="edited ? hovered=true : hovered= false"
         :disabled="fieldDisabled"
-        @blur="[edited=false,hovered= false]"
         :maxlength="maxLength"
-        @click="[edited=true, hovered=true]"
         :minlength="minLength || 0"
         :readonly="!hovered || !edited"
-        @keyup="[$emit('changeStudentObjectValue', name, fieldModel, $event),handleOnInput?handleOnInput(name):'']"
         :outlined="hovered || edited || hasEdits(name)"
         :rules="validationRequired?validationRules():[]"
         :error-messages="asyncMessages"
+        @keyup.tab="[edited=true, hovered=true]"
+        @mouseover="fieldDisabled?hovered=false:hovered=true"
+        @mouseout="edited ? hovered=true : hovered= false"
+        @blur="[edited=false,hovered= false]"
+        @click="[edited=true, hovered=true]"
+        @keyup="[$emit('changeStudentObjectValue', name, fieldModel, $event),handleOnInput?handleOnInput(name):'']"
       />
     </v-col>
     <v-col

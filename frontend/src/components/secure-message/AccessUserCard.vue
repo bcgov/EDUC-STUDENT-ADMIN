@@ -121,7 +121,7 @@
               >
                 <template #prepend="{ isActive }">
                   <v-list-item-action>
-                    <v-checkbox-btn :model-value="isActive"/>
+                    <v-checkbox-btn :model-value="isActive" />
                   </v-list-item-action>
                 </template>
 
@@ -146,8 +146,8 @@
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove this users access for the {{
-                    instituteTypeLabel.toLowerCase()
-                  }}?</span>
+                  instituteTypeLabel.toLowerCase()
+                }}?</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -420,11 +420,11 @@ export default {
         .then(() => {
           this.setSuccessAlert('User roles have been updated.');
         }).catch(error => {
-        this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
-        console.log(error);
-      }).finally(() => {
-        this.$emit('refresh');
-      });
+          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     setUserRolesAsSelected() {
       let mySelection = [];

@@ -76,8 +76,8 @@
               density="compact"
               clearable
               class="header-text"
-              @click:clear="headerSearchParams.initialSubmitDate = []"
               type="date"
+              @click:clear="headerSearchParams.initialSubmitDate = []"
               @update:model-value="validateForm"
             />
           </template>
@@ -195,7 +195,6 @@ import {mapActions, mapState} from 'pinia';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
-import PrimaryButton from './util/PrimaryButton.vue';
 import ClipboardButton from './util/ClipboardButton.vue';
 import FilterTag from './util/FilterTag.vue';
 import {notificationsStore} from '@/store/modules/notifications';
