@@ -93,6 +93,20 @@ function isPdf(document){
   );
 }
 
+function isImage(document) {
+  let imageTypes = ['.jpg','.jpeg','.jpe','.jfif','.jif','.jfi', '.png'];
+  return (
+    'fileName' in document &&
+    typeof document.fileName === 'string' &&
+    imageTypes.includes(getFileExtensionWithDot(document.fileName.toLowerCase()))
+  );
+}
+
+function getFileExtensionWithDot(fileName) {
+  const extension = fileName.slice((fileName.lastIndexOf('.') - 1 >>> 0) + 2);
+  return (extension.length > 0 ? ('.' + extension) : '');
+}
+
 async function deleteDataWithBody(token, url, data) {
   if (!data) {
     throw new ApiError(400, {message: 'Invalid request for delete with body'}, new Error('Empty body'));
@@ -545,7 +559,8 @@ const utils = {
   addSagaStatusToRecords,
   validateAccessToken,
   forwardGet,
-  isPdf
+  isPdf,
+  isImage
 };
 
 module.exports = utils;

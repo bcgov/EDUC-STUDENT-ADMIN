@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf} = require('../utils');
+const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf, isImage} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -203,11 +203,11 @@ async function getExchange(req, res) {
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
         if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
           activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-          activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? school.schoolName : comment.staffUserIdentifier;
         }
         if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
           activity['actor'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
-          activity['title'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? district.name : comment.staffUserIdentifier;
         }
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
@@ -223,10 +223,10 @@ async function getExchange(req, res) {
           activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
-            activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = document.edxUserID ? school.schoolName : document.staffUserIdentifier;
           }
           if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
-            activity['title'] = document.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = document.edxUserID ? district.name : document.staffUserIdentifier;
           }
           activity['fileName'] = document.fileName;
           activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
@@ -254,10 +254,10 @@ async function getExchange(req, res) {
           activity['timestamp'] = student['createDate'] ? LocalDateTime.parse(student['createDate']) : '';
           activity['actor'] = student.edxUserID ? student.edxUserID : student.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
-            activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = student.edxUserID ? school.schoolName : student.staffUserIdentifier;
           }
           if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
-            activity['title'] = student.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = student.edxUserID ? district.name : student.staffUserIdentifier;
           }
           activity['displayDate'] = student['createDate'] ? LocalDateTime.parse(student['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           dataResponse['activities'].push(activity);
@@ -808,11 +808,14 @@ function getExchangeDocumentById() {
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
     getData(token, url).then(resultData => {
       res.setHeader('Content-type', resultData.fileExtension);
-      if(!isPdf(resultData)){
+      if(isImage(resultData)){
         res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
         return res.status(200).send(resultData.documentData);
-      }else{
+      } else if(isPdf(resultData)){
         res.setHeader('Content-disposition', 'inline; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
+      } else {
+        res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
         return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
       }
     }).catch(error => {

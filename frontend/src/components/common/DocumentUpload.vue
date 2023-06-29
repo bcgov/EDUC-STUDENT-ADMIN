@@ -19,6 +19,7 @@
           variant="underlined"
           :disabled="hasReadOnlyRoleAccess()"
           placeholder="Select your file"
+          hint="JPEG, PNG, CSV, MS-WORD, MS-EXCEL, .STD, .VER and PDF files supported"
           :error-messages="fileInputError"
           class="pt-0"
           @update:model-value="selectFile"
@@ -80,11 +81,15 @@ export default {
       type: Boolean,
       default: false
     },
+    allowedFileFormat: {
+      type: String,
+      default: null
+    }
   },
   data() {
     return {
       fileAccept: 'xls, xlsx',
-      fileRules: [ ],
+      fileRules: [],
       requiredRules: [v => !!v || 'Required'],
       validForm: true,
       fileInputError: [],
@@ -96,7 +101,6 @@ export default {
       alert: false,
       alertMessage: null,
       alertType: null
-
     };
   },
   watch: {
@@ -108,11 +112,12 @@ export default {
   async created() {
     await edxStore().getFileRequirements();
     await this.getFileRules();
+    await this.validateForm();
   },
   computed: {
     ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),
     ...mapState(edxStore, ['fileRequirements']),
-    dataReady () {
+    dataReady() {
       return this.validForm && this.uploadFileValue;
     },
   },
@@ -137,8 +142,10 @@ export default {
     resetForm() {
       this.$refs.form.reset();
       this.fileInputError = [];
+      this.uploadFileValue = null;
       this.alert = false;
       this.active = false;
+      this.validateForm();
     },
     setSuccessAlert() {
       this.alertMessage = 'File upload successful.';
@@ -152,15 +159,16 @@ export default {
     },
     selectFile(file) {
       this.uploadFileValue = file;
-      if(!this.uploadFileValue && !this.active) {
+      if(file?.length === 0 && !this.active) {
         this.fileInputError = 'Required';
       } else {
         this.fileInputError = [];
         this.alert = false;
       }
     },
-    validate() {
-      this.$refs.form.validate();
+    async validateForm() {
+      const valid = await this.$refs.form.validate();
+      this.validForm = valid.valid;
     },
     submitRequest() {
       if(this.dataReady){
@@ -195,11 +203,11 @@ export default {
           return !value || !value.length || value[0].size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`;
         },
         value => {
-          return !value || !value.length || this.fileRequirements.extensions.includes(value[0].type) || `File formats should be ${this.fileFormats}.`;
+          return !value?.length || this.fileRequirements.extensions.includes(`.${value[0]?.name.split('.').slice(-1)}`) || this.fileRequirements.extensions.includes(value[0]?.type) || `File formats should be ${this.fileFormats}.`;
         }
       ];
       this.fileAccept = this.fileRequirements.extensions.join();
-      this.fileFormats = this.makefileFormatList(this.fileRequirements.extensions);
+      this.fileFormats = this.allowedFileFormat ? this.allowedFileFormat : this.makefileFormatList(this.fileRequirements.extensions);
     },
     handleFileReadErr() {
       this.active = false;
@@ -209,8 +217,8 @@ export default {
       let fileExtensionValue;
       if(this.smallFileExtension){
         fileExtensionValue = getFileExtensionWithDot(this.uploadFileValue[0].name);
-      }else{
-        fileExtensionValue = this.uploadFileValue[0].type;
+      } else {
+        fileExtensionValue = this.uploadFileValue[0].type ? this.uploadFileValue[0].type : getFileExtensionWithDot(this.uploadFileValue[0].name);
       }
 
       let document = {
