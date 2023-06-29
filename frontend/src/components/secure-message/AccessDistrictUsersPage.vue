@@ -43,7 +43,7 @@
           <v-col class="d-flex justify-end">
             <v-chip
               id="primaryEdxActivationCode"
-              :color="getChipColor()"
+              :class="primaryEdxActivationCode != null ? 'primary_color' : 'secondary_color'"
             >
               <v-icon left>
                 mdi-shield-key-outline
@@ -485,6 +485,16 @@ export default {
     margin-right: 0;
     border-radius: 5px;
     background-color: #F2F2F2;
+}
+
+.primary_color {
+    background-color: #4caf50;
+    color: white;
+}
+
+.secondary_color {
+    background-color: #424242;
+    color: white;
 }
 
 .card-hint {
