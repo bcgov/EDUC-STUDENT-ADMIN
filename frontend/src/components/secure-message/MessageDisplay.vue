@@ -70,7 +70,6 @@
                       <v-row no-gutters>
                         <v-col>
                           <v-icon
-                            color="grey darken-3"
                             size="medium"
                             dark
                           >
@@ -95,7 +94,6 @@
                         <v-col>
                           <v-icon
                             class="pr-1"
-                            color="grey darken-3"
                             dark
                           >
                             mdi-clock-outline
