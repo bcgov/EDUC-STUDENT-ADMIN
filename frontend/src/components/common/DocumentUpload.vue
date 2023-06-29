@@ -203,7 +203,6 @@ export default {
           return !value || !value.length || value[0].size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`;
         },
         value => {
-          //const extension = `.${value[0]?.name.split('.').slice(-1)}`;
           return !value?.length || this.fileRequirements.extensions.includes(`.${value[0]?.name.split('.').slice(-1)}`) || this.fileRequirements.extensions.includes(value[0]?.type) || `File formats should be ${this.fileFormats}.`;
         }
       ];
