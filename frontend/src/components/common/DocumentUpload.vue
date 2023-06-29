@@ -207,7 +207,7 @@ export default {
         }
       ];
       this.fileAccept = this.fileRequirements.extensions.join();
-      this.fileFormats = this.allowedFileFormat ? this.allowedFileFormat : this.makefileFormatList(fileRequirements.extensions);
+      this.fileFormats = this.allowedFileFormat ? this.allowedFileFormat : this.makefileFormatList(this.fileRequirements.extensions);
     },
     handleFileReadErr() {
       this.active = false;
