@@ -240,6 +240,50 @@ async function addNewDistrictNote(req, res) {
   }
 }
 
+async function updateDistrictNote(req, res) {
+  if (req.params.noteId !== req.body.noteId) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'The noteId in the URL didn\'t match the noteId in the request body.'
+    });
+  }
+  try {
+    const token = getBackendToken(req);
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const payload = {
+      noteId: req.body.noteId,
+      districtId: req.body.districtId,
+      content: req.body.content
+    };
+    const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateDistrictNote', 'Error occurred while attempting to save the changes to the district note.');
+    return errorResponse(res);
+  }
+}
+
+async function deleteDistrictNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+    let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    await utils.deleteData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note/${req.params.noteId}`);
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'deleteDistrictNote', 'An error occurred while attempting to remove a district note.');
+    return errorResponse(res);
+  }
+}
+
 async function getSchools(req, res) {
   const token = getBackendToken(req);
   try {
@@ -1207,6 +1251,8 @@ module.exports = {
   updateDistrict,
   addAuthority,
   addNewDistrictNote,
+  updateDistrictNote,
+  deleteDistrictNote,
   addDistrictContact,
   deleteDistrictContact,
   getSchoolHistoryPaginated,
