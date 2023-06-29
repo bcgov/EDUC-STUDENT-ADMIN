@@ -141,7 +141,6 @@
                     item-value="value"
                     item-title="text"
                     variant="underlined"
-                    return-object
                     clearable
                     :items="contacts"
                   >
@@ -935,8 +934,8 @@ export default {
 
 
 .containerSetup {
-    padding-right: 32em !important;
-    padding-left: 32em !important;
+    padding-right: 26em !important;
+    padding-left: 26em !important;
 }
 
 :deep(.dp__input) {

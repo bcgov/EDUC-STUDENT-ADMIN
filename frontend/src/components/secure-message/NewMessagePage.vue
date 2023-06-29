@@ -97,44 +97,48 @@
                     class="ml-6"
                     no-gutters
                   >
-                    <v-col
+                    <div
                       v-for="(document, index) in secureExchangeDocuments"
                       :key="index"
-                      cols="4"
-                      class="d-flex px-0 pb-2"
                     >
-                      <v-chip
-                        :id="`documentChip-${index}`"
-                        :class="['ma-1']"
-                        close-icon="mdi-close-circle"
-                        closable
-                        @click:close="removeDocumentByIndex(index)"
+                      <v-col
+                        class="d-flex justify-start px-0 pb-2"
                       >
-                        <v-avatar left>
-                          <v-icon>mdi-paperclip</v-icon>
-                        </v-avatar>
-                        {{ abbreviateFileName(document.fileName) }}
-                      </v-chip>
-                    </v-col>
-                    <v-col
+                        <v-chip
+                          :id="`documentChip-${index}`"
+                          :class="['ma-1']"
+                          close-icon="mdi-close-circle"
+                          closable
+                          @click:close="removeDocumentByIndex(index)"
+                        >
+                          <v-avatar left>
+                            <v-icon>mdi-paperclip</v-icon>
+                          </v-avatar>
+                          {{ abbreviateFileName(document.fileName) }}
+                        </v-chip>
+                      </v-col>
+                    </div>
+                    <div
                       v-for="(secureExchangeStudent, index) in secureExchangeStudents"
-                      :key="secureExchangeStudent.studentID"
-                      cols="4"
-                      class="d-flex px-0 pb-2"
+                      :key="index"
                     >
-                      <v-chip
-                        :id="`studentChip-${index}`"
-                        :class="['ma-1']"
-                        close-icon="mdi-close-circle"
-                        closable
-                        @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)"
+                      <v-col
+                        class="d-flex justify-start px-0 pb-2"
                       >
-                        <v-avatar left>
-                          <v-icon>mdi-account-circle</v-icon>
-                        </v-avatar>
-                        {{ secureExchangeStudent.pen }}
-                      </v-chip>
-                    </v-col>
+                        <v-chip
+                          :id="`studentChip-${index}`"
+                          :class="['ma-1']"
+                          close-icon="mdi-close-circle"
+                          closable
+                          @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)"
+                        >
+                          <v-avatar left>
+                            <v-icon>mdi-account-circle</v-icon>
+                          </v-avatar>
+                          {{ secureExchangeStudent.pen }}
+                        </v-chip>
+                      </v-col>
+                    </div>
                   </v-row>
                   <v-row v-if="shouldShowOptions">
                     <v-col class="d-flex justify-end mr-3 pt-0">
