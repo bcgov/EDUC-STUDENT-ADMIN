@@ -88,7 +88,6 @@ export default {
     },
     saveChangesToSchoolNote() {
       this.processing = true;
-      console.log(this.schoolNote);
       let payload = {
         noteId: this.schoolNote.noteId,
         schoolId: this.schoolNote.schoolId,
