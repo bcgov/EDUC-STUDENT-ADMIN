@@ -199,7 +199,7 @@ export default {
         },
         value => {
           const extension = `.${value?.name.split('.').slice(-1)}`;
-          return !value || !value.length || fileRequirements.extensions.includes(extension) || fileRequirements.extensions.includes(value?.type) || `File formats should be ${this.fileFormats}.`;
+          return !value?.length || fileRequirements.extensions.includes(extension) || fileRequirements.extensions.includes(value?.type) || `File formats should be ${this.fileFormats}.`;
         }
       ];
       this.fileAccept = this.fileRequirements.extensions.join();
