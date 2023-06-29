@@ -168,7 +168,7 @@ export default {
     },
     async validateForm() {
       const valid = await this.$refs.form.validate();
-      this.isFormValid = valid.valid;
+      this.validForm = valid.valid;
     },
     submitRequest() {
       if(this.dataReady){
