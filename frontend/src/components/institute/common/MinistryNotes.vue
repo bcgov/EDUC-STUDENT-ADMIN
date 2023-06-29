@@ -63,7 +63,7 @@
                         </div>
                         <div
                           class="mt-n2"
-                          style="font-size: xx-small;"
+                          style="font-size: 12px;"
                         >
                           Last modified by {{
                             note.updateUser
@@ -154,8 +154,8 @@
       <NewSchoolNotePage
         v-if="addNewSchoolNoteSheet"
         :school-i-d="$route.params.schoolID"
-        @newSchoolNote:closeNewSchoolNotePage="addNewSchoolNoteSheet = !addNewSchoolNoteSheet"
-        @newSchoolNote:addNewSchoolNote="newSchoolNoteAdded"
+        @closeNewSchoolNotePage="addNewSchoolNoteSheet = !addNewSchoolNoteSheet"
+        @addNewSchoolNote="newSchoolNoteAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
@@ -169,7 +169,7 @@
         v-if="editSchoolNoteSheet"
         :school-note="editSchoolNote"
         :school-id="$route.params.schoolID"
-        @editSchoolNote:closeEditSchoolNotePage="editSchoolNoteSheet = !editSchoolNoteSheet"
+        @closeEditSchoolNotePage="editSchoolNoteSheet = !editSchoolNoteSheet"
         @editSchoolNote:schoolNoteSaved="schoolNoteSaved"
       />
     </v-bottom-sheet>
@@ -263,7 +263,7 @@ export default {
       this.getThisSchoolsDetails();
     },
     newSchoolNoteAdded() {
-      this.newNoteSheet = !this.newNoteSheet;
+      this.addNewSchoolNoteSheet = !this.addNewSchoolNoteSheet;
       this.getThisSchoolsDetails();
     },
     openNoteSheet() {
@@ -285,7 +285,7 @@ export default {
           }
           this.loading = true;
           ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_NOTE_URL}/${schoolNote.schoolId}/${schoolNote.noteId}`).then(() => {
-            this.setSuccessAlert('The school note has successfully been removed!');
+            this.setSuccessAlert('The school note has been removed successfully!');
             this.getThisSchoolsDetails();
           }).catch(error => {
             console.log(error);
