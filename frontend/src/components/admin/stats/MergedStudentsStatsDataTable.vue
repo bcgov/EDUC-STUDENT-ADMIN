@@ -7,26 +7,27 @@
     item-value="studentID"
     disable-sort
     :search="search"
-    :custom-filter="filterMerges"
     :item-class="itemRowBackground"
     :footer-props="{
-      'items-per-page-options': [12]
+      'items-per-page-options': [10]
     }"
-    :items-per-page="12"
+    :items-per-page="10"
   >
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         label="Search"
         class="pa-4"
-      ></v-text-field>
+      />
     </template>
     <template
       v-for="h in headers"
       :key="h.id"
       #[`column.${h.key}`]="{ column }"
     >
-      <v-row no-gutters>
+      <v-row no-gutters
+             v-if="column.shouldDisplay"
+      >
         <v-col>
           <span
             class="header-font"
@@ -63,7 +64,6 @@
           :key="header"
           :class="isAPair(item.item.raw)?'even-row':'odd-row'"
         >
-          <div>{{item}}</div>
           <div
             class="tableCell"
             @click="viewStudentDetails(item.item.raw.studentID)"
@@ -129,20 +129,111 @@ export default {
     headers() {
       return [
         {
-          topText: 'PEN', align: 'start', key: 'pen', title: 'PEN',
-          topValue: 'pen', topTooltip: 'Personal Education Number'
+          shouldDisplay: true,
+          topText: 'PEN',
+          align: 'start',
+          key: 'pen',
+          title: 'PEN',
+          topValue: 'pen',
+          topTooltip: 'Personal Education Number'
         },
         {
+          shouldDisplay: true,
+          topText: 'Legal Surname',
+          key: 'legalLastName',
+          bottomText: 'Usual Surname',
+          topValue: 'legalLastName',
+          bottomValue: 'usualLastName',
+          topTooltip: 'Legal Surname',
+          bottomTooltip: 'Usual Surname'
+        },
+        {
+          shouldDisplay: false,
+          key: 'usualLastName'
+        },
+        {
+          shouldDisplay: true,
+          topText: 'Legal Given',
+          key: 'legalFirstName',
+          bottomText: 'Usual Given',
+          topValue: 'legalFirstName',
+          bottomValue: 'usualFirstName',
+          topTooltip: 'Legal Given',
+          bottomTooltip: 'Usual Given'
+        },
+        {
+          shouldDisplay: false,
+          key: 'usualFirstName'
+        },
+        {
+          shouldDisplay: true,
+          topText: 'Legal Middle',
+          key: 'legalMiddleNames',
+          bottomText: 'Usual Middle',
+          topValue: 'legalMiddleNames',
+          bottomValue: 'usualMiddleNames',
+          topTooltip: 'Legal Middle',
+          bottomTooltip: 'Usual Middle'
+        },
+        {
+          shouldDisplay: false,
+          key: 'usualMiddleNames'
+        },
+        {
+          shouldDisplay: true,
+          topText: 'Postal Code',
+          bottomText: 'Memo',
+          topValue: 'postalCode',
+          bottomValue: 'memo',
+          topTooltip: 'Postal Code',
+          bottomTooltip: 'Memo',
+          key: 'postalCode'
+        },
+        {
+          shouldDisplay: false,
+          key: 'memo'
+        },
+        {
+          shouldDisplay: true,
+          topText: 'DC',
+          doubleText: 'Gen',
+          bottomText: 'Local ID',
+          topValue: 'demogCode',
+          doubleValue: 'genderCode',
+          bottomValue: 'localID',
+          topTooltip: 'Demographic Code',
+          doubleTooltip: 'Gender',
+          bottomTooltip: 'Local ID',
+          key: 'genderCode'
+        },
+        {
+          shouldDisplay: false,
+          key: 'demogCode'
+        },
+        {
+          shouldDisplay: false,
+          key: 'localID'
+        },
+        {
+          shouldDisplay: true,
+          topText: 'Birth Date',
+          bottomText: 'Grade',
+          topValue: 'dob',
+          bottomValue: 'gradeCode',
+          topTooltip: 'Birth Date',
+          bottomTooltip: 'Grade',
+          key: 'dob'
+        },
+        {
+          shouldDisplay: false,
+          key: 'gradeCode'
+        },
+        {
+          shouldDisplay: true,
           topText: 'Mincode',
           topValue: 'mincode',
           topTooltip: 'Mincode',
           key: 'mincode'
-        },
-        {
-          topText: 'Jincode',
-          topValue: 'jincode',
-          topTooltip: 'Jincode',
-          key: 'jincode'
         },
       ];
     }
@@ -153,16 +244,6 @@ export default {
       if (memo) {
         return memo.substring(0, 25);
       }
-    },
-    filterMerges(value, query, item) {
-      console.log('Val: ' + JSON.stringify(value));
-      console.log('query: ' + query);
-      console.log('item: ' + JSON.stringify(item));
-
-      return value != null &&
-        query != null &&
-        typeof value === 'string' &&
-        value.toString().toLocaleUpperCase().indexOf(query) !== -1;
     },
     getUsualName(usual, legal) {
       if (usual === legal) {
