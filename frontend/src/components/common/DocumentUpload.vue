@@ -1,8 +1,9 @@
 <template>
   <v-card
-    class="document-upload"
+    class="document-upload mb-1"
     max-width="640px"
     min-width="40em"
+    elevation="2"
   >
     <v-card-title><h3>Document Upload</h3></v-card-title>
     <v-card-text>

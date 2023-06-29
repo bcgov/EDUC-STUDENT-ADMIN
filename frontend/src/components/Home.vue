@@ -185,49 +185,63 @@
         <v-card
           flat
           color="#F2F2F2"
-          class="mt-2"
+          class="mt-2 pa-3"
           height="100%"
         >
-          <v-row class="py-4 px-8">
-            <v-col class="py-0">
-              <v-row>
-                <router-link :to="{name: 'stats-dashboard'}">
-                  <v-card-title class="pa-0">
-                    <h3>Student and System Analytics</h3>
-                  </v-card-title>
-                </router-link>
-              </v-row>
+          <v-row>
+            <v-col>
+              <router-link :to="{name: 'stats-dashboard'}">
+                <v-card-title class="pa-0">
+                  <h3>Student and System Analytics</h3>
+                </v-card-title>
+              </router-link>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mt-2">
+            <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
                 :to="{name: 'analytics-gmp-stats'}"
               >
-                <v-row class="pt-2">
+                <v-card-item class="pa-0">
                   Get My PEN
-                </v-row>
+                </v-card-item>
               </router-link>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
                 :to="{name: 'analytics-ump-stats'}"
               >
-                <v-row class="pt-2">
+                <v-card-item class="pa-0">
                   Update My PEN
-                </v-row>
+                </v-card-item>
               </router-link>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_BATCH"
                 :to="{name: 'new-pens'}"
               >
-                <v-row class="pt-2">
+                <v-card-item class="pa-0">
                   New PENs
-                </v-row>
+                </v-card-item>
               </router-link>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_BATCH"
                 :to="{name: 'merges'}"
               >
-                <v-row class="pt-2">
+                <v-card-item class="pa-0">
                   Merges
-                </v-row>
+                </v-card-item>
               </router-link>
             </v-col>
           </v-row>

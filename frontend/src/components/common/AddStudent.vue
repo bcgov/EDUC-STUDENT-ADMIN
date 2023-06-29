@@ -1,5 +1,5 @@
 <template>
-  <v-card class="add-student">
+  <v-card class="add-student mb-1">
     <v-alert
       id="addStudentAlert"
       v-model="alert"
@@ -45,43 +45,48 @@
 
     <v-row
       v-if="showStudentDetails"
-      no-gutters
     >
-      <v-icon
-        v-if="showStudentDetails"
-        x-large
-        class="pr-2"
-      >
-        mdi-account-box-outline
-      </v-icon>
-      <div :class="['d-flex', 'flex-column']">
-        <strong>{{ student['studentName'] }}</strong>
-        <span>{{ student['studentLocalID'] }}</span>
-        <span>{{ student['studentDoB'] }}</span>
-        <span>{{ student['studentGender'] }}</span>
-      </div>
+      <v-col cols="auto" class="pr-0">
+        <v-icon
+          v-if="showStudentDetails"
+          size="x-large"
+          class="pr-2"
+        >
+          mdi-account-box-outline
+        </v-icon>
+      </v-col>
+      <v-col>
+        <div :class="['d-flex', 'flex-column']">
+          <strong>{{ student['studentName'] }}</strong>
+          <span>{{ student['studentLocalID'] }}</span>
+          <span>{{ student['studentDoB'] }}</span>
+          <span>{{ student['studentGender'] }}</span>
+        </div>
+      </v-col>
     </v-row>
-    <v-row class="justify-end pr-2 pt-2">
-      <PrimaryButton
-        id="cancelAddStudentBtn"
-        secondary
-        text="Cancel"
-        class="mr-2"
-        :click-action="closeForm"
-      />
-      <PrimaryButton
-        id="addStudentToNewMessageBtn"
-        :disabled="!studentExist"
-        text="Add"
-        width="5rem"
-        :click-action="addStudentToMessage"
-      />
+    <v-row>
+      <v-col class="d-flex justify-end pl-0">
+        <PrimaryButton
+          id="cancelAddStudentBtn"
+          secondary
+          text="Cancel"
+          class="mr-2"
+          :click-action="closeForm"
+        />
+        <PrimaryButton
+          id="addStudentToNewMessageBtn"
+          :disabled="!studentExist"
+          text="Add"
+          width="5rem"
+          :click-action="addStudentToMessage"
+        />
+      </v-col>
     </v-row>
   </v-card>
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
@@ -101,7 +106,7 @@ export default {
       type: Object,
       required: true
     },
-    additionalStudentAddWarning:{
+    additionalStudentAddWarning: {
       type: String,
       required: false,
       default: ''
@@ -127,21 +132,21 @@ export default {
     }
   },
   watch: {
-    additionalStudentAddWarning(newVal){
-      if(newVal){
+    additionalStudentAddWarning(newVal) {
+      if (newVal) {
         this.setInfoAlert(newVal);
       }
     },
-    alert(newVal){
-      if(!newVal){
-        this.$emit('updateAdditionalStudentAddWarning','');
+    alert(newVal) {
+      if (!newVal) {
+        this.$emit('updateAdditionalStudentAddWarning', '');
       }
     },
     penNumber(newVal) {
       if (!(isValidPEN(newVal))) {
         this.student = {};
-        this.showStudentDetails=false;
-        this.studentExist=false;
+        this.showStudentDetails = false;
+        this.studentExist = false;
         this.alert = false;
       }
     },
@@ -173,15 +178,15 @@ export default {
         .catch(() => {
           this.setErrorAlert('PEN must be a valid PEN associated with a student');
         }).finally(() => {
-          this.isSearchingStudent = false;
-        });
+        this.isSearchingStudent = false;
+      });
     },
     populateStudentInfoCard(data) {
       this.alert = false;
       this.studentExist = true;
       this.showStudentDetails = true;
       this.student = {};
-      this.student['pen']=data.pen;
+      this.student['pen'] = data.pen;
       this.student['studentID'] = data.studentID;
       this.student['studentName'] = data.legalFirstName + ' ' + (data.legalMiddleNames ?? '') + ' ' + data.legalLastName;
       this.student['studentLocalID'] = data.localID;
@@ -190,11 +195,11 @@ export default {
       this.mismatchCheck(data);
     },
     mismatchCheck(data) {
-      if(this.instituteTypeValue?.type === 'SCHOOL' && this.instituteTypeValue?.value !== data.mincode) {
+      if (this.instituteTypeValue?.type === 'SCHOOL' && this.instituteTypeValue?.value !== data.mincode) {
         this.setInfoAlert('This student\'s mincode does not match the school which you are sending the message.');
-      } else if(this.instituteTypeValue?.type === 'DISTRICT' && this.instituteTypeValue?.value !== this.getSchoolByMincode(data.mincode)[1].districtID) {
+      } else if (this.instituteTypeValue?.type === 'DISTRICT' && this.instituteTypeValue?.value !== this.getSchoolByMincode(data.mincode)[1].districtID) {
         this.setInfoAlert('This student\'s mincode does not belong to the district to which you are sending the message.');
-      } else{
+      } else {
         this.alert = false;
       }
     },
@@ -217,8 +222,8 @@ export default {
       this.$emit('close:form');
     },
     getSchoolByMincode(mincode) {
-      for(const [key,val] of this.schoolMap) {
-        if(val.mincode === mincode) {
+      for (const [key, val] of this.schoolMap) {
+        if (val.mincode === mincode) {
           return [key, val];
         }
       }
@@ -228,20 +233,24 @@ export default {
 </script>
 <style scoped>
 .add-student {
-  padding: 1.1rem;
-  max-width: 50rem;
-  min-width: 10rem;
+    padding: 1.1rem;
+    max-width: 50rem;
+    min-width: 10rem;
 }
+
 p {
-  padding-top: 10px;
+    padding-top: 10px;
 }
+
 ul {
-  width: 100%;
+    width: 100%;
 }
+
 h3 {
-  font-size: 1.2rem
+    font-size: 1.2rem
 }
+
 .v-alert >>> .v-alert__content {
-  max-width: 28em;
+    max-width: 28em;
 }
 </style>

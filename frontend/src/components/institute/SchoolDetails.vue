@@ -338,8 +338,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 24em !important;
-    padding-left: 24em !important;
+    padding-right: 20em !important;
+    padding-left: 20em !important;
 }
 
 .v-dialog__content /deep/ .v-bottom-sheet {

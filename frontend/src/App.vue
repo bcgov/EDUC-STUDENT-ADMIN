@@ -6,25 +6,6 @@
       v-if="pageTitle && authStore().isAuthenticated"
       :title="pageTitle"
     />
-    <v-btn
-      v-show="showToTopBtn"
-      id="toTopBtn"
-      v-scroll="onScroll"
-      fab
-      tile
-      x-small
-      dark
-      fixed
-      bottom
-      right
-      color="#606060"
-      class="rounded"
-      @click="toTop"
-    >
-      <v-icon>
-        mdi-format-vertical-align-top
-      </v-icon>
-    </v-btn>
     <v-main
       fluid
       class="align-start"
