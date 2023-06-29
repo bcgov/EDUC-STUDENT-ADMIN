@@ -22,6 +22,7 @@
               label="Note"
               autofocus
               variant="underlined"
+              :rules="requiredRules"
               no-resize
               maxlength="4000"
               class="pt-0"
@@ -79,16 +80,16 @@ export default {
       isFormValid: false,
       processing: false,
       editSchoolNote: _.cloneDeep(this.schoolNote),
+      requiredRules: [v => !!v || 'Required'],
     };
   },
   methods: {
     closeEditSchoolNotePage() {
       this.resetForm();
-      this.$emit('editSchoolNote:closeEditSchoolNotePage');
+      this.$emit('closeEditSchoolNotePage');
     },
     saveChangesToSchoolNote() {
       this.processing = true;
-      console.log(this.schoolNote);
       let payload = {
         noteId: this.schoolNote.noteId,
         schoolId: this.schoolNote.schoolId,
@@ -110,6 +111,7 @@ export default {
     },
     resetForm() {
       this.$refs.editSchoolNoteForm.reset();
+      this.validateForm();
     },
     validateForm() {
       const isValid = this.$refs.editSchoolNoteForm.validate();

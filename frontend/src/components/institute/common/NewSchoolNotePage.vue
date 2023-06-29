@@ -21,6 +21,7 @@
               rows="8"
               label="Note"
               autofocus
+              :rules="requiredRules"
               variant="underlined"
               no-resize
               maxlength="4000"
@@ -41,7 +42,7 @@
             id="saveNote"
             text="Save"
             width="7rem"
-            :click-action="addNewSchoolNote"
+            :click-action="saveNewSchoolNote"
             :disabled="!isFormValid"
             :loading="processing"
           />
@@ -73,15 +74,16 @@ export default {
     return {
       isFormValid: false,
       processing: false,
-      newNoteText: ''
+      newNoteText: '',
+      requiredRules: [v => !!v || 'Required'],
     };
   },
   methods: {
     closeNewSchoolNotePage() {
       this.resetForm();
-      this.$emit('newSchoolNote:closeNewSchoolNotePage');
+      this.$emit('closeNewSchoolNotePage');
     },
-    addNewSchoolNote() {
+    saveNewSchoolNote() {
       this.processing = true;
       const payload = {
         schoolID: this.schoolID,
@@ -91,7 +93,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been added to the school.');
           this.resetForm();
-          this.$emit('newSchoolNote:addNewSchoolNote');
+          this.$emit('addNewSchoolNote');
         })
         .catch(error => {
           console.error(error);
@@ -103,6 +105,7 @@ export default {
     },
     resetForm() {
       this.$refs.newSchoolNoteForm.reset();
+      this.validateForm();
     },
     validateForm() {
       const isValid = this.$refs.newSchoolNoteForm.validate();
