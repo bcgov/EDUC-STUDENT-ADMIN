@@ -10,7 +10,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="mt-1 mb-1 d-flex justify-start">
+      <v-col class="mt-1 mb-2 d-flex justify-start">
         <v-icon
           class="mt-1"
           size="small"
@@ -26,7 +26,7 @@
       <v-col class="d-flex justify-end">
         <v-chip
           id="primaryEdxActivationCode"
-          :color="getChipColor()"
+          :class="primaryEdxActivationCode != null ? 'primary_color' : 'secondary_color'"
         >
           <v-icon left>
             mdi-shield-key-outline
@@ -312,12 +312,6 @@ export default {
         this.searchButtonClick();
       }
     },
-    getChipColor(){
-      if(this.primaryEdxActivationCode){
-        return 'success';
-      }
-      return 'secondary';
-    },
     sortUserData(users){
       return users.sort((a, b) => {
         if (a.firstName > b.firstName) {
@@ -457,6 +451,16 @@ export default {
 
 .add-new-user {
   min-height: 150px;
+}
+
+.primary_color {
+    background-color: #4caf50;
+    color: white;
+}
+
+.secondary_color {
+    background-color: #424242;
+    color: white;
 }
 
 .card-hint {

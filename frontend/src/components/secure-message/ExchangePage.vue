@@ -379,7 +379,6 @@
                         <v-row no-gutters>
                           <v-col cols="6">
                             <v-icon
-                              color="grey darken-3"
                               right
                               size="medium"
                               dark
@@ -423,7 +422,6 @@
                           <v-col cols="6">
                             <v-icon
                               style="margin-bottom: 0.2em"
-                              color="grey darken-3"
                               right
                               dark
                             >
@@ -447,7 +445,6 @@
                             <v-icon
                               class="pr-1"
                               style="margin-bottom: 0.2em"
-                              color="grey darken-3"
                               right
                               dark
                             >
