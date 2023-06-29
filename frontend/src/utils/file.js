@@ -47,3 +47,12 @@ export function isPdf(document){
     document.fileName.toLowerCase().endsWith('.pdf')
   );
 }
+
+export function isImage(document) {
+  let imageTypes = ['.jpg','.jpeg','.jpe','.jfif','.jif','.jfi', '.png'];
+  return (
+    'fileName' in document &&
+    typeof document.fileName === 'string' &&
+    imageTypes.includes(getFileExtensionWithDot(document.fileName.toLowerCase()))
+  );
+}

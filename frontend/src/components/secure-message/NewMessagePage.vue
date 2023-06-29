@@ -194,6 +194,7 @@
                               v-show="expandAttachFile"
                               :small-file-extension="false"
                               :check-file-rules="true"
+                              :allowed-file-format="formatMessage"
                               @close:form="showOptions"
                               @upload="uploadDocument"
                             />
@@ -305,6 +306,7 @@ export default {
       additionalStudentAddWarningMessage: '',
       disableAddStudent: true,
       fileSizeAlert: false,
+      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER',
     };
   },
   mounted() {

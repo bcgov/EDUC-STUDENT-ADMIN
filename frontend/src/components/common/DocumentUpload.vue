@@ -79,6 +79,10 @@ export default {
       type: Boolean,
       default: false
     },
+    allowedFileFormat: {
+      type: String,
+      default: null
+    }
   },
   data() {
     return {
@@ -194,11 +198,12 @@ export default {
           return !value || !value.length || value[0].size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`;
         },
         value => {
-          return !value || !value.length || this.fileRequirements.extensions.includes(value[0].type) || `File formats should be ${this.fileFormats}.`;
+          const extension = `.${value?.name.split('.').slice(-1)}`;
+          return !value || !value.length || fileRequirements.extensions.includes(extension) || fileRequirements.extensions.includes(value?.type) || `File formats should be ${this.fileFormats}.`;
         }
       ];
       this.fileAccept = this.fileRequirements.extensions.join();
-      this.fileFormats = this.makefileFormatList(this.fileRequirements.extensions);
+      this.fileFormats = this.allowedFileFormat ? this.allowedFileFormat : this.makefileFormatList(fileRequirements.extensions);
     },
     handleFileReadErr() {
       this.active = false;
@@ -208,8 +213,8 @@ export default {
       let fileExtensionValue;
       if(this.smallFileExtension){
         fileExtensionValue = getFileExtensionWithDot(this.uploadFileValue[0].name);
-      }else{
-        fileExtensionValue = this.uploadFileValue[0].type;
+      } else {
+        fileExtensionValue = this.file.type ? this.file.type : getFileExtensionWithDot(this.file.name);
       }
 
       let document = {

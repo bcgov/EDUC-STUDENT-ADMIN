@@ -351,6 +351,7 @@
                     style="min-width: 40em"
                     :small-file-extension="false"
                     :check-file-rules="true"
+                    :allowed-file-format="formatMessage"
                     class="mt-4"
                     @close:form="hideAttachmentPanel"
                     @upload="upload"
@@ -625,8 +626,13 @@
                             'pb-3': activity.documentType.label === 'Other'
                           }"
                         >
+                          <a v-if="isImage(activity)"
+                            @click="showDocModal(activity)"
+                            :class="disabledAnchorDocumentName">
+                              {{ activity.fileName }}
+                           </a>
                           <router-link
-                            v-if="isPdf(activity)"
+                            v-else
                             :class="disabledAnchorDocumentName"
                             :to="{
                               path: documentUrl(activity)
@@ -635,13 +641,6 @@
                           >
                             {{ activity.fileName }}
                           </router-link>
-                          <a
-                            v-else
-                            :class="disabledAnchorDocumentName"
-                            @click="showDocModal(activity)"
-                          >
-                            {{ activity.fileName }}
-                          </a>
                         </v-card-text>
                         <v-card-text
                           v-if="activity.documentType.label !== 'Other'"
@@ -800,7 +799,7 @@ import ApiService from '@/common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
 import {mapActions, mapState} from 'pinia';
-import {isPdf} from '@/utils/file';
+import {isPdf, isImage} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
@@ -858,6 +857,7 @@ export default {
       documentRoute: Routes.edx.EXCHANGE_URL,
       newNote: '',
       disableAnchorTagDocumentName: true,
+      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER'
     };
   },
   computed: {
@@ -1254,6 +1254,7 @@ export default {
       }
     },
     isPdf,
+    isImage,
     async closeDialog() {
       this.documentId = '';
       this.imageId = '';
