@@ -274,7 +274,7 @@
                       />
                     </v-col>
                     <v-spacer />
-                    <v-col class="d-flex justify-start">
+                    <v-col class="d-flex justify-start mr-16 pr-12">
                       <PrimaryButton
                         id="cancelMessage"
                         secondary

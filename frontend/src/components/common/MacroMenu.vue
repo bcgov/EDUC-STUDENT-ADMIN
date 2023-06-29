@@ -1,19 +1,16 @@
 <template>
   <v-menu
-    id="chooseMessageMenu"
-    max-height="30%"
+    name="user_options"
     offset-y
-    :max-width="menuMaxWidth"
   >
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <div :class="[margin, padding]">
         <PrimaryButton
           :id="id"
           :text="text"
           icon="mdi-chevron-down"
           secondary
-          :bind="attrs"
-          :on="on"
+          :bind="props"
           icon-left
           width="13em"
           :disabled="disabled"
@@ -101,11 +98,15 @@ export default {
 
 <style scoped>
 .macroListItem {
-  min-height: 0;
+    min-height: 0;
+}
+
+.macroRow{
+    width: 40em;
 }
 
 .macroListItem:hover {
-  cursor: pointer;
-  background-color: #F2F2F2;
+    cursor: pointer;
+    background-color: #F2F2F2;
 }
 </style>
