@@ -4,57 +4,81 @@
     :headers="headers"
     :items="mergedAndTrueStudents"
     item-key="studentID"
+    item-value="studentID"
     disable-sort
+    :search="search"
+    :custom-filter="filterMerges"
     :item-class="itemRowBackground"
     :footer-props="{
       'items-per-page-options': [12]
     }"
     :items-per-page="12"
   >
+    <template v-slot:top>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        class="pa-4"
+      ></v-text-field>
+    </template>
     <template
       v-for="h in headers"
       :key="h.id"
-      #[`header.${h.value}`]="{ header }"
+      #[`column.${h.key}`]="{ column }"
     >
-      <span
-        class="top-column-item"
-        :title="header.topTooltip"
-      >
-        {{ header.topText }}
-      </span>
-      <span/>
-      <span
-        class="double-column-item"
-        :title="header.doubleTooltip"
-      >{{ header.doubleText }}</span>
-      <br>
-      <span
-        class="bottom-column-item"
-        :title="header.bottomTooltip"
-      >{{ header.bottomText }}</span>
+      <v-row no-gutters>
+        <v-col>
+          <span
+            class="header-font"
+            :title="column.topTooltip"
+          >
+            {{ column.topText }}
+          </span>
+        </v-col>
+        <v-col v-if="column.doubleTooltip">
+          <span
+            class="double-column-item header-font"
+            style="margin-top: 0.4em;"
+            :title="column.doubleTooltip"
+          >{{ column.doubleText }}</span>
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col>
+          <span
+            class="header-font"
+            :title="column.bottomTooltip"
+          >{{ column.bottomText }}</span>
+        </v-col>
+      </v-row>
     </template>
-    <template #item="props">
-      <tr :class="itemRowBackground(props.item)">
+    <template #item="item">
+      <tr
+        no-gutters
+        class="hoverTable"
+        :class="itemRowBackground(item.item.raw)"
+      >
         <td
-          v-for="header in props.headers"
-          :key="header.id"
-          :class="isAPair(props.item)?'even-row':'odd-row'"
+          v-for="header in headers"
+          :key="header"
+          :class="isAPair(item.item.raw)?'even-row':'odd-row'"
         >
+          <div>{{item}}</div>
           <div
             class="tableCell"
-            @click="viewStudentDetails(props.item.studentID)"
+            @click="viewStudentDetails(item.item.raw.studentID)"
           >
             <span
               v-if="header.topValue === 'dob'"
               class="top-column-item"
             >{{
-              formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
-            }}</span>
+                formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+              }}</span>
             <span
               v-else
               class="top-column-item"
-            >{{ props.item[header.topValue] }}</span>
-            <span class="double-column-item">{{ props.item[header.doubleValue] }}</span>
+            >{{ item.item.raw[header.topValue] }}</span>
+            <span class="double-column-item">{{ item.item.raw[header.doubleValue] }}</span>
             <br>
             <!-- if top and bottom value are the same, do not display the bottom value -->
             <v-tooltip
@@ -63,21 +87,21 @@
             >
               <template #activator="{ on }">
                 <span class="bottom-column-item">{{
-                  firstMemoChars(props.item[header.bottomValue])
-                }}</span>
+                    firstMemoChars(item.item.raw[header.bottomValue])
+                  }}</span>
               </template>
-              <span>{{ props.item[header.bottomValue] }}</span>
+              <span>{{ item.item.raw[header.bottomValue] }}</span>
             </v-tooltip>
             <span
               v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
               class="bottom-column-item"
             >{{
-              getUsualName(props.item[header.bottomValue], props.item[header.topValue])
-            }}</span>
+                getUsualName(item.item.raw[header.bottomValue], item.item.raw[header.topValue])
+              }}</span>
             <span
               v-else
               class="bottom-column-item"
-            >{{ props.item[header.bottomValue] }}</span>
+            >{{ item.item.raw[header.bottomValue] }}</span>
           </div>
         </td>
       </tr>
@@ -97,131 +121,31 @@ export default {
       type: Array,
       required: true
     },
-    penSearch: {
-      type: String,
-      defaultValue: '',
-    },
-    mincodeSearch: {
-      type: String,
-      defaultValue: '',
-    },
-    legalSurnameSearch: {
-      type: String,
-      defaultValue: '',
-    },
-    legalGivenNameSearch: {
-      type: String,
-      defaultValue: '',
-    },
-    legalMiddleNameSearch: {
-      type: String,
-      defaultValue: '',
-    },
   },
-  data: () => ({}),
+  data: () => ({
+    search: null,
+  }),
   computed: {
     headers() {
       return [
         {
-          topText: 'PEN', align: 'start',
-          topValue: 'pen', topTooltip: 'Personal Education Number',
-          filter: (value, search, item) => {
-            if (!this.penSearch) return true;
-            return item.pen?.includes(this.penSearch);
-          },
-        },
-        {
-          topText: 'Legal Surname',
-          filter: (value, search, item) => {
-            if (!this.legalSurnameSearch) return true;
-            return item.legalLastName?.includes(this.legalSurnameSearch.toUpperCase());
-          },
-          bottomText: 'Usual Surname',
-          topValue: 'legalLastName',
-          bottomValue: 'usualLastName',
-          topTooltip: 'Legal Surname',
-          bottomTooltip: 'Usual Surname'
-        },
-        {
-          topText: 'Legal Given',
-          filter: (value, search, item) => {
-            if (!this.legalGivenNameSearch) return true;
-            return item.legalFirstName?.includes(this.legalGivenNameSearch.toUpperCase());
-          },
-          bottomText: 'Usual Given',
-          topValue: 'legalFirstName',
-          bottomValue: 'usualFirstName',
-          topTooltip: 'Legal Given',
-          bottomTooltip: 'Usual Given'
-        },
-        {
-          topText: 'Legal Middle',
-          filter: (value, search, item) => {
-            if (!this.legalMiddleNameSearch) return true;
-            return item.legalMiddleNames?.includes(this.legalMiddleNameSearch.toUpperCase());
-          },
-          bottomText: 'Usual Middle',
-          topValue: 'legalMiddleNames',
-          bottomValue: 'usualMiddleNames',
-          topTooltip: 'Legal Middle',
-          bottomTooltip: 'Usual Middle'
-        },
-        {
-          topText: 'Postal Code',
-          bottomText: 'Memo',
-          topValue: 'postalCode',
-          bottomValue: 'memo',
-          topTooltip: 'Postal Code',
-          bottomTooltip: 'Memo'
-        },
-        {
-          topText: 'DC',
-          doubleText: 'Gen',
-          bottomText: 'Local ID',
-          topValue: 'demogCode',
-          doubleValue: 'genderCode',
-          bottomValue: 'localID',
-          topTooltip: 'Demographic Code',
-          doubleTooltip: 'Gender',
-          bottomTooltip: 'Local ID'
-        },
-        {
-          topText: 'Birth Date',
-          bottomText: 'Grade',
-          topValue: 'dob',
-          bottomValue: 'gradeCode',
-          topTooltip: 'Birth Date',
-          bottomTooltip: 'Grade'
+          topText: 'PEN', align: 'start', key: 'pen', title: 'PEN',
+          topValue: 'pen', topTooltip: 'Personal Education Number'
         },
         {
           topText: 'Mincode',
-          filter: (value, search, item) => {
-            if (!this.mincodeSearch) return true;
-            return item.mincode?.includes(this.mincodeSearch);
-          },
           topValue: 'mincode',
-          topTooltip: 'Mincode'
+          topTooltip: 'Mincode',
+          key: 'mincode'
+        },
+        {
+          topText: 'Jincode',
+          topValue: 'jincode',
+          topTooltip: 'Jincode',
+          key: 'jincode'
         },
       ];
     }
-  },
-  watch: {
-    penSearch(newValue) {
-      this.penSearch = newValue;
-    },
-    mincodeSearch(newValue) {
-      this.mincodeSearch = newValue;
-    },
-    legalSurnameSearch(newValue) {
-      this.legalSurnameSearch = newValue;
-    },
-    legalGivenNameSearch(newValue) {
-      this.legalGivenNameSearch = newValue;
-    },
-    legalMiddleNameSearch(newValue) {
-      this.legalMiddleNameSearch = newValue;
-    },
-
   },
   methods: {
     formatDob,
@@ -229,6 +153,16 @@ export default {
       if (memo) {
         return memo.substring(0, 25);
       }
+    },
+    filterMerges(value, query, item) {
+      console.log('Val: ' + JSON.stringify(value));
+      console.log('query: ' + query);
+      console.log('item: ' + JSON.stringify(item));
+
+      return value != null &&
+        query != null &&
+        typeof value === 'string' &&
+        value.toString().toLocaleUpperCase().indexOf(query) !== -1;
     },
     getUsualName(usual, legal) {
       if (usual === legal) {
@@ -244,7 +178,7 @@ export default {
       return item?.groupIndex % 2 === 0 ? 'grouped-row-even' : 'grouped-row-odd';
     },
     viewStudentDetails(studentID) {
-      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      const route = router.resolve({name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
   }
@@ -253,36 +187,52 @@ export default {
 
 <style scoped>
 .odd-row {
-  border: none !important;
+    border: none !important;
+}
+
+.grouped-row-odd td {
+    background-color: transparent !important; /* or #000 */
+}
+
+.grouped-row-even td {
+    background-color: transparent !important; /* or #000 */
 }
 
 .grouped-row-odd {
-  background-color: rgba(97, 114, 67, 0.24) !important;
+    background-color: rgba(97, 114, 67, 0.24) !important;
 }
 
 .grouped-row-even {
-  background-color: rgba(102, 7, 181, 0.06) !important;
+    background-color: rgba(102, 7, 181, 0.06) !important;
 }
 
 .even-row {
-  border-bottom: thin solid !important;
+    border-bottom: thin solid !important;
 }
 
 .double-column-item {
-  float: right;
+    float: right;
+    font-size: 0.9em;
 }
 
 .top-column-item {
-  float: left;
+    float: left;
+    font-size: 0.9em;
+}
+
+.header-font {
+    font-size: 0.75em;
+    font-weight: bold;
 }
 
 .bottom-column-item {
-  float: left;
-  min-height: 1.5em;
+    float: left;
+    min-height: 1.5em;
+    font-size: 0.9em;
 }
 
 .tableCell {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 
