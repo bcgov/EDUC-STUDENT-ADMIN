@@ -464,14 +464,15 @@ export default {
       activeSchoolCategoryTypes: [],
       activeAuthorities: [],
       schoolStatus: [],
-      schoolCodeNameFilter: '',
-      districtCodeNameFilter: '',
-      authorityCodeNameFilter: '',
-      schoolReportingRequirementCodeFilter: '',
-      schoolStatusFilter: '',
+      schoolCodeNameFilter: null,
+      districtCodeNameFilter: null,
+      authorityCodeNameFilter: null,
+      schoolReportingRequirementCodeFilter: null,
+      reportingRequirementTypes: [],
+      schoolStatusFilter: null,
       schoolCategoryTypes: [],
-      schoolCategoryTypeFilter: '',
-      schoolFacilityTypeFilter: '',
+      schoolCategoryTypeFilter: null,
+      schoolFacilityTypeFilter: null,
       loadingSchools: true,
       newSchoolSheet: false,
       isFormValid: false,
@@ -506,7 +507,9 @@ export default {
     instStore.getAllSchoolCategoryTypeCodes().then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes, ['displayOrder']);
     });
-    instStore.getSchoolReportingRequirementTypeCodes();
+    instStore.getSchoolReportingRequirementTypeCodes().then(() => {
+      this.reportingRequirementTypes = this.schoolReportingRequirementTypeCodes;
+    });
     instStore.getAllActiveFacilityTypeCodes();
     instStore.getAllActiveSchoolCategoryTypeCodes().then(() => {
       this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']);

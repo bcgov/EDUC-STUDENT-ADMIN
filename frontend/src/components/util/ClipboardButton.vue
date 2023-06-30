@@ -11,7 +11,7 @@
         :disabled="disabled"
         :dark="!disabled"
         icon
-        size="30"
+        :size="size ? size : '30'"
         class="ml-1"
         v-bind="props"
         :title="`Copy ${copyText} to clipboard`"
@@ -49,6 +49,9 @@ export default {
       type: String
     },
     copyText: {
+      type: String
+    },
+    size: {
       type: String
     },
   },

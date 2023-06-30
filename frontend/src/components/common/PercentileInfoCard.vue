@@ -7,26 +7,12 @@
       class="ml-auto text-right"
       two-line
     >
-      <v-list-item-action
-        rounded
-        size="80"
-        color="cyan"
-        class="v-sheet–offset my-0"
-      >
-        <v-icon
-          color="white"
-          large
-        >
-          {{ icon }}
-        </v-icon>
-      </v-list-item-action>
-      <v-list-item>
-        <v-list-item-subtitle>{{ subTitle }}</v-list-item-subtitle>
-        <v-list-item-title class="text-h5 mb-1">
-          {{ title }}
-        </v-list-item-title>
-      </v-list-item>
+      <v-list-item-subtitle class="mt-2 mb-2">{{ subTitle }}</v-list-item-subtitle>
+      <v-list-item-title class="text-h5 mb-1">
+        {{ title }}
+      </v-list-item-title>
     </v-list-item>
+
     <v-card-text class="pt-0">
       <v-divider class="mb-2" />
       <v-icon
@@ -56,8 +42,8 @@
         >{{ Math.round(percentile.toString().replace('-', '')) }}% decrease in last 30 days.</span>
         <span
           v-else-if="percentile === 0"
-          class="blue--text"
-        >same in last 30 days.</span>
+          style="color: #039BE5"
+        >Same in last 30 days.</span>
       </span>
     </v-card-text>
   </v-card>
@@ -88,10 +74,9 @@ export default {
 </script>
 
 
-
 <style scoped>
 .v-sheet–offset {
-  top: -18px;
-  position: relative;
+    top: -18px;
+    position: relative;
 }
 </style>

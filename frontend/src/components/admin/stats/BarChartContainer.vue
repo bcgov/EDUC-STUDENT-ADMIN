@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <v-card
       v-if="chartData && labels"
       class="mx-auto px-4 pt-4"
+      height="100%"
     >
       <bar-chart
         ref="chart"

@@ -2,14 +2,15 @@
   <v-hover v-slot="{ hover }">
     <v-btn
       :id="id"
-      :class="[hover ? 'button-hover':'']"
+      :class="classModifier"
       color="#38598A"
       :small="short"
       :disabled="disabled"
       :dark="!disabled"
       :to="to"
       :width="width"
-      :text="true"
+      @click="$emit('clickAction')"
+      variant="text"
       :min-width="minWidth"
       v-bind="bind"
     >
@@ -17,8 +18,8 @@
         v-if="icon"
         :class="[iconStyle, 'mr-1']"
         left
+        :icon="icon"
       >
-        {{ icon }}
       </v-icon>
       <strong>{{ text }}</strong>
     </v-btn>
@@ -27,6 +28,7 @@
 
 <script>
 export default {
+  emits: ['clickAction'],
   name: 'TertiaryButton',
   props: {
     id: {
@@ -34,6 +36,9 @@ export default {
     },
     text: {
       type: String
+    },
+    classModifier: {
+      type: Object
     },
     short: {
       type: Boolean,
@@ -71,14 +76,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .v-btn {
-  text-transform: none;
+    text-transform: none;
 }
+
 .button-hover {
-  color: #003366 !important;
+    color: #003366 !important;
 }
+
 .theme--light.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-  background-color: #38598A !important;
-  opacity: 0.3;
-  color: white !important;
+    background-color: #38598A !important;
+    opacity: 0.3;
+    color: white !important;
 }
 </style>

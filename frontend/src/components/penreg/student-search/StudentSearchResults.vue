@@ -15,7 +15,7 @@
           class="px-4 pb-2"
         >{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
-      <v-col />
+      <v-col/>
       <v-col>
         <CompareDemographicModal
           v-model:selected-records="selectedRecords"
@@ -23,91 +23,104 @@
         />
       </v-col>
     </v-row>
-    <v-data-table
+    <v-data-table-server
       id="dataTable"
-      v-model="selectedRecords"
-      v-model:page="pageNumber"
-      :headers="headers"
+      :items-per-page="itemsPerPage"
+      :page="pageNumber"
       :items="studentSearchResponse.content"
-      :items-per-page="studentSearchResponse.pageable.pageSize"
+      :items-length="studentSearchResponse.totalElements"
+      :headers="headers"
       hide-default-footer
       :header-props="{ sortIcon: null }"
       item-key="studentID"
       :loading="searchLoading || loading"
-      @page-count="studentSearchResponse.pageable.pageNumber = $event"
+      @update:options="loadItems"
     >
       <template
         v-for="h in headers"
         :key="h.id"
-        #[`header.${h.value}`]="{ header }"
+        #[`column.${h.key}`]="{ column }"
       >
-        <span
-          class="top-column-item"
-          :title="header.topTooltip"
-          @click="updateSortParams(header.topValue)"
+        <v-row
+          no-gutters
         >
-          {{ header.topText }}
-        </span>
-        <span
-          @click="updateSortParams(header.topValue)"
-        >
-          <em
-            v-if="header.sortable && headerSortParams.currentSort === header.topValue"
-            :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"
-          />
-        </span>
-        <span
-          class="double-column-item"
-          :title="header.doubleTooltip"
-          @click="updateSortParams(header.topValue)"
-        >{{ header.doubleText }}</span>
-        <br>
-        <span
-          class="bottom-column-item"
-          :title="header.bottomTooltip"
-          @click="updateSortParams(header.topValue)"
-        >{{ header.bottomText }}</span>
+          <v-col>
+            <span
+              class="header-font"
+              :title="column.topTooltip"
+              @click="updateSortParams(column.topValue)"
+            >
+              {{ column.topText }}
+            </span>
+            <span
+              @click="updateSortParams(column.topValue)"
+            >
+              <em
+                v-if="column.sortable && headerSortParams.currentSort === column.topValue"
+                :class="['sort-header mt-1 pl-2 v-icon mdi active', headerSortParams.currentSortAsc ? 'mdi-sort-ascending' : 'mdi-sort-descending']"
+              />
+            </span>
+          </v-col>
+          <v-col v-if="column.doubleTooltip">
+            <span
+              class="double-column-item header-font"
+              style="margin-top: 0.4em;"
+              :title="column.doubleTooltip"
+              @click="updateSortParams(column.topValue)"
+            >{{ column.doubleText }}</span>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <span
+              class="header-font"
+              :title="column.bottomTooltip"
+              @click="updateSortParams(column.topValue)"
+            >{{ column.bottomText }}</span>
+          </v-col>
+        </v-row>
       </template>
-      <template #item="props">
+      <template #item="item">
         <tr>
           <td
-            v-for="header in props.headers"
+            v-for="header in headers"
             :key="header.id"
-            :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }"
+            :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(item.item) }"
           >
             <v-checkbox
               v-if="header.type"
-              :input-value="props.isSelected"
+              :input-value="item.item.raw.isSelected"
               color="#606060"
-              @update:model-value="props.select($event)"
+              @update:model-value="item.item.raw.select($event)"
             />
             <div
               v-else
               class="tableCell"
-              @click="viewStudentDetails(props.item.studentID)"
+              @click="viewStudentDetails(item.item.raw.studentID)"
             >
               <span
                 v-if="header.topValue === 'dob'"
                 class="top-column-item"
               >{{
-                formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
-              }}</span>
+                  formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+                }}</span>
               <span
                 v-else-if="header.topValue === 'pen'"
                 class="top-column-item"
               >
-                {{ props.item[header.topValue] }}
+                {{ item.item.raw[header.topValue] }}
                 <ClipboardButton
-                  v-if="props.item[header.topValue]"
-                  :copy-text="props.item[header.topValue]"
-                  icon="$copy"
+                  v-if="item.item.raw[header.topValue]"
+                  size="x-small"
+                  :copy-text="item.item.raw[header.topValue]"
+                  icon="mdi-content-copy"
                 />
               </span>
               <span
                 v-else
                 class="top-column-item"
-              >{{ props.item[header.topValue] }}</span>
-              <span class="double-column-item">{{ props.item[header.doubleValue] }}</span>
+              >{{ item.item.raw[header.topValue] }}</span>
+              <span class="double-column-item">{{ item.item.raw[header.doubleValue] }}</span>
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip
@@ -116,48 +129,24 @@
               >
                 <template #activator="{ on }">
                   <span class="bottom-column-item">{{
-                    firstMemoChars(props.item[header.bottomValue])
-                  }}</span>
+                      firstMemoChars(item.item.raw[header.bottomValue])
+                    }}</span>
                 </template>
-                <span>{{ props.item[header.bottomValue] }}</span>
+                <span>{{ item.item.raw[header.bottomValue] }}</span>
               </v-tooltip>
               <span
                 v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
                 class="bottom-column-item"
-              >{{ getUsualName(props.item[header.bottomValue], props.item[header.topValue] ) }}</span>
+              >{{ getUsualName(item.item.raw[header.bottomValue], item.item.raw[header.topValue]) }}</span>
               <span
                 v-else
                 class="bottom-column-item"
-              >{{ props.item[header.bottomValue] }}</span>
+              >{{ item.item.raw[header.bottomValue] }}</span>
             </div>
           </td>
         </tr>
       </template>
-    </v-data-table>
-    <v-row
-      class="pt-2"
-      justify="end"
-    >
-      <v-col
-        v-if="!showCompare"
-        cols="4"
-      >
-        <span id="numberResultsSecond">{{ studentSearchResponse.totalElements }} Results</span>
-      </v-col>
-      <v-col cols="4">
-        <v-pagination
-          v-model="pageNumber"
-          color="#38598A"
-          :length="studentSearchResponse.totalPages"
-        />
-      </v-col>
-      <v-col
-        id="currentItemsDisplay"
-        cols="4"
-      >
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements || 0 }}
-      </v-col>
-    </v-row>
+    </v-data-table-server>
   </div>
 </template>
 
@@ -198,14 +187,20 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       pageCount: 0,
       itemsPerPage: 10,
       loading: false,
       headers: [
-        {id: 'table-checkbox', type: 'select', sortable: false},
-        {topText: 'PEN', align: 'start', sortable: true, topValue: 'pen', topTooltip: 'Personal Education Number'},
+        {
+          topText: 'PEN',
+          align: 'start',
+          sortable: true,
+          topValue: 'pen',
+          topTooltip: 'Personal Education Number',
+          key: 'pen'
+        },
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
@@ -213,7 +208,8 @@ export default {
           bottomValue: 'usualLastName',
           sortable: true,
           topTooltip: 'Legal Surname',
-          bottomTooltip: 'Usual Surname'
+          bottomTooltip: 'Usual Surname',
+          key: 'legalLastName'
         },
         {
           topText: 'Legal Given',
@@ -222,7 +218,8 @@ export default {
           bottomValue: 'usualFirstName',
           sortable: true,
           topTooltip: 'Legal Given',
-          bottomTooltip: 'Usual Given'
+          bottomTooltip: 'Usual Given',
+          key: 'legalFirstName'
         },
         {
           topText: 'Legal Middle',
@@ -231,9 +228,19 @@ export default {
           bottomValue: 'usualMiddleNames',
           sortable: true,
           topTooltip: 'Legal Middle',
-          bottomTooltip: 'Usual Middle'
+          bottomTooltip: 'Usual Middle',
+          key: 'legalMiddleNames'
         },
-        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false, topTooltip: 'Postal Code', bottomTooltip: 'Memo'},
+        {
+          topText: 'Postal Code',
+          bottomText: 'Memo',
+          topValue: 'postalCode',
+          bottomValue: 'memo',
+          sortable: false,
+          topTooltip: 'Postal Code',
+          bottomTooltip: 'Memo',
+          key: 'postalCode'
+        },
         {
           topText: 'DC',
           doubleText: 'Gen',
@@ -244,7 +251,8 @@ export default {
           sortable: false,
           topTooltip: 'Demographic Code',
           doubleTooltip: 'Gender',
-          bottomTooltip: 'Local ID'
+          bottomTooltip: 'Local ID',
+          key: 'genderCode'
         },
         {
           topText: 'Birth Date',
@@ -253,13 +261,15 @@ export default {
           bottomValue: 'gradeCode',
           sortable: true,
           topTooltip: 'Birth Date',
-          bottomTooltip: 'Grade'
+          bottomTooltip: 'Grade',
+          key: 'dob'
         },
         {
           topText: 'Mincode',
           topValue: 'mincode',
           sortable: true,
-          topTooltip: 'Mincode'
+          topTooltip: 'Mincode',
+          key: 'mincode'
         },
       ],
     };
@@ -267,7 +277,14 @@ export default {
   watch: {
     pageNumber: {
       handler() {
-        if(!this.searchLoading) {
+        if (!this.searchLoading) {
+          this.pagination();
+        }
+      }
+    },
+    itemsPerPage: {
+      handler() {
+        if (!this.searchLoading) {
           this.pagination();
         }
       }
@@ -301,9 +318,6 @@ export default {
   },
   mounted() {
     this.clearStaleData();
-    if(!this.showCompare){
-      this.headers.splice(0,1);
-    }
   },
   computed: {
     ...mapState(studentSearchStore, ['headerSortParams', 'studentSearchResponse', 'useNameVariants', 'isAuditHistorySearch', 'statusCode']),
@@ -321,39 +335,42 @@ export default {
       get() {
         return studentSearchStore().selectedRecords;
       },
-      set(newRecord){
+      set(newRecord) {
         return studentSearchStore().setSelectedRecords(newRecord);
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.studentSearchResponse.pageable.pageSize || 0) + ((this.studentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
+      return ((this.pageNumber - 1) * (this.studentSearchResponse.pageable.pageSize || 0) + ((this.studentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.studentSearchResponse.pageable.pageSize || 0) + (this.studentSearchResponse.numberOfElements || 0));
+      return ((this.pageNumber - 1) * (this.studentSearchResponse.pageable.pageSize || 0) + (this.studentSearchResponse.numberOfElements || 0));
     }
   },
   methods: {
     ...mapActions(studentSearchStore, ['updateSortParams', 'setStudentSearchResponse']),
     viewStudentDetails(studentID) {
-      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      const route = router.resolve({name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
     formatDob,
     firstMemoChars(memo) {
-      if(memo){
-        return memo.substring(0,25);
+      if (memo) {
+        return memo.substring(0, 25);
       }
     },
     getUsualName(usual, legal) {
-      if(usual === legal){
+      if (usual === legal) {
         return '';
       }
       return usual;
     },
+    loadItems({page}) {
+      this.pageNumber = page;
+    },
     pagination() {
       this.loading = true;
       ApiService.apiAxios
-        .get(Routes.student.SEARCH_URL,this.prepPut(this.searchCriteria))
+        .get(Routes.student.SEARCH_URL, this.prepPut(this.searchCriteria))
         .then(response => {
           this.setStudentSearchResponse(response.data);
           this.isStudentDataUpdated = false;
@@ -374,44 +391,63 @@ export default {
 </script>
 
 <style scoped>
-  #currentItemsDisplay {
+#currentItemsDisplay {
     text-align: right;
     font-size: 0.875rem;
-  }
-  .sort-header {
+}
+
+.sort-header {
     opacity: 1;
     position: absolute;
     cursor: pointer;
     color: #1A5A96;
-  }
-  .double-column-item {
+}
+
+.double-column-item {
     float: right;
-  }
-  .top-column-item {
+    font-size: 0.9em;
+}
+
+.top-column-item {
     float: left;
-  }
-  .bottom-column-item {
+    font-size: 0.9em;
+}
+
+.header-font {
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+.bottom-column-item {
     float: left;
     min-height: 1.5em;
-  }
-  .table-checkbox {
+    font-size: 0.9em;
+}
+
+.table-checkbox {
     margin-top: 0;
     padding-top: 0;
-  }
-  .table-checkbox /deep/ .v-input__slot {
+}
+
+.table-checkbox /deep/ .v-input__slot {
     padding-top: 0;
-  }
-  .tableCell {
+}
+
+.tableCell {
     cursor: pointer;
-  }
+}
 
-  #searchResults /deep/ .v-pagination__navigation > i {
+:deep(.v-data-table-footer__items-per-page){
+    display: none;
+}
+
+#searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
-  }
+}
 
-  .row-hightlight {
+.row-hightlight {
     background-color: rgba(0, 0, 0, 0.06);
     color: #1A5A96;
     font-weight: bold;
-  }
+}
 </style>
