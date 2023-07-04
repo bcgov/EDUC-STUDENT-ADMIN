@@ -149,7 +149,6 @@
         <v-alert
           density="compact"
           color="#003366"
-          outlined
           type="info"
           class="px-2"
           variant="tonal"
