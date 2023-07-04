@@ -7,7 +7,7 @@ const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
-const {isSchoolActive} = require('./instituteUtils');
+const {isSchoolActive, isDistrictActive} = require('./instituteUtils');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -64,6 +64,12 @@ async function addDistrictContact(req, res) {
     if(!district || !hasDistrictAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
+      });
+    }
+
+    if(!isDistrictActive(district)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add contact for an inactive district'
       });
     }
 
@@ -169,6 +175,12 @@ async function updateDistrictContact(req, res) {
       });
     }
 
+    if(!isDistrictActive(district)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to update contact for an inactive district'
+      });
+    }
+
     const params = req.body;
     params.updateDate = null;
     params.createDate = null;
@@ -193,6 +205,12 @@ async function deleteDistrictContact(req, res) {
     if(!district || !hasDistrictAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
+      });
+    }
+
+    if(!isDistrictActive(district)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to delete contact for an inactive district'
       });
     }
 

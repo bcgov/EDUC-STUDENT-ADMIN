@@ -129,8 +129,8 @@
             <DistrictContact
               :contact="contact"
               :can-edit-district-contact="canEditDistrictContact"
-              @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)"
-              @removeSchoolContact:showConfirmationPrompt="removeContact"
+              @edit-district-contact:do-show-edit-district-contact-form="showDistrictEditForm(contact)"
+              @remove-school-contact:show-confirmation-prompt="removeContact"
             />
           </v-col>
         </v-row>
@@ -156,8 +156,8 @@
         v-if="newContactSheet"
         :district-contact-types="districtContactTypes"
         :district-i-d="$route.params.districtID"
-        @newDistrictContact:closeNewDistrictContactPage="newContactSheet = !newContactSheet"
-        @newDistrictContact:addNewDistrictContact="newDistrictContactAdded"
+        @new-district-contact:close-new-district-contact-page="newContactSheet = !newContactSheet"
+        @new-district-contact:add-new-district-contact="newDistrictContactAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
@@ -172,8 +172,8 @@
         :contact="editContact"
         :district-contact-types="districtContactTypes"
         :district-i-d="$route.params.districtID"
-        @editDistrictContact:cancelEditDistrictContactPage="editContactSheet = !editContactSheet"
-        @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
+        @edit-district-contact:cancel-edit-district-contact-page="editContactSheet = !editContactSheet"
+        @edit-district-contact:edit-district-contact-success="contactEditSuccess"
       />
     </v-bottom-sheet>
     <ConfirmationDialog ref="confirmationDialog" />
@@ -208,7 +208,8 @@ export default {
   props: {
     districtID: {
       type: String,
-      required: false
+      required: false,
+      default: undefined
     },
   },
   data() {
@@ -228,7 +229,7 @@ export default {
       return this.loadingCount !== 0;
     },
     canEditDistrictContact() {
-      return this.DISTRICT_ADMIN_ROLE;
+      return this.DISTRICT_ADMIN_ROLE && this.districtDetails.districtStatusCode === 'ACTIVE';
     }
   },
   created() {

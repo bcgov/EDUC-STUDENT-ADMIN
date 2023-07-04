@@ -175,12 +175,13 @@ export default {
       required: true
     }
   },
+  emits: ['edit-district-contact:do-show-edit-district-contact-form', 'remove-school-contact:show-confirmation-prompt'],
   methods: {
     callDoShowEditDistrictContactForm() {
-      this.$emit('editDistrictContact:doShowEditDistrictContactForm');
+      this.$emit('edit-district-contact:do-show-edit-district-contact-form');
     },
     callShowRemoveContactConfirmation() {
-      this.$emit('removeSchoolContact:showConfirmationPrompt', this.contact.districtId, this.contact.districtContactId);
+      this.$emit('remove-school-contact:show-confirmation-prompt', this.contact.districtId, this.contact.districtContactId);
     },
     formatDate,
     formatPhoneNumber,

@@ -190,6 +190,7 @@ export default {
       required: true
     }
   },
+  emits: ['new-district-contact:close-new-district-contact-page', 'new-district-contact:add-new-district-contact'],
   data() {
     return {
       isFormValid: false,
@@ -212,11 +213,19 @@ export default {
       newContactExpiryDatePicker: null
     };
   },
-  mounted() {
-    this.validateForm();
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
+  },
+  watch: {
+    //watching effective date to valid form because we need to cross validate expiry and effective date fields
+    'newContact.effectiveDate': {
+      handler() {
+        this.validateForm();
+      }
+    }
+  },
+  mounted() {
+    this.validateForm();
   },
   methods: {
     saveNewContactEffectiveDate(date) {
@@ -227,7 +236,7 @@ export default {
     },
     closeNewContactPage() {
       this.resetForm();
-      this.$emit('newDistrictContact:closeNewDistrictContactPage');
+      this.$emit('new-district-contact:close-new-district-contact-page', 'new-district-contact:add-new-district-contact');
     },
     addNewDistrictContact() {
       this.processing = true;
@@ -237,7 +246,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The district contact has been created.');
           this.resetForm();
-          this.$emit('newDistrictContact:addNewDistrictContact');
+          this.$emit('new-district-contact:add-new-district-contact');
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while adding the new district contact. Please try again later.');
@@ -256,14 +265,6 @@ export default {
     },
     isNumber,
   },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'newContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
-  }
 };
 </script>
 
