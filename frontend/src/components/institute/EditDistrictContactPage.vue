@@ -122,7 +122,7 @@
                   label="Start Date"
                   variant="underlined"
                   type="date"
-                  clearable
+                  clearable="true"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -134,7 +134,7 @@
                   class="pt-0 mt-0"
                   label="End Date"
                   variant="underlined"
-                  clearable
+                  clearable="true"
                   type="date"
                   @update:model-value="validateForm"
                 />
@@ -196,6 +196,7 @@ export default {
       required: true
     }
   },
+  emits: ['edit-district-contact:cancel-edit-district-contact-page', 'edit-district-contact:edit-district-contact-success'],
   data() {
     let clonedContact = _.cloneDeep(this.contact);
     clonedContact.effectiveDate = this.parseDate(formatDate(clonedContact.effectiveDate));
@@ -208,9 +209,6 @@ export default {
       editDistrictContactEffectiveDatePicker: null,
       editDistrictContactExpiryDatePicker: null
     };
-  },
-  mounted() {
-    this.validateForm();
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
@@ -231,10 +229,21 @@ export default {
       }
     }
   },
+  watch: {
+    //watching effective date to valid form because we need to cross validate expiry and effective date fields
+    'editContact.effectiveDate': {
+      handler() {
+        this.validateForm();
+      }
+    }
+  },
+  mounted() {
+    this.validateForm();
+  },
   methods: {
     cancelEditDistrictContactPage() {
       this.resetForm();
-      this.$emit('editDistrictContact:cancelEditDistrictContactPage');
+      this.$emit('edit-district-contact:cancel-edit-district-contact-page');
     },
     saveChangesToDistrictContact() {
       this.processing = true;
@@ -246,7 +255,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The district contact has been updated.');
           this.resetForm();
-          this.$emit('editDistrictContact:editDistrictContactSuccess');
+          this.$emit('edit-district-contact:edit-district-contact-success');
         })
         .catch(error => {
           console.error(error);
@@ -273,14 +282,6 @@ export default {
     formatDate,
     formatDisplayDate,
     parseDate
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'editContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
   }
 };
 </script>

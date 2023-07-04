@@ -2,9 +2,9 @@
   <span>
     <v-card height="100%">
       <v-card-title class="pb-0">
-        <v-row no-gutters>
+        <v-row no-gutters="true">
           <v-col>
-            <v-row no-gutters>
+            <v-row no-gutters="true">
               <v-col
                 cols="8"
                 class="justify-start"
@@ -64,7 +64,7 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row no-gutters>
+            <v-row no-gutters="true">
               <v-col
                 cols="12"
                 class="pt-1"
@@ -125,7 +125,7 @@
         </v-row>
       </v-card-title>
       <v-card-text class="pt-2">
-        <v-row no-gutters>
+        <v-row no-gutters="true">
           <v-col
             v-if="contact.expiryDate"
             cols="12"
@@ -175,12 +175,13 @@ export default {
       required: true
     }
   },
+  emits: ['edit-district-contact:do-show-edit-district-contact-form', 'remove-school-contact:show-confirmation-prompt'],
   methods: {
     callDoShowEditDistrictContactForm() {
-      this.$emit('editDistrictContact:doShowEditDistrictContactForm');
+      this.$emit('edit-district-contact:do-show-edit-district-contact-form');
     },
     callShowRemoveContactConfirmation() {
-      this.$emit('removeSchoolContact:showConfirmationPrompt', this.contact.districtId, this.contact.districtContactId);
+      this.$emit('remove-school-contact:show-confirmation-prompt', this.contact.districtId, this.contact.districtContactId);
     },
     formatDate,
     formatPhoneNumber,

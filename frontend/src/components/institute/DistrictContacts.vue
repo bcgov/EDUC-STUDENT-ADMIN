@@ -1,7 +1,7 @@
 <template>
   <v-container
     class="containerSetup"
-    fluid
+    fluid="true"
   >
     <v-col class="mt-1 d-flex justify-start">
       <v-icon
@@ -33,7 +33,7 @@
           cols="12"
           class="d-flex justify-start"
         >
-          <v-row no-gutters>
+          <v-row no-gutters="true">
             <v-col cols="12">
               <h2 class="subjectHeading">
                 {{
@@ -91,7 +91,7 @@
       >
         <v-row
           class="mb-1"
-          no-gutters
+          no-gutters="true"
         >
           <v-col>
             <h2 style="color:#1A5A96">
@@ -129,14 +129,14 @@
             <DistrictContact
               :contact="contact"
               :can-edit-district-contact="canEditDistrictContact"
-              @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)"
-              @removeSchoolContact:showConfirmationPrompt="removeContact"
+              @edit-district-contact:do-show-edit-district-contact-form="showDistrictEditForm(contact)"
+              @remove-school-contact:show-confirmation-prompt="removeContact"
             />
           </v-col>
         </v-row>
         <v-row
           v-else
-          no-gutters
+          no-gutters="true"
           cols="2"
         >
           <v-col>
@@ -147,33 +147,33 @@
     </template>
     <v-bottom-sheet
       v-model="newContactSheet"
-      inset
-      no-click-animation
-      scrollable
-      persistent
+      inset="true"
+      no-click-animation="true"
+      scrollable="true"
+      persistent="true"
     >
       <NewDistrictContactPage
         v-if="newContactSheet"
         :district-contact-types="districtContactTypes"
         :district-i-d="$route.params.districtID"
-        @newDistrictContact:closeNewDistrictContactPage="newContactSheet = !newContactSheet"
-        @newDistrictContact:addNewDistrictContact="newDistrictContactAdded"
+        @new-district-contact:close-new-district-contact-page="newContactSheet = !newContactSheet"
+        @new-district-contact:add-new-district-contact="newDistrictContactAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
       v-model="editContactSheet"
-      inset
-      no-click-animation
-      scrollable
-      persistent
+      inset="true"
+      no-click-animation="true"
+      scrollable="true"
+      persistent="true"
     >
       <EditDistrictContactPage
         v-if="editContactSheet"
         :contact="editContact"
         :district-contact-types="districtContactTypes"
         :district-i-d="$route.params.districtID"
-        @editDistrictContact:cancelEditDistrictContactPage="editContactSheet = !editContactSheet"
-        @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
+        @edit-district-contact:cancel-edit-district-contact-page="editContactSheet = !editContactSheet"
+        @edit-district-contact:edit-district-contact-success="contactEditSuccess"
       />
     </v-bottom-sheet>
     <ConfirmationDialog ref="confirmationDialog" />
@@ -208,7 +208,8 @@ export default {
   props: {
     districtID: {
       type: String,
-      required: false
+      required: false,
+      default: undefined
     },
   },
   data() {
