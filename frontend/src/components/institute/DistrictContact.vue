@@ -2,9 +2,9 @@
   <span>
     <v-card height="100%">
       <v-card-title class="pb-0">
-        <v-row no-gutters="true">
+        <v-row no-gutters>
           <v-col>
-            <v-row no-gutters="true">
+            <v-row no-gutters>
               <v-col
                 cols="8"
                 class="justify-start"
@@ -64,7 +64,7 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row no-gutters="true">
+            <v-row no-gutters>
               <v-col
                 cols="12"
                 class="pt-1"
@@ -125,7 +125,7 @@
         </v-row>
       </v-card-title>
       <v-card-text class="pt-2">
-        <v-row no-gutters="true">
+        <v-row no-gutters>
           <v-col
             v-if="contact.expiryDate"
             cols="12"

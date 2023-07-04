@@ -1,7 +1,7 @@
 <template>
   <v-container
     class="containerSetup"
-    fluid="true"
+    fluid
   >
     <v-col class="mt-1 d-flex justify-start">
       <v-icon
@@ -33,7 +33,7 @@
           cols="12"
           class="d-flex justify-start"
         >
-          <v-row no-gutters="true">
+          <v-row no-gutters>
             <v-col cols="12">
               <h2 class="subjectHeading">
                 {{
@@ -91,7 +91,7 @@
       >
         <v-row
           class="mb-1"
-          no-gutters="true"
+          no-gutters=
         >
           <v-col>
             <h2 style="color:#1A5A96">
@@ -136,7 +136,7 @@
         </v-row>
         <v-row
           v-else
-          no-gutters="true"
+          no-gutters
           cols="2"
         >
           <v-col>
@@ -147,10 +147,10 @@
     </template>
     <v-bottom-sheet
       v-model="newContactSheet"
-      inset="true"
-      no-click-animation="true"
-      scrollable="true"
-      persistent="true"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <NewDistrictContactPage
         v-if="newContactSheet"
@@ -162,10 +162,10 @@
     </v-bottom-sheet>
     <v-bottom-sheet
       v-model="editContactSheet"
-      inset="true"
-      no-click-animation="true"
-      scrollable="true"
-      persistent="true"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <EditDistrictContactPage
         v-if="editContactSheet"

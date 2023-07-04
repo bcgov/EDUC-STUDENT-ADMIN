@@ -122,7 +122,7 @@
                   label="Start Date"
                   variant="underlined"
                   type="date"
-                  clearable="true"
+                  clearable
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -134,7 +134,7 @@
                   class="pt-0 mt-0"
                   label="End Date"
                   variant="underlined"
-                  clearable="true"
+                  clearable
                   type="date"
                   @update:model-value="validateForm"
                 />
