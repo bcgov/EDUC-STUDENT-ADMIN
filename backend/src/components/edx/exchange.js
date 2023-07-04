@@ -122,7 +122,7 @@ async function getExchangesPaginated(req, res) {
         return '';
       }
     }
-
+    
     criteria = buildSearchParams(JSON.stringify(parsedParams));
   }
 
@@ -720,7 +720,11 @@ const createSearchParamObject = (key, value) => {
   } else if (key === 'secureExchangeStatusCode') {
     value = value.join(',');
     operation = FILTER_OPERATION.IN;
+  } else if (key === 'reviewer' && value === 'Unclaimed') {
+    value = null;
+    operation = FILTER_OPERATION.EQUAL;
   }
+  
   return {key, value, operation, valueType};
 };
 
