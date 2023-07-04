@@ -162,7 +162,7 @@
           </v-col>
         </v-row>
         <!-- warning message for no existing users-->
-        <v-row v-if="!filteredUsers.length">
+        <v-row v-if="!hasAdminUsers && primaryEdxActivationCode">
           <v-col class="mx-3 px-0 pb-0">
             <v-alert
               density="compact"
@@ -298,6 +298,7 @@ import Spinner from '@/components/common/Spinner.vue';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {edxStore} from '@/store/modules/edx';
+import { PERMISSION } from '@/utils/constants/Permission';
 
 export default {
   name: 'AccessDistrictUsersPage',
@@ -331,6 +332,14 @@ export default {
       },
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
+  },
+  computed: {
+    ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
+    hasAdminUsers() {
+      return this.filteredUsers.filter(user => {
+        return user.edxUserDistricts.some(district => district.edxUserDistrictRoles.some(role => role.edxRoleCode === PERMISSION.EDX_DISTRICT_ADMIN));
+      })?.length > 0;
+    }
   },
   async beforeMount() {
     if (this.districtRoles.length === 0) {
@@ -467,9 +476,6 @@ export default {
     getDistrictNameForUserInvite() {
       return this.district.name;
     }
-  },
-  computed: {
-    ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
   }
 };
 </script>
