@@ -228,7 +228,7 @@ export default {
       return this.loadingCount !== 0;
     },
     canEditDistrictContact() {
-      return this.DISTRICT_ADMIN_ROLE;
+      return this.DISTRICT_ADMIN_ROLE && this.districtDetails.districtStatusCode === 'ACTIVE';
     }
   },
   created() {
