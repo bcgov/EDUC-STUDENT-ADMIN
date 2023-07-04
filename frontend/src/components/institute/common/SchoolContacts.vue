@@ -212,7 +212,6 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the school\'s contacts. Please try again later.');
         }).finally(() => {
           this.loadingCount -= 1;
-          console.log(this.isNotClosed());
         });
     },
     backButtonClick() {
