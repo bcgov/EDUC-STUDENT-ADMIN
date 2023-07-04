@@ -69,7 +69,9 @@
                 :disabled="!statusRadioGroupEnabled"
                 direction="horizontal"
                 inline
+                hide-details="auto"
                 class="pt-1 pb-3 mb-0"
+                id="radioPanel"
               >
                 <v-radio
                   class="mt-2 radio-blue-text"
@@ -102,6 +104,17 @@
                 >
                   <template #label>
                     <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
+                  </template>
+                </v-radio>
+                <v-radio
+                  class="mt-2 radio-blue-text"
+                  label="All Unclaimed Messages"
+                  color="#003366"
+                  value="statusFilterAllUnclaimed"
+                  @click.prevent.stop="statusFilterUnclaimedClicked"
+                >
+                  <template #label>
+                    <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Unclaimed Messages</span>
                   </template>
                 </v-radio>
               </v-radio-group>
@@ -341,10 +354,11 @@
                     <v-checkbox
                       v-model="selectedExchanges"
                       :value="item.raw"
+                      hide-details="auto"
                     />
                   </v-col>
                   <v-col
-                    cols="7"
+                    cols="6"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
                     <v-row no-gutters>
@@ -375,6 +389,13 @@
                       no-gutters
                       class="d-flex justify-end"
                     >
+                      <v-col cols="2">
+                        <v-icon
+                          v-if="item?.raw?.documentList?.length > 0" 
+                        >
+                          mdi-paperclip
+                        </v-icon>
+                      </v-col>
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
@@ -437,7 +458,7 @@
                         </v-row>
                       </v-col>
                       <v-col
-                        cols="4"
+                        cols="3"
                         class="pl-0 pr-0"
                       >
                         <v-row no-gutters>
@@ -683,6 +704,10 @@ export default {
       this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = this.myself.name;
     },
+    setFilterStatusUnclaimed() {
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
+      this.headerSearchParams.reviewer = 'Unclaimed';
+    },
     statusFilterActiveClicked() {
       this.setFilterStatusActive();
       this.resetPageNumber();
@@ -694,6 +719,12 @@ export default {
       this.resetPageNumber();
       this.getExchanges();
       this.statusRadioGroup = 'statusFilterAllActive';
+    },
+    statusFilterUnclaimedClicked() {
+      this.setFilterStatusUnclaimed();
+      this.resetPageNumber();
+      this.getExchanges();
+      this.statusRadioGroup = 'statusFilterAllUnclaimed';
     },
     resetPageNumber() {
       this.pageNumber = 1;
@@ -807,7 +838,7 @@ export default {
       if (this.statusSelectFilter !== null && this.statusSelectFilter !== '' && this.statusSelectFilter !== undefined) {
         this.headerSearchParams.secureExchangeStatusCode = [this.statusSelectFilter];
       }
-
+      
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {
         params: {
           pageNumber: this.pageNumber - 1,
@@ -942,6 +973,5 @@ export default {
 :deep(.dp__icon) {
     display: none;
 }
-
 
 </style>
