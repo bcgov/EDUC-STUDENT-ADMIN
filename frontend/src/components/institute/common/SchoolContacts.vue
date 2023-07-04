@@ -131,7 +131,7 @@ import EditSchoolContactPage from './EditSchoolContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {mapState} from 'pinia';
-import {isExpired} from '@/utils/institute/status';
+import {isExpired, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 
@@ -166,9 +166,9 @@ export default {
     },
     canAddEditSchoolContact() {
       if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
+        return (this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosed();
       }
-      return this.SCHOOL_ADMIN_ROLE;
+      return this.SCHOOL_ADMIN_ROLE && this.isNotClosed();
     },
   },
   created() {
@@ -259,6 +259,9 @@ export default {
           }
         });
     },
+    isNotClosed() {
+      return getStatusAuthorityOrSchool(this.school) !== 'Closed';
+    }
   },
 };
 </script>
