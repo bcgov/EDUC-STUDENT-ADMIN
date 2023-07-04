@@ -7,6 +7,7 @@ const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
+const {isSchoolActive} = require('./instituteUtils');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -487,6 +488,12 @@ async function addSchoolContact(req, res) {
       });
     }
 
+    if (!isSchoolActive(school)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add contact for a closed school'
+      });
+    }
+
     const url = `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolID}/contact`;
 
     const payload = {
@@ -524,6 +531,12 @@ async function updateSchoolContact(req, res) {
       });
     }
 
+    if (!isSchoolActive(school)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to update contacts for a closed school'
+      });
+    }
+
     const params = req.body;
     params.updateDate = null;
     params.createDate = null;
@@ -548,6 +561,12 @@ async function deleteSchoolContact(req, res) {
     if(!school || !hasSchoolAdminRole(req, school)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
+      });
+    }
+
+    if (!isSchoolActive(school)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to delete contacts for a closed school'
       });
     }
 
