@@ -91,7 +91,7 @@
       >
         <v-row
           class="mb-1"
-          no-gutters=
+          no-gutters
         >
           <v-col>
             <h2 style="color:#1A5A96">
