@@ -7,7 +7,7 @@ const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
-const {isSchoolActive, isDistrictActive} = require('./instituteUtils');
+const {isSchoolActive, isDistrictActive, isAuthorityActive} = require('./instituteUtils');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -231,7 +231,7 @@ async function deleteDistrictContact(req, res) {
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
-    await logApiError(e, 'removeDistrictContact', 'Error occurred while attempting to remove a district contact.');
+    await logApiError(e, 'deleteDistrictContact', 'Error occurred while attempting to remove a district contact.');
     return errorResponse(res);
   }
 }
@@ -605,7 +605,7 @@ async function deleteSchoolContact(req, res) {
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
-    await logApiError(e, 'removeSchoolContact', 'Error occurred while attempting to remove a school contact.');
+    await logApiError(e, 'deleteSchoolContact', 'Error occurred while attempting to remove a school contact.');
     return errorResponse(res);
   }
 }
@@ -619,6 +619,12 @@ async function addAuthorityContact(req, res) {
     if(!authority || !hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
+      });
+    }
+
+    if(!isAuthorityActive(authority)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add contact for an closed authority'
       });
     }
 
@@ -659,6 +665,12 @@ async function updateAuthorityContact(req, res) {
       });
     }
 
+    if(!isAuthorityActive(authority)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to update contact for an closed authority'
+      });
+    }
+
     const params = req.body;
     params.updateDate = null;
     params.createDate = null;
@@ -686,6 +698,12 @@ async function deleteAuthorityContact(req, res) {
       });
     }
 
+    if(!isAuthorityActive(authority)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to delete contact for an closed authority'
+      });
+    }
+
     const contact =  await utils.getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/contact/${req.params.contactId}`);
 
     if (!contact) {
@@ -703,7 +721,7 @@ async function deleteAuthorityContact(req, res) {
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
-    await logApiError(e, 'removeAuthorityContact', 'Error occurred while attempting to remove an authority contact.');
+    await logApiError(e, 'deleteAuthorityContact', 'Error occurred while attempting to remove an authority contact.');
     return errorResponse(res);
   }
 }
