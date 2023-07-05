@@ -51,7 +51,7 @@
         v-if="selected"
         id="viewSelected"
         :disabled="!viewEnabled"
-        :click-action="clickViewSelected"
+        @click-action="clickViewSelected"
         text="View Selected"
       />
       <PrimaryButton
@@ -59,7 +59,7 @@
         id="viewDetails"
         :loading="loadingRequestIDs"
         :disabled="!viewEnabled"
-        :click-action="clickViewDetails"
+        @click-action="clickViewDetails"
         text="View Details"
       />
     </v-row>

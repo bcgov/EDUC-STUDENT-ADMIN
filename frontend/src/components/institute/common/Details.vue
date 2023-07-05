@@ -33,7 +33,7 @@
                 width="6em"
                 icon="mdi-pencil"
                 text="Edit"
-                :click-action="toggleEdit"
+                @click-action="toggleEdit"
               />
             </v-col>
             <v-col
@@ -47,7 +47,7 @@
                 icon-left
                 width="6em"
                 text="Cancel"
-                :click-action="cancelClicked"
+                @click-action="cancelClicked"
               />
               <PrimaryButton
                 id="saveButton"
@@ -55,7 +55,7 @@
                 width="6em"
                 text="Save"
                 :disabled="!schoolDetailsFormValid"
-                :click-action="updateSchoolDetails"
+                @click-action="updateSchoolDetails"
               />
             </v-col>
           </v-row>

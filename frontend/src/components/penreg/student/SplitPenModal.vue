@@ -11,7 +11,7 @@
         class="mx-1"
         text="Split PEN"
         :disabled="disabled"
-        :click-action="openModal"
+        @click-action="openModal"
         :bind="attrs"
         :on="on"
       />
@@ -87,7 +87,7 @@
           class="mx-1"
           text="Cancel"
           secondary
-          :click-action="closeModal"
+          @click-action="closeModal"
         />
         <PrimaryButton
           id="acceptSplitPen"
@@ -95,13 +95,13 @@
           :loading="isProcessing"
           class="mx-1"
           text="Accept"
-          :click-action="splitPen"
+          @click-action="splitPen"
         />
         <PrimaryButton
           id="searchPen"
           class="ml-1"
           text="Search"
-          :click-action="searchPen"
+          @click-action="searchPen"
         />
       </v-card-actions>
     </v-card>

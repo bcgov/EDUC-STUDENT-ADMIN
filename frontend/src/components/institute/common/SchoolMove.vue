@@ -30,7 +30,7 @@
               secondary
               icon-left
               icon="mdi-arrow-left-right"
-              :click-action="moveSchool"
+              @click-action="moveSchool"
               text="Move School"
             />
           </v-col>

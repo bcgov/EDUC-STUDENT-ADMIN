@@ -227,7 +227,7 @@
               class="mr-2 mb-3"
               secondary
               text="Clear"
-              :click-action="clearSearchParams"
+              @click-action="clearSearchParams"
             />
             <PrimaryButton
               id="search-action"
@@ -235,7 +235,7 @@
               :loading="searchLoading && searchEnabled"
               class="mr-0 mb-3"
               text="Search"
-              :click-action="search"
+              @click-action="search"
             />
           </v-sheet>
         </v-col>
@@ -260,14 +260,14 @@
             <v-list>
               <v-list-item
                 id="view-list-action"
-                :click-action="clickViewList"
+                @click-action="clickViewList"
                 link
               >
                 <v-list-item-title>View List</v-list-item-title>
               </v-list-item>
               <v-list-item
                 id="view-details-action"
-                :click-action="clickViewDetails"
+                @click-action="clickViewDetails"
                 link
               >
                 <v-list-item-title>View Details</v-list-item-title>
@@ -280,7 +280,7 @@
             :disabled="!filesSelected"
             text="Unarchive"
             :loading="unarchiving"
-            :click-action="unarchive"
+            @click-action="unarchive"
           />
         </v-col>
       </v-row>

@@ -29,7 +29,7 @@
             icon="mdi-plus"
             icon-left
             text="New Note"
-            :click-action="openNoteSheet"
+            @click-action="openNoteSheet"
           />
         </v-row>
         <v-row align="stretch">

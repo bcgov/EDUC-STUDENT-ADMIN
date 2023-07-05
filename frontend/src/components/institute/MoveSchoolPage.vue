@@ -462,13 +462,13 @@
         id="cancelNewSchoolBtn"
         secondary
         text="Cancel"
-        :click-action="closeMoveSchoolPage"
+        @click-action="closeMoveSchoolPage"
       />
       <PrimaryButton
         id="newSchoolPostBtn"
         text="Move"
         width="7rem"
-        :click-action="moveSchool"
+        @click-action="moveSchool"
         :disabled="!isMoveFormValid"
         :loading="processing"
       />

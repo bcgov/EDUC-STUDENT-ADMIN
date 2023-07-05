@@ -41,7 +41,7 @@
               class="ml-2"
               text="Copy"
               :short="true"
-              :click-action="copyPen"
+              @click-action="copyPen"
             />
           </template>
           <span>PEN Copied to Clipboard!</span>
@@ -71,7 +71,7 @@
             :short="true"
             :disabled="!request.recordedPen"
             :loading="loading"
-            :click-action="searchStudent"
+            @click-action="searchStudent"
           />
         </v-row>
         <v-row no-gutters>

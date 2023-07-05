@@ -61,7 +61,7 @@
                       class="mx-2"
                       :disabled="disableModifySearch"
                       text="Modify search"
-                      :click-action="clickOpenSearch"
+                      @click-action="clickOpenSearch"
                     />
                     <PrimaryButton
                       id="issue-pen-action"
@@ -69,7 +69,7 @@
                       :disabled="disableIssueNewPen"
                       :loading="isIssuingNewPen"
                       text="Issue new PEN"
-                      :click-action="issueNewPen"
+                      @click-action="issueNewPen"
                     />
                     <InfoDialog
                       :disabled="disableInfoReqBtn"

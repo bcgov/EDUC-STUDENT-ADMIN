@@ -13,7 +13,7 @@
           id="cancel"
           :secondary="true"
           text="Cancel"
-          :click-action="closeDialog"
+          @click-action="closeDialog"
         />
 
         <PrimaryButton
@@ -22,7 +22,7 @@
           text="Create PEN"
           :loading="createNewPenLoading"
           :disabled="isValidForm"
-          :click-action="isFormValid()"
+          @click-action="isFormValid"
         />
       </template>
     </CreateNewPenModal>
@@ -69,21 +69,21 @@
                 id="create-new-pen"
                 class="mr-2"
                 :disabled="createNewPenDisabled"
-                :click-action="openCreatePenModal"
+                @click-action="openCreatePenModal"
                 text="Create PEN"
               />
               <PrimaryButton
                 id="search-clear"
                 :secondary="true"
                 class="mr-2"
-                :click-action="clearSearch"
+                @click-action="clearSearch"
                 text="Clear"
               />
               <PrimaryButton
                 id="perform-search"
                 :disabled="!searchEnabled"
                 :loading="searchLoading"
-                :click-action="searchStudent(true)"
+                @click-action="searchStudent"
                 text="Search"
               />
             </v-row>

@@ -87,7 +87,7 @@
             width="11em"
             icon="mdi-plus-thick"
             text="New Contact"
-            :click-action="openNewContactSheet"
+            @click-action="openNewContactSheet"
           />
         </v-col>
       </v-row>

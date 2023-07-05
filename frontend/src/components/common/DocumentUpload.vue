@@ -44,7 +44,7 @@
         id="cancelUploadButton"
         secondary
         text="Cancel"
-        :click-action="closeForm"
+        @click-action="closeForm"
       />
       <PrimaryButton
         id="upload_form"
@@ -53,7 +53,7 @@
         :disabled="!dataReady"
         text="Upload"
         width="7rem"
-        :click-action="submitRequest"
+        @click-action="submitRequest"
       />
     </v-card-actions>
   </v-card>

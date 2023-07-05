@@ -26,7 +26,7 @@
             id="repostBtn"
             class="mr-5"
             text="Repost Reports"
-            :click-action="repostReports"
+            @click-action="repostReports"
             :disabled="batchFile.sagaInProgress"
             :loading="isProcessing"
           />

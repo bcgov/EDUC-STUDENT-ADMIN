@@ -209,7 +209,7 @@
                         <PrimaryButton
                           id="search-clear"
                           :secondary="true"
-                          :click-action="clearSearch"
+                          @click-action="clearSearch"
                           text="Clear"
                         />
                       </v-col>
@@ -221,7 +221,7 @@
                           :disabled="!searchEnabled"
                           :loading="searchLoading"
                           text="Refine"
-                          :click-action="getNewPENs"
+                          @click-action="getNewPENs"
                         />
                       </v-col>
                     </v-row>

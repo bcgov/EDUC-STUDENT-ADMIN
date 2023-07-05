@@ -41,7 +41,7 @@
                 :short="true"
                 class="mt-1"
                 :model="copyTxt"
-                :click-action="copyPen"
+                @click-action="copyPen"
               />
             </v-col>
           </v-row>
@@ -123,7 +123,7 @@
                   :short="true"
                   class="mt-1 ml-3"
                   :loading="saveStudentLoading"
-                  :click-action="updateDOC()"
+                  @click-action="updateDOC"
                   title="Set Date Of Confirmation to Current Date."
                   :disabled="fullReadOnly"
                 />
@@ -732,7 +732,7 @@
           color="#38598A"
           text="Copy"
           :model="copyTxt"
-          :click-action="copyInfo"
+          @click-action="copyInfo"
         />
       </v-col>
     </v-row>

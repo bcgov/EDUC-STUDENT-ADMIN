@@ -36,13 +36,13 @@
             secondary
             text="Cancel"
             class="mr-2"
-            :click-action="closeNewSchoolNotePage"
+            @click-action="closeNewSchoolNotePage"
           />
           <PrimaryButton
             id="saveNote"
             text="Save"
             width="7rem"
-            :click-action="saveNewSchoolNote"
+            @click-action="saveNewSchoolNote"
             :disabled="!isFormValid"
             :loading="processing"
           />

@@ -8,11 +8,10 @@
     <template #activator="{ on, attrs }">
       <TertiaryButton
         id="studentSearchCompareButton"
-        class="ma-0"
         text="Compare"
         icon="mdi-content-copy"
         :disabled="disabled"
-        :click-action="compare"
+        @click-action="compare"
         :bind="attrs"
         :on="on"
       />
@@ -29,35 +28,35 @@
             id="compareModalCancelBtn"
             text="Cancel"
             secondary
-            :click-action="[closeCompareModal(), clearError()]"
+            @click-action="[closeCompareModal, clearError]"
           />
           <PrimaryButton
             id="moveSldBtn"
             text="Move Sld Record"
             primary
-            :disabled="disableMoveSld()"
-            :click-action="moveSldRecords()"
+            :disabled="disableMoveSld"
+            @click-action="moveSldRecords"
           />
           <PrimaryButton
             id="twinBtn"
             text="Twin"
             primary
-            :disabled="validateAction()"
-            :click-action="twin()"
+            :disabled="validateAction"
+            @click-action="twin"
           />
           <PrimaryButton
             id="demergeBtn"
             text="Demerge"
             primary
-            :disabled="disableDemerge()"
-            :click-action="demerge()"
+            :disabled="disableDemerge"
+            @click-action="demerge"
           />
           <PrimaryButton
             id="mergeBtn"
             text="Merge PENs"
             primary
-            :disabled="disableMerge()"
-            :click-action="merge()"
+            :disabled="disableMerge"
+            @click-action="merge"
           />
         </template>
       </CompareDemographicsCommon>
@@ -144,5 +143,9 @@ export default {
 <style scoped>
   #studentSearchCompareButton {
     float: right;
+  }
+
+  :deep(.v-data-table-footer){
+      display: none;
   }
 </style>

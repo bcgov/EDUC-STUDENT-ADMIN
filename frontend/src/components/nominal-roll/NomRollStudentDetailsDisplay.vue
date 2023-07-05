@@ -52,7 +52,7 @@
                       class="mx-2"
                       :disabled="!isIgnoredStatus"
                       text="Recover Record"
-                      :click-action="recoverStudent"
+                      @click-action="recoverStudent"
                     />
                     <PrimaryButton
                       v-else
@@ -60,7 +60,7 @@
                       class="mx-2"
                       :disabled="disableActionButtons"
                       text="Ignore Record"
-                      :click-action="ignoreStudent"
+                      @click-action="ignoreStudent"
                     />
                     <PrimaryButton
                       id="modify-search-action"
@@ -68,7 +68,7 @@
                       class="mx-2"
                       :disabled="disableActionButtons"
                       text="Modify search"
-                      :click-action="openSearchDemographicsModal"
+                      @click-action="openSearchDemographicsModal"
                     />
                   </v-row>
                   <v-row

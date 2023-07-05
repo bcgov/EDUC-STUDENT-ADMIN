@@ -66,7 +66,7 @@
               style="margin-top: 0.2em"
               text="Generate"
               class="ml-2 pl-2 pr-2"
-              :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
+              @click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
             />
           </v-col>
         </v-row>
@@ -96,13 +96,13 @@
                     secondary
                     class="ml-2"
                     text="No"
-                    :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
+                    @click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
                   />
                   <PrimaryButton
                     id="doGeneratePrimaryEdxActivationCodeButton"
                     class="ml-2"
                     text="Yes"
-                    :click-action="doGeneratePrimaryEdxActivationCode"
+                    @click-action="doGeneratePrimaryEdxActivationCode"
                   />
                 </v-col>
               </v-row>
@@ -150,14 +150,14 @@
               id="user-clear-button"
               secondary
               text="Clear"
-              :click-action="clearButtonClick"
+              @click-action="clearButtonClick"
             />
             <PrimaryButton
               id="user-search-button"
               class="ml-2"
               text="Search"
-              :click-action="searchButtonClick"
-              :disabled="searchEnabled()"
+              @click-action="searchButtonClick"
+              :disabled="searchEnabled"
             />
           </v-col>
         </v-row>
@@ -220,7 +220,7 @@
                         :disabled="!primaryEdxActivationCode"
                         icon-left
                         text="Add New User"
-                        :click-action="openNewUserInviteSheet"
+                        @click-action="openNewUserInviteSheet"
                       />
                     </v-col>
                   </v-row>

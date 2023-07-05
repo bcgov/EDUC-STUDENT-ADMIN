@@ -35,14 +35,14 @@
           v-if="!canIgnore"
           id="unignoreRecord"
           :disabled="!canRecover || isPosted"
-          :click-action="clickRecover"
+          @click-action="clickRecover"
           text="Recover Record"
         />
         <PrimaryButton
           v-else
           id="ignoreRecord"
           :disabled="!canIgnore || isPosted"
-          :click-action="clickIgnore"
+          @click-action="clickIgnore"
           text="Ignore Record"
         />
         <PrimaryButton
@@ -50,7 +50,7 @@
           id="viewSelected"
           class="ml-1"
           :disabled="!viewSelectionEnabled || isPosted"
-          :click-action="clickViewSelected"
+          @click-action="clickViewSelected"
           text="View Selected"
         />
         <PrimaryButton
@@ -59,7 +59,7 @@
           class="ml-1"
           :loading="loadingRequestIDs"
           :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted"
-          :click-action="clickViewDetails"
+          @click-action="clickViewDetails"
           text="View Details"
         />
         <PrimaryButton
@@ -67,7 +67,7 @@
           class="ml-1"
           :loading="processing"
           :disabled="isPosted || hasReadOnlyRoleAccess()"
-          :click-action="clickPostRecords"
+          @click-action="clickPostRecords"
           text="Post"
         />
         <PrimaryButton
@@ -75,7 +75,7 @@
           class="ml-1"
           :loading="processing"
           :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()"
-          :click-action="retrieveAndDownloadIgnoredPenRequests"
+          @click-action="retrieveAndDownloadIgnoredPenRequests"
           text="Export Ignored"
         />
       </div>
@@ -146,7 +146,7 @@
                   />
                   <v-icon
                     v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
-                    :click-action="toggleRow(props.item)"
+                    @click-action="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
                 <span
@@ -324,7 +324,7 @@
                   width="100%"
                   text="Save"
                   :disabled="!validForm"
-                  :click-action="updateRequest(item)"
+                  @click-action="updateRequest(item)"
                   :loading="updating"
                 />
               </v-col>

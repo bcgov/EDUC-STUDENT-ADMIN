@@ -244,13 +244,13 @@
         id="cancelNewAuthorityBtn"
         secondary
         text="Cancel"
-        :click-action="closeNewAuthorityPage"
+        @click-action="closeNewAuthorityPage"
       />
       <PrimaryButton
         id="newAuthorityPostBtn"
         text="Save"
         width="7rem"
-        :click-action="addNewAuthority"
+        @click-action="addNewAuthority"
         :disabled="!isFormValid"
         :loading="processing"
       />

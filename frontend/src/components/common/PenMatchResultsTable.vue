@@ -46,7 +46,7 @@
             icon="mdi-cached"
             icon-style="mdi-flip-h"
             text="Refresh"
-            :click-action="$emit('refresh-match-results')"
+            @click-action="$emit('refresh-match-results')"
           />
         </v-row>
       </v-col>
@@ -171,7 +171,7 @@
                           :text="matchUnMatchButtonText"
                           :width="'6.5em'"
                           :disabled="disableMatchUnmatch"
-                          :click-action="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"
+                          @click-action="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"
                         />
                       </span>
                       <span

@@ -17,7 +17,7 @@
         <PrimaryButton
           id="newContactPostBtn"
           text="Okay"
-          :click-action="cancel"
+          @click-action="cancel"
         />
       </v-card-actions>
     </v-card>
@@ -194,13 +194,13 @@
             id="cancelNewContactBtn"
             secondary
             text="Cancel"
-            :click-action="closeEditSchoolStatus"
+            @click-action="closeEditSchoolStatus"
           />
           <PrimaryButton
             id="newContactPostBtn"
             text="Okay"
             width="7rem"
-            :click-action="updateSchoolDates"
+            @click-action="updateSchoolDates"
             :disabled="!isFormValid"
             :loading="processing"
           />

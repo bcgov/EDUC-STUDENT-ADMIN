@@ -193,14 +193,14 @@
             class="mt-3 mx-3"
             text="Unlink"
             :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser"
-            :click-action="unlinkRequest"
+            @click-action="unlinkRequest"
           />
           <PrimaryButton
             id="provide-pen-to-student"
             class="mt-3 mx-3"
             text="Provide PEN to Student"
             :disabled="isCompleteDisabled || !isProvidePenEnabledForUser"
-            :click-action="completeRequest"
+            @click-action="completeRequest"
           />
         </div>
       </v-row>

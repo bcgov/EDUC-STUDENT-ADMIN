@@ -21,7 +21,7 @@
               id="closePanel"
               class="mx-1"
               text="Close"
-              :click-action="closePanel"
+              @click-action="closePanel"
             />
           </v-card-actions>
         </SchoolHistoryDetail>

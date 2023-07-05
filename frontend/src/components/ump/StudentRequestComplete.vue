@@ -34,7 +34,7 @@
                   id="refresh-student-info"
                   text="Refresh Student Info"
                   :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser"
-                  :click-action="refreshStudentInfo"
+                  @click-action="refreshStudentInfo"
                 />
               </v-row>
             </v-col>
@@ -170,7 +170,7 @@
               id="send-changes-to-student"
               text="Send Changes to Student"
               :disabled="isCompleteDisabled || !isProvidePenEnabledForUser"
-              :click-action="sendChanges"
+              @click-action="sendChanges"
             />
           </v-row>
           <v-form ref="completeForm">
@@ -206,12 +206,12 @@
           <PrimaryButton
             id="confirm-request-changes"
             text="Confirm"
-            :click-action="confirmChanges"
+            @click-action="confirmChanges"
           />
           <PrimaryButton
             id="confirm-request-changes"
             text="Cancel"
-            :click-action="dialog = false"
+            @click-action="dialog = false"
           />
         </v-card-actions>
       </v-card>

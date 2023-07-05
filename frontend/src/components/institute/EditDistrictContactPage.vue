@@ -149,13 +149,13 @@
         id="cancelChangesToDistrictContactButton"
         secondary
         text="Cancel"
-        :click-action="cancelEditDistrictContactPage"
+        @click-action="cancelEditDistrictContactPage"
       />
       <PrimaryButton
         id="saveChangesToDistrictContactButton"
         text="Save"
         width="7rem"
-        :click-action="saveChangesToDistrictContact"
+        @click-action="saveChangesToDistrictContact"
         :disabled="!isFormValid"
         :loading="processing"
       />

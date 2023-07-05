@@ -41,7 +41,7 @@
                 text="Return to Student"
                 :disabled="isReturnToStudentDisabled || !isRequestMoreInfoEnabledForUser"
                 width="100%"
-                :click-action="returnToStudent"
+                @click-action="returnToStudent"
               />
             </v-col>
           </v-row>

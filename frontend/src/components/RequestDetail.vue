@@ -206,7 +206,7 @@
                 class="ml-2"
                 :disabled="isReleaseDisabled"
                 :short="true"
-                :click-action="claimRequest"
+                @click-action="claimRequest"
                 text="Release"
               />
             </v-row>
@@ -247,7 +247,7 @@
                 class="ml-2"
                 :disabled="isClaimDisabled"
                 :short="true"
-                :click-action="claimRequest"
+                @click-action="claimRequest"
                 text="Claim"
               />
             </v-row>
@@ -260,7 +260,7 @@
                 id="back-to-list"
                 class="ml-2"
                 :short="true"
-                :click-action="backToList"
+                @click-action="backToList"
                 text="Back to List"
               />
             </v-row>

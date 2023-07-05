@@ -3,7 +3,7 @@
     <v-textarea
       v-model="macro.macroText"
       density="compact"
-      outlined
+      variant="outlined"
       :disabled="loading || disabled"
       :rules="validateMaxLength()"
       :rows="rows"
@@ -17,7 +17,7 @@
         secondary
         text="Cancel"
         :disabled="loading || disabled"
-        :click-action="$emit('cancel')"
+        @click-action="$emit('cancel')"
       />
       <PrimaryButton
         id="save-action"
@@ -25,7 +25,7 @@
         text="Save"
         :disabled="!isValidForm || loading || disabled"
         :loading="loading"
-        :click-action="$emit('save', macro)"
+        @click-action="$emit('save', macro)"
       />
     </v-card-actions>
   </div>

@@ -38,7 +38,7 @@
               text="Claim"
               class="mr-2"
               :disabled="isClaimDisabled"
-              :click-action="claimExchanges"
+              @click-action="claimExchanges"
             />
             <PrimaryButton
               id="newMessageBtn"
@@ -46,7 +46,7 @@
               :large-icon="true"
               icon="mdi-plus"
               text="New Message"
-              :click-action="openNewMessageSheet"
+              @click-action="openNewMessageSheet"
             />
           </v-col>
         </v-row>
@@ -303,12 +303,12 @@
                     id="search-clear"
                     class="mr-3"
                     :secondary="true"
-                    :click-action="clearSearch"
+                    @click-action="clearSearch"
                     text="Clear"
                   />
                   <PrimaryButton
                     id="searchButton"
-                    :click-action="filterExchanges"
+                    @click-action="filterExchanges"
                     :loading="loadingTable"
                     :disabled="!searchEnabled"
                     text="Search"

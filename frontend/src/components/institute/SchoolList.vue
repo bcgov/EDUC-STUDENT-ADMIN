@@ -33,7 +33,7 @@
               width="11em"
               icon="mdi-plus-thick"
               text="New School"
-              :click-action="openNewSchoolSheet"
+              @click-action="openNewSchoolSheet"
             />
           </v-col>
         </v-row>
@@ -251,14 +251,14 @@
                   id="user-search-button"
                   text="Clear"
                   secondary
-                  :click-action="clearButtonClick"
+                  @click-action="clearButtonClick"
                 />
                 <PrimaryButton
                   id="user-clear-button"
                   class="ml-3"
                   width="8em"
                   text="Search"
-                  :click-action="searchButtonClick"
+                  @click-action="searchButtonClick"
                   :disabled="!searchEnabled()"
                 />
               </v-col>
