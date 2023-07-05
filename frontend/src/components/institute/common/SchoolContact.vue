@@ -14,14 +14,14 @@
               >
                 <v-icon
                   class="pb-1"
-                  size="x-small"
+                  size="15"
                   :color="getStatusColor(contact)"
                   left
                   dark
                 >
                   mdi-circle
                 </v-icon>
-                <strong style="word-break: break-word;">{{
+                <strong class="pl-1" style="word-break: break-word;">{{
                   formatContactName(contact)
                 }}</strong>
               </v-col>
