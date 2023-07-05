@@ -31,8 +31,8 @@
                             id="newUserFirstName"
                             v-model.trim="firstName"
                             label="First Name"
+                            class="mt-1"
                             variant="underlined"
-                            class="pt-0"
                             maxlength="255"
                             :rules="requiredRules"
                           />
@@ -40,6 +40,7 @@
                             id="newUserLastName"
                             v-model.trim="lastName"
                             label="Last Name"
+                            class="mt-1"
                             variant="underlined"
                             maxlength="255"
                             :rules="requiredRules"
@@ -48,7 +49,7 @@
                             id="newUserEmail"
                             v-model.trim="email"
                             label="Email"
-                            class="pt-0"
+                            class="mt-1"
                             variant="underlined"
                             :rules="emailRules"
                             maxlength="255"
@@ -59,20 +60,21 @@
                             v-model="instituteNameAndCode"
                             :label="instituteTypeLabel"
                             variant="underlined"
-                            :disabled="true"
-                            class="pt-0"
+                            class="mt-1"
+                            readonly
                             :rules="requiredRules"
                           />
                           <v-select
                             id="instituteNewUserRolesSelect"
                             v-model="edxActivationRoleCodes"
                             variant="underlined"
+                            density="compact"
                             label="Role(s)"
                             :hint="rolesHint"
                             persistent-hint
                             required
                             :rules="requireRoleRules"
-                            class="mb-3 mt-0 pt-0"
+                            class="pb-3 mt-0 pt-0"
                           >
                             <template #no-data />
                             <template #selection="{item, index}">

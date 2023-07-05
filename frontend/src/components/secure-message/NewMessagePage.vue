@@ -261,7 +261,7 @@
 </template>
 
 <script>
-import {mapState} from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import {replaceMacro, insertMacro} from '../../utils/macro';
 import {humanFileSize} from '@/utils/file';
 import ApiService from '@/common/apiService';
@@ -352,7 +352,7 @@ export default {
     this.getMacros();
   },
   methods: {
-    ...mapState(edxStore, ['getMacros']),
+    ...mapActions(edxStore, ['getMacros']),
     navigateToList() {
       this.$emit('secure-exchange:cancelMessage');
     },

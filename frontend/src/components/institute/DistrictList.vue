@@ -28,8 +28,7 @@
         @keydown.enter="searchButtonClick"
       >
         <v-col
-          cols="12"
-          md="4"
+          cols="5"
         >
           <v-autocomplete
             id="district-text-field"
@@ -65,8 +64,7 @@
           </v-autocomplete>
         </v-col>
         <v-col
-          cols="12"
-          md="4"
+          cols="3"
         >
           <v-select
             id="status-select-field"
@@ -160,11 +158,12 @@
             </v-col>
             <v-col class="d-flex justify-end">
               <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
+                <template #activator="{ props }">
                   <v-btn
                     id="districtContacts"
                     color="#003366"
                     outlined
+                    v-bind="props"
                     class="mt-0 pt-0 filterButton ml-2"
                     style="text-transform: initial"
                     @click.stop.prevent="openDistrictContacts(item.raw.districtId)"
@@ -328,8 +327,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 40em !important;
-    padding-left: 40em !important;
+    padding-right: 30em !important;
+    padding-left: 30em !important;
 }
 
 .hoverTable {
@@ -356,5 +355,8 @@ export default {
     display: none;
 }
 
+:deep(.v-list-item__prepend){
+    margin-right: -2em;
+}
 </style>
 

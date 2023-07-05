@@ -83,7 +83,7 @@
                           min-width="0.5em"
                           title="Edit"
                           color="white"
-                          depressed
+                          variant="flat"
                           small
                           @click="showSchoolNoteEditForm(note)"
                         >
@@ -101,7 +101,7 @@
                           min-width="0.5em"
                           title="Remove"
                           color="white"
-                          depressed
+                          variant="flat"
                           small
                           @click="removeSchoolNote(note)"
                         >

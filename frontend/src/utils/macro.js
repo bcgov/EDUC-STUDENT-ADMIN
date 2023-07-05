@@ -22,8 +22,12 @@ function checkForMacro(comment, macroText, macros){
 
 export function insertMacro(macroText, message, input) {
   if(message){
-    let cursorLocation = input.selectionEnd;
-    message = message.substring(0, cursorLocation) + macroText + message.substring(cursorLocation);
+    if(input){
+      let cursorLocation = input.selectionEnd;
+      message = message.substring(0, cursorLocation) + macroText + message.substring(cursorLocation);
+    }else{
+      message = message + ' ' + macroText;
+    }
   } else {
     message = macroText;
   }
