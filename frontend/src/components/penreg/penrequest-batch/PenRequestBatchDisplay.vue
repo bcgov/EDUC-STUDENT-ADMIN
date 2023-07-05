@@ -93,7 +93,7 @@
               class="mr-2 mb-3"
               secondary
               text="Clear"
-              :click-action="clearSearchParams"
+              @click-action="clearSearchParams"
             />
             <PrimaryButton
               id="search-action"
@@ -101,7 +101,7 @@
               :loading="searchLoading && searchEnabled"
               class="mr-0 mb-3"
               text="Search"
-              :click-action="search"
+              @click-action="search"
             />
           </v-sheet> 
         </v-form>
@@ -111,7 +111,7 @@
         id="view-list-action"
         class="mr-2 mt-1"
         :disabled="!filesSelected"
-        :click-action="clickViewList"
+        @click-action="clickViewList"
         text="View List"
       />
       <PrimaryButton
@@ -119,7 +119,7 @@
         class="mx-2 mt-1"
         :disabled="!filesSelected"
         :loading="loadingRequestIDs"
-        :click-action="clickViewDetails"
+        @click-action="clickViewDetails"
         text="View Details"
       />
       <v-menu offset-y>
@@ -175,7 +175,7 @@
             id="closeBtn"
             text
             icon
-            :click-action="cancel"
+            @click-action="cancel"
           >
             <v-icon color="#38598A">
               mdi-close

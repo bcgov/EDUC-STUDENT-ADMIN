@@ -280,14 +280,14 @@
           id="clear-search"
           class="mr-2"
           :secondary="true"
-          :click-action="clearSearch"
+          @click-action="clearSearch"
           text="Clear"
         />
         <PrimaryButton
           id="perform-search"
           :disabled="!searchEnabled"
           :loading="loading && searchEnabled"
-          :click-action="searchPenRequests"
+          @click-action="searchPenRequests"
           text="Search"
         />
       </div>

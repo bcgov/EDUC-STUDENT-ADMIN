@@ -92,7 +92,7 @@
                 width="6em"
                 icon="mdi-pencil"
                 text="Edit"
-                :click-action="toggleEdit"
+                @click-action="toggleEdit"
               />
             </v-col>
             <v-col
@@ -107,7 +107,7 @@
                 icon-left
                 width="6em"
                 text="Cancel"
-                :click-action="cancelClicked"
+                @click-action="cancelClicked"
               />
               <PrimaryButton
                 id="saveButton"
@@ -115,7 +115,7 @@
                 width="6em"
                 text="Save"
                 :disabled="!districtDetailsFormValid"
-                :click-action="updateDistrictDetails"
+                @click-action="updateDistrictDetails"
               />
             </v-col>
           </v-row>
@@ -686,7 +686,7 @@
                     icon="mdi-plus"
                     icon-left
                     text="New Note"
-                    :click-action="openNoteSheet"
+                    @click-action="openNoteSheet"
                   />
                 </v-col>
               </v-row>
@@ -843,7 +843,7 @@
                     secondary
                     text="Cancel"
                     class="mr-2"
-                    :click-action="flipNoteSheet"
+                    @click-action="flipNoteSheet"
                   />
                   <PrimaryButton
                     id="saveNote"
@@ -851,7 +851,7 @@
                     width="7rem"
                     :disabled="newNoteText === ''"
                     :loading="loading"
-                    :click-action="saveNewDistrictNote"
+                    @click-action="saveNewDistrictNote"
                   />
                 </v-row>
               </v-card-text>
@@ -897,7 +897,7 @@
                     secondary
                     text="Cancel"
                     class="mr-2"
-                    :click-action="cancelEditDistrictNote"
+                    @click-action="cancelEditDistrictNote"
                   />
                   <PrimaryButton
                     id="saveNote"
@@ -905,7 +905,7 @@
                     width="7rem"
                     :disabled="editDistrictNote.content === ''"
                     :loading="loading"
-                    :click-action="saveChangesToDistrictNote"
+                    @click-action="saveChangesToDistrictNote"
                   />
                 </v-row>
               </v-card-text>

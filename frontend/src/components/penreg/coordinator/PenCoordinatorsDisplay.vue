@@ -82,7 +82,7 @@
                       short
                       text="Cancel"
                       :disabled="!hasAnyEdits() || dataLoading"
-                      :click-action="clickCancel"
+                      @click-action="clickCancel"
                     />
                     <PrimaryButton
                       v-if="hoveredOveredRowID === item.item.raw.mincode"
@@ -91,7 +91,7 @@
                       text="Save"
                       :disabled="!hasAnyEdits() || !isValidPenCoordForm || dataLoading"
                       :loading="dataLoading"
-                      :click-action="clickSave"
+                      @click-action="clickSave"
                     />
                   </div>
                   <span v-else>{{ item.item.raw[header.value] }}</span>

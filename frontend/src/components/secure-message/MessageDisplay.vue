@@ -278,7 +278,7 @@
                         secondary
                         text="Cancel"
                         class="mr-2"
-                        :click-action="hideNewMessagePanel"
+                        @click-action="hideNewMessagePanel"
                       />
                       <PrimaryButton
                         id="newMessagePostBtn"
@@ -286,7 +286,7 @@
                         width="8rem"
                         :disabled="!newMessage"
                         :loading="loading"
-                        :click-action="sendNewExchangeComment"
+                        @click-action="sendNewExchangeComment"
                       />
                     </v-col>
                   </v-row>
@@ -326,7 +326,7 @@
                         secondary
                         text="Cancel"
                         class="mr-2"
-                        :click-action="hideNewNotePanel"
+                        @click-action="hideNewNotePanel"
                       />
                       <PrimaryButton
                         id="newNotePostBtn"
@@ -334,7 +334,7 @@
                         width="8rem"
                         :disabled="!newNote"
                         :loading="loading"
-                        :click-action="sendNewExchangeNote"
+                        @click-action="sendNewExchangeNote"
                       />
                     </v-col>
                   </v-row>

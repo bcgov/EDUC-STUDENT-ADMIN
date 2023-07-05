@@ -76,7 +76,7 @@
                   :disabled="!isValidRequestsSearchInput"
                   text="Search"
                   width="100%"
-                  :click-action="searchRequests"
+                  @click-action="searchRequests"
                   minheight="40px"
                 />
               </v-col>
@@ -88,7 +88,7 @@
                   id="advanceSearchBtn"
                   class="advanceSearchButtonStyle"
                   text="Advanced Archive Search"
-                  :click-action="archiveSearch"
+                  @click-action="archiveSearch"
                   minheight="40px"
                 />
               </v-col>
@@ -127,7 +127,7 @@
                   text="Search"
                   width="100%"
                   minheight="40px"
-                  :click-action="quickSearch"
+                  @click-action="quickSearch"
                 />
               </v-col>
               <v-col
@@ -137,7 +137,7 @@
                 <PrimaryButton
                   id="advanceSearchBtn"
                   text="Advanced Student Search"
-                  :click-action="advanceSearch"
+                  @click-action="advanceSearch"
                   minheight="40px"
                 />
               </v-col>

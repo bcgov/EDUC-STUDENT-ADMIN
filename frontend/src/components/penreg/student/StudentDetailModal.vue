@@ -42,7 +42,7 @@
               <v-col cols="12">
                 <v-card-actions style="float: right;">
                   <PrimaryButton
-                    :click-action="$emit('closeDialog')"
+                    @click-action="$emit('closeDialog')"
                     :secondary="true"
                     class="mx-1"
                     text="Cancel"
@@ -50,12 +50,12 @@
                   <PrimaryButton
                     class="mx-1"
                     text="Go to Record"
-                    :click-action="viewStudentDetails"
+                    @click-action="viewStudentDetails"
                   />
                   <PrimaryButton
                     class="mx-1"
                     text="Open in new window"
-                    :click-action="openStudentDetails"
+                    @click-action="openStudentDetails"
                   />
                 </v-card-actions>
               </v-col>

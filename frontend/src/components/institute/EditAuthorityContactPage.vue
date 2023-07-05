@@ -140,13 +140,13 @@
         id="cancelChangesToAuthorityContactButton"
         secondary
         text="Cancel"
-        :click-action="cancelEditAuthorityContactPage"
+        @click-action="cancelEditAuthorityContactPage"
       />
       <PrimaryButton
         id="saveChangesToAuthorityContactButton"
         text="Save"
         width="7rem"
-        :click-action="saveChangesToAuthorityContact"
+        @click-action="saveChangesToAuthorityContact"
         :disabled="!isFormValid"
         :loading="processing"
       />

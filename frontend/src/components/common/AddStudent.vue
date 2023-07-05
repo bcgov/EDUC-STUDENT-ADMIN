@@ -39,7 +39,7 @@
         :disabled="enableSearchButton"
         text="Search"
         :loading="isSearchingStudent"
-        :click-action="searchStudentForGivenPEN"
+        @click-action="searchStudentForGivenPEN"
       />
     </v-row>
 
@@ -71,14 +71,14 @@
           secondary
           text="Cancel"
           class="mr-2"
-          :click-action="closeForm"
+          @click-action="closeForm"
         />
         <PrimaryButton
           id="addStudentToNewMessageBtn"
           :disabled="!studentExist"
           text="Add"
           width="5rem"
-          :click-action="addStudentToMessage"
+          @click-action="addStudentToMessage"
         />
       </v-col>
     </v-row>

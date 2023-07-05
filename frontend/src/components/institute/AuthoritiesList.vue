@@ -29,7 +29,7 @@
             width="12em"
             icon="mdi-plus-thick"
             text="New Authority"
-            :click-action="openNewAuthoritySheet"
+            @click-action="openNewAuthoritySheet"
           />
         </v-col>
       </v-row>
@@ -126,13 +126,13 @@
                 id="user-clear-button"
                 text="Clear"
                 secondary
-                :click-action="clearButtonClick"
+                @click-action="clearButtonClick"
               />
               <PrimaryButton
                 id="user-search-button"
                 class="ml-3"
                 text="Search"
-                :click-action="searchButtonClick"
+                @click-action="searchButtonClick"
                 :disabled="!searchEnabled()"
               />
             </v-col>

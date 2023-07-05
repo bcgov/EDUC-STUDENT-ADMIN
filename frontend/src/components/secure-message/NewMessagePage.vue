@@ -242,7 +242,7 @@
             secondary
             text="Cancel"
             class="mr-2"
-            :click-action="navigateToList"
+            @click-action="navigateToList"
           />
           <PrimaryButton
             id="newMessagePostBtn"
@@ -250,7 +250,7 @@
             width="8rem"
             :disabled="!isValidForm || fileSizeAlert"
             :loading="processing"
-            :click-action="sendNewMessage"
+            @click-action="sendNewMessage"
           />
         </v-row>
       </v-col>

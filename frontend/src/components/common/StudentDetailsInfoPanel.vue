@@ -20,20 +20,20 @@
           id="cancel"
           :secondary="true"
           text="Cancel"
-          :click-action="closeDialog"
+          @click-action="closeDialog"
         />
 
         <PrimaryButton
           id="searchDemogModalSearchBtn"
           width="15%"
           text="Modify Request"
-          :click-action="isFormValid()"
+          @click-action="isFormValid"
         />
         <PrimaryButton
           id="runAdvancedSearch"
           width="15%"
           text="Advanced Search"
-          :click-action="searchStudent()"
+          @click-action="searchStudent"
         />
       </template>
     </SearchDemographicModal>

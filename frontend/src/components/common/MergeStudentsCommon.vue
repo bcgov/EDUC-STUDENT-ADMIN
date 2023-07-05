@@ -518,11 +518,11 @@
                 id="compareModalCancelBtn"
                 text="Cancel"
                 secondary
-                :click-action="closeStudentsMergeModal"
+                @click-action="closeStudentsMergeModal"
               />
               <PrimaryButton
                 :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
-                :click-action="performMerge()"
+                @click-action="performMerge"
                 text="Merge"
               />
             </v-card-actions>

@@ -148,13 +148,13 @@
         id="cancelChangesToSchoolContactButton"
         secondary
         text="Cancel"
-        :click-action="cancelEditSchoolContactPage"
+        @click-action="cancelEditSchoolContactPage"
       />
       <PrimaryButton
         id="saveChangesToSchoolContactButton"
         text="Save"
         width="7rem"
-        :click-action="saveChangesToSchoolContact"
+        @click-action="saveChangesToSchoolContact"
         :disabled="!isFormValid"
         :loading="processing"
       />

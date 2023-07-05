@@ -68,15 +68,15 @@
                     </router-link>
                     <PrimaryButton
                       v-if="studentDetails.student.statusCode === 'M'"
-                      :disabled="disableDemerge()"
+                      :disabled="disableDemerge"
                       text="Demerge"
-                      :click-action="demerge()"
+                      @click-action="demerge"
                     />
                     <PrimaryButton
                       :disabled="!hasAnyEdits() || !validForm"
                       text="Save"
                       :loading="saveStudentLoading"
-                      :click-action="saveStudent()"
+                      @click-action="saveStudent"
                     />
                   </v-card-actions>
                 </v-col>

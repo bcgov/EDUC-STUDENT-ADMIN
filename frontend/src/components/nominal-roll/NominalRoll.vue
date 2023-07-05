@@ -37,7 +37,7 @@
               text="Process"
               :loading="processStudentsLoading"
               :disabled="processing"
-              :click-action="processNominalRollStudents()"
+              @click-action="processNominalRollStudents"
             />
           </v-card-title>
           <v-progress-linear

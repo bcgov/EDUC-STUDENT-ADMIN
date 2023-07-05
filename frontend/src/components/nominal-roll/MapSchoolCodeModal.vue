@@ -117,14 +117,14 @@
             id="mapSchoolCodeDialogCancelBtn"
             text="Cancel"
             secondary
-            :click-action="mapSchoolCodeDialog = false"
+            @click-action="mapSchoolCodeDialog = false"
           />
           <PrimaryButton
             id="mapSchoolCodeDialogAddBtn"
             text="Add"
             :disabled="!isValidForm"
             :loading="processing"
-            :click-action="createFedProvSchoolCode"
+            @click-action="createFedProvSchoolCode"
           />
         </v-card-actions>
       </v-card>

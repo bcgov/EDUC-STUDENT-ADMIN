@@ -119,7 +119,7 @@
                 short 
                 text="More Info"
                 :disabled="props.item.sagaInProgress"
-                :click-action="clickMoreInfo"
+                @click-action="clickMoreInfo"
               />
               <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip

@@ -14,7 +14,7 @@
                 </v-list-item-title>
               </slot>
             </v-list-item>
-            <v-list-item-icon class="my-0">
+            <v-list-item-media class="my-0">
               <v-btn
                 id="closeCreateNewPenModalBtn"
                 text
@@ -28,7 +28,7 @@
                   mdi-close
                 </v-icon>
               </v-btn>
-            </v-list-item-icon>
+            </v-list-item-media>
           </v-list-item>
         </v-card-title>
         <v-spacer />
@@ -44,7 +44,7 @@
                   no-gutters
                 >
                   <v-col cols="3">
-                    <Strong>Legal Surname</Strong>
+                    <strong>Legal Surname</strong>
                   </v-col>
                   <v-spacer />
                   <v-col cols="3">
@@ -112,7 +112,7 @@
                   no-gutters
                 >
                   <v-col cols="3">
-                    <Strong>Usual Surname </Strong>
+                    <strong>Usual Surname </strong>
                   </v-col>
                   <v-spacer />
                   <v-col cols="3">
@@ -182,7 +182,7 @@
                   no-gutters
                 >
                   <v-col cols="3">
-                    <Strong>Gender</Strong>
+                    <strong>Gender</strong>
                   </v-col>
                   <v-spacer />
                   <v-col cols="3">

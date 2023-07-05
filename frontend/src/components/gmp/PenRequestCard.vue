@@ -36,7 +36,7 @@
           :short="true"
           :disabled="disableSearchBtn"
           class="mt-1 ml-n3"
-          :click-action="searchStudent"
+          @click-action="searchStudent"
         />
       </v-col>
     </v-row>

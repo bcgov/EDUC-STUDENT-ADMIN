@@ -46,7 +46,7 @@
               :secondary="true"
               class="mx-1"
               text="Close"
-              :click-action="$emit('close')"
+              @click-action="$emit('close')"
             />
             <SplitPenModal
               :disabled="isSplitPenDisabled"
@@ -62,7 +62,7 @@
               :loading="isRevertingStudent"
               class="mx-1"
               text="Revert"
-              :click-action="revertStudentDataFromStudentHistory()"
+              @click-action="revertStudentDataFromStudentHistory"
             />
           </v-card-actions>
         </StudentAuditHistoryDetailCard>

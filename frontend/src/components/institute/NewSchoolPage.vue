@@ -466,13 +466,13 @@
         id="cancelNewSchoolBtn"
         secondary
         text="Cancel"
-        :click-action="closeNewSchoolPage"
+        @click-action="closeNewSchoolPage"
       />
       <PrimaryButton
         id="newSchoolPostBtn"
         text="Save"
         width="7rem"
-        :click-action="addNewSchool"
+        @click-action="addNewSchool"
         :disabled="!isFormValid"
         :loading="processing"
       />

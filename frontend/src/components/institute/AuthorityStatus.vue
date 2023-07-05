@@ -222,13 +222,13 @@
           id="cancelNewContactBtn"
           secondary
           text="Cancel"
-          :click-action="closeEditAuthorityStatus"
+          @click-action="closeEditAuthorityStatus"
         />
         <PrimaryButton
           id="newContactPostBtn"
           text="Okay"
           width="7rem"
-          :click-action="updateAuthorityDates"
+          @click-action="updateAuthorityDates"
           :disabled="!isFormValid"
           :loading="processing"
         />

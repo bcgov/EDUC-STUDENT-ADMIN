@@ -16,7 +16,7 @@
         >{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col/>
-      <v-col>
+      <v-col class="d-flex justify-end">
         <CompareDemographicModal
           v-model:selected-records="selectedRecords"
           :disabled="selectedRecords.length<2 || selectedRecords.length>3 || !EDIT_STUDENT_RECORDS_ROLE"
@@ -87,12 +87,13 @@
             :key="header.id"
             :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(item.item) }"
           >
-            <v-checkbox
-              v-if="header.type"
-              :input-value="item.item.raw.isSelected"
-              color="#606060"
-              @update:model-value="item.item.raw.select($event)"
-            />
+            <div v-if="header.key === 'checkbox'">
+              <v-checkbox
+                :value="item.item.raw.isSelected"
+                color="#606060"
+                @update:model-value="selectStudent(item.item.raw)"
+              />
+            </div>
             <div
               v-else
               class="tableCell"
@@ -193,6 +194,11 @@ export default {
       itemsPerPage: 10,
       loading: false,
       headers: [
+        {
+          topText: '',
+          align: 'start',
+          key: 'checkbox'
+        },
         {
           topText: 'PEN',
           align: 'start',
@@ -333,7 +339,7 @@ export default {
     },
     selectedRecords: {
       get() {
-        return studentSearchStore().selectedRecords;
+        return this.studentSearchResponse.content.filter(student => student.isSelected);
       },
       set(newRecord) {
         return studentSearchStore().setSelectedRecords(newRecord);
@@ -366,6 +372,9 @@ export default {
     },
     loadItems({page}) {
       this.pageNumber = page;
+    },
+    selectStudent(student){
+      student.isSelected = !student.isSelect;
     },
     pagination() {
       this.loading = true;
@@ -437,7 +446,7 @@ export default {
     cursor: pointer;
 }
 
-:deep(.v-data-table-footer__items-per-page){
+:deep(.v-data-table-footer__items-per-page) {
     display: none;
 }
 

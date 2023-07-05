@@ -107,14 +107,14 @@
             id="district-clear-button"
             secondary
             text="Clear"
-            :click-action="clearButtonClick"
+            @click-action="clearButtonClick"
           />
           <PrimaryButton
             id="district-search-button"
             class="ml-2"
             text="Search"
             width="7rem"
-            :click-action="searchButtonClick"
+            @click-action="searchButtonClick"
           />
         </v-col>
       </v-row>

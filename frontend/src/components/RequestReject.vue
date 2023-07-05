@@ -44,7 +44,7 @@
                 text="Reject"
                 :disabled="isRejectDisabled || !isRejectEnabledForUser"
                 width="100%"
-                :click-action="submitReject"
+                @click-action="submitReject"
               />
             </v-col>
           </v-row>

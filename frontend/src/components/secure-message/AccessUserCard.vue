@@ -158,12 +158,12 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :click-action="clickDeleteButton"
+                  @click-action="clickDeleteButton"
                 />
                 <PrimaryButton
                   :id="`user-remove-action-button-${user.firstName}-${user.lastName}`"
                   text="Remove"
-                  :click-action="clickRemoveButton"
+                  @click-action="clickRemoveButton"
                 />
               </v-col>
             </v-row>
@@ -192,13 +192,13 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :click-action="clickRelinkButton"
+                  @click-action="clickRelinkButton"
                   :disabled="isRelinking"
                 />
                 <PrimaryButton
                   :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
                   text="Re-Link"
-                  :click-action="clickActionRelinkButton"
+                  @click-action="clickActionRelinkButton"
                   :disabled="isRelinking"
                   :loading="isRelinking"
                 />
@@ -230,13 +230,13 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :click-action="clickEditButton"
+                  @click-action="clickEditButton"
                 />
                 <PrimaryButton
                   :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
                   text="Save"
                   :disabled="!minimumRolesSelected"
-                  :click-action="clickSaveButton"
+                  @click-action="clickSaveButton"
                 />
               </v-col>
             </v-row>

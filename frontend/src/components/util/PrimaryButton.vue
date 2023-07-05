@@ -14,7 +14,7 @@
       :min-height="minheight"
       :loading="loading"
       v-bind="bind"
-      @click="clickAction"
+      @click="$emit('clickAction')"
     >
       <v-icon
         v-if="icon"
@@ -38,6 +38,7 @@
 <script>
 export default {
   name: 'PrimaryButton',
+  emits: ['clickAction'],
   inheritAttrs: false,
   props: {
     class:{
@@ -86,10 +87,6 @@ export default {
     },
     bind: {
       type: Object,
-      default: null
-    },
-    clickAction: {
-      type: Function,
       default: null
     },
     largeIcon: {

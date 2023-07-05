@@ -19,9 +19,9 @@
           <v-text-field
             id="pen"
             v-model.trim="studentSearchParams.pen"
-            dense
-            filled
-            outlined
+            density="compact"
+            variant="outlined"
+            bg-color="#efefef"
             maxlength="9"
             minlength="9"
             autofocus
@@ -50,6 +50,7 @@
             v-model="useDOBValue"
             class="ma-0 pa-0"
             height="100%"
+            density="compact"
             label=""
             color="#606060"
             @change="searchHasValues"
@@ -62,9 +63,9 @@
                 id="start-dob-year"
                 v-model="advancedSearchCriteria.startDate.year"
                 class="doubleWidthInput"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 maxlength="4"
                 placeholder="YYYY"
                 :rules="validateStartDOBYear()"
@@ -79,9 +80,9 @@
               <v-text-field
                 id="start-dob-month"
                 v-model="advancedSearchCriteria.startDate.month"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 maxlength="2"
                 placeholder="MM"
                 :disabled="!isValidStartDOB.year"
@@ -94,9 +95,9 @@
               <v-text-field
                 id="start-dob-day"
                 v-model="advancedSearchCriteria.startDate.day"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 maxlength="2"
                 placeholder="DD"
                 :disabled="!isValidStartDOB.month || !isValidStartDOB.year"
@@ -116,6 +117,7 @@
             v-model="advancedSearchCriteria.useDOBRange"
             class="ma-0 pa-0"
             height="100%"
+            density="compact"
             label="Use range"
             color="#606060"
             @change="[searchHasValues(), $emit('valueChange')]"
@@ -133,9 +135,9 @@
               <v-text-field
                 id="end-dob-year"
                 v-model="advancedSearchCriteria.endDate.year"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 placeholder="YYYY"
                 maxlength="4"
                 :rules="validateEndDOBYear()"
@@ -150,9 +152,9 @@
               <v-text-field
                 id="end-dob-month"
                 v-model="advancedSearchCriteria.endDate.month"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 placeholder="MM"
                 min-length="2"
                 maxlength="2"
@@ -166,9 +168,9 @@
               <v-text-field
                 id="end-dob-day"
                 v-model="advancedSearchCriteria.endDate.day"
-                dense
-                filled
-                outlined
+                density="compact"
+                bg-color="#efefef"
+                variant="outlined"
                 placeholder="DD"
                 min-length="2"
                 maxlength="2"
@@ -182,7 +184,7 @@
         </v-col>
       </v-row>
       <v-row
-        dense
+        density="compact"
         no-gutters
         class="textFieldRow"
       >
@@ -203,8 +205,8 @@
             item-value="genderCode"
             style="max-width: 7em"
             variant="outlined"
-            filled
-            dense
+            bg-color="#efefef"
+            density="compact"
             clearable
             @change="[searchHasValues(),$emit('valueChange')]"
           />
@@ -228,8 +230,8 @@
             item-value="gradeCode"
             style="max-width: 7em"
             variant="outlined"
-            filled
-            dense
+            bg-color="#efefef"
+            density="compact"
             clearable
             @change="[searchHasValues(),$emit('valueChange')]"
           />
@@ -249,9 +251,9 @@
           <v-text-field
             id="mincode"
             v-model.trim="studentSearchParams.mincode"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="8"
             min-length="8"
             :rules="validateMincode()"
@@ -274,9 +276,9 @@
           <v-text-field
             id="localID"
             v-model.trim="studentSearchParams.localID"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="12"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -297,9 +299,9 @@
           <v-text-field
             id="postalCode"
             v-model.trim="studentSearchParams.postalCode"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="7"
             :rules="validatePostal()"
             @input="[searchHasValues(),uppercasePostal(), $emit('valueChange')]"
@@ -321,9 +323,9 @@
           <v-text-field
             id="memo"
             v-model="studentSearchParams.memo"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -343,19 +345,21 @@
               id="searchNameVariantsCheckbox"
               v-model="advancedSearchCriteria.useNameVariants"
               label="Search name variants"
+              density="compact"
               color="#606060"
               class="ma-0 pa-0"
             />
           </v-col>
           <v-col cols="2">
             <v-tooltip left>
-              <template #activator="{ on }">
+              <template #activator="{ props }">
                 <v-icon
-                  small
+                  size="25"
+                  v-bind="props"
                   color="#FCBA19"
-                  style="margin-top: 0.9em"
+                  icon="mdi-alert-circle"
+                  style="margin-top: 0.3em"
                 >
-                  fa-exclamation-circle
                 </v-icon>
               </template>
               <span>
@@ -368,6 +372,7 @@
               id="searchAuditHistoryCheckbox"
               v-model="advancedSearchCriteria.isAuditHistorySearch"
               label="Search audit history"
+              density="compact"
               color="#606060"
               class="ma-0 pa-0"
             />
@@ -386,9 +391,9 @@
           <v-text-field
             id="legalLastName"
             v-model.trim="studentSearchParams.legalLastName"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -407,9 +412,9 @@
           <v-text-field
             id="legalFirstName"
             v-model.trim="studentSearchParams.legalFirstName"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -428,9 +433,9 @@
           <v-text-field
             id="legalMiddleNames"
             v-model.trim="studentSearchParams.legalMiddleNames"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @input="[searchHasValues(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
@@ -449,9 +454,9 @@
           <v-text-field
             id="usualLastName"
             v-model.trim="studentSearchParams.usualLastName"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -470,9 +475,9 @@
           <v-text-field
             id="usualFirstName"
             v-model.trim="studentSearchParams.usualFirstName"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -491,9 +496,9 @@
           <v-text-field
             id="usualMiddleNames"
             v-model.trim="studentSearchParams.usualMiddleNames"
-            dense
-            filled
-            outlined
+            density="compact"
+            bg-color="#efefef"
+            variant="outlined"
             maxlength="255"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
@@ -509,15 +514,22 @@
           >
             Status
           </v-col>
-          <v-checkbox
+          <v-col
+            cols="auto"
+            class="px-2"
             v-for="status in statusCodes"
             :key="status.label"
-            v-model="advancedSearchCriteria.statusCode"
-            :label="status.label"
-            color="#606060"
-            class="ma-0 mr-5 pa-0"
-            :value="status.value"
-          />
+          >
+            <v-checkbox
+              v-model="advancedSearchCriteria.statusCode"
+              :label="status.label"
+              density="compact"
+              color="#606060"
+              class="ma-0 pa-0"
+              :value="status.value"
+            />
+          </v-col>
+
         </v-row>
       </v-card>
     </v-col>
@@ -623,16 +635,16 @@ export default {
   },
   computed: {
     useDOBValue: {
-      get: function() {
+      get: function () {
         return this.useDOB;
       },
-      set: async function(value) {
+      set: async function (value) {
         this.$emit('update:useDOB', value);
       }
     },
     ...mapState(studentSearchStore, ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch', 'studentSearchParams', 'advancedSearchCriteria']),
     formattedStartDOB() {
-      if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {
+      if (this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {
         const formattedDate = {
           year: this.advancedSearchCriteria.startDate.year,
           month: this.startMonth(),
@@ -643,7 +655,7 @@ export default {
       return null;
     },
     formattedEndDOB() {
-      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.useDOBRange) {
+      if (this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.useDOBRange) {
         const formattedDate = {
           year: this.advancedSearchCriteria.endDate.year,
           month: this.endMonth(this.advancedSearchCriteria.endDate.month, this.isValidEndDOB.month),
@@ -671,8 +683,8 @@ export default {
   methods: {
     ...mapActions(studentSearchStore, ['setIsAdvancedSearch']),
     validateDOBPast(year, month, day) {
-      if(year || month || day) {
-        if(!!year && month && day) {
+      if (year || month || day) {
+        if (!!year && month && day) {
           return LocalDate.of(year, month, day) < LocalDate.now();
         }
         return false;
@@ -680,11 +692,13 @@ export default {
       return true;
     },
     validateDOBYear(year) {
-      if(!year) { return []; }
+      if (!year) {
+        return [];
+      }
       if (!year.match(/\d{4}/g)) {
         return ['Invalid year'];
       } else {
-        if(year <= LocalDate.now().year()) {
+        if (year <= LocalDate.now().year()) {
           return [];
         } else {
           return ['DOB must be in the past'];
@@ -692,45 +706,45 @@ export default {
       }
     },
     validateStartDOBYear() {
-      if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {
+      if (this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {
         const validYearResponse = this.validateDOBYear(this.advancedSearchCriteria.startDate.year);
-        this.isValidStartDOB.year = validYearResponse.length===0;
+        this.isValidStartDOB.year = validYearResponse.length === 0;
         return validYearResponse;
       }
       this.isValidStartDOB.year = false;
       return [];
     },
     validateEndDOBYear() {
-      if(this.advancedSearchCriteria.useDOBRange && !this.advancedSearchCriteria.endDate.year) {
+      if (this.advancedSearchCriteria.useDOBRange && !this.advancedSearchCriteria.endDate.year) {
         this.isValidEndDOB.year = false;
         return ['Year required for range search'];
       }
-      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year) {
+      if (this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year) {
         const validYearResponse = this.validateDOBYear(this.advancedSearchCriteria.endDate.year);
-        if(validYearResponse.length===0 && this.advancedSearchCriteria.endDate.year < this.advancedSearchCriteria.startDate.year) {
+        if (validYearResponse.length === 0 && this.advancedSearchCriteria.endDate.year < this.advancedSearchCriteria.startDate.year) {
           this.isValidEndDOB.year = false;
           return ['End Date must be the same as or later than the Start Date'];
         }
-        this.isValidEndDOB.year = validYearResponse.length===0;
+        this.isValidEndDOB.year = validYearResponse.length === 0;
         return validYearResponse;
       }
       this.isValidEndDOB.year = false;
       return [];
     },
     validateDOBMonth(year, month) {
-      if(!month.match(/\d{2}/g) || month < 1 || month > 12) {
+      if (!month.match(/\d{2}/g) || month < 1 || month > 12) {
         return ['Invalid month'];
       }
-      if(month > 0 && this.validateDOBPast(year, month, 1)) {
+      if (month > 0 && this.validateDOBPast(year, month, 1)) {
         return [];
       } else {
         return ['DOB must be in the past'];
       }
     },
     validateStartDOBMonth() {
-      if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.month && this.isValidStartDOB.year) {
-        const validMonthResponse =  this.validateDOBMonth(this.advancedSearchCriteria.startDate.year, this.advancedSearchCriteria.startDate.month);
-        this.isValidStartDOB.month = validMonthResponse.length===0;
+      if (this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.month && this.isValidStartDOB.year) {
+        const validMonthResponse = this.validateDOBMonth(this.advancedSearchCriteria.startDate.year, this.advancedSearchCriteria.startDate.month);
+        this.isValidStartDOB.month = validMonthResponse.length === 0;
         return validMonthResponse;
       }
       this.isValidStartDOB.month = false;
@@ -738,15 +752,15 @@ export default {
       return [];
     },
     validateEndDOBMonth() {
-      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.endDate.month && this.isValidEndDOB.year) {
-        const validMonthResponse =  this.validateDOBMonth(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month);
-        const startDOBMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1?1:this.advancedSearchCriteria.startDate.month;
-        if(validMonthResponse.length===0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, 1)  < LocalDate.of(this.advancedSearchCriteria.startDate.year, startDOBMonth, 1)) {
+      if (this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.endDate.month && this.isValidEndDOB.year) {
+        const validMonthResponse = this.validateDOBMonth(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month);
+        const startDOBMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1 ? 1 : this.advancedSearchCriteria.startDate.month;
+        if (validMonthResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, 1) < LocalDate.of(this.advancedSearchCriteria.startDate.year, startDOBMonth, 1)) {
           this.isValidEndDOB.month = false;
           this.isValidEndDOB.day = false;
           return ['End Date must be the same as or later than the Start Date'];
         } else {
-          this.isValidEndDOB.month = validMonthResponse.length===0;
+          this.isValidEndDOB.month = validMonthResponse.length === 0;
           return validMonthResponse;
         }
       }
@@ -755,52 +769,52 @@ export default {
       return [];
     },
     validateDOBDay(year, month, day) {
-      if(!day.match(/\d{2}/g) || day < 1 || LocalDate.of(year, month, 1).lengthOfMonth() < day) {
+      if (!day.match(/\d{2}/g) || day < 1 || LocalDate.of(year, month, 1).lengthOfMonth() < day) {
         return ['Invalid day'];
       }
-      if(this.validateDOBPast(year, month, day)) {
+      if (this.validateDOBPast(year, month, day)) {
         return [];
       } else {
         return ['DOB must be in the past'];
       }
     },
     validateStartDOBDay() {
-      if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.day && this.isValidStartDOB.month) {
-        const validDayResponse =  this.validateDOBDay(this.advancedSearchCriteria.startDate.year, this.advancedSearchCriteria.startDate.month, this.advancedSearchCriteria.startDate.day);
-        this.isValidStartDOB.day = validDayResponse.length===0;
+      if (this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.day && this.isValidStartDOB.month) {
+        const validDayResponse = this.validateDOBDay(this.advancedSearchCriteria.startDate.year, this.advancedSearchCriteria.startDate.month, this.advancedSearchCriteria.startDate.day);
+        this.isValidStartDOB.day = validDayResponse.length === 0;
         return validDayResponse;
       }
       return [];
     },
     validateEndDOBDay() {
-      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.day && this.isValidEndDOB.month) {
-        const validDayResponse =  this.validateDOBDay(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day);
-        const startMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1?1:this.advancedSearchCriteria.startDate.month;
-        const startDay = !this.advancedSearchCriteria.startDate.day || this.advancedSearchCriteria.startDate.day < 1?1:this.advancedSearchCriteria.startDate.day;
-        if(validDayResponse.length===0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day)  < LocalDate.of(this.advancedSearchCriteria.startDate.year, startMonth, startDay)) {
+      if (this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.day && this.isValidEndDOB.month) {
+        const validDayResponse = this.validateDOBDay(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day);
+        const startMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1 ? 1 : this.advancedSearchCriteria.startDate.month;
+        const startDay = !this.advancedSearchCriteria.startDate.day || this.advancedSearchCriteria.startDate.day < 1 ? 1 : this.advancedSearchCriteria.startDate.day;
+        if (validDayResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day) < LocalDate.of(this.advancedSearchCriteria.startDate.year, startMonth, startDay)) {
           this.isValidEndDOB.day = false;
           return ['End Date must be the same as or later than the Start Date'];
         } else {
-          this.isValidEndDOB.day = validDayResponse.length===0;
+          this.isValidEndDOB.day = validDayResponse.length === 0;
           return validDayResponse;
         }
       }
       return [];
     },
     startMonth() {
-      return this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.month && this.isValidStartDOB.month? this.advancedSearchCriteria.startDate.month: '01';
+      return this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.month && this.isValidStartDOB.month ? this.advancedSearchCriteria.startDate.month : '01';
     },
     startDay() {
-      return this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.day && this.isValidStartDOB.day? this.advancedSearchCriteria.startDate.day: '01';
+      return this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.day && this.isValidStartDOB.day ? this.advancedSearchCriteria.startDate.day : '01';
     },
     endMonth(month, isValid) {
-      return month && isValid && month!=='0' ? month: 12;
+      return month && isValid && month !== '0' ? month : 12;
     },
     endDay(dateObject, isValidObject) {
-      return dateObject.day && isValidObject.day? dateObject.day: LocalDate.of(dateObject.year, this.endMonth(dateObject.month, isValidObject.month), 1).lengthOfMonth();
+      return dateObject.day && isValidObject.day ? dateObject.day : LocalDate.of(dateObject.year, this.endMonth(dateObject.month, isValidObject.month), 1).lengthOfMonth();
     },
     setStartDateInAdvancedSearchCriteria() {
-      if(this.studentSearchParams.dob.startDate){
+      if (this.studentSearchParams.dob.startDate) {
         const tempStartDates = this.studentSearchParams.dob.startDate.split('/');
         this.advancedSearchCriteria.startDate.year = tempStartDates[0];
         this.advancedSearchCriteria.startDate.month = tempStartDates[1];
@@ -811,13 +825,14 @@ export default {
 };
 </script>
 <style scoped>
-  .v-text-field/deep/.v-text-field__details {
-    max-width:300%;
-    width:300%;
+.v-text-field /deep/ .v-text-field__details {
+    max-width: 300%;
+    width: 300%;
     margin-bottom: 0 !important;
     padding-left: 0 !important;
-  }
-  .v-text-field/deep/.v-input__slot {
+}
+
+.v-text-field /deep/ .v-input__slot {
     margin-bottom: 0 !important;
-  }
+}
 </style>

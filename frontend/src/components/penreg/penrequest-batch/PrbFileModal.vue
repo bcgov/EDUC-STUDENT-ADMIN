@@ -29,7 +29,7 @@
         <PrimaryButton
           id="closeFileViewer"
           text="Close"
-          :click-action="isFileViewerOpen=false"
+          @click-action="isFileViewerOpen=false"
         />
       </div>
     </v-card>

@@ -48,13 +48,13 @@
           id="requestInfoDialogCancelBtn"
           text="Cancel"
           secondary
-          :click-action="closeRequestInfoDialog"
+          @click-action="closeRequestInfoDialog"
         />
         <PrimaryButton
           id="requestInfoDialogPostBtn"
           text="Post"
           :disabled="requestInfoDialogText===null"
-          :click-action="$emit('updateInfoRequested', requestInfoDialogText)"
+          @click-action="$emit('updateInfoRequested', requestInfoDialogText)"
         />
       </v-card-actions>
     </v-card>

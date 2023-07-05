@@ -126,7 +126,7 @@
                   secondary
                   text="Cancel"
                   class="mr-2"
-                  :click-action="navigateToList"
+                  @click-action="navigateToList"
                 />
                 <PrimaryButton
                   id="newUserInvitePostBtn"
@@ -134,7 +134,7 @@
                   width="8rem"
                   :disabled="!isValidForm"
                   :loading="processing"
-                  :click-action="sendNewUserInvite"
+                  @click-action="sendNewUserInvite"
                 />
               </v-row>
             </v-col>

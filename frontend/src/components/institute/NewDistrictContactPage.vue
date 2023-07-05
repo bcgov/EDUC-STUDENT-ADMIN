@@ -149,13 +149,13 @@
         id="cancelNewContactBtn"
         secondary
         text="Cancel"
-        :click-action="closeNewContactPage"
+        @click-action="closeNewContactPage"
       />
       <PrimaryButton
         id="newContactPostBtn"
         text="Save"
         width="7rem"
-        :click-action="addNewDistrictContact"
+        @click-action="addNewDistrictContact"
         :disabled="!isFormValid"
         :loading="processing"
       />

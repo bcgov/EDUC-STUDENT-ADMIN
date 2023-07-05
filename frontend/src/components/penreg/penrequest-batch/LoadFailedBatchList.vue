@@ -15,7 +15,7 @@
           :disabled="!fileChecked()"
           text="Review"
           :loading="isProcessing"
-          :click-action="reviewFile"
+          @click-action="reviewFile"
         />
         <PrimaryButton
           id="delete-file-action"
@@ -23,7 +23,7 @@
           :disabled="!fileChecked()"
           text="Delete"
           :loading="isDeleting"
-          :click-action="deleteFile"
+          @click-action="deleteFile"
         />
       </v-col>
     </v-row>

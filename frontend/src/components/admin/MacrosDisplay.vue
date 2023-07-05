@@ -14,7 +14,7 @@
         text="Add Macro"
         short
         :disabled="!selected || loading || processing"
-        :click-action="clickAddBtn"
+        @click-action="clickAddBtn"
       />
     </v-toolbar>
     <v-divider />
@@ -34,7 +34,7 @@
             transition
             activatable
             return-object
-            :click-action="clickTreeView"
+            @click-action="clickTreeView"
           />
         </v-card-text>
       </v-col>

@@ -92,7 +92,7 @@
                 width="6em"
                 icon="mdi-pencil"
                 text="Edit"
-                :click-action="toggleEdit"
+                @click-action="toggleEdit"
               />
             </v-col>
             <v-col
@@ -107,7 +107,7 @@
                 icon-left
                 width="6em"
                 text="Cancel"
-                :click-action="cancelEdit"
+                @click-action="cancelEdit"
               />
               <PrimaryButton
                 id="saveButton"
@@ -115,7 +115,7 @@
                 width="6em"
                 text="Save"
                 :disabled="!authorityFormValid"
-                :click-action="saveAuthority"
+                @click-action="saveAuthority"
               />
             </v-col>
           </v-row>
@@ -761,7 +761,7 @@
                     icon="mdi-plus"
                     icon-left
                     text="New Note"
-                    :click-action="openNoteSheet"
+                    @click-action="openNoteSheet"
                   />
                 </v-col>
               </v-row>
@@ -877,14 +877,14 @@
                 secondary
                 text="Cancel"
                 class="mr-2"
-                :click-action="openNoteSheet"
+                @click-action="openNoteSheet"
               />
               <PrimaryButton
                 id="saveNote"
                 text="Save"
                 width="7rem"
                 :loading="loading"
-                :click-action="saveNewAuthorityNote"
+                @click-action="saveNewAuthorityNote"
                 :disabled="newNoteText === ''"
               />
             </v-row>

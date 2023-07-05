@@ -60,7 +60,7 @@
               class="ma-0"
               text="Delete"
               icon="mdi-delete"
-              :click-action="deleteTwinStudent"
+              @click-action="deleteTwinStudent"
             />
           </v-row>
         </v-col>

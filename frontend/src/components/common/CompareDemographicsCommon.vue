@@ -27,7 +27,7 @@
           <v-text-field
             id="enterAPenTxtField"
             v-model="penToAdd"
-            outlined
+            variant="outlined"
             density="compact"
             label="Enter a PEN"
             maxlength="9"
@@ -38,7 +38,7 @@
           />
         </v-col>
         <v-col
-          class="py-0"
+          class="py-0 pt-1"
           cols="5"
         >
           <PrimaryButton
@@ -46,7 +46,7 @@
             :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
             :loading="isLoadingStudent"
             text="Add PEN"
-            :click-action="addPEN"
+            @click-action="addPEN"
           />
           <span
             v-if="isSearchedPENMerged"
@@ -82,7 +82,7 @@
       </v-row>
     </v-card-title>
     <v-divider />
-    <v-simple-table class="sldTable pb-2">
+    <v-data-table class="sldTable pb-2">
       <template #default>
         <thead>
           <tr>
@@ -97,7 +97,7 @@
           </tr>
         </thead>
       </template>
-    </v-simple-table>
+    </v-data-table>
     <div
       v-for="(students, index) in studentRecords"
       :key="index"
@@ -286,12 +286,12 @@
         <TertiaryButton
           text="More"
           icon="$plus"
-          :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"
+          @click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"
         />
         <TertiaryButton
           text="Less"
           icon="$minus"
-          :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"
+          @click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"
         />
       </v-row>
     </div>
@@ -584,7 +584,7 @@ export default {
             response.data = this.sortArrayByDate(response.data, 'reportDate', false);
             response.data.forEach(sld => sld.selected = false);
           }
-          this.$set(this.sldData, pen, response.data);
+          this.sldData[pen] = response.data;
           this.updateSldRowDisplay(pen, true);
           this.updateSldTableRows(pen, 10);
         })
@@ -615,7 +615,7 @@ export default {
       this.resetSldSelection();
     },
     updateSldRowDisplay(id, value) {
-      this.$set(this.sldDataTablesToDisplay, id, value);
+      this.sldDataTablesToDisplay[id] = value;
     },
     updateSldTableRows(id, value) {
       if(value < 0) {
@@ -623,7 +623,7 @@ export default {
       } else if(value > this.sldData[id]?.length) {
         value = this.sldData[id]?.length;
       }
-      this.$set(this.sldDataTablesNumberOfRows, id, value);
+      this.sldDataTablesNumberOfRows[id] = value;
     },
     validateAction() {
       let cnt = 0;

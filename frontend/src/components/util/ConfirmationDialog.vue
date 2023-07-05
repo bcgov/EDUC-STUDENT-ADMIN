@@ -26,7 +26,7 @@
             id="closeBtn"
             text
             icon
-            :click-action="cancel"
+            @click-action="cancel"
           >
             <v-icon color="#38598A">
               mdi-close
@@ -48,13 +48,13 @@
           id="rejectBtn"
           secondary
           :text="options.rejectText || 'Cancel'"
-          :click-action="cancel"
+          @click-action="cancel"
         />
         <PrimaryButton
           id="resolveBtn"
           :text="options.resolveText || 'Yes'"
           :disabled="options.resolveDisabled"
-          :click-action="agree"
+          @click-action="agree"
         />
       </v-card-actions>
     </v-card>

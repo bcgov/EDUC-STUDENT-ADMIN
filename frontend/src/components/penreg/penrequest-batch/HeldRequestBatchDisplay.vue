@@ -41,7 +41,7 @@
         class="mr-2"
         :disabled="!filesSelected || isActioned"
         text="Review"
-        :click-action="clickReview"
+        @click-action="clickReview"
       />
       <PrimaryButton
         id="process-action"
@@ -49,7 +49,7 @@
         :disabled="!filesSelected || isActioned"
         text="Process"
         :loading="isProcessing"
-        :click-action="markRecordForProcessing"
+        @click-action="markRecordForProcessing"
       />
       <PrimaryButton
         id="delete-action"
@@ -57,7 +57,7 @@
         :disabled="!filesSelected || isActioned"
         text="Delete"
         :loading="isDeleting"
-        :click-action="deleteFile"
+        @click-action="deleteFile"
       />
     </v-row>
     <v-row
