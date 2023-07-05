@@ -1,4 +1,4 @@
-export const PERMISSION = Object.freeze(
+export const ROLE = Object.freeze(
   {
     EDX_DISTRICT_ADMIN: 'EDX_DISTRICT_ADMIN',
 
