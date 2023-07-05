@@ -1,7 +1,7 @@
 <template>
   <span>
     <v-card height="100%">
-      <v-card-title class="pb-0">
+      <v-card-title class="pb-0 text-wrap">
         <v-row no-gutters>
           <v-col>
             <v-row no-gutters>
@@ -17,7 +17,6 @@
                 </v-icon>
                 <strong
                   id="authorityContactName"
-                  style="word-break: break-word;"
                 >{{
                   formatContactName(contact)
                 }}</strong>
