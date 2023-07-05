@@ -20,11 +20,10 @@
             data-type="New PENs"
             annual-total
           />
-          <spinner v-else />
+          <spinner v-else/>
         </v-col>
         <v-col cols="3">
           <v-row
-            no-gutters
             class="d-flex justify-end"
           >
             <v-col style="text-align: -webkit-right">
@@ -32,12 +31,11 @@
                 id="k12PSIselector"
                 v-model="selectedSchoolGroup"
                 :items="schoolGroups"
-                variant="outlined"
-                density="compact"
-                class="mr-2"
-                placeholder="K-12/PSI Filter"
+                item-title="text"
+                item-value="value"
+                variant="solo-filled"
+                label="K-12/PSI Filter"
                 color="#38598a"
-                append-icon="mdi-chevron-down"
                 clearable
               />
             </v-col>
@@ -46,10 +44,11 @@
                 id="newPENTimeframe"
                 v-model="timeframe"
                 :items="timeframes"
-                density="compact"
-                variant="outlined"
+                item-title="text"
+                item-value="value"
+                label="Timeframe"
+                variant="solo-filled"
                 color="#38598a"
-                append-icon="mdi-chevron-down"
                 :menu-props="{ offsetY: true }"
               />
             </v-col>
@@ -64,15 +63,15 @@
             >
               <v-expansion-panels focusable>
                 <v-expansion-panel>
-                  <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
+                  <v-expansion-panel-title style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
                     <template #actions>
                       <v-icon color="white">
                         $expand
                       </v-icon>
                     </template>
                     Refine Results
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
                     <v-row
                       no-gutters
                       class="mt-4"
@@ -90,14 +89,14 @@
                         <v-text-field
                           id="pen"
                           v-model="penSearch"
-                          dense
+                          density="compact"
                           filled
-                          outlined
+                          variant="solo-filled"
                           maxlength="9"
                           minlength="9"
                           autofocus
-                          @keyup.enter="getNewPENs(true)"
                           @keypress="isValidNumber($event)"
+                          @keyup.enter="getNewPENs"
                           @input="[refineHasValues()]"
                         />
                       </v-col>
@@ -119,13 +118,13 @@
                         <v-text-field
                           id="mincode"
                           v-model="mincodeSearch"
-                          dense
+                          density="compact"
                           filled
-                          outlined
+                          variant="solo-filled"
                           maxlength="8"
                           minlength="8"
                           @keypress="isValidNumber($event)"
-                          @keyup.enter="getNewPENs(true)"
+                          @keyup.enter="getNewPENs"
                           @input="[refineHasValues()]"
                         />
                       </v-col>
@@ -144,11 +143,11 @@
                         <v-text-field
                           id="legalLastName"
                           v-model="legalSurnameSearch"
-                          dense
+                          density="compact"
                           filled
-                          outlined
+                          variant="solo-filled"
                           maxlength="255"
-                          @keyup.enter="getNewPENs(true)"
+                          @keyup.enter="getNewPENs"
                           @input="[refineHasValues()]"
                         />
                       </v-col>
@@ -167,11 +166,11 @@
                         <v-text-field
                           id="legalFirstName"
                           v-model="legalGivenNameSearch"
-                          dense
+                          density="compact"
                           filled
-                          outlined
+                          variant="solo-filled"
                           maxlength="255"
-                          @keyup.enter="getNewPENs(true)"
+                          @keyup.enter="getNewPENs"
                           @input="[refineHasValues()]"
                         />
                       </v-col>
@@ -190,11 +189,11 @@
                         <v-text-field
                           id="legalMiddleNames"
                           v-model="legalMiddleNameSearch"
-                          dense
+                          density="compact"
                           filled
-                          outlined
+                          variant="solo-filled"
                           maxlength="255"
-                          @keyup.enter="getNewPENs(true)"
+                          @keyup.enter="getNewPENs"
                           @input="[refineHasValues()]"
                         />
                       </v-col>
@@ -221,12 +220,12 @@
                         <PrimaryButton
                           :disabled="!searchEnabled"
                           :loading="searchLoading"
-                          :click-action="getNewPENs(true)"
                           text="Refine"
+                          :click-action="getNewPENs"
                         />
                       </v-col>
                     </v-row>
-                  </v-expansion-panel-content>
+                  </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
             </v-col>
@@ -280,7 +279,7 @@
               class="pt-3 mb-n1"
               style="background-color:white;"
             >
-              <v-divider class="mx-3" />
+              <v-divider class="mx-3"/>
             </v-row>
             <v-row
               v-if="studentSearchResponse"
@@ -309,21 +308,21 @@ import {Routes} from '@/utils/constants';
 import {mapActions, mapState} from 'pinia';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults.vue';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidNumber} from '@/utils/validation';
 import BarChartContainer from '@/components/admin/stats/BarChartContainer.vue';
 import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
 import Spinner from '@/components/common/Spinner.vue';
 import {studentSearchStore} from '@/store/modules/studentSearch';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 
 export default {
   name: 'Newpens',
   components: {
     Spinner,
-    PrimaryButton,
     BarChartContainer,
-    StudentSearchResults
+    StudentSearchResults,
+    PrimaryButton
   },
   mixins: [alertMixin],
   props: {
@@ -338,11 +337,14 @@ export default {
       menu: false,
       localDate: LocalDate,
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
-      timeframes: [{value: 'TODAY', text: 'Today'}, {value: '2DAYS', text: 'In the last 2 days'}, {value: '1WEEK', text: 'In the last week'}],
+      timeframes: [{value: 'TODAY', text: 'Today'}, {value: '2DAYS', text: 'In the last 2 days'}, {
+        value: '1WEEK',
+        text: 'In the last week'
+      }],
       timeframe: 'TODAY',
       searchLoading: true,
       searchEnabled: false,
-      selectedSchoolGroup: '',
+      selectedSchoolGroup: null,
       currentStudentSearchParams: {},
       penSearch: null,
       mincodeSearch: null,
@@ -416,31 +418,31 @@ export default {
         this.searchEnabled = false;
       }
     },
-    setTimeframeCriteria(){
+    setTimeframeCriteria() {
       let today = LocalDateTime.now();
       let backMidnight = today.withHour(0).withMinute(0).withSecond(0).withNano(0);
       let yesterday;
-      if(this.timeframe === '1WEEK'){
+      if (this.timeframe === '1WEEK') {
         yesterday = backMidnight.minusWeeks(1);
-      }else if(this.timeframe === '2DAYS'){
+      } else if (this.timeframe === '2DAYS') {
         yesterday = backMidnight.minusDays(1);
-      }else{
+      } else {
         yesterday = backMidnight;
       }
       this.studentSearchParams.createDate.startDate = yesterday;
       this.studentSearchParams.createDate.endDate = today;
     },
-    setK12PSICriteria(){
+    setK12PSICriteria() {
       this.studentSearchParams.mincode = null;
-      if(this.selectedSchoolGroup === 'PSI'){
+      if (this.selectedSchoolGroup === 'PSI') {
         this.studentSearchParams.mincode = '102';
-      }else if(this.selectedSchoolGroup === 'K12'){
+      } else if (this.selectedSchoolGroup === 'K12') {
         this.studentSearchParams.mincode = {};
         this.studentSearchParams.mincode.notstartswith = '102';
       }
     },
-    setSearchCriteria(){
-      if(this.studentSearchParams.mincode === null){
+    setSearchCriteria() {
+      if (this.studentSearchParams.mincode === null) {
         delete this.studentSearchParams['mincode'];
       }
       delete this.studentSearchParams['pen'];
@@ -448,19 +450,19 @@ export default {
       delete this.studentSearchParams['legalFirstName'];
       delete this.studentSearchParams['legalMiddleNames'];
 
-      if(this.penSearch){
+      if (this.penSearch) {
         this.studentSearchParams.pen = this.penSearch;
       }
-      if(this.mincodeSearch){
+      if (this.mincodeSearch) {
         this.studentSearchParams.mincode = this.mincodeSearch;
       }
-      if(this.legalSurnameSearch){
+      if (this.legalSurnameSearch) {
         this.studentSearchParams.legalLastName = this.legalSurnameSearch;
       }
-      if(this.legalGivenNameSearch){
+      if (this.legalGivenNameSearch) {
         this.studentSearchParams.legalFirstName = this.legalGivenNameSearch;
       }
-      if(this.legalMiddleNameSearch){
+      if (this.legalMiddleNameSearch) {
         this.studentSearchParams.legalMiddleNames = this.legalMiddleNameSearch;
       }
     },
@@ -474,7 +476,9 @@ export default {
           this.setFailureAlert('Failed to load new pen statistics. Please try again later.');
           console.log(e);
         })
-        .finally(() => {this.searchLoading = false;});
+        .finally(() => {
+          this.searchLoading = false;
+        });
 
     },
     getNewPENs(validationRequired = true) {

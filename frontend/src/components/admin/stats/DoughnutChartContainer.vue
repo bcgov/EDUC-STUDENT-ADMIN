@@ -5,6 +5,7 @@
       class="mx-auto pa-4"
     >
       <doughnut-chart
+        v-if="data"
         ref="chart"
         :chart-data="data"
         :options="options"

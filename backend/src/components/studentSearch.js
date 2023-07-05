@@ -18,7 +18,7 @@ async function searchStudent(req, res) {
   let isAuditHistorySearch = false;
 
   if(req.query.searchQueries) {
-    let searchQueries = JSON.parse(req.query.searchQueries);
+    let searchQueries = req.query.searchQueries;
     isAuditHistorySearch = searchQueries['isAuditHistorySearch'];
     const useNameVariants = searchQueries['useNameVariants'];
     if (useNameVariants) {
