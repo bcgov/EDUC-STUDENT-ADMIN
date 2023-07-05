@@ -71,9 +71,9 @@ function isSchoolOrAuthorityClosedOrNeverOpened(schoolOrAuthority) {
   } else if (closedDate && (currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || currentTime.isEqual(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))) {
     //closed
     return true;
+  } else {
+    return false;
   }
-
-  return false;
 }
 
 function isSchoolCategoryActive(schoolCategory){
