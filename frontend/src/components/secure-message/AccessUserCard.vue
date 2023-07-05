@@ -19,7 +19,7 @@
                     color="white"
                     width="0.5em"
                     min-width="0.5em"
-                    depressed
+                    variant="flat"
                     size="small"
                     class="mr-2"
                     @click="clickEditButton"
@@ -38,7 +38,7 @@
                     color="white"
                     width="0.5em"
                     min-width="0.5em"
-                    depressed
+                    variant="flat"
                     size="small"
                     class="mr-2"
                     @click="clickDeleteButton"
@@ -57,7 +57,7 @@
                     color="white"
                     width="0.5em"
                     min-width="0.5em"
-                    depressed
+                    variant="flat"
                     size="small"
                     @click="clickRelinkButton"
                   >

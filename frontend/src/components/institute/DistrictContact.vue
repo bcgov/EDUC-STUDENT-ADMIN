@@ -60,7 +60,7 @@
                     size="x-large"
                     color="#003366"
                     dark
-                  >mdi-trash-can-outline</v-icon>
+                  >mdi-delete</v-icon>
                 </v-btn>
               </v-col>
             </v-row>

@@ -144,9 +144,9 @@
             </v-tabs>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row no-gutters>
           <v-col>
-            <v-card-text>
+            <v-card-text class="pt-0">
               <v-window v-model="tab">
                 <v-window-item value="details">
                   <Details

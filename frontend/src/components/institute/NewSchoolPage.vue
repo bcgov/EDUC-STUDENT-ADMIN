@@ -297,7 +297,7 @@
                 </v-row>
                 <v-row>
                   <v-col cols="4">
-                    <v-autocomplete
+                    <v-select
                       id="newSchoolMailingAddressProvinceInput"
                       v-model="newSchool.mailingAddrProvince"
                       :rules="[rules.required()]"
@@ -310,7 +310,7 @@
                     />
                   </v-col>
                   <v-col cols="4">
-                    <v-autocomplete
+                    <v-select
                       id="newSchoolMailingAddressCountryInput"
                       v-model="newSchool.mailingAddrCountry"
                       :rules="[rules.required()]"
@@ -399,7 +399,7 @@
                       </v-row>
                       <v-row>
                         <v-col cols="4">
-                          <v-autocomplete
+                          <v-select
                             id="newSchoolPhysicalAddressProvinceInput"
                             v-model="newSchool.physicalAddrProvince"
                             :rules="[rules.required()]"
@@ -412,7 +412,7 @@
                           />
                         </v-col>
                         <v-col cols="4">
-                          <v-autocomplete
+                          <v-select
                             id="newSchoolPhysicalAddressCountryInput"
                             v-model="newSchool.physicalAddrCountry"
                             :rules="[rules.required()]"

@@ -804,6 +804,7 @@ export default {
       this.clearSchoolList();
     },
     async schoolCategoryChanged() {
+      this.schoolFacilityTypeFilter = null;
       await this.fireFormValidate();
     },
     async fireFormValidate() {
@@ -868,6 +869,10 @@ export default {
 .hoverTable:hover {
     background-color: #e8e8e8;
     cursor: pointer;
+}
+
+:deep(.v-list-item__prepend){
+    margin-right: -2em;
 }
 
 </style>

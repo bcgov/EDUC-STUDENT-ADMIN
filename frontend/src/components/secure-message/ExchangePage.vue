@@ -320,7 +320,7 @@
         </v-expansion-panels>
         <v-row no-gutters>
           <v-col>
-            <v-data-table
+            <v-data-table-server
               v-model:items-per-page="pageSize"
               v-model:page="pageNumber"
               v-model:items="exchanges"
@@ -343,7 +343,7 @@
                   </v-col>
                 </v-row>
               </template>
-              <template #headers />
+              <template #headers/>
               <template #item="{ item, index }">
                 <v-row
                   class="hoverTable pa-2"
@@ -369,7 +369,14 @@
                           class="subjectHeading"
                           :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
                         >{{ getSubject(item.raw.subject)
-                        }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                          }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                        <v-icon
+                          size="x-small"
+                          class="mb-1"
+                          v-if="item?.raw?.documentList?.length > 0"
+                        >
+                          mdi-paperclip
+                        </v-icon>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -389,13 +396,6 @@
                       no-gutters
                       class="d-flex justify-end"
                     >
-                      <v-col cols="2">
-                        <v-icon
-                          v-if="item?.raw?.documentList?.length > 0" 
-                        >
-                          mdi-paperclip
-                        </v-icon>
-                      </v-col>
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
@@ -484,7 +484,7 @@
                   </v-col>
                 </v-row>
               </template>
-            </v-data-table>
+            </v-data-table-server>
           </v-col>
         </v-row>
       </v-col>
@@ -503,7 +503,7 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           New Message
         </v-card-title>
-        <v-divider />
+        <v-divider/>
         <v-card-text>
           <NewMessagePage
             @secure-exchange:messageSent="messageSent"
@@ -838,7 +838,7 @@ export default {
       if (this.statusSelectFilter !== null && this.statusSelectFilter !== '' && this.statusSelectFilter !== undefined) {
         this.headerSearchParams.secureExchangeStatusCode = [this.statusSelectFilter];
       }
-      
+
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {
         params: {
           pageNumber: this.pageNumber - 1,

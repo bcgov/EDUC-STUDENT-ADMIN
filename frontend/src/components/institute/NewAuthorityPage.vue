@@ -119,7 +119,7 @@
                   :maxlength="255"
                   label="City"
                 />
-                <v-autocomplete
+                <v-select
                   id="newAuthorityMailingAddressProvinceInput"
                   v-model="newAuthority.mailingAddrProvince"
                   :rules="[rules.required()]"
@@ -130,7 +130,7 @@
                   item-title="label"
                   item-value="provinceCode"
                 />
-                <v-autocomplete
+                <v-select
                   id="newAuthorityMailingAddressCountryInput"
                   v-model="newAuthority.mailingAddrCountry"
                   :rules="[rules.required()]"
@@ -190,7 +190,7 @@
                       :maxlength="255"
                       label="City"
                     />
-                    <v-autocomplete
+                    <v-select
                       id="newAuthorityPhysicalAddressProvinceInput"
                       v-model="newAuthority.physicalAddrProvince"
                       :rules="[rules.required()]"
@@ -201,7 +201,7 @@
                       item-title="label"
                       item-value="provinceCode"
                     />
-                    <v-autocomplete
+                    <v-select
                       id="newAuthorityPhysicalAddressCountryInput"
                       v-model="newAuthority.physicalAddrCountry"
                       :rules="[rules.required()]"

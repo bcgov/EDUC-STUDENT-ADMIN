@@ -4,7 +4,7 @@
       <v-card-title class="sheetHeader pt-1 pb-1">
         Update School Status
       </v-card-title>
-      <v-divider />
+      <v-divider/>
       <v-card-text>
         <v-row class="d-flex justify-start">
           <v-col>
@@ -33,14 +33,14 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           Update School Status
         </v-card-title>
-        <v-divider />
+        <v-divider/>
         <v-card-text>
           <v-row class="pl-3 pr-3 d-flex justify-center">
             <v-col>
               <v-row class="d-flex justify-start">
                 <h3>How would you like to update the status?</h3>
               </v-row>
-              <v-row class="d-flex justify-start">
+              <v-row class="d-flex justify-start pt-2">
                 <v-radio-group v-model="action">
                   <span v-if="displayOptionsForOpeningSchoolStatus">
                     <v-radio
@@ -76,8 +76,10 @@
                   </span>
                 </v-radio-group>
               </v-row>
-              <v-row class="d-flex justify-start">
-                <v-divider class="mt-1" />
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col>
+                  <v-divider class="mt-1"/>
+                </v-col>
               </v-row>
               <v-row
                 v-if="action === 'cancelOpening'"
@@ -94,7 +96,7 @@
                     <h3>Select the open date</h3>
                   </v-row>
                   <v-row>
-                    <v-col>
+                    <v-col cols="4">
                       <v-text-field
                         id="newOpenDateTextField"
                         v-model="newOpenDate"
@@ -119,7 +121,7 @@
                     <h3>Select the open date</h3>
                   </v-row>
                   <v-row>
-                    <v-col>
+                    <v-col cols="4">
                       <v-text-field
                         id="updatedOpenDateTextField"
                         v-model="updatedOpenDate"
@@ -144,7 +146,7 @@
                     <h3>Select the closure date</h3>
                   </v-row>
                   <v-row>
-                    <v-col>
+                    <v-col cols="4">
                       <v-text-field
                         id="newCloseDateTextField"
                         v-model="newCloseDate"
@@ -169,7 +171,7 @@
                     <h3>Select the new closing date</h3>
                   </v-row>
                   <v-row>
-                    <v-col>
+                    <v-col cols="6">
                       <v-text-field
                         id="updatedCloseDateTextField"
                         v-model="updatedCloseDate"
