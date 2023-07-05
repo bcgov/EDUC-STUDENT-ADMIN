@@ -297,7 +297,7 @@ import Spinner from '@/components/common/Spinner.vue';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {edxStore} from '@/store/modules/edx';
-import { PERMISSION } from '@/utils/constants/Permission';
+import { ROLE } from '@/utils/constants/Roles';
 
 export default {
   name: 'AccessDistrictUsersPage',
@@ -336,7 +336,7 @@ export default {
     ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
     hasAdminUsers() {
       return this.filteredUsers.filter(user => {
-        return user.edxUserDistricts.some(district => district.edxUserDistrictRoles.some(role => role.edxRoleCode === PERMISSION.EDX_DISTRICT_ADMIN));
+        return user.edxUserDistricts.some(district => district.edxUserDistrictRoles.some(role => role.edxRoleCode === ROLE.EDX_DISTRICT_ADMIN));
       })?.length > 0;
     }
   },

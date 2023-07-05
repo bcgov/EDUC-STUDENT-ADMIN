@@ -277,7 +277,7 @@ import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
-import { PERMISSION } from '@/utils/constants/Permission';
+import { ROLE } from '@/utils/constants/Roles';
 
 export default {
   name: 'AccessUsersPage',
@@ -314,7 +314,7 @@ export default {
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     hasAdminUsers() {
       return this.filteredUsers.filter(user => {
-        return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === PERMISSION.EDX_SCHOOL_ADMIN));
+        return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === ROLE.EDX_SCHOOL_ADMIN));
       })?.length > 0;
     }
   },
