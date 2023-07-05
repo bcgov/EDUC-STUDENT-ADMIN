@@ -101,7 +101,7 @@
             </h2>
           </v-col>
         </v-row>
-        <v-row v-if="!districtContactType.publiclyAvailable">
+        <v-row v-if="!districtContactType.publiclyAvailable" no-gutters>
           <v-col>
             <v-alert
               style="background-color: #003366"
@@ -109,6 +109,7 @@
               density="compact"
               variant="text"
               type="info"
+              width="50vw"
             >
               Contacts of this type are only available to the
               ministry and not available to public.
@@ -139,7 +140,7 @@
           no-gutters
           cols="2"
         >
-          <v-col>
+          <v-col class="mt-2">
             <p>No contacts of this type have been listed.</p>
           </v-col>
         </v-row>
