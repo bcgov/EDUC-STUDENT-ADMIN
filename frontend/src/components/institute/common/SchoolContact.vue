@@ -4,7 +4,7 @@
       bg
       height="100%"
     >
-      <v-card-title class="pb-0">
+      <v-card-title class="pb-0 text-wrap">
         <v-row no-gutters>
           <v-col>
             <v-row no-gutters>
@@ -21,7 +21,7 @@
                 >
                   mdi-circle
                 </v-icon>
-                <strong class="pl-1" style="word-break: break-word;">{{
+                <strong class="pl-1">{{
                   formatContactName(contact)
                 }}</strong>
               </v-col>

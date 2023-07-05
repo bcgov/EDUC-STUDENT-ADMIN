@@ -177,7 +177,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import {isExpired} from '@/utils/institute/status';
+import {isExpired, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {mapState} from 'pinia';
 import AuthorityContact from '@/components/institute/AuthorityContact.vue';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage.vue';
@@ -222,7 +222,7 @@ export default {
       return this.loadingCount !== 0;
     },
     canEditAuthorityContact() {
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosed();
     },
   },
   methods: {
@@ -309,6 +309,9 @@ export default {
           }
         });
     },
+    isNotClosed() {
+      return getStatusAuthorityOrSchool(this.authority) !== 'Closed';
+    }
   },
 };
 
