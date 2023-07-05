@@ -240,7 +240,7 @@ export default {
           this.$emit('newSchoolContact:addNewSchoolContact');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while adding the new school contact. Please try again later.');
           console.log(error);
         })
         .finally(() => {

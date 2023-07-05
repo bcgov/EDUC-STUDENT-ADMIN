@@ -222,7 +222,7 @@ export default {
       return this.loadingCount !== 0;
     },
     canEditAuthorityContact() {
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosed();
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
     },
   },
   methods: {
@@ -309,8 +309,8 @@ export default {
           }
         });
     },
-    isNotClosed() {
-      return getStatusAuthorityOrSchool(this.authority) !== 'Closed';
+    isNotClosedAndNeverOpened() {
+      return getStatusAuthorityOrSchool(this.authority) !== 'Closed' && getStatusAuthorityOrSchool(this.authority) !== 'Never Opened';
     }
   },
 };

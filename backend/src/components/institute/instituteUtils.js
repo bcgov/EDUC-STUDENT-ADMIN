@@ -55,6 +55,27 @@ function isSchoolActive(school) {
   return !(!school || !school.schoolName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && (currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || currentTime.isEqual(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))));
 }
 
+/**
+ * Returns true if the school/authority status is never opened or is closed.
+ * @param schoolOrAuthority
+ * @returns boolean
+ */
+function isSchoolOrAuthorityClosedOrNeverOpened(schoolOrAuthority) {
+  const currentTime = LocalDate.now();
+  const openedDate = schoolOrAuthority?.openedDate;
+  const closedDate = schoolOrAuthority?.closedDate;
+
+  if (!openedDate) {
+    //never opened
+    return true;
+  } else if (closedDate && (currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || currentTime.isEqual(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))) {
+    //closed
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function isSchoolCategoryActive(schoolCategory){
   const currentTime = LocalDate.now();
   const openedDate = schoolCategory?.effectiveDate;
@@ -78,5 +99,6 @@ module.exports = {
   isDistrictActive,
   isAuthorityActive,
   isSchoolCategoryActive,
-  isActiveRecord
+  isActiveRecord,
+  isSchoolOrAuthorityClosedOrNeverOpened
 };

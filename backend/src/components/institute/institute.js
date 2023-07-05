@@ -7,7 +7,7 @@ const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
-const {isSchoolActive, isDistrictActive, isAuthorityActive} = require('./instituteUtils');
+const {isDistrictActive, isSchoolOrAuthorityClosedOrNeverOpened} = require('./instituteUtils');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -506,9 +506,9 @@ async function addSchoolContact(req, res) {
       });
     }
 
-    if (!isSchoolActive(school)) {
+    if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to add contact for a closed school'
+        message: 'Unable to add contact for a closed or never opened school'
       });
     }
 
@@ -549,9 +549,9 @@ async function updateSchoolContact(req, res) {
       });
     }
 
-    if (!isSchoolActive(school)) {
+    if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to update contacts for a closed school'
+        message: 'Unable to update contacts for a closed or never opened school'
       });
     }
 
@@ -582,9 +582,9 @@ async function deleteSchoolContact(req, res) {
       });
     }
 
-    if (!isSchoolActive(school)) {
+    if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to delete contacts for a closed school'
+        message: 'Unable to delete contacts for a closed or never opened school'
       });
     }
 
@@ -622,9 +622,9 @@ async function addAuthorityContact(req, res) {
       });
     }
 
-    if(!isAuthorityActive(authority)) {
+    if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to add contact for an closed authority'
+        message: 'Unable to add contact for an closed or never opened authority'
       });
     }
 
@@ -665,9 +665,9 @@ async function updateAuthorityContact(req, res) {
       });
     }
 
-    if(!isAuthorityActive(authority)) {
+    if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to update contact for an closed authority'
+        message: 'Unable to update contact for an closed or never opened authority'
       });
     }
 
@@ -698,9 +698,9 @@ async function deleteAuthorityContact(req, res) {
       });
     }
 
-    if(!isAuthorityActive(authority)) {
+    if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to delete contact for an closed authority'
+        message: 'Unable to delete contact for an closed or never opened authority'
       });
     }
 
