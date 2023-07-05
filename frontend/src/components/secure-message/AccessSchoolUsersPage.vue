@@ -143,6 +143,20 @@
         />
       </v-col>
     </v-row>
+    <!-- warning message for no existing users-->
+    <v-row v-if="!hasAdminUsers && primaryEdxActivationCode">
+      <v-col class="mx-3 px-0 pb-0">
+        <v-alert
+          density="compact"
+          color="#003366"
+          type="info"
+          class="px-2"
+          variant="tonal"
+        >
+          The Primary Activation Code will have to be communicated to any new users, as there are no school level administrators.
+        </v-alert>
+      </v-col>
+    </v-row>
     <!--    user info -->
     <Spinner v-if="loadingUsers" />
     <v-row
@@ -263,6 +277,7 @@ import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
+import { PERMISSION } from '@/utils/constants/Permission';
 
 export default {
   name: 'AccessUsersPage',
@@ -293,6 +308,15 @@ export default {
       },
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
+  },
+  computed: {
+    ...mapState(appStore, ['schoolMap']),
+    ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
+    hasAdminUsers() {
+      return this.filteredUsers.filter(user => {
+        return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === PERMISSION.EDX_SCHOOL_ADMIN));
+      })?.length > 0;
+    }
   },
   async beforeMount() {
     if (this.schoolRoles.length === 0) {
@@ -413,10 +437,6 @@ export default {
     getSchoolNameForUserInvite(){
       return this.schoolMap.get(this.schoolID).schoolName;
     }
-  },
-  computed: {
-    ...mapState(appStore, ['schoolMap']),
-    ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
   }
 };
 </script>

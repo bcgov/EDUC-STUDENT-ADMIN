@@ -161,6 +161,20 @@
             />
           </v-col>
         </v-row>
+        <!-- warning message for no existing users-->
+        <v-row v-if="!hasAdminUsers && primaryEdxActivationCode">
+          <v-col class="mx-3 px-0 pb-0">
+            <v-alert
+              density="compact"
+              color="#003366"
+              type="info"
+              class="px-2"
+              variant="tonal"
+            >
+              The Primary Activation Code will have to be communicated to any new users, as there are no district level administrators.
+            </v-alert>
+          </v-col>
+        </v-row>
         <!-- user info -->
         <Spinner v-if="loadingUsers" />
         <v-row
@@ -283,6 +297,7 @@ import Spinner from '@/components/common/Spinner.vue';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {edxStore} from '@/store/modules/edx';
+import { PERMISSION } from '@/utils/constants/Permission';
 
 export default {
   name: 'AccessDistrictUsersPage',
@@ -316,6 +331,14 @@ export default {
       },
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
+  },
+  computed: {
+    ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
+    hasAdminUsers() {
+      return this.filteredUsers.filter(user => {
+        return user.edxUserDistricts.some(district => district.edxUserDistrictRoles.some(role => role.edxRoleCode === PERMISSION.EDX_DISTRICT_ADMIN));
+      })?.length > 0;
+    }
   },
   async beforeMount() {
     if (this.districtRoles.length === 0) {
@@ -452,9 +475,6 @@ export default {
     getDistrictNameForUserInvite() {
       return this.district.name;
     }
-  },
-  computed: {
-    ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
   }
 };
 </script>
