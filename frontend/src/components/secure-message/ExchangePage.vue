@@ -64,6 +64,7 @@
               @click.prevent.stop="onExpansionPanelClick"
             >
               <v-radio-group
+                id="radioPanel"
                 v-model="statusRadioGroup"
                 color="#003366"
                 :disabled="!statusRadioGroupEnabled"
@@ -71,7 +72,6 @@
                 inline
                 hide-details="auto"
                 class="pt-1 pb-3 mb-0"
-                id="radioPanel"
               >
                 <v-radio
                   class="mt-2 radio-blue-text"
@@ -343,7 +343,7 @@
                   </v-col>
                 </v-row>
               </template>
-              <template #headers/>
+              <template #headers />
               <template #item="{ item, index }">
                 <v-row
                   class="hoverTable pa-2"
@@ -368,12 +368,11 @@
                         <span
                           class="subjectHeading"
                           :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
-                        >{{ getSubject(item.raw.subject)
-                          }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                        >{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
                         <v-icon
+                          v-if="item?.raw?.documentList?.length > 0"
                           size="x-small"
                           class="mb-1"
-                          v-if="item?.raw?.documentList?.length > 0"
                         >
                           mdi-paperclip
                         </v-icon>
@@ -503,11 +502,11 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           New Message
         </v-card-title>
-        <v-divider/>
+        <v-divider />
         <v-card-text>
           <NewMessagePage
-            @secure-exchange:messageSent="messageSent"
-            @secure-exchange:cancelMessage="newMessageSheet = false"
+            @secure-exchange:message-sent="messageSent"
+            @secure-exchange:cancel-message="newMessageSheet = false"
           />
         </v-card-text>
       </v-card>
@@ -927,15 +926,15 @@ export default {
     text-align: left;
 }
 
->>> .v-data-table-header {
+* >>> .v-data-table-header {
     height: 0 !important;
 }
 
->>> .v-data-table-header > tr {
+* >>> .v-data-table-header > tr {
     height: 0 !important;
 }
 
->>> .v-data-table-header > tr > th {
+* >>> .v-data-table-header > tr > th {
     height: 0 !important;
 }
 
