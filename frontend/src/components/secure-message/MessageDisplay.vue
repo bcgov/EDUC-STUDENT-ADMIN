@@ -408,13 +408,18 @@
                     </v-card>
                     <v-card v-if="activity.type === 'student'">
                       <v-card-title>
-                        <div class="activityTitle">
-                          {{ activity.title }}
-                        </div>
-                        <v-spacer />
-                        <div class="activityDisplayDate">
-                          {{ activity.displayDate }}
-                        </div>
+                        <v-row class="mb-2">
+                          <v-col class="d-flex justify-start">
+                            <span>
+                              {{ activity.title }}
+                            </span>
+                          </v-col>
+                          <v-col class="d-flex justify-end">
+                            <span class="activityDisplayDate">
+                              {{ activity.displayDate }}
+                            </span>
+                          </v-col>
+                        </v-row>
                       </v-card-title>
 
                       <v-card-text class="">
@@ -624,11 +629,13 @@
                             'pb-3': activity.documentType.label === 'Other'
                           }"
                         >
-                          <a v-if="isImage(activity)"
+                          <a
+                            v-if="isImage(activity)"
+                            :class="disabledAnchorDocumentName"
                             @click="showDocModal(activity)"
-                            :class="disabledAnchorDocumentName">
-                              {{ activity.fileName }}
-                           </a>
+                          >
+                            {{ activity.fileName }}
+                          </a>
                           <router-link
                             v-else
                             :class="disabledAnchorDocumentName"
