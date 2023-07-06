@@ -240,18 +240,17 @@ async function addNewDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district || !hasDistrictAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
     }
-
     const params = {
-      content: req.body.noteContent,
-      districtId: req.body.districtID
+      districtId: req.body.districtId,
+      content: req.body.content
     };
-    const result = await utils.postData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.body.districtID + '/note', params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewDistrictNote', 'Error occurred while attempting to add a new district note.');
@@ -431,7 +430,7 @@ async function addNewSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
     if(!school || !hasSchoolAdminRole(req, school)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
@@ -439,10 +438,10 @@ async function addNewSchoolNote(req, res) {
     }
 
     const params = {
-      content: req.body.noteContent,
-      schoolId: req.body.schoolID
+      content: req.body.content,
+      schoolId: req.body.schoolId
     };
-    const result = await utils.postData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/note', params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewSchoolNote', 'Error occurred while attempting to add a new school note.');
@@ -1188,7 +1187,7 @@ async function addNewAuthorityNote(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
 
     if(!authority || !hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -1197,13 +1196,57 @@ async function addNewAuthorityNote(req, res) {
     }
 
     const params = {
-      content: req.body.noteContent,
-      authorityId: req.body.authorityID
+      content: req.body.content,
+      independentAuthorityId: req.body.independentAuthorityId
     };
-    const result = await utils.postData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.authorityID + '/note', params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewAuthorityNote', 'Error occurred while attempting to add a new authority note.');
+    return errorResponse(res);
+  }
+}
+
+async function updateAuthorityNote(req, res) {
+  if (req.params.noteId !== req.body.noteId) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'The noteId in the URL didn\'t match the noteId in the request body.'
+    });
+  }
+  try {
+    const token = getBackendToken(req);
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const payload = {
+      noteId: req.body.noteId,
+      independentAuthorityId: req.body.independentAuthorityId,
+      content: req.body.content
+    };
+    const result = await utils.putData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateAuthorityNote', 'Error occurred while attempting to save the changes to the authority note.');
+    return errorResponse(res);
+  }
+}
+
+async function deleteAuthorityNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    await utils.deleteData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note/${req.params.noteId}`);
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'deleteAuthorityNote', 'An error occurred while attempting to remove an authority note.');
     return errorResponse(res);
   }
 }
@@ -1297,6 +1340,8 @@ module.exports = {
   deleteAuthorityContact,
   updateAuthorityContact,
   addNewAuthorityNote,
+  updateAuthorityNote,
+  deleteAuthorityNote,
   getCachedSchoolCategoryFacilityTypes,
   updateSchool,
   addSchool,
