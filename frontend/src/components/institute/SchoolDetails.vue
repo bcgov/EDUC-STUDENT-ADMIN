@@ -158,9 +158,13 @@
                   <SchoolContacts :school-i-d="schoolID" />
                 </v-window-item>
                 <v-window-item value="notes">
-                  <MinistryNotes
-                    :school-i-d="schoolID"
+                  <InstituteNotes
+                    :notes="school.notes"
                     :has-access="canEditSchoolDetails()"
+                    :loading="notesLoading"
+                    @add-institute-note="saveNewSchoolNote"
+                    @edit-institute-note="saveChangesToSchoolNote"
+                    @remove-institute-note="removeSchoolNote"
                   />
                 </v-window-item>
                 <v-window-item value="history">
@@ -195,18 +199,18 @@ import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
 import Details from './common/Details.vue';
-import MinistryNotes from './common/MinistryNotes.vue';
 import SchoolHistory from './common/SchoolHistory.vue';
 import SchoolContacts from './common/SchoolContacts.vue';
 import SchoolMove from './common/SchoolMove.vue';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
+import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 
 export default {
   name: 'SchoolDetailsPage',
   components: {
+    InstituteNotes,
     Details,
-    MinistryNotes,
     SchoolHistory,
     SchoolContacts,
     SchoolMove
@@ -225,6 +229,7 @@ export default {
       authority: '',
       cleanWebsiteUrl: '',
       loading: true,
+      noteRequestCount: 0,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       tab: null,
       items: [
@@ -235,6 +240,9 @@ export default {
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState(notificationsStore, ['notification']),
+    notesLoading() {
+      return this.noteRequestCount > 0;
+    },
     dataReady: function () {
       return this.userInfo;
     },
@@ -308,7 +316,7 @@ export default {
     },
     async updateSchoolDetails(schoolDetailsCopy) {
       this.loading = true;
-      ApiService.apiAxios.put(`${Routes.institute.SCHOOL_DATA_URL}` + '/' + schoolDetailsCopy.schoolId, schoolDetailsCopy)
+      ApiService.apiAxios.put(`${Routes.institute.SCHOOL_DATA_URL}/${schoolDetailsCopy.schoolId}`, schoolDetailsCopy)
         .then(() => {
           this.setSuccessAlert('Success! The school details have been updated.');
         })
@@ -325,6 +333,54 @@ export default {
         return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
+    },
+    saveNewSchoolNote(schoolNote) {
+      this.noteRequestCount += 1;
+      const payload = {
+        schoolId: this.schoolID,
+        content: schoolNote.content
+      };
+      ApiService.apiAxios.post(Routes.institute.SCHOOL_NOTE_URL, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been added to the school.');
+          this.getThisSchoolsDetails();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the school note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    saveChangesToSchoolNote(schoolNote) {
+      this.noteRequestCount += 1;
+      let payload = {
+        noteId: schoolNote.noteId,
+        schoolId: this.schoolID,
+        content: schoolNote.content
+      };
+      ApiService.apiAxios.put(`${Routes.institute.SCHOOL_NOTE_URL}/${schoolNote.noteId}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been saved.');
+          this.getThisSchoolsDetails();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the school note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    removeSchoolNote(schoolNote) {
+      this.noteRequestCount += 1;
+      ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_NOTE_URL}/${this.schoolID}/${schoolNote.noteId}`).then(() => {
+        this.setSuccessAlert('The school note has been removed successfully!');
+        this.getThisSchoolsDetails();
+      }).catch(error => {
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the school note. Please try again later.');
+      }).finally(() => {
+        this.noteRequestCount -= 1;
+      });
     },
   },
 };
@@ -358,7 +414,7 @@ export default {
 
 .tab-divider {
     border-right: 1px solid lightgray;
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .tab-divider:last-child {

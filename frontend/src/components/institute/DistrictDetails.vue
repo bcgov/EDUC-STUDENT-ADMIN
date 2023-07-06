@@ -82,8 +82,8 @@
                 secondary
                 icon-left
                 icon="mdi-library-outline"
-                @click-action="viewSchools"
                 text="View Schools in District"
+                @click-action="viewSchools"
               />
               <PrimaryButton
                 id="viewDistrictContactsButton"
@@ -687,244 +687,21 @@
                 <v-col class="d-flex justify-start">
                   <h2>Ministry Notes</h2>
                 </v-col>
-                <v-col class="d-flex justify-end">
-                  <PrimaryButton
-                    v-if="canEditDistrictDetails()"
-                    id="addNewDistrictNoteButton"
-                    width="9em"
-                    icon="mdi-plus"
-                    icon-left
-                    text="New Note"
-                    @click-action="openNoteSheet"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col class="d-flex justify-start">
-                  <v-timeline
-                    id="districtNotesTimeline"
-                    density="compact"
-                    direction="vertical"
-                    side="end"
-                    truncate-line="both"
-                  >
-                    <v-timeline-item
-                      v-for="(note) in sortedNotes"
-                      :key="note.noteId"
-                      icon="mdi-message-bulleted"
-                      dot-color="white"
-                      fill-dot
-                      elevation="1"
-                      icon-color="#003366"
-                      size="large"
-                      width="100%"
-                    >
-                      <v-card width="40em">
-                        <v-card-title>
-                          <v-row>
-                            <v-col>
-                              <div>
-                                {{
-                                  note.createUser
-                                }}
-                              </div>
-                              <div
-                                class="mt-n2"
-                                style="font-size: xx-small;"
-                              >
-                                Last modified by {{
-                                  note.updateUser
-                                }} on {{
-                                  formatDate(note.updateDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', to = 'uuuu/MM/dd')
-                                }}
-                              </div>
-                            </v-col>
-                            <v-col class="d-flex justify-end">
-                              <span class="activityDisplayDate mr-2">{{
-                                formatDate(note.createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', to = 'uuuu/MM/dd')
-                              }}</span>
-                              <v-btn
-                                v-if="canEditDistrictDetails()"
-                                class="mr-2"
-                                width="0.5em"
-                                min-width="0.5em"
-                                title="Edit"
-                                color="white"
-                                variant="flat"
-                                small
-                                @click="showDistrictNoteEditForm(note)"
-                              >
-                                <v-icon
-                                  size="x-large"
-                                  color="#003366"
-                                  dark
-                                >
-                                  mdi-pencil
-                                </v-icon>
-                              </v-btn>
-                              <v-btn
-                                v-if="canEditDistrictDetails()"
-                                width="0.5em"
-                                min-width="0.5em"
-                                title="Remove"
-                                color="white"
-                                variant="flat"
-                                small
-                                @click="removeDistrictNote(note)"
-                              >
-                                <v-icon
-                                  size="x-large"
-                                  color="#003366"
-                                  dark
-                                >
-                                  mdi-delete
-                                </v-icon>
-                              </v-btn>
-                            </v-col>
-                          </v-row>
-                        </v-card-title>
-                        <v-card-text class="activityContent">
-                          {{
-                            note.content
-                          }}
-                        </v-card-text>
-                      </v-card>
-                    </v-timeline-item>
-                    <v-timeline-item
-                      v-if="sortedNotes.length === 0"
-                      icon="mdi-message-bulleted"
-                      dot-color="white"
-                      fill-dot
-                      elevation="1"
-                      icon-color="#003366"
-                      size="large"
-                      width="100%"
-                    >
-                      <v-card>
-                        <v-card-text class="activityContent">
-                          No notes have been recorded for this school.
-                        </v-card-text>
-                      </v-card>
-                    </v-timeline-item>
-                  </v-timeline>
-                </v-col>
+                <InstituteNotes
+                  :notes="district?.notes ? district?.notes : []"
+                  :has-access="canEditDistrictDetails()"
+                  :loading="notesLoading"
+                  @add-institute-note="saveNewDistrictNote"
+                  @edit-institute-note="saveChangesToDistrictNote"
+                  @remove-institute-note="removeDistrictNote"
+                />
               </v-row>
             </v-col>
           </v-row>
-
-          <v-bottom-sheet
-            v-model="newNoteSheet"
-            inset
-            no-click-animation
-            scrollable
-            persistent
-          >
-            <v-card
-              v-if="newNoteSheet"
-              id="newDistrictNoteSheet"
-              class="information-window-v-card"
-            >
-              <v-card-title class="sheetHeader pt-1 pb-1">
-                New Note
-              </v-card-title>
-              <v-divider />
-              <v-card-text>
-                <v-row>
-                  <v-col>
-                    <v-textarea
-                      id="newDistrictNoteTextArea"
-                      ref="newDistrictNoteTextArea"
-                      v-model="newNoteText"
-                      rows="8"
-                      label="Note"
-                      autofocus
-                      no-resize
-                      variant="underlined"
-                      maxlength="4000"
-                      class="pt-0"
-                      hide-details="auto"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row class="py-4 pr-2 justify-end">
-                  <PrimaryButton
-                    id="cancelNote"
-                    secondary
-                    text="Cancel"
-                    class="mr-2"
-                    @click-action="flipNoteSheet"
-                  />
-                  <PrimaryButton
-                    id="saveNote"
-                    text="Save"
-                    width="7rem"
-                    :disabled="newNoteText === ''"
-                    :loading="loading"
-                    @click-action="saveNewDistrictNote"
-                  />
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-bottom-sheet>
-          <v-bottom-sheet
-            v-model="editNoteSheet"
-            inset
-            no-click-animation
-            scrollable
-            persistent
-          >
-            <v-card
-              v-if="editNoteSheet"
-              id="editDistrictNoteSheet"
-              class="information-window-v-card"
-            >
-              <v-card-title class="sheetHeader pt-1 pb-1">
-                Edit Note
-              </v-card-title>
-              <v-divider />
-              <v-card-text>
-                <v-row>
-                  <v-col>
-                    <v-textarea
-                      id="editDistrictNoteTextArea"
-                      ref="editDistrictNoteTextArea"
-                      v-model="editDistrictNote.content"
-                      rows="8"
-                      label="Note"
-                      autofocus
-                      no-resize
-                      variant="underlined"
-                      maxlength="4000"
-                      class="pt-0"
-                      hide-details="auto"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row class="py-4 pr-2 justify-end">
-                  <PrimaryButton
-                    id="cancelNote"
-                    secondary
-                    text="Cancel"
-                    class="mr-2"
-                    @click-action="cancelEditDistrictNote"
-                  />
-                  <PrimaryButton
-                    id="saveNote"
-                    text="Save"
-                    width="7rem"
-                    :disabled="editDistrictNote.content === ''"
-                    :loading="loading"
-                    @click-action="saveChangesToDistrictNote"
-                  />
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-bottom-sheet>
         </v-col>
       </v-row>
     </v-container>
   </v-form>
-  <ConfirmationDialog ref="confirmationDialog" />
 </template>
 
 <script>
@@ -940,17 +717,15 @@ import {mapState, mapActions} from 'pinia';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import {edxStore} from '@/store/modules/edx'
-import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
-import _ from 'lodash';
+import {edxStore} from '@/store/modules/edx';
+import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 
 export default {
   name: 'DistrictDetails',
   components: {
-    ConfirmationDialog,
+    InstituteNotes,
     PrimaryButton
   },
   mixins: [alertMixin],
@@ -965,42 +740,25 @@ export default {
       district: null,
       rules: Rules,
       loading: false,
+      noteRequestCount: 0,
       cleanWebsiteUrl: '',
       editing: false,
       districtDetailsFormValid: true,
       districtDetailsCopy: {},
       provinceCodeValues: [],
       countryCodeValues: [],
-      sameAsMailingCheckbox: true,
-      newNoteSheet: false,
-      newNoteText: '',
-      editNoteSheet: false,
-      editDistrictNote: null,
+      sameAsMailingCheckbox: true
     };
   },
   computed: {
     ...mapState(authStore, ['DISTRICT_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
+    notesLoading() {
+      return this.noteRequestCount > 0;
+    },
     hasSamePhysicalAddress() {
       return !this.district.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
-    },
-    sortedNotes() {
-      if (!this.district?.notes) {
-        return [];
-      }
-      let notes = this.district.notes.slice();
-      return notes.sort(function (a, b) {
-        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        if (aCreateDate.isBefore(bCreateDate)) {
-          return 1;
-        }
-        if (aCreateDate.isAfter(bCreateDate)) {
-          return -1;
-        }
-        return 0;
-      });
     }
   },
   created() {
@@ -1112,89 +870,6 @@ export default {
         });
       }
     },
-    openNoteSheet() {
-      this.newNoteSheet = !this.newNoteSheet;
-    },
-    flipNoteSheet() {
-      this.newNoteSheet = !this.newNoteSheet;
-      this.newNoteText = '';
-    },
-    showDistrictNoteEditForm(districtNote) {
-      this.editDistrictNote = _.cloneDeep(districtNote);
-      this.editNoteSheet = true;
-    },
-    cancelEditDistrictNote() {
-      this.editDistrictNote = null;
-      this.editNoteSheet = false;
-    },
-    saveNewDistrictNote() {
-      this.loading = false;
-
-      const payload = {
-        districtID: this.district.districtId,
-        noteContent: this.newNoteText
-      };
-      ApiService.apiAxios.post(`${Routes.institute.DISTRICT_NOTE_URL}`, payload)
-        .then(() => {
-          this.setSuccessAlert('Success! The note has been added to the district.');
-        })
-        .catch(error => {
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the district note. Please try again later.');
-        })
-        .finally(() => {
-          this.getDistrict();
-          this.newNoteSheet = false;
-          this.newNoteText = '';
-        });
-    },
-    saveChangesToDistrictNote() {
-      this.loading = true;
-      let payload = {
-        noteId: this.editDistrictNote.noteId,
-        districtId: this.editDistrictNote.districtId,
-        content: this.editDistrictNote.content
-      };
-      ApiService.apiAxios.put(`${Routes.institute.DISTRICT_NOTE_URL}/${this.editDistrictNote.noteId}`, payload)
-        .then(() => {
-          this.setSuccessAlert('Success! The note has been saved.');
-          this.editDistrictNote = null;
-          this.editNoteSheet = false;
-          this.getDistrict();
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the district note. Please try again later.');
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-    removeDistrictNote(districtNote) {
-      const opts = {
-        color: '#003366',
-        dense: false,
-        width: 400,
-        dark: true,
-        titleBold: true,
-        resolveText: 'Remove'
-      };
-      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this note?', opts)
-        .then((result) => {
-          if (!result) {
-            return;
-          }
-          this.loading = true;
-          ApiService.apiAxios.delete(`${Routes.institute.DISTRICT_NOTE_URL}/${districtNote.districtId}/${districtNote.noteId}`).then(() => {
-            this.setSuccessAlert('The district note has successfully been removed!');
-            this.getDistrict();
-          }).catch(error => {
-            console.log(error);
-            this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the district note. Please try again later.');
-          }).finally(() => {
-            this.loading = false;
-          });
-        });
-    },
     async updateDistrictDetails() {
       this.loading = true;
 
@@ -1254,7 +929,55 @@ export default {
     },
     backButtonClick() {
       router.push({name: 'instituteDistrict'});
-    }
+    },
+    saveNewDistrictNote(districtNote) {
+      this.noteRequestCount += 1;
+      const payload = {
+        districtId: this.districtID,
+        content: districtNote.content
+      };
+      ApiService.apiAxios.post(Routes.institute.DISTRICT_NOTE_URL, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been added to the district.');
+          this.getDistrict();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the district note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    saveChangesToDistrictNote(districtNote) {
+      this.noteRequestCount += 1;
+      let payload = {
+        noteId: districtNote.noteId,
+        districtId: this.districtID,
+        content: districtNote.content
+      };
+      ApiService.apiAxios.put(`${Routes.institute.DISTRICT_NOTE_URL}/${districtNote.noteId}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been saved.');
+          this.getDistrict();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the district note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    removeDistrictNote(districtNote) {
+      this.noteRequestCount += 1;
+      ApiService.apiAxios.delete(`${Routes.institute.DISTRICT_NOTE_URL}/${this.districtID}/${districtNote.noteId}`).then(() => {
+        this.setSuccessAlert('The district note has been removed successfully!');
+        this.getDistrict();
+      }).catch(error => {
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the district note. Please try again later.');
+      }).finally(() => {
+        this.noteRequestCount -= 1;
+      });
+    },
   }
 };
 </script>
@@ -1271,21 +994,6 @@ export default {
     color: white;
     font-size: medium !important;
     font-weight: bolder !important;
-}
-
-.activityTitle {
-  line-height: 1rem;
-}
-
-.activityDisplayDate {
-    font-size: smaller;
-}
-
-.activityContent {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-width: 100%;
-    font-size: medium;
 }
 
 .fontItalic {

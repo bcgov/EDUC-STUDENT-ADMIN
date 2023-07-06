@@ -753,144 +753,20 @@
                 <v-col class="d-flex justify-start">
                   <h2>Ministry Notes</h2>
                 </v-col>
-                <v-col class="d-flex justify-end">
-                  <PrimaryButton
-                    v-if="canEditAuthorities()"
-                    id="addNewNoteButton"
-                    width="9em"
-                    icon="mdi-plus"
-                    icon-left
-                    text="New Note"
-                    @click-action="openNoteSheet"
-                  />
-                </v-col>
+                <InstituteNotes
+                  :notes="authority?.notes ? authority?.notes : []"
+                  :has-access="canEditAuthorities()"
+                  :loading="notesLoading"
+                  @add-institute-note="saveNewAuthorityNote"
+                  @edit-institute-note="saveChangesToAuthorityNote"
+                  @remove-institute-note="removeAuthorityNote"
+                />
               </v-row>
-              <v-row>
-                <v-col class="d-flex justify-start">
-                  <v-timeline
-                    v-if="sortedNotes.length > 0"
-                    id="authorityNotesTimeline"
-                    density="compact"
-                    direction="vertical"
-                    side="end"
-                    truncate-line="both"
-                  >
-                    <v-timeline-item
-                      v-for="(activity) in sortedNotes"
-                      :key="activity.noteId"
-                      icon="mdi-message-bulleted"
-                      dot-color="white"
-                      fill-dot
-                      elevation="1"
-                      icon-color="#003366"
-                      size="large"
-                      width="100%"
-                    >
-                      <v-card width="40em">
-                        <v-card-title>
-                          <v-row>
-                            <v-col class="d-flex justify-start">
-                              <span>{{
-                                activity.createUser
-                              }}</span>
-                            </v-col>
-                            <v-col class="d-flex justify-end">
-                              <span>{{
-                                formatDate(activity.createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', to = 'uuuu/MM/dd')
-                              }}</span>
-                            </v-col>
-                          </v-row>
-                        </v-card-title>
-                        <v-card-text class="activityContent">
-                          {{
-                            activity.content
-                          }}
-                        </v-card-text>
-                      </v-card>
-                    </v-timeline-item>
-                  </v-timeline>
-                  <v-timeline
-                    v-else
-                    id="authorityNotesTimeline"
-                    dense
-                  >
-                    <v-timeline-item
-                      icon="mdi-message-bulleted"
-                      dot-color="white"
-                      fill-dot
-                      elevation="1"
-                      icon-color="#003366"
-                      size="large"
-                      width="100%"
-                    >
-                      <v-card width="40em">
-                        <v-card-text class="activityContent">
-                          No notes have been recorded for this authority
-                        </v-card-text>
-                      </v-card>
-                    </v-timeline-item>
-                  </v-timeline>
-                </v-col>
-              </v-row>
+              <v-row />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-
-      <v-bottom-sheet
-        v-model="newNoteSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
-      >
-        <v-card
-          v-if="newNoteSheet"
-          id="newNoteSheet"
-          class="information-window-v-card"
-        >
-          <v-card-title class="sheetHeader pt-1 pb-1">
-            New Note
-          </v-card-title>
-          <v-divider />
-          <v-card-text>
-            <v-row no-gutters>
-              <v-col>
-                <v-textarea
-                  id="newNoteTextArea"
-                  ref="newNoteTextArea"
-                  v-model="newNoteText"
-                  rows="8"
-                  label="Note"
-                  autofocus
-                  variant="underlined"
-                  no-resize
-                  maxlength="4000"
-                  class="pt-0"
-                  hide-details="auto"
-                />
-              </v-col>
-            </v-row>
-            <v-row class="py-4 pr-2 justify-end">
-              <PrimaryButton
-                id="cancelNote"
-                secondary
-                text="Cancel"
-                class="mr-2"
-                @click-action="openNoteSheet"
-              />
-              <PrimaryButton
-                id="saveNote"
-                text="Save"
-                width="7rem"
-                :loading="loading"
-                @click-action="saveNewAuthorityNote"
-                :disabled="newNoteText === ''"
-              />
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-bottom-sheet>
     </v-container>
     <v-dialog
       v-model="openAuthorityStatusEditCard"
@@ -928,15 +804,16 @@ import {mapState} from 'pinia';
 import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
 import {isEmpty, omitBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 
 export default {
   name: 'AuthorityDetailsPage',
   components: {
+    InstituteNotes,
     AuthorityStatus,
     PrimaryButton
   },
@@ -951,12 +828,11 @@ export default {
     return {
       sameAsMailingCheckbox: true,
       editing: false,
-      newNoteSheet: false,
-      newNoteText: '',
       authority: null,
       authorityFormValid: false,
       authorityCopy: null,
       loading: false,
+      noteRequestCount: 0,
       openAuthorityStatusEditCard: false,
       authorityHasOpenSchools: false,
       closedDateOfLastClosingSchool: null,
@@ -974,6 +850,9 @@ export default {
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
     ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    notesLoading() {
+      return this.noteRequestCount > 0;
+    },
     hasSamePhysicalAddress() {
       return !this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },
@@ -982,23 +861,6 @@ export default {
         return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy.authorityTypeCode);
       }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority.authorityTypeCode);
-    },
-    sortedNotes() {
-      if (!this.authority?.notes) {
-        return [];
-      }
-      let notes = this.authority.notes.slice();
-      return notes.sort(function (a, b) {
-        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        if (aCreateDate.isBefore(bCreateDate)) {
-          return 1;
-        }
-        if (aCreateDate.isAfter(bCreateDate)) {
-          return -1;
-        }
-        return 0;
-      });
     }
   },
   created() {
@@ -1031,26 +893,6 @@ export default {
       } else {
         return true;
       }
-    },
-    saveNewAuthorityNote() {
-      this.loading = true;
-      const payload = {
-        authorityID: this.authorityID,
-        noteContent: this.newNoteText
-      };
-      ApiService.apiAxios.post(`${Routes.institute.AUTHORITY_NOTE_URL}`, payload)
-        .then(() => {
-          this.setSuccessAlert('Success! The note has been added to the authority.');
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the authority note. Please try again later.');
-        })
-        .finally(() => {
-          this.getAuthority();
-          this.newNoteSheet = false;
-          this.newNoteText = '';
-        });
     },
     getAuthority() {
       this.loading = true;
@@ -1207,10 +1049,6 @@ export default {
     getAuthorityType(authority) {
       return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority.authorityTypeCode).label;
     },
-    openNoteSheet() {
-      this.newNoteText = '';
-      this.newNoteSheet = !this.newNoteSheet;
-    },
     hasMailingAddress() {
       return this.authority.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0;
     },
@@ -1262,6 +1100,54 @@ export default {
       }
       this.authorityCopy.status = getStatusAuthorityOrSchool(this.authorityCopy);
       this.$refs.authorityForm.validate();
+    },
+    saveNewAuthorityNote(authorityNote) {
+      this.noteRequestCount += 1;
+      const payload = {
+        independentAuthorityId: this.authorityID,
+        content: authorityNote.content
+      };
+      ApiService.apiAxios.post(Routes.institute.AUTHORITY_NOTE_URL, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been added to the authority.');
+          this.getAuthority();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the authority note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    saveChangesToAuthorityNote(authorityNote) {
+      this.noteRequestCount += 1;
+      let payload = {
+        noteId: authorityNote.noteId,
+        independentAuthorityId: this.authorityID,
+        content: authorityNote.content
+      };
+      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_NOTE_URL}/${authorityNote.noteId}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been saved.');
+          this.getAuthority();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the authority note. Please try again later.');
+        })
+        .finally(() => {
+          this.noteRequestCount -= 1;
+        });
+    },
+    removeAuthorityNote(authorityNote) {
+      this.noteRequestCount += 1;
+      ApiService.apiAxios.delete(`${Routes.institute.AUTHORITY_NOTE_URL}/${this.authorityID}/${authorityNote.noteId}`).then(() => {
+        this.setSuccessAlert('The authority note has been removed successfully!');
+        this.getAuthority();
+      }).catch(error => {
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the authority note. Please try again later.');
+      }).finally(() => {
+        this.noteRequestCount -= 1;
+      });
     }
   }
 };
@@ -1272,13 +1158,6 @@ export default {
     border-color: #FCBA19;
     border-width: 3px;
     opacity: unset;
-}
-
-.activityContent {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-width: 100%;
-    font-size: medium;
 }
 
 .sheetHeader {

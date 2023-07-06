@@ -9,7 +9,7 @@
     <v-divider />
     <v-card-text>
       <v-form
-        ref="newSchoolNoteForm"
+        ref="newInstituteNoteForm"
         v-model="isFormValid"
       >
         <v-row>
@@ -36,15 +36,15 @@
             secondary
             text="Cancel"
             class="mr-2"
-            @click-action="closeNewSchoolNotePage"
+            @click-action="closeAddInstituteNote"
           />
           <PrimaryButton
             id="saveNote"
             text="Save"
             width="7rem"
-            @click-action="saveNewSchoolNote"
             :disabled="!isFormValid"
-            :loading="processing"
+            :loading="loading"
+            @click-action="saveNewInstituteNote"
           />
         </v-row>
       </v-form>
@@ -54,61 +54,44 @@
 
 <script>
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
 
 export default {
-  name: 'NewSchoolNotePage',
+  name: 'AddInstituteNote',
   components: {
     PrimaryButton
   },
-  mixins: [alertMixin],
   props: {
-    schoolID: {
-      type: String,
+    loading: {
+      type: Boolean,
       required: true
     },
   },
+  emits: ['closeAddInstituteNote', 'saveNewInstituteNote'],
   data() {
     return {
       isFormValid: false,
-      processing: false,
       newNoteText: '',
       requiredRules: [v => !!v || 'Required'],
     };
   },
+  mounted() {
+    this.validateForm();
+  },
   methods: {
-    closeNewSchoolNotePage() {
+    closeAddInstituteNote() {
+      this.$emit('closeAddInstituteNote');
       this.resetForm();
-      this.$emit('closeNewSchoolNotePage');
     },
-    saveNewSchoolNote() {
-      this.processing = true;
-      const payload = {
-        schoolID: this.schoolID,
-        noteContent: this.newNoteText
-      };
-      ApiService.apiAxios.post(Routes.institute.SCHOOL_NOTE_URL, payload)
-        .then(() => {
-          this.setSuccessAlert('Success! The note has been added to the school.');
-          this.resetForm();
-          this.$emit('addNewSchoolNote');
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the school note. Please try again later.');
-        })
-        .finally(() => {
-          this.processing = false;
-        });
+    saveNewInstituteNote() {
+      this.$emit('saveNewInstituteNote', { content: this.newNoteText });
+      this.resetForm();
     },
     resetForm() {
-      this.$refs.newSchoolNoteForm.reset();
+      this.$refs.newInstituteNoteForm.reset();
       this.validateForm();
     },
     validateForm() {
-      const isValid = this.$refs.newSchoolNoteForm.validate();
+      const isValid = this.$refs.newInstituteNoteForm.validate();
       this.isFormValid = isValid.valid;
     },
   }
@@ -117,9 +100,9 @@ export default {
 
 <style scoped>
 .sheetHeader {
-    background-color: #003366;
-    color: white;
-    font-size: medium !important;
-    font-weight: bolder !important;
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
 }
 </style>
