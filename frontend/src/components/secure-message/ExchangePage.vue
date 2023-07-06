@@ -329,9 +329,7 @@
               show-select
               item-value="secureExchangeID"
               select-strategy="page"
-              :footer-props="{
-                'items-per-page-options': itemsPerPageOptions
-              }"
+              :items-per-page-options="itemsPerPageOptions"
               :loading="loadingTable"
               class="elevation-1 mt-2"
               mobile-breakpoint="0"
@@ -575,7 +573,11 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       totalRequests: 0,
-      itemsPerPageOptions: [15],
+      itemsPerPageOptions: [
+        {value: 15, title: '15'},
+        {value: 25, title: '25'},
+        {value: 50, title: '50'}
+      ],
       loadingTableCount: 0,
       dateMenu: false,
       headerSearchParams: {
