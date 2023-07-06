@@ -77,6 +77,15 @@
               class="d-flex justify-end"
             >
               <PrimaryButton
+                id="viewSchoolsInDistrictButton"
+                class="mr-2"
+                secondary
+                icon-left
+                icon="mdi-library-outline"
+                @click-action="viewSchools"
+                text="View Schools in District"
+              />
+              <PrimaryButton
                 id="viewDistrictContactsButton"
                 class="mr-2"
                 secondary
@@ -927,13 +936,14 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
-import {mapState} from 'pinia';
+import {mapState, mapActions} from 'pinia';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import {edxStore} from '@/store/modules/edx'
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import _ from 'lodash';
 
@@ -971,6 +981,7 @@ export default {
   computed: {
     ...mapState(authStore, ['DISTRICT_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
+    ...mapState(edxStore, ['schoolSearchParams']),
     hasSamePhysicalAddress() {
       return !this.district.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },
@@ -1003,6 +1014,7 @@ export default {
     });
   },
   methods: {
+    ...mapActions(edxStore, ['setSchoolSearchParams']),
     formatPhoneNumber,
     getDistrict() {
       this.loading = true;
@@ -1031,6 +1043,12 @@ export default {
     },
     setHasSamePhysicalFlag() {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
+    },
+    viewSchools() {
+      this.schoolSearchParams.districtID = this.districtID;
+      this.schoolSearchParams.status = {name: 'Open', code: 'Open'};
+      this.setSchoolSearchParams(this.schoolSearchParams);
+      this.$router.push({name: 'instituteSchoolList'});
     },
     async toggleEdit() {
       this.districtDetailsCopy = this.deepCloneObject(this.district);
