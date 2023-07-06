@@ -34,28 +34,28 @@
             id="moveSldBtn"
             text="Move Sld Record"
             primary
-            :disabled="disableMoveSld"
-            @click-action="moveSldRecords"
+            :disabled="disableMoveSld()"
+            :click-action="moveSldRecords"
           />
           <PrimaryButton
             id="twinBtn"
             text="Twin"
             primary
-            :disabled="validateAction"
+            :disabled="validateAction()"
             @click-action="twin"
           />
           <PrimaryButton
             id="demergeBtn"
             text="Demerge"
             primary
-            :disabled="disableDemerge"
+            :disabled="disableDemerge()"
             @click-action="demerge"
           />
           <PrimaryButton
             id="mergeBtn"
             text="Merge PENs"
             primary
-            :disabled="disableMerge"
+            :disabled="disableMerge()"
             @click-action="merge"
           />
         </template>
