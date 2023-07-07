@@ -28,7 +28,8 @@
           color="#000000"
           :value="fieldModel"
           readonly
-          dense
+          variant="outlined"
+          density="compact"
           tabindex="-1"
           :disabled="fieldDisabled"
         />

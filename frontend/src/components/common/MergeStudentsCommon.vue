@@ -2,6 +2,7 @@
   <v-card
     fluid
     class="px-4"
+    style="overflow-y: scroll"
     elevation="0"
   >
     <v-card-title class="px-0 pb-0 pt-5">
@@ -17,7 +18,7 @@
         <v-col class="pt-0 d-flex justify-end">
           <v-btn
             id="closeStudentsMergeModalBtn"
-            text
+            variant="flat"
             icon
             @click="closeStudentsMergeModal"
           >
@@ -90,7 +91,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME"
                   tab-index="21"
                   :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('legalLastName')"
                   @update="handleCheckBoxChanged"
                 />
@@ -99,7 +100,7 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
                   v-model="student.legalLastName"
-                  outlined
+                  variant="outlined"
                   density="compact"
                   maxlength="25"
                   class="true-pen-data"
@@ -125,7 +126,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME"
                   tab-index="22"
                   :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('legalFirstName')"
                   @update="handleCheckBoxChanged"
                 />
@@ -134,7 +135,7 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
                   v-model="student.legalFirstName"
-                  outlined
+                  variant="outlined"
                   density="compact"
                   maxlength="25"
                   class="true-pen-data"
@@ -159,7 +160,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                   tab-index="23"
                   :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('legalMiddleNames')"
                   @update="handleCheckBoxChanged"
                 />
@@ -168,7 +169,7 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                   v-model="student.legalMiddleNames"
-                  outlined
+                  variant="outlined"
                   density="compact"
                   maxlength="25"
                   class="true-pen-data"
@@ -193,7 +194,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME"
                   tab-index="24"
                   :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('usualLastName')"
                   @update="handleCheckBoxChanged"
                 />
@@ -202,8 +203,8 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
                   v-model="student.usualLastName"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                   maxlength="25"
                   class="true-pen-data"
                   :disabled="mergeSagaComplete"
@@ -227,7 +228,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME"
                   tab-index="25"
                   :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('usualFirstName')"
                   @update="handleCheckBoxChanged"
                 />
@@ -236,8 +237,8 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                   v-model="student.usualFirstName"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                   maxlength="25"
                   class="true-pen-data"
                   :disabled="mergeSagaComplete"
@@ -261,7 +262,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                   tab-index="26"
                   :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('usualMiddleNames')"
                   @update="handleCheckBoxChanged"
                 />
@@ -270,8 +271,8 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                   v-model="student.usualMiddleNames"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                   maxlength="25"
                   class="true-pen-data"
                   :disabled="mergeSagaComplete"
@@ -295,7 +296,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE"
                   tab-index="27"
                   :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('genderCode')"
                   @update="handleCheckBoxChanged"
                 />
@@ -304,8 +305,8 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.GENDER_CODE"
                   v-model="student.genderCode"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                   maxlength="1"
                   class="true-pen-data"
                   :disabled="mergeSagaComplete"
@@ -330,7 +331,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.DOB"
                   tab-index="28"
                   :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('dob', isSameDate)"
                   @update="handleCheckBoxChanged"
                 />
@@ -365,7 +366,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE"
                   tab-index="29"
                   :model="mergedStudent.mincode?mergedStudent.mincode:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('mincode')"
                   @update="handleCheckBoxChanged"
                 />
@@ -401,7 +402,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID"
                   tab-index="30"
                   :model="mergedStudent.localID?mergedStudent.localID:''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('localID')"
                   @update="handleCheckBoxChanged"
                 />
@@ -410,8 +411,8 @@
                 <v-text-field
                   :id="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                   v-model="student.localID"
-                  outlined
-                  dense
+                  variant="outlined"
+                  density="compact"
                   maxlength="10"
                   class="true-pen-data"
                   :disabled="mergeSagaComplete"
@@ -434,7 +435,7 @@
                   :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE"
                   tab-index="31"
                   :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
-                  colspan="11"
+                  colspan="8"
                   :disabled="fieldDisabled('postalCode')"
                   @update="handleCheckBoxChanged"
                 />
@@ -470,7 +471,7 @@
                 <StudentDetailsCheckBoxWithOutputText
                   v-if="!!mergedStudent.memo"
                   maxlength="4000"
-                  :name="STUDENT_DETAILS_FIELDS.MEMO"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.MEMO"
                   tab-index="32"
                   :model="mergedStudent.memo?mergedStudent.memo:''"
                   colspan="11"
@@ -492,10 +493,10 @@
                   class="memoscroll true-pen-data"
                   color="#000000"
                   maxlength="4000"
-                  dense
+                  density="compact"
                   rows="3"
                   no-resize
-                  outlined
+                  variant="outlined"
                   @input="replaceMemoMacro"
                 />
                 <MacroMenu
@@ -510,7 +511,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-divider />
+        <v-divider class="mt-4 mb-2" />
         <v-row>
           <v-col cols="12">
             <v-card-actions style="float: right;">
@@ -522,16 +523,17 @@
               />
               <PrimaryButton
                 :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
-                @click-action="performMerge"
                 text="Merge"
+                @click-action="performMerge"
               />
             </v-card-actions>
           </v-col>
         </v-row>
       </v-container>
+
       <ConfirmationDialog ref="confirmationDialog">
         <template #message>
-          <v-col class="my-n6">
+          <v-col>
             <v-row class="mb-5">
               Merging these records will break any twinned connections.
             </v-row>
@@ -557,7 +559,7 @@
 
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {
   REQUEST_TYPES,
   Routes,
@@ -624,6 +626,7 @@ export default {
       STUDENT_MERGE_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
+      macrosList: [],
       isStudentUpdated: false,
       isLoading: false,
       isAMergedStudent: false,
@@ -694,15 +697,8 @@ export default {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
       }
     },
-    hasEdits(key) {
-      let studentCopy = this.student[key];
-      let studentOriginal = this.mergedToPen[key];
-      studentCopy = (studentCopy === null || studentCopy === undefined) ? '' : studentCopy;
-      studentOriginal = (studentOriginal === null || studentOriginal === undefined) ? '' : studentOriginal;
-      return studentCopy !== studentOriginal;
-    },
     hasAnyEdits() {
-      return JSON.stringify(this.student) !== JSON.stringify(this.mergedToPen);
+      return JSON.stringify(this.student) !== JSON.stringify(this.getMergedToPen());
     },
     validateLegalLastName() {
       if (this.student) {
@@ -864,34 +860,34 @@ export default {
 <style scoped>
 
 .penLabel {
-  font-size: 1.125em;
-  font-weight: bolder;
+    font-size: 1.125em;
+    font-weight: bolder;
 }
 
 .penLinkLabel {
-  font-size: 1.125em;
-  font-weight: bolder;
-  color: #1976d2;
-  text-decoration: underline;
+    font-size: 1.125em;
+    font-weight: bolder;
+    color: #1976d2;
+    text-decoration: underline;
 }
 
-.memoscroll.v-textarea >>> .v-input__control > .v-input__slot > .v-text-field__slot > #memo{
-  margin-bottom: 0px;
-  margin-top: 0px;
-  margin-right: 0px;
+.memoscroll.v-textarea >>> .v-input__control > .v-input__slot > .v-text-field__slot > #memo {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-right: 0px;
 }
 
 .memoscroll.v-textarea >>> .v-text-field__details {
-  display: none;
+    display: none;
 }
 
 .demographics-data {
-  font-size: 1rem;
+    font-size: 1rem;
 }
 
 .true-pen-data.v-input >>> textarea,
-.true-pen-data.v-input >>> input{
-  color: #000 !important;
-  font-weight: bold;
+.true-pen-data.v-input >>> input {
+    color: #000 !important;
+    font-weight: bold;
 }
 </style>

@@ -2,6 +2,7 @@
   <v-card
     fluid
     class="px-4"
+    style="overflow-y: scroll"
     elevation="0"
   >
     <MergeStudentsModal
@@ -67,7 +68,7 @@
           <v-btn
             v-if="closeCompareModal"
             id="closeCompareModalBtn"
-            text
+            variant="flat"
             icon
             @click="[closeCompareModal(), clearError()]"
           >
@@ -89,6 +90,7 @@
             <th
               v-for="(header, index) in headers"
               :id="`${header.text}Header`"
+              class="header-font"
               :key="index"
               :title="header.tooltip"
             >
@@ -109,21 +111,25 @@
         no-gutters
       >
         <span class="pl-2 pr-0 flexBox">
-          <v-checkbox
-            v-model="checkedStudents[index]"
-            density="compact"
-            class="studentCheckbox pa-0 ma-0"
-            color="#606060"
-            @update:model-value="validateAction"
-          />
+          <div>
+            <v-checkbox
+              v-model="checkedStudents[index]"
+              density="compact"
+              class="bannerCheckbox pa-0 ma-0"
+              hide-details="true"
+              color="#606060"
+              @update:model-value="validateAction"
+            />
+          </div>
           <a
             class="ml-2"
             @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])"
           >
             <v-icon
               small
+              :icon="sldDataTablesToDisplay[students.pen]?'mdi-chevron-down':'mdi-chevron-up'"
               color="#1A5A96"
-            >{{ sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up' }}</v-icon>
+            />
           </a>
           <a
             class="ml-1 pr-1"
@@ -192,24 +198,25 @@
         </a>
       </v-row>
       <v-data-table
-        v-show="sldDataTablesToDisplay[students.pen]"
+        v-if="sldDataTablesToDisplay[students.pen]"
         class="sldTable"
         :headers="headers"
         :items="sldData[students.pen]"
+        :items-length="sldDataTablesNumberOfRows[students.pen]"
         :items-per-page="sldDataTablesNumberOfRows[students.pen]"
-        hide-default-header
-        hide-default-footer
+        @update:items-per-page="getSldData(students.pen)"
       >
-        <template #item="props">
+        <template #headers />
+        <template #item="item">
           <tr>
             <td
-              v-for="header in props.headers"
+              v-for="header in item.columns"
               :key="header.id"
-              :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']"
+              :class="[header.id, existSldUsualName(item.item.raw)? 'two-rows-column' : 'one-row-column']"
             >
               <v-checkbox
                 v-if="header.type === 'select'"
-                v-model="props.item.selected"
+                v-model="item.item.raw.selected"
                 density="compact"
                 class="studentCheckbox pa-0 ma-0"
                 color="#606060"
@@ -217,61 +224,61 @@
               />
               <div
                 v-else-if="header.value === 'mincode'"
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
+                <span class="top-field-item">{{ item.item.raw.distNo + item.item.raw.schlNo }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
                 />
               </div>
               <div
                 v-else-if="header.value === 'legalSurname'"
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ props.item['usualSurname'] }}</span>
+                >{{ item.item.raw['usualSurname'] }}</span>
               </div>
               <div
                 v-else-if="header.value === 'legalGivenName'"
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ props.item['usualGivenName'] }}</span>
+                >{{ item.item.raw['usualGivenName'] }}</span>
               </div>
               <div
                 v-else-if="header.value === 'legalMiddleName'"
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ props.item['usualMiddleName'] }}</span>
+                >{{ item.item.raw['usualMiddleName'] }}</span>
               </div>
               <div
                 v-else-if="header.value === 'birthDate'"
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
+                <span class="top-field-item">{{ formatDob(item.item.raw[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
                 />
               </div>
               <div
                 v-else
-                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
-                  v-if="existSldUsualName(props.item)"
+                  v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
                 />
               </div>
@@ -318,22 +325,22 @@
         />
       </v-card-actions>
     </div>
-    <ConfirmationDialog ref="confirmationDialog">
+    <ConfirmationDialog ref="confirmationDialog" :show-title-bar="false">
       <template #message>
-        <v-col class="mt-n6">
-          <v-row class="mb-3">
+        <v-row class="mb-3">
+          <v-col>
             <span>Are you sure you want to demerge PENs <strong>{{ getMergedFromPen() }}</strong> and <strong>{{ getMergedToPen() }}</strong>?</span>
-          </v-row>
-        </v-col>
+          </v-col>
+        </v-row>
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog ref="moveSldConfirmationDialog">
+    <ConfirmationDialog ref="moveSldConfirmationDialog" :show-title-bar="false">
       <template #message>
-        <v-col class="mt-n6">
-          <v-row>
+        <v-row>
+          <v-col>
             <span>Are you sure you want to move the selected SLD records from <strong>{{ movedFromStudent.pen }}</strong> to <strong>{{ movedToStudent.pen }}</strong></span>?
-          </v-row>
-        </v-col>
+          </v-col>
+        </v-row>
       </template>
     </ConfirmationDialog>
   </v-card>
@@ -359,6 +366,7 @@ import {studentStore} from '@/store/modules/student';
 import _ from 'lodash';
 
 export default {
+  emits: ['update:selectedRecords'],
   name: 'CompareDemographicsCommon',
   components: {
     TertiaryButton,
@@ -413,6 +421,7 @@ export default {
       penAlreadyAddedErrorMessage: 'Pen already added to compare list.',
       fetchingStudentErrorMessage: 'Error occurred while fetching student, Please try again later.',
       sldData: {},
+      storedSldData: {},
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
       checkedStudents: [],
@@ -584,7 +593,7 @@ export default {
             response.data = this.sortArrayByDate(response.data, 'reportDate', false);
             response.data.forEach(sld => sld.selected = false);
           }
-          this.sldData[pen] = response.data;
+          this.storedSldData[pen] = response.data;
           this.updateSldRowDisplay(pen, true);
           this.updateSldTableRows(pen, 10);
         })
@@ -620,10 +629,16 @@ export default {
     updateSldTableRows(id, value) {
       if(value < 0) {
         value = 0;
-      } else if(value > this.sldData[id]?.length) {
-        value = this.sldData[id]?.length;
+      } else if(value > this.storedSldData[id]?.length) {
+        value = this.storedSldData[id]?.length;
       }
       this.sldDataTablesNumberOfRows[id] = value;
+
+      if(value === 0){
+        this.sldData[id] = [];
+      }else{
+        this.sldData[id] = this.storedSldData[id].slice(0, value);
+      }
     },
     validateAction() {
       let cnt = 0;
@@ -906,20 +921,16 @@ export default {
   .paginatedButtons {
     color: #38598A;
   }
-  .studentCheckbox /deep/ .v-input--selection-controls__input {
-    margin: 0;
+
+  .header-font {
+    font-size: 0.9em;
+    font-weight: bold !important;
   }
-  .studentCheckbox /deep/ .v-messages {
-    display: none;
-  }
-  .studentCheckbox /deep/ .v-input__slot {
-    margin-bottom: 0;
-    padding-top: 0;
-  }
-  .sldTable /deep/ td.one-row-column {
+
+  .sldTable :deep(.one-row-column) {
     height: 32px !important;
   }
-  .sldTable /deep/ td.two-rows-column {
+  .sldTable :deep(.two-rows-column) {
     height: 42px !important;
   }
   .studentDemographicsTable a {
@@ -930,7 +941,7 @@ export default {
     font-size: 0.875rem;
     color: rgba(0, 0, 0, 1);
   }
-  .studentDemographicsTable .bottom-field-item {
+  .studentDemographicsTable :deep(.bottom-field-item) {
     font-style: italic;
   }
 
@@ -995,7 +1006,7 @@ export default {
   }
 
   .sldTable {
-    font-size: 0.67rem;
+    font-size: 0.9rem;
   }
 
   .sldTable .flex-row-div {
@@ -1056,6 +1067,14 @@ export default {
     width: 12%;
   }
 
+  .studentCheckbox :deep(.v-input__details){
+      display: none;
+  }
+
+  .bannerCheckbox :deep(.v-input__control){
+      height: 24px !important;
+  }
+
   .flexBox {
     display: flex;
     flex-direction: row;
@@ -1066,5 +1085,9 @@ export default {
   .flexBox a {
     margin-top: 2px;
     margin-left: 12px;
+  }
+
+  :deep(.v-data-table-footer){
+      display: none;
   }
 </style>

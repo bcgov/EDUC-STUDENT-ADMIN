@@ -19,6 +19,7 @@
       <v-col class="d-flex justify-end">
         <CompareDemographicModal
           v-model:selected-records="selectedRecords"
+          @update:selected-records="clearCheckboxes"
           :disabled="selectedRecords.length<2 || selectedRecords.length>3 || !EDIT_STUDENT_RECORDS_ROLE"
         />
       </v-col>
@@ -89,7 +90,7 @@
           >
             <div v-if="header.key === 'checkbox'">
               <v-checkbox
-                :value="item.item.raw.isSelected"
+                v-model="selected[item.item.raw.studentID]"
                 color="#606060"
                 @update:model-value="selectStudent(item.item.raw)"
               />
@@ -190,6 +191,7 @@ export default {
   },
   data() {
     return {
+      selected: [],
       pageCount: 0,
       itemsPerPage: 10,
       loading: false,
@@ -339,7 +341,7 @@ export default {
     },
     selectedRecords: {
       get() {
-        return this.studentSearchResponse.content.filter(student => student.isSelected);
+        return studentSearchStore().selectedRecords;
       },
       set(newRecord) {
         return studentSearchStore().setSelectedRecords(newRecord);
@@ -358,6 +360,9 @@ export default {
       const route = router.resolve({name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
+    clearCheckboxes(){
+      this.selected = [];
+    },
     formatDob,
     firstMemoChars(memo) {
       if (memo) {
@@ -373,8 +378,13 @@ export default {
     loadItems({page}) {
       this.pageNumber = page;
     },
-    selectStudent(student){
-      student.isSelected = !student.isSelect;
+    selectStudent(student) {
+      const isSelected = this.selectedRecords.includes(student);
+      if (isSelected) {
+        this.selectedRecords = this.selectedRecords.filter(record => record !== student);
+      } else {
+        this.selectedRecords.push(student);
+      }
     },
     pagination() {
       this.loading = true;

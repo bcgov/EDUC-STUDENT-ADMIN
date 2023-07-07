@@ -5,15 +5,14 @@
     max-width="80%"
     :disabled="disabled"
   >
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <TertiaryButton
         id="studentSearchCompareButton"
         text="Compare"
         icon="mdi-content-copy"
         :disabled="disabled"
         @click-action="compare"
-        :bind="attrs"
-        :on="on"
+        :bind="props"
       />
     </template>
     <v-card id="requestInfoDialogCard">
@@ -28,35 +27,35 @@
             id="compareModalCancelBtn"
             text="Cancel"
             secondary
-            @click-action="[closeCompareModal, clearError]"
+            @click-action="[closeCompareModal(), clearError()]"
           />
           <PrimaryButton
             id="moveSldBtn"
             text="Move Sld Record"
             primary
             :disabled="disableMoveSld()"
-            :click-action="moveSldRecords"
+            @click-action="moveSldRecords()"
           />
           <PrimaryButton
             id="twinBtn"
             text="Twin"
             primary
             :disabled="validateAction()"
-            @click-action="twin"
+            @click-action="twin()"
           />
           <PrimaryButton
             id="demergeBtn"
             text="Demerge"
             primary
             :disabled="disableDemerge()"
-            @click-action="demerge"
+            @click-action="demerge()"
           />
           <PrimaryButton
             id="mergeBtn"
             text="Merge PENs"
             primary
             :disabled="disableMerge()"
-            @click-action="merge"
+            @click-action="merge()"
           />
         </template>
       </CompareDemographicsCommon>
@@ -73,6 +72,7 @@ import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
+  emits: ['update:selectedRecords'],
   name: 'CompareDemographicModal',
   components: {
     CompareDemographicsCommon,
