@@ -327,7 +327,7 @@
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
                 :items="genderCodes"
-                :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                :variant="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE) ? 'outlined' : 'plain'"
                 density="compact"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 @keyup.tab="[hoveringGender = true, editingGender = true]"
@@ -343,7 +343,7 @@
                 class="onhoverEdit customNoBorder onhoverPad"
                 :value="genderLabel"
                 color="#000000"
-                dense
+                density="compact"
                 readonly
                 tabindex="-1"
                 :disabled="true"

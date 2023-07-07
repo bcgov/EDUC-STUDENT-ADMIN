@@ -3,7 +3,7 @@
     :id="id"
     v-model="data"
     :disabled="disabled"
-    :variant="outlined ? 'outlined' : undefined"
+    :variant="outlined ? 'outlined' : 'plain'"
     :density="dense ? 'compact' : undefined"
     :filled="filled"
     :readonly="readonly"

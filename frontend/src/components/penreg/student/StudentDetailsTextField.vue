@@ -21,6 +21,7 @@
         :class="{onhoverPad: !hovered && !hasEdits(name), darkBackgound: (hovered || hasEdits(name))}"
         color="#000000"
         density="compact"
+        :style="hovered || edited || hasEdits(name) ? '' : 'padding-top: 0px !important; margin-top: -7px'"
         :disabled="fieldDisabled"
         :maxlength="maxLength"
         :minlength="minLength || 0"

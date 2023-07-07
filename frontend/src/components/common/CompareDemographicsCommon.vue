@@ -1086,4 +1086,8 @@ export default {
     margin-top: 2px;
     margin-left: 12px;
   }
+
+  :deep(.v-data-table-footer){
+      display: none;
+  }
 </style>
