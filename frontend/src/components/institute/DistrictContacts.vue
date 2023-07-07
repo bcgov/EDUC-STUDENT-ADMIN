@@ -450,6 +450,8 @@ export default {
   padding-left: 1em;
   padding-right: 1em;
   border-radius: 5px;
+  margin-left: 0;
+  margin-right: 0;
   background-color: #F2F2F2;
 }
 
