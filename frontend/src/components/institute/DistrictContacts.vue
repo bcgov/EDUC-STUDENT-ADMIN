@@ -84,66 +84,118 @@
           />
         </v-col>
       </v-row>
+      <v-row
+        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']"
+        @keydown.enter="searchButtonClicked"
+      >
+        <v-col>
+          <v-select
+            id="status-select-field"
+            v-model="searchFilter.districtContactTypeCode"
+            clearable
+            :items="districtContactTypes"
+            item-title="label"
+            variant="underlined"
+            item-value="districtContactTypeCode"
+            :menu-props="{closeOnContentClick:true}"
+            label="Contact Type"
+          />
+        </v-col>
+        <v-col>
+          <v-text-field
+            id="first-name-search-text-field"
+            v-model="searchFilter.firstName"
+            variant="underlined"
+            label="Contact First Name"
+          />
+        </v-col>
+        <v-col>
+          <v-text-field
+            id="last-name-search-text-field"
+            v-model="searchFilter.lastName"
+            variant="underlined"
+            label="Contact Last Name"
+          />
+        </v-col>
+        <v-col
+          :class="['text-right']"
+        >
+          <PrimaryButton
+            id="district-clear-button"
+            secondary
+            text="Clear"
+            @click-action="clearButtonClicked"
+          />
+          <PrimaryButton
+            id="district-search-button"
+            class="ml-2"
+            text="Search"
+            @click-action="searchButtonClicked"
+          />
+        </v-col>
+      </v-row>
       <div
         v-for="districtContactType in districtContactTypes"
         :key="districtContactType.code"
         class="mt-5"
       >
-        <v-row
-          class="mb-1"
-          no-gutters
-        >
-          <v-col>
-            <h2 style="color:#1A5A96">
-              {{
-                districtContactType.label
-              }}
-            </h2>
-          </v-col>
-        </v-row>
-        <v-row v-if="!districtContactType.publiclyAvailable" no-gutters>
-          <v-col>
-            <v-alert
-              style="background-color: #003366"
-              color="white"
-              density="compact"
-              variant="text"
-              type="info"
-              width="50vw"
-            >
-              Contacts of this type are only available to the
-              ministry and not available to public.
-            </v-alert>
-          </v-col>
-        </v-row>
-        <v-row
-          v-if="districtContacts.has(districtContactType.districtContactTypeCode)"
-          class="mt-0 mb-0"
-          cols="2"
-        >
-          <v-col
-            v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)"
-            :key="contact.schoolId"
-            cols="5"
-            lg="4"
+        <div v-if="hasContactsWhenFiltered(districtContactType)">
+          <v-row
+            class="mb-1"
+            no-gutters
           >
-            <DistrictContact
-              :contact="contact"
-              :can-edit-district-contact="canEditDistrictContact"
-              @edit-district-contact:do-show-edit-district-contact-form="showDistrictEditForm(contact)"
-              @remove-school-contact:show-confirmation-prompt="removeContact"
-            />
-          </v-col>
-        </v-row>
-        <v-row
-          v-else
-          no-gutters
-          cols="2"
-        >
-          <v-col class="mt-2">
-            <p>No contacts of this type have been listed.</p>
-          </v-col>
-        </v-row>
+            <v-col>
+              <h2 style="color:#1A5A96">
+                {{
+                  districtContactType.label
+                }}
+              </h2>
+            </v-col>
+          </v-row>
+          <v-row v-if="!districtContactType.publiclyAvailable" no-gutters>
+            <v-col>
+              <v-alert
+                style="background-color: #003366"
+                color="white"
+                density="compact"
+                variant="text"
+                type="info"
+                width="50vw"
+              >
+                Contacts of this type are only available to the
+                ministry and not available to public.
+              </v-alert>
+            </v-col>
+          </v-row>
+          <v-row
+            v-if="hasContactsForThisType(districtContactType)"
+            class="mt-0 mb-0"
+            cols="2"
+          >
+            <v-col
+              v-for="contact in filteredDistrictContacts.get(districtContactType.districtContactTypeCode)"
+              :key="contact.schoolId"
+              cols="5"
+              lg="4"
+            >
+              <DistrictContact
+                :contact="contact"
+                :can-edit-district-contact="canEditDistrictContact"
+                @edit-district-contact:do-show-edit-district-contact-form="showDistrictEditForm(contact)"
+                @remove-school-contact:show-confirmation-prompt="removeContact"
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            v-else
+            no-gutters
+            cols="2"
+          >
+            <v-col class="mt-2">
+              <p>No contacts of this type have been listed.</p>
+            </v-col>
+          </v-row>
+        </div>
       </div>
     </template>
     <v-bottom-sheet
@@ -192,9 +244,10 @@ import EditDistrictContactPage from '@/components/institute/EditDistrictContactP
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {mapState} from 'pinia';
-import {sortBy} from 'lodash';
+import {sortBy, omitBy, isEmpty} from 'lodash';
 import {isExpired} from '@/utils/institute/status';
 import {authStore} from '@/store/modules/auth';
+import {setEmptyInputParams} from '@/utils/common';
 
 export default {
   name: 'DistrictContactsPage',
@@ -221,7 +274,14 @@ export default {
       districtDetails: '',
       editContact: null,
       newContactSheet: false,
-      editContactSheet: false
+      editContactSheet: false,
+      searchFilter: {
+        districtContactTypeCode: null,
+        firstName: '',
+        lastName: ''
+      },
+      filteredDistrictContacts: new Map(),
+      isFiltered: false
     };
   },
   computed: {
@@ -270,6 +330,7 @@ export default {
               this.districtContacts.get(contact.districtContactTypeCode).push(contact);
             }
           });
+          this.filteredDistrictContacts = this.districtContacts;
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the district\'s contacts. Please try again later.');
@@ -320,6 +381,36 @@ export default {
           }
         });
     },
+    clearButtonClicked() {
+      setEmptyInputParams(this.searchFilter);
+      this.searchButtonClicked();
+    },
+    searchButtonClicked() {
+      const searchCriteriaWithoutNulls = omitBy(this.searchFilter, isEmpty); //removing null filter criteria
+      this.isFiltered = Object.keys(searchCriteriaWithoutNulls).length !== 0; //setting isFiltered flag of use elsewhere
+
+      //Creating a new map of district contacts (from districtContacts) by performing a wildcard search with each provided filter parameters
+      this.filteredDistrictContacts = new Map(
+        Array.from(this.districtContacts).map(([districtContactType, contactArray]) => [
+          districtContactType,
+          contactArray.filter((obj) =>
+            Object.entries(searchCriteriaWithoutNulls).every(([filterKey, filterValue]) =>
+              new RegExp(`^.*${filterValue}.*$`, 'i').test(obj[filterKey])
+            )
+          ),
+        ])
+      );
+    },
+    hasContactsForThisType(districtContactType) {
+      return this.filteredDistrictContacts.has(districtContactType.districtContactTypeCode) && this.filteredDistrictContacts.get(districtContactType.districtContactTypeCode)?.length !== 0;
+    },
+    hasContactsWhenFiltered(districtContactType) {
+      if(this.isFiltered) {
+        return this.hasContactsForThisType(districtContactType);
+      } else {
+        return true;
+      }
+    }
   }
 };
 </script>
@@ -353,6 +444,15 @@ export default {
         padding-right: 4em !important;
         padding-left: 4em !important;
     }
+}
+
+.searchBox {
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 5px;
+  margin-left: 0;
+  margin-right: 0;
+  background-color: #F2F2F2;
 }
 
 </style>
