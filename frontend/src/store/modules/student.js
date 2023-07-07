@@ -105,7 +105,7 @@ export const studentStore = defineStore('student', {
       }
     },
     async getMacros() {
-      const response = ApiService.apiAxios.get(Routes.penServices.MACRO_URL);
+      const response = await ApiService.apiAxios.get(Routes.penServices.MACRO_URL);
       await this.setMergeMacros(response.data);
     }
   }

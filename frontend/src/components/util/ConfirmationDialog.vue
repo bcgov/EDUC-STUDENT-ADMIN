@@ -9,6 +9,7 @@
     <v-card>
       <slot
         name="title"
+        v-if="showTitleBar"
         :cancel="cancel"
       >
         <v-toolbar
@@ -71,6 +72,10 @@ export default {
       type: String,
       default: '',
     },
+    showTitleBar:{
+      type: Boolean,
+      default: true
+    }
   },
   data: () => ({
     dialog: false,
@@ -81,7 +86,7 @@ export default {
     options: {
       color: 'primary',
       width: 290,
-      zIndex: 200,
+      zIndex: 20000,
       dark: true,
       dense: true,
       closeIcon: false,

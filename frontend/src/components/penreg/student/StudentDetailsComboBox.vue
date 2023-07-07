@@ -29,8 +29,8 @@
           color="#FFFFFF"
           :items="items"
           :outlined="hovering || editing || hasEdits(name)"
-          dense
-          type="solo"
+          density="compact"
+          variant="solo"
           :disabled="fieldDisabled"
           :rules="rules"
           @keyup.tab="[editing = true, hovering = true]"

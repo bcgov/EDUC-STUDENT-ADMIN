@@ -4,7 +4,7 @@
       <v-checkbox
         v-model="checkedFieldModel"
         :disabled="!fieldModel || disabled"
-        style="margin-top: -0.4em"
+        style="margin-top: -0.6em"
         dense
         color="#606060"
         @update:model-value="handleOnChange"
@@ -17,11 +17,12 @@
       <v-text-field
         v-if="!isTextArea"
         :id="name"
-        style="margin-top: 0.2em"
+        style="margin-top: -0.55em"
         :disabled="!fieldModel || disabled"
         :value="fieldModel"
         :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
-        dense
+        density="compact"
+        variant="plain"
         readonly
       />
       <v-textarea
@@ -29,11 +30,12 @@
         :id="name"
         :disabled="!fieldModel || disabled"
         :value="fieldModel"
-        style="margin-top: 0.2em"
+        style="margin-top: -0.55em"
         :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
         color="#000000"
         maxlength="4000"
-        dense
+        density="compact"
+        variant="plain"
         readonly
         rows="3"
         no-resize

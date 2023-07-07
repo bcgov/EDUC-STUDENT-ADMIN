@@ -23,9 +23,9 @@
         :nudge-down="4"
         :large="largeIcon"
         right
+        :icon="icon"
         dark
       >
-        {{ icon }}
       </v-icon>
       <span
         :style="getButtonTextStyle()"
@@ -129,6 +129,10 @@ export default {
 }
 
 .v-theme--myCustomLightTheme.v-btn.v-btn--disabled:not(.v-btn--variant-flat):not(.v-btn--variant-text):not(.v-btn--variant-outlined) .v-icon {
+  color: white !important;
+}
+
+:deep(.v-progress-circular){
   color: white !important;
 }
 </style>

@@ -27,6 +27,7 @@
                 :id="STUDENT_DETAILS_FIELDS.PEN"
                 v-model="studentCopy.pen"
                 readonly
+                variant="outlined"
                 class="onhoverEdit bolder customNoBorder"
                 color="#000000"
                 density="compact"
@@ -92,7 +93,7 @@
               small
               dark
             >
-              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
+              <strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</strong>
             </v-chip>
           </div>
           <StudentDetailsComboBox
