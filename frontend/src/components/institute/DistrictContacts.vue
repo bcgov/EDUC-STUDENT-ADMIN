@@ -244,7 +244,7 @@ import EditDistrictContactPage from '@/components/institute/EditDistrictContactP
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {mapState} from 'pinia';
-import {sortBy} from 'lodash';
+import {sortBy, omitBy, isEmpty} from 'lodash';
 import {isExpired} from '@/utils/institute/status';
 import {authStore} from '@/store/modules/auth';
 import {setEmptyInputParams} from '@/utils/common';
@@ -386,14 +386,14 @@ export default {
       this.searchButtonClicked();
     },
     searchButtonClicked() {
-      const searchCriteriaWithoutNulls = Object.fromEntries(
-        Object.entries(this.searchFilter).filter(([, value]) => value !== '' && value !== null && value !== undefined)
-      );
-      this.isFiltered = Object.keys(searchCriteriaWithoutNulls).length !== 0;
+      const searchCriteriaWithoutNulls = omitBy(this.searchFilter, isEmpty); //removing null filter criteria
+      this.isFiltered = Object.keys(searchCriteriaWithoutNulls).length !== 0; //setting isFiltered flag of use elsewhere
+
+      //Creating a new map of district contacts (from districtContacts) by performing a wildcard search with each provided filter parameters
       this.filteredDistrictContacts = new Map(
-        Array.from(this.districtContacts).map(([key, value]) => [
-          key,
-          value.filter((obj) =>
+        Array.from(this.districtContacts).map(([districtContactType, contactArray]) => [
+          districtContactType,
+          contactArray.filter((obj) =>
             Object.entries(searchCriteriaWithoutNulls).every(([filterKey, filterValue]) =>
               new RegExp(`^.*${filterValue}.*$`, 'i').test(obj[filterKey])
             )
