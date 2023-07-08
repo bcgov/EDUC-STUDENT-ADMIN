@@ -5,15 +5,14 @@
     max-width="80%"
     :disabled="disabled"
   >
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <PrimaryButton
         id="splitPen"
         class="mx-1"
         text="Split PEN"
         :disabled="disabled"
         @click-action="openModal"
-        :bind="attrs"
-        :on="on"
+        :bind="props"
       />
     </template>
     <v-card
@@ -24,24 +23,26 @@
       <v-row>
         <v-col
           cols="6"
-          class="pt-0"
+          class="pt-2"
         >
           <v-row no-gutters>
             <v-col
               cols="4"
-              class="title pt-0"
+              class="title pt-2 pb-0"
+              style="margin-bottom: 9px;"
             >
-              <h4>Current PEN</h4>
+              <h3>Current PEN</h3>
             </v-col>
             <v-col class="pt-0">
               <v-checkbox
                 id="revertCheckbox"
                 v-model="revertCurrentStudent"
-                class="split-checkbox ma-0 pa-0 ml-4 mt-1"
+                class="split-checkbox ma-0 pa-0 ml-4"
                 height="100%"
+                hide-details
                 label="Revert"
                 color="#606060"
-                dense
+                density="compact"
                 :disabled="!studentDetailForRevert"
               />
             </v-col>
@@ -54,23 +55,11 @@
         </v-col>
         <v-col
           cols="6"
-          class="pt-0"
+          class="pt-2 pb-0"
+          style="margin-top: 4px;"
         >
-          <div class="title d-flex justify-space-between pt-0">
-            <h4>New PEN</h4>
-            <v-btn
-              id="closeModalBtn"
-              text
-              icon
-              @click="closeModal"
-            >
-              <v-icon
-                large
-                color="#38598A"
-              >
-                mdi-close
-              </v-icon>
-            </v-btn>
+          <div style="margin-top: 2px;" class="title d-flex justify-space-between pt-0">
+            <h3>New PEN</h3>
           </div>
           <StudentAuditHistoryDetailCard
             :student-history-detail="newStudentDetail"
@@ -80,7 +69,7 @@
           />
         </v-col>
       </v-row>
-      <v-card-actions class="pt-0 pr-0">
+      <v-card-actions class="pt-2 pr-0">
         <v-spacer />
         <PrimaryButton
           id="closeSplitPenModal"

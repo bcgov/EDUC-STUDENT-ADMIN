@@ -1,7 +1,7 @@
 <template>
   <v-row
     no-gutters
-    class="py-1"
+    class="py-2"
   >
     <v-col :cols="labelSpan">
       <p :class="['labelField', highlighted && !fieldModel? 'diff-value' : 'plain-value']">
@@ -16,8 +16,10 @@
         v-if="displayValue"
         :id="name"
         :value="fieldModel"
+        style="margin-top: -12px; font-weight: bold"
         :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
         density="compact"
+        variant="plain"
         readonly
         :disabled="fieldDisabled"
       />
@@ -111,9 +113,15 @@ export default {
   color: #008000 !important;
 }
 
-p.diff-value {
+.diff-value {
   font-weight: bold;
   color: #008000 !important;
+}
+
+.labelField {
+  display: table-cell;
+  height: 1em;
+  padding-top: 8px !important;
 }
 
 </style>

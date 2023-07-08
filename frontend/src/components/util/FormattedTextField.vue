@@ -13,9 +13,14 @@
     :tabindex="tabindex"
     :error-messages="asyncMessages"
     :label="label"
+    :bg-color="hovered || edited || hasEdits(name) ? '#efefef' : undefined"
     :class="classes"
+    @keyup.tab="[edited=true, hovered=true]"
+    @mouseover="fieldDisabled?hovered=false:hovered=true"
+    @mouseout="edited ? hovered=true : hovered= false"
+    @click="[edited=true, hovered=true]"
     @focus="[isActive = true, $emit('focus')]"
-    @blur="[isActive = false, $emit('blur')]"
+    @blur="[edited=false,hovered= false, isActive = false, $emit('blur')]"
   />
 </template>
 
@@ -47,8 +52,16 @@ export default {
       type: Function,
       required: true
     },
+    hasEdits: {
+      type: Function,
+      required: true
+    },
     id: {
       type: String
+    },
+    name: {
+      type: String,
+      required: true
     },
     maxlength: {
       type: String
@@ -80,19 +93,21 @@ export default {
   },
   data() {
     return {
+      edited: false,
+      hovered: false,
       isActive: false
     };
   },
   computed: {
     data: {
-      get(){
-        if(!this.isActive && (!this.rules || !this.existsAsyncMessages())) {
+      get() {
+        if (!this.isActive && (!this.rules || !this.existsAsyncMessages())) {
           return this.format(this.value);
         } else {
           return this.value;
         }
       },
-      set(data){
+      set(data) {
         this.$emit('input', data);
       }
     }

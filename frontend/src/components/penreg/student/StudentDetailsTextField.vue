@@ -2,7 +2,7 @@
   <v-row
     no-gutters
     dense
-    class="py-1 mb-1"
+    class="py-2 mb-1"
   >
     <v-col :cols="labelSpan">
       <p class="labelField">
@@ -20,8 +20,9 @@
         class="onhoverEdit bolder customNoBorder"
         :class="{onhoverPad: !hovered && !hasEdits(name), darkBackgound: (hovered || hasEdits(name))}"
         color="#000000"
+        :bg-color="hovered || edited || hasEdits(name) ? '#efefef' : undefined"
         density="compact"
-        :style="hovered || edited || hasEdits(name) ? '' : 'padding-top: 0px !important; margin-top: -7px'"
+        :style="hovered || edited || hasEdits(name) ? '' : 'padding-top: 0px !important; margin-top: -9px'"
         :disabled="fieldDisabled"
         :maxlength="maxLength"
         :minlength="minLength || 0"
@@ -47,7 +48,9 @@
         class="onhoverEdit revert customNoBorder ml-3"
         readonly
         value="Revert"
-        dense
+        density="compact"
+        style="margin-top: -7px"
+        variant="plain"
         tabindex="-1"
         @click="revertField(name)"
       />
@@ -108,11 +111,11 @@ export default {
     minLength: {
       type: String
     },
-    disabled:{
-      type:Boolean,
-      required:true
+    disabled: {
+      type: Boolean,
+      required: true
     },
-    handleOnInput:{
+    handleOnInput: {
       type: Function
     },
     asyncMessages: {
@@ -134,7 +137,7 @@ export default {
     model(newValue) {
       this.fieldModel = newValue;
     },
-    disabled(newValue){
+    disabled(newValue) {
       this.fieldDisabled = newValue;
     }
   },
@@ -146,3 +149,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.bolder {
+    font-weight: bolder;
+}
+
+.revert {
+    color: #1a5a96 !important;
+    font-weight: bolder;
+}
+
+.revert :deep(input) {
+    cursor: pointer;
+}
+
+</style>

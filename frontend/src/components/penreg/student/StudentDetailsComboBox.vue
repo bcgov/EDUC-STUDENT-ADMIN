@@ -3,6 +3,7 @@
     <v-row
       cols="1"
       no-gutters
+      class="pt-3"
     >
       <v-col>
         <p class="ma-0">
@@ -28,25 +29,29 @@
           :class="{darkBackgound: hovering || hasEdits(name)}"
           color="#FFFFFF"
           :items="items"
-          :outlined="hovering || editing || hasEdits(name)"
+          item-title="text"
+          item-value="value"
+          :style="hovering || editing || hasEdits(name) ? '' : 'margin-top: -12px !important'"
+          :bg-color="hovering || editing || hasEdits(name) ? '#efefef' : undefined"
+          :variant="hovering || editing || hasEdits(name) ? 'outlined' : 'plain'"
           density="compact"
-          variant="solo"
           :disabled="fieldDisabled"
           :rules="rules"
           @keyup.tab="[editing = true, hovering = true]"
-          @change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
+          @update:model-value="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
         >
           <template #selection="{ item }">
             <v-chip
               v-if="name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel)"
-              small
               dark
               color="#003366"
             >
-              {{ item.text }}
+              {{ item.raw.text }}
             </v-chip>
-            <div v-else>
-              {{ item.text }}
+            <div class="bolder"
+                 v-else
+            >
+              {{ item.raw.text }}
             </div>
           </template>
         </v-select>
@@ -63,7 +68,8 @@
           class="my-0 onhoverEdit revert customNoBorder ml-3"
           readonly
           value="Revert"
-          dense
+          density="compact"
+          variant="plain"
           tabindex="-1"
           @click="revertField(name)"
         />
@@ -118,7 +124,7 @@ export default {
       type: Function
     },
     disabled: {
-      type:Boolean,
+      type: Boolean,
       required: true
     },
     rules: {
@@ -140,7 +146,7 @@ export default {
     model(newValue) {
       this.fieldModel = newValue;
     },
-    disabled(newValue){
+    disabled(newValue) {
       this.fieldDisabled = newValue;
     }
   },
@@ -153,10 +159,21 @@ export default {
 </script>
 
 <style scoped>
-  #chipSelected /deep/ i {
+#chipSelected /deep/ i {
     display: none !important;
-  }
-  #chipSelected:hover /deep/ i {
+}
+
+#chipSelected:hover /deep/ i {
     display: inline !important;
-  }
+}
+
+.revert {
+    margin-top: -1em !important;
+    color: #1a5a96 !important;
+    font-weight: bolder;
+}
+
+.revert :deep(input) {
+    cursor: pointer;
+}
 </style>

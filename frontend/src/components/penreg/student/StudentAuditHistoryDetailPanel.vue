@@ -19,21 +19,20 @@
               :disabled="previousDisabled"
               class="mr-3"
               dark
-              icon
-              small
+              icon="mdi-arrow-left-bold"
+              size="small"
               @click="clickPrevious"
             >
-              <v-icon large>fa-arrow-alt-circle-left</v-icon>
             </v-btn>
             <v-btn
               id="nextHistoryDetail"
               :disabled="nextDisabled"
               class="mr-2"
               dark
-              icon
+              size="small"
+              icon="mdi-arrow-right-bold"
               @click="clickNext"
             >
-              <v-icon large>fa-arrow-alt-circle-right</v-icon>
             </v-btn>
           </span>
         </div>

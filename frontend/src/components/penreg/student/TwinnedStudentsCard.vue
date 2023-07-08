@@ -1,26 +1,24 @@
 <template>
-  <v-card height="100%">
-    <v-card-title class="px-0 pb-0 pt-5">
+  <v-card>
+    <v-card-title class="px-0 pb-0">
       <v-list-item>
         <v-list-item class="pt-0">
           <v-list-item-title class="headline">
-            Twinned Students
+            <v-row>
+              <v-col class="mt-2">
+                <span style="font-size: x-large;font-weight: bold">Twinned Students</span>
+              </v-col>
+              <v-col class="d-flex justify-end">
+                <v-btn
+                  variant="flat"
+                  icon="mdi-close"
+                  @click="$emit('close')"
+                >
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-list-item-title>
         </v-list-item>
-        <v-list-item-icon class="my-0">
-          <v-btn
-            text
-            icon
-            @click="$emit('close')"
-          >
-            <v-icon
-              color="#38598A"
-              class="px-0"
-            >
-              mdi-close
-            </v-icon>
-          </v-btn>
-        </v-list-item-icon>
       </v-list-item>
     </v-card-title>
     <v-card-text class="px-3 py-2 text--primary">
@@ -34,11 +32,11 @@
             :headers="topTableHeaders"
             :items="[currentStudent]"
             hide-default-footer
-            dense
+            density="compact"
           />
         </v-col>
       </v-row>
-      <v-divider class="mt-2" />
+      <v-divider class="mt-2"/>
       <v-row
         no-gutters
         justify="end"
@@ -49,7 +47,7 @@
             class="px-4"
           ><strong>{{ possibleMatches.length }} Twins</strong></span>
         </v-col>
-        <v-col class="mt-2">
+        <v-col class="mt-4">
           <v-row
             justify="end"
             class="mx-3"
@@ -57,7 +55,6 @@
             <TertiaryButton
               id="deleteButton"
               :disabled="selectedTwins.length < 1 || !ADVANCED_SEARCH_ROLE"
-              class="ma-0"
               text="Delete"
               icon="mdi-delete"
               @click-action="deleteTwinStudent"
@@ -69,11 +66,11 @@
         id="details-table"
         v-model:page="pageNumber"
         v-model="selectedTwins"
+        return-object
         :headers="headers"
         :items="possibleMatchItems"
         :items-per-page="itemsPerPage"
         show-select
-        hide-default-footer
         item-key="possibleMatchID"
       >
         <template #[`item.pen`]="props">
@@ -93,6 +90,7 @@
       <v-row
         class="pt-2"
         justify="end"
+        no-gutters
       >
         <v-col cols="4">
           <v-pagination
@@ -149,18 +147,18 @@ export default {
       pageNumber: 1,
       itemsPerPage: 15,
       headers: [
-        {text: 'PEN', align: 'start', sortable: false, value: 'pen', topTable: true},
-        {text: 'Legal Name', value: 'legalName', sortable: false, topTable: true},
-        {text: 'Birth Date', value: 'dob', sortable: false, topTable: true},
-        {text: 'Gender', value: 'genderCode', sortable: false, topTable: true},
-        {text: 'Twinned', value: 'matchedDate', sortable: false},
-        {text: 'Reason', value: 'matchedReason', sortable: false},
+        {title: 'PEN', key: 'pen', align: 'start', sortable: false, value: 'pen', topTable: true},
+        {title: 'Legal Name', value: 'legalName', key: 'legalName', sortable: false, topTable: true},
+        {title: 'Birth Date', value: 'dob', key: 'dob', sortable: false, topTable: true},
+        {title: 'Gender', value: 'genderCode', key: 'genderCode', sortable: false, topTable: true},
+        {title: 'Twinned', value: 'matchedDate', key: 'matchedDate', sortable: false},
+        {title: 'Reason', value: 'matchedReason', key: 'matchedReason', sortable: false},
       ],
     };
   },
   computed: {
     ...mapState(studentStore, ['possibleMatchReasons']),
-    ...mapActions(authStore, ['ADVANCED_SEARCH_ROLE']),
+    ...mapState(authStore, ['ADVANCED_SEARCH_ROLE']),
     topTableHeaders() {
       return this.headers.filter(header => header.topTable);
     },
@@ -217,8 +215,8 @@ export default {
           studentID: element.studentID,
           matchedStudentID: element.matchedStudentID,
           matchReasonCode: element.matchedReason,
-          createUser:element.createUser,
-          updateUser:element.updateUser
+          createUser: element.createUser,
+          updateUser: element.updateUser
         };
       });
       ApiService.apiAxios
@@ -247,110 +245,114 @@ export default {
 
 <style scoped>
 #currentItemsDisplay {
-  text-align: right;
-  font-size: 0.875rem;
+    text-align: right;
+    font-size: 0.875rem;
 }
 
 /deep/ tr.v-data-table__selected {
-  background: #dff4fd !important;
+    background: #dff4fd !important;
 }
 
 .twins-pagination /deep/ .v-pagination__navigation > i {
-  padding-left: 0;
+    padding-left: 0;
 }
 
 #top-table /deep/ table th:nth-child(1) {
-  width: 21%;
+    width: 21%;
 }
 
 #top-table /deep/ table th:nth-child(3),
 #top-table /deep/ table th:nth-child(4) {
-  width: 20%;
+    width: 20%;
 }
 
 #top-table /deep/ table th:nth-child(2) {
-  width: 39%;
+    width: 39%;
 }
 
 #top-table /deep/ table th {
-  border-bottom: none !important;
-  font-size: 0.875rem;
-  font-weight: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
+    border-bottom: none !important;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
 }
 
 #top-table /deep/ table td {
-  cursor: default;
-  font-weight: bold;
+    cursor: default;
+    font-weight: bold;
 }
 
 #top-table /deep/ table > tbody > tr:hover {
-  background: transparent !important;
+    background: transparent !important;
 }
 
 #details-table /deep/ table {
-  table-layout: fixed;
-  width: 100%;
+    table-layout: fixed;
+    width: 100%;
 }
 
 #details-table /deep/ table th:nth-child(1) {
-  width: 5%;
+    width: 5%;
 }
 
 #details-table /deep/ table th:nth-child(2) {
-  width: 16%;
+    width: 16%;
 }
 
 #details-table /deep/ table th:nth-child(3) {
-  width: 25%;
+    width: 25%;
 }
 
 #details-table /deep/ table th:nth-child(4) {
-  width: 15%;
+    width: 15%;
 }
 
 #details-table /deep/ table th:nth-child(5) {
-  width: 11%;
+    width: 11%;
 }
 
 #details-table /deep/ table th:nth-child(6) {
-  width: 15%;
+    width: 15%;
 }
 
 #details-table /deep/ table th:nth-child(7) {
-  width: 18%;
+    width: 18%;
 }
 
 #details-table /deep/ table > tbody > tr:not(:last-child) > td {
-  border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 #details-table /deep/ table > thead > tr:last-child > th,
 #details-table /deep/ table > tbody > tr:last-child > td {
-  border-bottom: thin solid black;
+    border-bottom: thin solid black;
 }
 
 #details-table /deep/ table th {
-  font-size: 0.875rem;
-  color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.87) !important;
 }
 
 #details-table /deep/ table > tbody > tr {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 #details-table /deep/ table > tbody > tr > td {
-  height: 32px;
+    height: 32px;
+}
+
+:deep(.v-data-table-footer){
+    display: none;
 }
 
 .v-divider {
-  display: block;
-  flex: 1 1 0;
-  max-width: 100%;
-  height: 0;
-  max-height: 0;
-  border: 0 solid black;
-  border-top-width: medium;
-  transition: inherit;
+    display: block;
+    flex: 1 1 0;
+    max-width: 100%;
+    height: 0;
+    max-height: 0;
+    border: 0 solid black;
+    border-top-width: medium;
+    transition: inherit;
 }
 </style>

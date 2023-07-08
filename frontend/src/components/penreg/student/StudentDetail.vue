@@ -14,88 +14,92 @@
         class="fill-height ma-0 pa-0"
       >
         <v-row>
-          <v-tabs
-            selected-class="active-display"
-            class="pa-0 ma-0 "
-            :model-value="tab"
-          >
+          <v-tabs v-model="tab">
             <v-tab
-              key="Demographics"
+              value="demographics"
               class="student-details-tabs-style"
             >
-              <strong>Demographics</strong>
+              Demographics
             </v-tab>
             <v-tab
-              v-if="VIEW_SLD_HISTORY_ROLE"
-              key="SLD"
+              value="sld"
               class="student-details-tabs-style"
             >
-              <strong>SLD History</strong>
+              SLD History
             </v-tab>
             <v-tab
               v-if="VIEW_AUDIT_HISTORY_ROLE"
-              key="Audit"
+              value="audit"
               class="student-details-tabs-style"
             >
-              <strong>Audit History</strong>
+              Audit History
             </v-tab>
           </v-tabs>
         </v-row>
-        <v-tabs-items v-if="!isLoading">
-          <StudentDetailCommon
-            v-if="tab===0"
-            :student-i-d="studentID"
-            :student-details="studentDetails"
-            :valid-form="validForm"
-            :parent-refs="$refs"
-            :full-read-only="hasSagaInProgress || !EDIT_STUDENT_RECORDS_ROLE"
-            @update:student="v => studentDetails.student = v"
-            @isStudentUpdated="v=> isStudentDataUpdated = v"
-            @refresh="refreshStudent"
-          >
-            <template #buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
-              <v-row>
-                <v-col cols="12">
-                  <v-card-actions style="float: right;">
-                    <router-link
-                      :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"
-                    >
-                      <PrimaryButton
-                        :secondary="true"
-                        class="mx-1"
-                        text="Cancel"
-                      />
-                    </router-link>
-                    <PrimaryButton
-                      v-if="studentDetails.student.statusCode === 'M'"
-                      :disabled="disableDemerge"
-                      text="Demerge"
-                      @click-action="demerge"
-                    />
-                    <PrimaryButton
-                      :disabled="!hasAnyEdits() || !validForm"
-                      text="Save"
-                      :loading="saveStudentLoading"
-                      @click-action="saveStudent"
-                    />
-                  </v-card-actions>
-                </v-col>
-              </v-row>
-            </template>
-          </StudentDetailCommon>
-          <StudentSLDHistory
-            v-else-if="tab===1 && VIEW_SLD_HISTORY_ROLE"
-            :student="studentDetails.student"
-            @refresh="refreshStudent"
-            @isStudentUpdated="v=> isStudentDataUpdated = v"
-          />
-          <StudentAuditHistory
-            v-else-if="tab===2 && VIEW_AUDIT_HISTORY_ROLE"
-            :student="studentDetails.student"
-            @refresh="refreshStudent"
-            @isStudentUpdated="v=> isStudentDataUpdated = v"
-          />
-        </v-tabs-items>
+        <v-row v-if="!isLoading">
+          <v-col class="px-0">
+            <v-window v-model="tab">
+              <v-window-item
+                value="demographics"
+              >
+                <StudentDetailCommon
+                  :student-i-d="studentID"
+                  :student-details="studentDetails"
+                  :valid-form="validForm"
+                  :parent-refs="$refs"
+                  :full-read-only="hasSagaInProgress || !EDIT_STUDENT_RECORDS_ROLE"
+                  @update:student="v => studentDetails.student = v"
+                  @isStudentUpdated="v=> isStudentDataUpdated = v"
+                  @refresh="refreshStudent"
+                >
+                  <template #buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
+                    <v-row>
+                      <v-col cols="12">
+                        <v-card-actions style="float: right;">
+                          <router-link
+                            :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"
+                          >
+                            <PrimaryButton
+                              :secondary="true"
+                              class="mx-1"
+                              text="Cancel"
+                            />
+                          </router-link>
+                          <PrimaryButton
+                            v-if="studentDetails.student.statusCode === 'M'"
+                            :disabled="disableDemerge"
+                            text="Demerge"
+                            @click-action="demerge"
+                          />
+                          <PrimaryButton
+                            :disabled="!hasAnyEdits() || !validForm"
+                            text="Save"
+                            :loading="saveStudentLoading"
+                            @click-action="saveStudent"
+                          />
+                        </v-card-actions>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </StudentDetailCommon>
+              </v-window-item>
+              <v-window-item value="sld">
+                <StudentSLDHistory
+                  :student="studentDetails.student"
+                  @refresh="refreshStudent"
+                  @isStudentUpdated="v=> isStudentDataUpdated = v"
+                />
+              </v-window-item>
+              <v-window-item value="audit">
+                <StudentAuditHistory
+                  :student="studentDetails.student"
+                  @refresh="refreshStudent"
+                  @isStudentUpdated="v=> isStudentDataUpdated = v"
+                />
+              </v-window-item>
+            </v-window>
+          </v-col>
+        </v-row>
         <v-row v-else>
           <v-row
             fluid
@@ -136,7 +140,6 @@ import {mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {studentStore} from '@/store/modules/student';
 import {authStore} from '@/store/modules/auth';
-
 export default {
   name: 'StudentDetail',
   components: {
@@ -156,7 +159,7 @@ export default {
     return {
       validForm: false,
       studentForm: null,
-      tab: 0,
+      tab: null,
       isLoading: true,
       studentDetails: null,
       isStudentDataUpdated: false,
@@ -209,96 +212,98 @@ export default {
 
 <style>
 .studentDetail {
-  line-height: 1.2;
+    line-height: 1.2;
 }
 
 .topMenu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .onhoverEdit.v-text-field > .v-input__control > .v-input__slot:before {
-  border-style: none;
+    border-style: none;
 }
 
 .onhoverEdit.v-text-field > .v-input__control > .v-input__slot:after {
-  border-style: none;
+    border-style: none;
 }
 
 .onhoverPad {
-  padding-left: 12px !important;
-  padding-top: 2px !important;
+    padding-left: 12px !important;
+    padding-top: 2px !important;
 }
 
 .onEditPad {
-  padding-left: 12px !important;
-  padding-top: 2px !important;
+    padding-left: 12px !important;
+    padding-top: 2px !important;
 }
 
 .textFieldColumn {
-  display: table-cell;
-  height: 1rem;
+    display: table-cell;
+    height: 1rem;
 }
 
 .darkBackgound.v-text-field > .v-input__control > .v-input__slot {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 
 .textAreaColumn {
-  display: table-cell;
+    display: table-cell;
 }
 
 .sideCardField {
-  display: table-cell;
-  height: 3em;
+    display: table-cell;
+    height: 3em;
 }
 
 .labelField {
-  display: table-cell;
-  height: 1em;
-  padding-top: 9px !important;
+    display: table-cell;
+    height: 1em;
+    padding-top: 9px !important;
 }
 
 .customNoBorder.v-text-field > .v-input__control > .v-input__slot {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
 }
 
 .revert.v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot > input {
-  color: #1a5a96 !important;
-  font-weight: bolder;
-  cursor: pointer;
+    color: #1a5a96 !important;
+    font-weight: bolder;
+    cursor: pointer;
 }
 
 .bolder {
-  color: #000000 !important;
-  font-weight: bolder;
+    color: #000000 !important;
+    font-weight: bolder;
 }
 
 .top-banner {
-  background-color: white;
-  background-size: cover;
-  align-items: center;
-  display: flex;
+    background-color: white;
+    background-size: cover;
+    align-items: center;
+    display: flex;
 }
 
 .full-height {
-  height: 100%;
-  min-height: 400px;
+    height: 100%;
+    min-height: 400px;
 }
+
 .active-display {
-  background-color: #eaf8fe;
+    background-color: #eaf8fe;
 }
 
 .pen {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
 .dob-disabled {
-  visibility: hidden;
+    visibility: hidden;
 }
-.student-details-tabs-style{
-  text-transform: none;
+
+.student-details-tabs-style {
+    font-weight: bold !important;
 }
 </style>
