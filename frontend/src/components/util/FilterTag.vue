@@ -3,16 +3,16 @@
     :id="id"
     class="filter-chip"
     label
-    close
-    close-icon="fa-times"
-    @click:close="close(item)"
+    closable
+    :text="text"
+    @click:close="$emit('closeItem')"
   >
-    <span>{{ text }}</span>
   </v-chip>
 </template>
 
 <script>
 export default {
+  emits: ['closeItem'],
   name: 'FilterTag',
   props: {
     id: {
@@ -21,11 +21,7 @@ export default {
     },
     text: {
       type: String
-    },
-    close: {
-      type: Function
-    },
-    item: [String, Number]
+    }
   }
 };
 </script>

@@ -27,9 +27,8 @@
           <template #selection="{ attrs, item, select, selected }">
             <FilterTag
               :id="item + 'tag'"
-              :text="item"
-              :close="remove"
-              :item="item"
+              :text="item.title"
+              @close-item="remove(item)"
             />
           </template>
         </v-combobox>
@@ -165,23 +164,24 @@
             There are no requests with the selected statuses.
           </template>
           <template #item="{ item }">
+
             <tr
-              :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
-              @click="viewRequestDetails(item)"
+              :class="item.raw.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
+              @click="viewRequestDetails(item.raw)"
             >
-              <td>{{ item[`${requestType}StatusCode`].label }}</td>
-              <td>{{ item.initialSubmitDate ? moment(item.initialSubmitDate).format('YYYY/MM/DD LT') : '' }}</td>
+              <td>{{ item.raw[`${requestType}StatusCode`].label }}</td>
+              <td>{{ item.raw.initialSubmitDate ? moment(item.raw.initialSubmitDate).format('YYYY/MM/DD LT') : '' }}</td>
               <td>
-                {{ item[`${penName}`] }}
+                {{ item.raw[`${penName}`] }}
                 <ClipboardButton
-                  v-if="item[`${penName}`]"
-                  :copy-text="item[`${penName}`]"
-                  icon="$copy"
+                  v-if="item.raw[`${penName}`]"
+                  :copy-text="item.raw[`${penName}`]"
+                  icon="mdi-content-copy"
                 />
               </td>
-              <td>{{ item.legalLastName }}</td>
-              <td>{{ item.legalFirstName }}</td>
-              <td>{{ item.reviewer }}</td>
+              <td>{{ item.raw.legalLastName }}</td>
+              <td>{{ item.raw.legalFirstName }}</td>
+              <td>{{ item.raw.reviewer }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -200,6 +200,7 @@ import FilterTag from './util/FilterTag.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {requestStore} from '@/store/modules/request';
+import moment from 'moment';
 
 export default {
   name: 'RequestsDisplay',
