@@ -27,7 +27,8 @@
                 :id="STUDENT_DETAILS_FIELDS.PEN"
                 v-model="studentCopy.pen"
                 readonly
-                variant="outlined"
+                variant="plain"
+                style="margin-top: -8px"
                 class="onhoverEdit bolder customNoBorder"
                 color="#000000"
                 density="compact"
@@ -35,8 +36,6 @@
             </v-col>
             <v-col cols="1">
               <PrimaryButton
-                v-clipboard:copy="copyTxt"
-                v-clipboard:error="onError"
                 color="#38598A"
                 text="Copy"
                 :short="true"
@@ -71,6 +70,7 @@
             :revert-field="revertField"
             :items="getDocumentTypes()"
             revert-id="revertDocumentTypeCode"
+
             :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"
             @changeStudentObjectValue="changeStudentObjectValue"
           />
@@ -202,7 +202,7 @@
       </v-col>
       <v-col
         cols="7"
-        class="py-0 pl-0"
+        class="py-0 pl-0 mt-3"
       >
         <v-card
           class="pa-0"
@@ -307,7 +307,7 @@
           <v-row
             no-gutters
             density="compact"
-            class="py-1"
+            class="py-2"
             style="max-height: 3em;"
           >
             <v-col cols="2">
@@ -327,6 +327,8 @@
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
                 :items="genderCodes"
+                :bg-color="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE) ? '#efefef' : undefined"
+                :style="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE) ? '' : 'padding-top: 0px !important; margin-top: -7px'"
                 :variant="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE) ? 'outlined' : 'plain'"
                 density="compact"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
@@ -344,6 +346,8 @@
                 :value="genderLabel"
                 color="#000000"
                 density="compact"
+                style="margin-top: -10px; color: black"
+                variant="plain"
                 readonly
                 tabindex="-1"
                 :disabled="true"
@@ -356,10 +360,12 @@
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 id="revertGender"
-                class="onhoverEdit revert customNoBorder ml-3"
+                class="onhoverEdit revertValue customNoBorder ml-3"
                 readonly
                 value="Revert"
-                dense
+                style="margin-top: -7px"
+                variant="plain"
+                density="compact"
                 tabindex="-1"
                 @click="revertField(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
               />
@@ -368,8 +374,8 @@
 
           <v-row
             no-gutters
-            dense
-            class="py-1 mb-1"
+            density="compact"
+            class="py-3"
           >
             <v-col cols="2">
               <div class="labelField">
@@ -400,9 +406,12 @@
                 :format="formatDob"
                 :async-messages="err.birthDateError"
                 :rules="validateDOB()"
+                :has-edits="hasEdits"
+                :name="STUDENT_DETAILS_FIELDS.DOB"
                 maxlength="8"
                 :readonly="!hoveringDOB || !editingDOB"
-                :outlined="hoveringDOB || editingDOB || dobHasChanged()"
+                :style="hoveringDOB || editingDOB || dobHasChanged() ? '' : 'padding-top: 0px !important; margin-top: -10px'"
+                :variant="hoveringDOB || editingDOB || dobHasChanged() ? 'outlined': 'plain'"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
                 @keyup.tab="[editingDOB = true, hoveringDOB = true]"
                 @mouseover="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
@@ -422,7 +431,9 @@
                 v-model="longDOB"
                 class="onhoverEdit bolder customNoBorder onhoverPad"
                 color="#000000"
-                dense
+                style="margin-top: -10px; color: black"
+                density="compact"
+                variant="plain"
                 readonly
                 tabindex="-1"
               />
@@ -434,11 +445,12 @@
               <v-text-field
                 v-show="dobHasChanged()"
                 id="revertDOB"
-                class="onhoverEdit revert customNoBorder ml-3"
+                class="onhoverEdit revertValue customNoBorder ml-3"
                 readonly
                 value="Revert"
-                style="padding-top: 2px;"
-                dense
+                style="margin-top: -7px"
+                variant="plain"
+                density="compact"
                 tabindex="-1"
                 @click="revertDOBField(STUDENT_DETAILS_FIELDS.DOB)"
               />
@@ -446,8 +458,8 @@
           </v-row>
           <v-row
             no-gutters
-            dense
-            class="py-1"
+            density="compact"
+            class="py-3"
             style="max-height: 3em;"
           >
             <v-col cols="2">
@@ -464,11 +476,13 @@
                 id="GradeCombo"
                 v-model="studentCopy.gradeCode"
                 tabindex="9"
+                :style="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE) ? '' : 'padding-top: 0px !important; margin-top: -7px'"
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hovering || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE), 'grade-drop-down-fixed': !hovering&&!editing}"
                 :items="gradeCodes"
-                :outlined="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
-                dense
+                :bg-color="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE) ? '#efefef' : undefined"
+                :variant="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE) ? 'outlined' : 'plain'"
+                density="compact"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 @keyup.tab="[editing = true, hovering = true]"
                 @change="[editing = false, hovering = false, setGradeLabel()]"
@@ -483,20 +497,23 @@
                 class="onhoverEdit customNoBorder onhoverPad"
                 :value="gradeLabel"
                 color="#000000"
-                dense
+                density="compact"
+                style="margin-top: -10px"
+                variant="plain"
                 readonly
                 tabindex="-1"
                 :disabled="true"
               />
             </v-col>
-            <v-col>
+            <v-col class="py-2">
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 id="revertGradeCode"
-                class="onhoverEdit revert customNoBorder ml-3"
+                class="onhoverEdit revertValue customNoBorder ml-3"
                 readonly
+                variant="plain"
                 value="Revert"
-                dense
+                density="compact"
                 tabindex="-1"
                 @click="revertField(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
               />
@@ -528,7 +545,7 @@
 
           <v-row
             no-gutters
-            class="py-1"
+            class="py-3"
           >
             <v-col cols="2">
               <p class="labelField">
@@ -548,10 +565,13 @@
                 :filled="false"
                 :clearable="false"
                 :format="formatMincode"
+                :name="STUDENT_DETAILS_FIELDS.MINCODE"
+                :has-edits="hasEdits"
                 :rules="validateMincode()"
                 maxlength="8"
+                :style="hoveringMincode || editingMincode || mincodeHasChanged() ? '' : 'padding-top: 0px !important; margin-top: -7px'"
                 :readonly="!hoveringMincode || !editingMincode"
-                :outlined="hoveringMincode || editingMincode || mincodeHasChanged() || false"
+                :variant="hoveringMincode || editingMincode || mincodeHasChanged() ? 'outlined' : 'plain'"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                 @keyup.tab="[editingMincode = true, hoveringMincode = true]"
                 @mouseover="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
@@ -576,7 +596,9 @@
                 v-model="schoolLabel"
                 class="onhoverEdit customNoBorder onhoverPad"
                 color="#000000"
-                dense
+                density="compact"
+                style="padding-top: 0px !important; margin-top: -7px"
+                variant="plain"
                 readonly
                 tabindex="-1"
               />
@@ -588,11 +610,12 @@
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
                 id="revertMincode"
-                class="onhoverEdit revert customNoBorder ml-3"
+                class="onhoverEdit revertValue customNoBorder ml-3"
                 readonly
                 value="Revert"
-                style="padding-top: 2px;"
-                dense
+                style="margin-top: -8px"
+                variant="plain"
+                density="compact"
                 tabindex="-1"
                 @click="revertMincodeField()"
               />
@@ -664,8 +687,9 @@
 
           <v-row
             no-gutters
-            dense
+            density="compact"
             style="min-height: 7em;"
+            class="py-2"
           >
             <v-col cols="2">
               <p class="labelField">
@@ -681,7 +705,9 @@
                 :class="{onhoverPad: !hoveringMemo && !hasEdits('memo'), darkBackgound: hoveringMemo || hasEdits('memo')}"
                 color="#000000"
                 maxlength="4000"
-                dense
+                density="compact"
+                :bg-color="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO) ? '#efefef' : undefined"
+                :variant="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO) ? 'outlined' : 'plain'"
                 rows="3"
                 no-resize
                 :readonly="!hoveringMemo || !editingMemo"
@@ -701,10 +727,11 @@
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                 id="revertMemo"
-                class="onhoverEdit revert customNoBorder ml-3"
+                class="onhoverEdit revertValue customNoBorder ml-3"
                 readonly
                 value="Revert"
-                dense
+                density="compact"
+                variant="plain"
                 tabindex="-1"
                 @click="revertField(STUDENT_DETAILS_FIELDS.MEMO)"
               />
@@ -727,12 +754,7 @@
       </v-col>
       <v-col cols="1">
         <TertiaryButton
-          v-clipboard:copy="copyTxt"
-          v-clipboard:error="onError"
-          class="ma-0"
-          color="#38598A"
           text="Copy"
-          :model="copyTxt"
           @click-action="copyInfo"
         />
       </v-col>
@@ -824,16 +846,16 @@
         </v-col>
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog">
+    <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog" :show-title-bar="false">
       <template #message>
-        <v-col class="mt-n6">
+        <v-col>
           <v-row class="mb-3">
             <span>Are you sure you want to edit this <strong>Confirmed</strong> student?</span>
           </v-row>
         </v-col>
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog ref="demergeConfirmationDialog">
+    <ConfirmationDialog ref="demergeConfirmationDialog" :show-title-bar="false">
       <template #message>
         <v-col class="mt-n6">
           <v-row
@@ -1129,6 +1151,7 @@ export default {
         setTimeout(() => event.target.setSelectionRange(cursorPositionStart, cursorPositionEnd), 0);
       }
       this.clearFieldError(key);
+      this.validateForm();
     }, 500),
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
@@ -1276,6 +1299,7 @@ export default {
       }
       this.setGradeLabel();
       this.setGenderLabel();
+      this.validateForm();
     },
     revertDOBField(value) {
       this.revertField(value);
@@ -1353,6 +1377,9 @@ export default {
         }
         return true;
       }
+    },
+    validateForm(){
+      this.parentRefs.studentDetailForm.validate();
     },
     confirmDeceasedDialog() {
       this.deceasedDialog = false;
@@ -1691,11 +1718,21 @@ export default {
 
 };
 </script>
-<style>
+<style scoped>
 .topMenu {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.revertValue{
+  cursor: pointer !important;
+  color: #1a5a96 !important;
+  font-weight: bolder !important;
+}
+
+.revertValue :deep(.v-field__input){
+  cursor: pointer;
 }
 
 .onhoverEdit.v-text-field > .v-input__control > .v-input__slot:before {

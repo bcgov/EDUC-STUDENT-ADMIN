@@ -32,84 +32,84 @@
           :items-per-page="10"
           :loading="loading"
           no-data-text="No SLD history found"
-          :hide-default-footer="sldData.length===0"
         >
           <template
             v-for="h in headers"
             :key="h.id"
-            #[`header.${h.value}`]="{ header }"
+            #[`column.${h.key}`]="{ column }"
           >
             <span
-              :title="header.tooltip"
-              :class="{'file-column' : !header.countable}"
+              style="font-weight: bold"
+              :title="column.tooltip"
+              :class="{'file-column' : !column.countable}"
             >
-              {{ header.text }}
+              {{ column.text }}
             </span>
           </template>
-          <template #item="props">
+          <template #item="item">
             <tr>
               <td
-                v-for="header in props.headers"
+                v-for="header in item.columns"
                 :key="header.id"
-                :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']"
+                :class="[header.id, existSldUsualName(item.item.raw)? 'two-rows-column' : 'one-row-column']"
               >
                 <div
                   v-if="header.value === 'mincode'"
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
+                  <span class="top-field-item">{{ item.item.raw.distNo + item.item.raw.schlNo }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
                   />
                 </div>
                 <div
                   v-else-if="header.value === 'legalSurname'"
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
-                  >{{ props.item['usualSurname'] }}</span>
+                  >{{ item.item.raw['usualSurname'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'legalGivenName'"
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
-                  >{{ props.item['usualGivenName'] }}</span>
+                  >{{ item.item.raw['usualGivenName'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'legalMiddleName'"
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
-                  >{{ props.item['usualMiddleName'] }}</span>
+                  >{{ item.item.raw['usualMiddleName'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'birthDate'"
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
+                  <span class="top-field-item">{{ formatDob(item.item.raw[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
                   />
                 </div>
                 <div
                   v-else
-                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(props.item)"
+                    v-if="existSldUsualName(item.item.raw)"
                     class="bottom-field-item"
                   />
                 </div>
@@ -232,6 +232,7 @@ export default {
   border-spacing: 0 0.25rem;
   border-bottom: thin solid #d7d7d7;
 }
+
 #sldHistoryDataTable /deep/ table th {
   font-size: 0.875rem;
 }
@@ -239,6 +240,7 @@ export default {
 #sldHistoryDataTable /deep/ table td {
   border-bottom: none !important;
 }
+
 #studentInfo {
   font-size: 1.25rem;
 }
@@ -246,13 +248,14 @@ export default {
 .sldTable /deep/ td.one-row-column {
   height: 3rem !important;
 }
+
 .sldTable /deep/ td.two-rows-column {
   height: 4.2rem !important;
 }
-.sldTable {
-  font-size: 0.67rem;
-}
 
+.sldTable {
+  font-size: 0.85rem;
+}
 
 .sldTable .flex-column-div {
   display: flex;

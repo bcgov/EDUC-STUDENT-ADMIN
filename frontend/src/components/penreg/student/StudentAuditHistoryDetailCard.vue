@@ -144,10 +144,12 @@
           class="onhoverEdit customNoBorder onhoverPad"
           :value="getGradeLabel()"
           color="#000000"
-          dense
+          density="compact"
+          variant="plain"
+          style="margin-top: -12px"
           readonly
           tabindex="-1"
-          :disabled="true"
+          :disabled="false"
         />
       </v-col>
     </StudentDetailsTextFieldReadOnly>
@@ -165,7 +167,7 @@
     <StudentDetailsTextFieldReadOnly
       :disabled="false"
       :highlight="highlightDiff && studentHistoryDetail.postalCode_diff"
-      :model="formatPostalCode(studentHistoryDetail.postalCode)"
+      :model="studentHistoryDetail.postalCode || ''"
       :name="prefixFieldName(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
       colspan="4"
       label="Postal Code"
@@ -191,7 +193,9 @@
         <v-text-field
           :value="getSchoolName(studentHistoryDetail.mincode)"
           class="onhoverEdit customNoBorder onhoverPad"
-          dense
+          density="compact"
+          variant="plain"
+          style="margin-top: -12px"
           readonly
           :disabled="false"
         />
@@ -237,7 +241,8 @@
           :outlined="false"
           :readonly="true"
           color="#000000"
-          dense
+          density="compact"
+          variant="plain"
           maxlength="4000"
           rows="2"
         />
@@ -344,7 +349,7 @@ div.auditHistoryDetail {
   color: #008000 !important;
 }
 
-p.diff-value {
+.diff-value {
   font-weight: bold;
   color: #008000 !important;
 }

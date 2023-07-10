@@ -30,69 +30,52 @@
           :items="studentHistoryResp.content"
           :items-per-page="studentHistoryResp.pageable.pageSize"
           :loading="loading"
-          hide-default-footer
           item-key="studentHistoryID"
           @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
           <template
             v-for="h in headers"
             :key="h.id"
-            #[`header.${h.value}`]="{ header }"
+            #[`column.${h.key}`]="{ column }"
           >
             <span
-              :title="header.tooltip"
-              :class="{'file-column' : !header.countable}"
+              :title="column.tooltip"
+              style="font-weight: bold"
+              :class="{'file-column' : !column.countable}"
             >
-              {{ header.text }}
+              {{ column.text }}
             </span>
           </template>
-          <template #item="props">
+          <template #item="item">
             <tr
-              :class="tableRowClass(props.item)"
-              @click="selectItem(props)"
+              class="hoverTable"
+              :class="tableRowClass(item.item.raw)"
+              @click="selectItem(item.item.raw)"
             >
               <td
-                v-for="header in props.headers"
+                v-for="header in item.columns"
                 :key="header.id"
                 :class="header.id"
               >
                 <div class="table-cell">
-                  <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{
-                    formatTableColumn(header.format, props.item[header.value])
+                  <span :class="{'diff-value': item.item.raw[`${header.value}_diff`]}">{{
+                    formatTableColumn(header.format, item.item.raw[header.value])
                   }}</span>
                   <v-btn
-                    v-if="header.value === 'createDate' && props.item.expandable"
+                    v-if="header.value === 'createDate' && item.item.raw.expandable"
                     class="ml-1"
-                    color="#38598a"
-                    icon
+                    color="#9cbceb42"
+                    variant="flat"
+                    size="x-small"
+                    @click.stop.prevent="expandRow(item.item.raw)"
+                    :icon="item.item.raw.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
                   >
-                    <v-icon @click.stop="expandRow(props.item)">
-                      {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                    </v-icon>
                   </v-btn>
                 </div>
               </td>
             </tr>
           </template>
         </v-data-table>
-        <v-row
-          class="pt-2"
-          justify="end"
-        >
-          <v-col cols="4">
-            <v-pagination
-              v-model="pageNumber"
-              color="#38598A"
-              :length="studentHistoryResp.totalPages"
-            />
-          </v-col>
-          <v-col
-            id="currentItemsDisplay"
-            cols="4"
-          >
-            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements || 0 }}
-          </v-col>
-        </v-row>
       </v-col>
       <v-col v-if="listDetailMode">
         <StudentAuditHistoryDetail
@@ -142,23 +125,23 @@ export default {
     return {
       itemsPerPage: 10,
       headers: [
-        {text: 'Date', sortable: false, value: 'createDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'createUser', tooltip: 'Changed By'},
-        {text: 'Activity', sortable: false, value: 'historyActivityLabel', tooltip: 'Activity'},
-        {text: 'Mincode', sortable: false, value: 'mincode', tooltip: 'Mincode'},
-        {text: 'Local ID', sortable: false, value: 'localID', tooltip: 'Local ID'},
-        {text: 'Birth Date', sortable: false, value: 'dob', format: _.partialRight(formatDob,'uuuu-MM-dd'), tooltip: 'Birth Date'},
-        {text: 'Gen', sortable: false, value: 'genderCode', tooltip: 'Gender'},
-        {text: 'Legal Name', sortable: false, value: 'legalName', tooltip: 'Legal Name'},
-        {text: 'Postal', sortable: false, value: 'postalCode', tooltip: 'Postal Code'},
-        {text: 'DC', sortable: false, value: 'demogCode', tooltip: 'Demographic Code'},
+        {text: 'Date', sortable: false, value: 'createDate', format: this.formatDate, tooltip: 'Activity Date', key: 'date'},
+        {text: 'Changed by', sortable: false, value: 'createUser', tooltip: 'Changed By', key: 'createUser'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel', key: 'historyActivityLabel', tooltip: 'Activity'},
+        {text: 'Mincode', sortable: false, value: 'mincode', key: 'mincode', tooltip: 'Mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID', key: 'localID', tooltip: 'Local ID'},
+        {text: 'Birth Date', sortable: false, value: 'dob', key: 'dob', format: _.partialRight(formatDob,'uuuu-MM-dd'), tooltip: 'Birth Date'},
+        {text: 'Gen', sortable: false, value: 'genderCode', key: 'genderCode', tooltip: 'Gender'},
+        {text: 'Legal Name', sortable: false, value: 'legalName', key: 'legalName', tooltip: 'Legal Name'},
+        {text: 'Postal', sortable: false, value: 'postalCode', key: 'postalCode', tooltip: 'Postal Code'},
+        {text: 'DC', sortable: false, value: 'demogCode', key: 'demogCode', tooltip: 'Demographic Code'},
       ],
       shortHeaders: [
-        {text: 'Date', sortable: false, value: 'createDate', tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'createUser', tooltip: 'Changed By'},
-        {text: 'Activity', sortable: false, value: 'historyActivityLabel', tooltip: 'Activity'},
-        {text: 'Mincode', sortable: false, value: 'mincode', tooltip: 'Mincode'},
-        {text: 'Local ID', sortable: false, value: 'localID', tooltip: 'Local ID'},
+        {text: 'Date', sortable: false, value: 'createDate', key: 'date', tooltip: 'Activity Date'},
+        {text: 'Changed by', sortable: false, value: 'createUser', key: 'createUser', tooltip: 'Changed By'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel', key: 'historyActivityLabel', tooltip: 'Activity'},
+        {text: 'Mincode', sortable: false, value: 'mincode', key: 'mincode', tooltip: 'Mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID', key: 'localID', tooltip: 'Local ID'},
       ],
       loading: true,
       selectedRecords: [],
@@ -232,8 +215,8 @@ export default {
   methods: {
     ...mapActions(studentStore, ['getHistoryActivityCodes']),
     formatPen,
-    selectItem(props) {
-      this.updateSelectedStudentHistoryId(props.item.studentHistoryID);
+    selectItem(item) {
+      this.updateSelectedStudentHistoryId(item.studentHistoryID);
       this.listDetailMode = true;
     },
     tableRowClass(item) {
@@ -482,6 +465,14 @@ export default {
   cursor: pointer;
 }
 
+.selected-record{
+   background-color: #E1F5FE !important;
+}
+
+.selected-record td{
+   background-color:  #E1F5FE !important;
+}
+
 #auditHistory /deep/ .v-pagination__navigation > i {
   padding-left: 0;
 }
@@ -498,6 +489,26 @@ export default {
 #dataTable /deep/ table tr.selected-record,
 #dataTable /deep/ table tbody tr:hover {
   background-color: #E1F5FE !important;
+}
+
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
+}
+
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+.hoverTable:hover td {
+    background-color: transparent; /* or #000 */
 }
 
 #dataTable /deep/ table td {
