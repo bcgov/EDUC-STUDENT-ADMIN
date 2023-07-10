@@ -31,8 +31,7 @@
           :key="index"
           :text="filter"
           class="mr-2"
-          :close="removeFilter"
-          :item="index"
+          @close-item="removeFilter(index)"
         />
       </v-sheet>
       <v-spacer v-else />

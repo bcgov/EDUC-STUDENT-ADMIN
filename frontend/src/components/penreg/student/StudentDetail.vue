@@ -67,7 +67,7 @@
                           </router-link>
                           <PrimaryButton
                             v-if="studentDetails.student.statusCode === 'M'"
-                            :disabled="disableDemerge"
+                            :disabled="disableDemerge()"
                             text="Demerge"
                             @click-action="demerge"
                           />
@@ -229,6 +229,8 @@ export default {
     border-style: none;
 }
 
+
+
 .onhoverPad {
     padding-left: 12px !important;
     padding-top: 2px !important;
@@ -305,5 +307,7 @@ export default {
 
 .student-details-tabs-style {
     font-weight: bold !important;
+    color: #003366 !important;
 }
+
 </style>

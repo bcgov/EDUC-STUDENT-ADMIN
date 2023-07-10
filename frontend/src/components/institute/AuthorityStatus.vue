@@ -206,6 +206,7 @@
                                rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
                       class="pt-0 mt-0"
                       label="Close Date"
+                      variant="underlined"
                       type="date"
                       clearable
                       @update:model-value="validateForm"

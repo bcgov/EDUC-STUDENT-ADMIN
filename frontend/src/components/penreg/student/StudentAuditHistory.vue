@@ -530,4 +530,8 @@ export default {
 .diff-value {
   font-weight: bold;
 }
+
+:deep(.v-data-table-footer__items-per-page){
+    display: none;
+}
 </style>

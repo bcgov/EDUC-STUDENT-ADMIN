@@ -134,7 +134,7 @@
                     mdi-email-open-outline
                   </v-icon>
                   <span class="ml-1 markAsSpan">{{ `Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}`
-                  }}</span>
+                    }}</span>
                 </v-btn>
                 <v-btn
                   id="claimAsButton"
@@ -160,7 +160,7 @@
               class="mt-2"
             >
               <v-col>
-                <v-divider class="divider" />
+                <v-divider class="divider"/>
               </v-col>
             </v-row>
             <v-row>
@@ -271,7 +271,7 @@
                         @select="insertMacroMessage"
                       />
                     </v-col>
-                    <v-spacer />
+                    <v-spacer/>
                     <v-col class="d-flex justify-start mr-16 pr-12">
                       <PrimaryButton
                         id="cancelMessage"
@@ -394,13 +394,18 @@
                   >
                     <v-card v-if="activity.type === 'message'">
                       <v-card-title>
-                        <div class="activityTitle">
-                          {{ activity.title }}
-                        </div>
-                        <v-spacer />
-                        <div class="activityDisplayDate">
-                          {{ activity.displayDate }}
-                        </div>
+                        <v-row class="mb-2">
+                          <v-col class="d-flex justify-start">
+                            <span>
+                              {{ activity.title }}
+                            </span>
+                          </v-col>
+                          <v-col class="d-flex justify-end">
+                            <span class="activityDisplayDate">
+                              {{ activity.displayDate }}
+                            </span>
+                          </v-col>
+                        </v-row>
                       </v-card-title>
                       <v-card-text class="activityContent">
                         {{ activity.content }}
@@ -577,7 +582,7 @@
                           v-show="isOpenStudentIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider />
+                          <v-divider/>
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
@@ -612,72 +617,75 @@
                       </v-expand-transition>
                     </v-card>
                     <v-card v-if="activity.type === 'document'">
-                      <v-card-title>
-                        <div class="activityTitle">
-                          {{ activity.title }}
-                        </div>
-                        <v-spacer />
-                        <div class="activityDisplayDate">
-                          {{ activity.displayDate }}
-                        </div>
-                      </v-card-title>
-                      <v-row no-gutters>
-                        <v-card-text
-                          class="mt-n2 pt-0 pb-0"
-                          :class="{
-                            'pb-0': activity.documentType.label !== 'Other',
-                            'pb-3': activity.documentType.label === 'Other'
-                          }"
-                        >
-                          <a
-                            v-if="isImage(activity)"
-                            :class="disabledAnchorDocumentName"
-                            @click="showDocModal(activity)"
-                          >
-                            {{ activity.fileName }}
-                          </a>
-                          <router-link
-                            v-else
-                            :class="disabledAnchorDocumentName"
-                            :to="{
-                              path: documentUrl(activity)
-                            }"
-                            target="_blank"
-                          >
-                            {{ activity.fileName }}
-                          </router-link>
-                        </v-card-text>
-                        <v-card-text
-                          v-if="activity.documentType.label !== 'Other'"
-                          class="pt-0 pb-3"
-                        >
-                          {{ activity.documentType.label }}
-                        </v-card-text>
-                        <v-row>
+                      <v-card-title class="pb-0">
+                        <v-row class="mb-2">
+                          <v-col class="d-flex justify-start">
+                            <span>
+                              {{ activity.title }}
+                            </span>
+                          </v-col>
                           <v-col class="d-flex justify-end">
-                            <v-btn
-                              v-show="isHideIndex === false || isHideIndex !== index"
-                              class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
-                              bottom
-                              right
-                              absolute
-                              elevation="0"
-                              :disabled="!isEditable()"
-                              @click="toggleRemoveDoc(index)"
-                            >
-                              <v-icon color="#003366">
-                                mdi-delete
-                              </v-icon>
-                            </v-btn>
+                            <span class="activityDisplayDate">
+                              {{ activity.displayDate }}
+                            </span>
                           </v-col>
                         </v-row>
+                      </v-card-title>
+                      <v-card-text class="activityContent">
+                        <v-row no-gutters>
+                          <v-col>
+                            <a
+                              v-if="isImage(activity)"
+                              :class="disabledAnchorDocumentName"
+                              @click="showDocModal(activity)"
+                            >
+                              {{ activity.fileName }}
+                            </a>
+                            <router-link
+                              v-else
+                              :class="disabledAnchorDocumentName"
+                              :to="{
+                              path: documentUrl(activity)
+                            }"
+                              target="_blank"
+                            >
+                              {{ activity.fileName }}
+                            </router-link>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          no-gutters
+                          v-if="activity.documentType.label !== 'Other'"
+                        >
+                          <v-col class="d-flex justify-start">
+                            {{ activity.documentType.label }}
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                      <v-row no-gutters>
+                        <v-col class="d-flex justify-end">
+                          <v-btn
+                            v-show="isHideIndex === false || isHideIndex !== index"
+                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
+                            bottom
+                            right
+                            absolute
+                            elevation="0"
+                            :disabled="!isEditable()"
+                            @click="toggleRemoveDoc(index)"
+                          >
+                            <v-icon color="#003366">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-col>
                       </v-row>
                       <v-expand-transition>
                         <div
                           v-show="isOpenDocIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider />
+                          <v-divider/>
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
@@ -716,7 +724,7 @@
                         <div class="activityTitle">
                           {{ activity.title }}
                         </div>
-                        <v-spacer />
+                        <v-spacer/>
                         <div class="activityDisplayDate">
                           {{ activity.displayDate }}
                         </div>
@@ -747,7 +755,7 @@
                           v-show="isOpenNoteIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider />
+                          <v-divider/>
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
