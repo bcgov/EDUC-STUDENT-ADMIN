@@ -721,13 +721,18 @@
                     </v-card>
                     <v-card v-if="activity.type === 'note'">
                       <v-card-title>
-                        <div class="activityTitle">
-                          {{ activity.title }}
-                        </div>
-                        <v-spacer/>
-                        <div class="activityDisplayDate">
-                          {{ activity.displayDate }}
-                        </div>
+                        <v-row class="mb-2">
+                          <v-col class="d-flex justify-start">
+                            <span>
+                              {{ activity.title }}
+                            </span>
+                          </v-col>
+                          <v-col class="d-flex justify-end">
+                            <span class="activityDisplayDate">
+                              {{ activity.displayDate }}
+                            </span>
+                          </v-col>
+                        </v-row>
                       </v-card-title>
                       <v-card-text class="activityContent">
                         {{ activity.content }}
