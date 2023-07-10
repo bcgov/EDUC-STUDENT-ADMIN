@@ -215,11 +215,12 @@
                 </v-col>
                 <v-col class="d-flex justify-end">
                   <v-tooltip bottom>
-                    <template #activator="{ on, attrs }">
+                    <template #activator="{ on, props }">
                       <v-btn
                         id="authorityContacts"
                         color="#003366"
                         outlined
+                        v-bind="props"
                         class="mt-0 pt-0 filterButton ml-2"
                         style="text-transform: initial"
                         @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
@@ -555,6 +556,10 @@ export default {
 .containerSetup {
     padding-right: 30em !important;
     padding-left: 30em !important;
+}
+
+:deep(.v-list-item__prepend){
+    margin-right: -2em;
 }
 
 </style>
