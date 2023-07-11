@@ -651,7 +651,7 @@ export default {
       ApiService.apiAxios
         .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
         .then(response => {
-          if (response && response.data) {
+          if (response?.data) {
             this.getRequestStore(this.requestType).setDocumentTypes(response.data);
             this.documentTypes = this.getRequestStore(this.requestType).documentTypes
               .sort((a, b) => a.displayOrder - b.displayOrder)
