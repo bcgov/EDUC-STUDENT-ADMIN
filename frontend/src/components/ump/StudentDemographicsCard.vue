@@ -1,5 +1,7 @@
 <template>
-  <div class="flex">
+  <v-col
+    class="py-2 px-0"
+  >
     <v-progress-linear
       indeterminate
       color="blue"
@@ -163,7 +165,7 @@
         </v-col>
       </v-row>
     </v-alert>
-  </div>
+  </v-col>
 </template>
 
 <script>

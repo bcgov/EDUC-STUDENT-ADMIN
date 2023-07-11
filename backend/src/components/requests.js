@@ -23,18 +23,13 @@ function getAllRequests(requestType) {
     const statusFilters = req.query.statusFilters;
 
     if (req.query.headerFilters) {
-      let headerFilters = JSON.parse(req.query.headerFilters);
+      let headerFilters = req.query.headerFilters;
       Object.keys(headerFilters).forEach(element => {
         let operation = 'like_ignore_case';
         let valueType = 'STRING';
         if (element === 'initialSubmitDate') {
-          headerFilters[element].forEach((date, index) => {
-            headerFilters[element][index] = date + 'T00:00:01';
-          });
-          if (headerFilters[element].length === 1) {
-            headerFilters[element].push(LocalDateTime.now().toString());
-          }
-          headerFilters[element] = headerFilters[element].join(',');
+          const submissionDate = headerFilters['initialSubmitDate'] + 'T00:00:01';
+          headerFilters[element] = submissionDate + ',' + LocalDateTime.now().toString();
           operation = 'btn';
           valueType = 'DATE_TIME';
         }
@@ -132,7 +127,7 @@ function getRequestCommentById(requestType) {
           name: (element.staffMemberName ? element.staffMemberName : 'Student'),
           timestamp: readableTime,
           color: (element.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
-          icon: (element.staffMemberIDIRGUID ? '$question' : '$info')
+          icon: (element.staffMemberIDIRGUID ? 'mdi-help-circle' : 'mdi-alert-circle')
         });
       });
       return res.status(200).json(response);

@@ -166,7 +166,7 @@
             sm="9"
           >
             <p class="mb-2">
-              {{ request.recordedDob ? moment(request.recordedDob).format('YYYY/MM/DD'):'' }}
+              {{ getMomentDate(request.recordedDob,'YYYY/MM/DD') }}
             </p>
           </v-col>
         </v-row>
@@ -202,7 +202,7 @@
         </v-row>
         <v-row no-gutters>
           <p class="update-data mb-2">
-            {{ request.dob ? moment(request.dob).format('YYYY/MM/DD'):'' }}
+            {{ getMomentDate(request.dob,'YYYY/MM/DD') }}
           </p>
         </v-row>
       </v-col>
@@ -270,6 +270,7 @@ import router from '@/router';
 import {Routes, REQUEST_TYPES} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
+import {getMomentDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'StudentRequestCard',
@@ -302,6 +303,7 @@ export default {
       document.execCommand('copy');
       document.body.removeChild(el);
     },
+    getMomentDate,
     searchStudent() {
       this.loading = true;
       ApiService.apiAxios

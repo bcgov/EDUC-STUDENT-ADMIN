@@ -4,7 +4,7 @@
       flat
       :disabled="!isProvidePenEnabledForUser"
     >
-      <v-row>
+      <v-row class="pt-6">
         <v-col
           class="pt-0"
           cols="6"
@@ -24,6 +24,7 @@
                 :disabled="isProvidePenDisabled"
                 maxlength="9"
                 label="PEN:"
+                variant="underlined"
                 clearable
                 class="pt-0"
                 @input="validatePen"
@@ -80,7 +81,9 @@
                   v-else
                   class="mb-2"
                 >
-                  <strong>{{ demographics.legalLast ? demographics.legalLast: '(none)' }}, {{ demographics.legalFirst ? demographics.legalFirst: '(none)' }}, {{ demographics.legalMiddle ? demographics.legalMiddle: '(none)' }}</strong>
+                  <strong>{{ demographics.legalLast ? demographics.legalLast : '(none)' }},
+                    {{ demographics.legalFirst ? demographics.legalFirst : '(none)' }},
+                    {{ demographics.legalMiddle ? demographics.legalMiddle : '(none)' }}</strong>
                 </p>
               </v-col>
             </v-row>
@@ -114,7 +117,9 @@
                   v-else
                   class="mb-2"
                 >
-                  <strong>{{ demographics.usualLast ? demographics.usualLast: '(none)' }}, {{ demographics.usualFirst ? demographics.usualFirst: '(none)' }}, {{ demographics.usualMiddle ? demographics.usualMiddle: '(none)' }}</strong>
+                  <strong>{{ demographics.usualLast ? demographics.usualLast : '(none)' }},
+                    {{ demographics.usualFirst ? demographics.usualFirst : '(none)' }},
+                    {{ demographics.usualMiddle ? demographics.usualMiddle : '(none)' }}</strong>
                 </p>
               </v-col>
             </v-row>
@@ -141,7 +146,7 @@
                 sm="9"
               >
                 <p class="mb-2">
-                  <strong>{{ formatDob(demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
+                  <strong>{{ formatDob(demographics.dob, 'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
                 </p>
               </v-col>
             </v-row>
@@ -222,6 +227,7 @@ import MacroMenu from '../common/MacroMenu.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'PenRequestComplete',
@@ -252,12 +258,12 @@ export default {
       required: true
     },
   },
-  data () {
+  data() {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
       notAPenErrorMessage: 'The provided PEN is not valid.',
-      numberOfDuplicatePenRequests:0,
+      numberOfDuplicatePenRequests: 0,
       completeSagaInProgress: false,
     };
   },
@@ -272,7 +278,7 @@ export default {
       return Statuses.AUTO_MATCH_RESULT_CODES;
     },
     completedRules() {
-      return isValidLength(4000, this.request.demogChanged==='Y');
+      return isValidLength(4000, this.request.demogChanged === 'Y');
     },
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
@@ -281,7 +287,7 @@ export default {
       return this.selectedRequest;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`] || [];
+      return this.getRequestStore(this.requestType).completeMacros || [];
     },
     statusCodes() {
       return Statuses[this.requestType];
@@ -293,7 +299,7 @@ export default {
       };
     },
     autoPenResults() {
-      if(this.request.bcscAutoMatchDetails) {
+      if (this.request.bcscAutoMatchDetails) {
         return this.request.bcscAutoMatchDetails.split(' ')[0];
       } else {
         return null;
@@ -302,13 +308,13 @@ export default {
     isCompleteDisabled() {
       return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
     },
-    isCompleteDark(){
-      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    isCompleteDark() {
+      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode !== 'DRAFT' && this.request.penRequestStatusCode !== 'ABANDONED';
     },
-    isProvidePenDisabled(){
+    isProvidePenDisabled() {
       return !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
     },
-    isCompleteCommentDisabled(){
+    isCompleteCommentDisabled() {
       return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
     },
     isUnlinkDisabled() {
@@ -330,9 +336,9 @@ export default {
             this.completeSagaInProgress = false;
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
           }
-        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload ){
+        } else if (this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           const student = JSON.parse(notificationData.eventPayload);
-          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){ // dont show message when there is a complete saga in progress for the pen.
+          if (student?.pen === this.penSearchId && !this.completeSagaInProgress) { // dont show message when there is a complete saga in progress for the pen.
             this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
             this.enableCompleteButton = false;
           }
@@ -349,8 +355,9 @@ export default {
     replaceCompleteMacro() {
       this.request.completeComment = replaceMacro(this.request.completeComment, this.completeMacros);
     },
+    getRequestStore,
     completeRequest() {
-      if(this.$refs.completeForm.validate()) {
+      if (this.$refs.completeForm.validate()) {
         this.beforeSubmit();
         this.request.pen = this.penSearchId;
         if (this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
@@ -365,7 +372,7 @@ export default {
           penNumbersInOps: this.request.pen
         };
         ApiService.apiAxios
-          .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request),{params})
+          .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request), {params})
           .then(() => {
             this.setSuccessAlert('Your request to complete is accepted.');
             this.completeSagaInProgress = true;
@@ -410,11 +417,11 @@ export default {
       this.demographics.dob = null;
       this.demographics.gender = null;
       this.enableCompleteButton = false;
-      this.numberOfDuplicatePenRequests=0;
+      this.numberOfDuplicatePenRequests = 0;
       if (this.penSearchId?.length === 9) {
         if (checkDigit(this.penSearchId)) {
           await this.searchByPen();
-          if(this.demographics.statusCode != STUDENT_CODES.ACTIVE){
+          if (this.demographics.statusCode != STUDENT_CODES.ACTIVE) {
             this.enableCompleteButton = false;
             this.setFailureAlert('The provided PEN is not active.');
           } else {
@@ -427,20 +434,20 @@ export default {
     },
     searchDuplicatePenRequestsByPen() {
       this.switchLoading(true);
-      const params={
-        pen :this.penSearchId
+      const params = {
+        pen: this.penSearchId
       };
       ApiService.apiAxios
-        .get(`${Routes[this.requestType].DUPLICATE_REQUESTS_URL}`,{params})
+        .get(`${Routes[this.requestType].DUPLICATE_REQUESTS_URL}`, {params})
         .then(response => {
-          if(response && response.data > 0){
-            this.numberOfDuplicatePenRequests=response.data;
+          if (response && response.data > 0) {
+            this.numberOfDuplicatePenRequests = response.data;
           }
         }).catch(error => {
-          console.log(error);
-        }).finally(() => {
-          this.switchLoading(false);
-        });
+        console.log(error);
+      }).finally(() => {
+        this.switchLoading(false);
+      });
     },
     populateAutoMatchedPen() {
       this.penSearchId = this.autoPenResults;

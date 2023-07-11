@@ -18,12 +18,12 @@
         <v-card
           height="100%"
           width="100%"
+          variant="flat"
           elevation="0"
         >
-          <v-card-title class="pb-0 px-0">
+          <v-card-title class="pb-0 px-0 background-white">
             {{ title }}
           </v-card-title>
-          <v-divider />
           <v-progress-linear
             indeterminate
             color="blue"
@@ -43,6 +43,7 @@
           <v-card
             height="100%"
             width="100%"
+            class="background-white"
             elevation="0"
           >
             <v-row no-gutters>
@@ -132,11 +133,14 @@
                   id="asOfDate"
                   class="mb-2"
                 >
-                  <strong>{{ request['statusUpdateDate'] ? moment(request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ request['statusUpdateDate'] ? moment(request['statusUpdateDate']).format('YYYY/MM/DD LT'):'' }}
+                  <strong>{{ getFromMomentDate(request['statusUpdateDate']) }}</strong>, at
+                  {{ getMomentDate(request['statusUpdateDate']) }}
                 </p>
               </v-col>
             </v-row>
-            <v-row no-gutters>
+            <v-row no-gutters
+                   class="mb-5"
+            >
               <v-col
                 cols="12"
                 xl="3"
@@ -162,7 +166,8 @@
                   v-else
                   id="submittedDate"
                 >
-                  <strong>{{ request.initialSubmitDate ? moment(request.initialSubmitDate).fromNow():'' }}</strong>, at {{ request.initialSubmitDate ? moment(request.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}
+                  <strong>{{ getFromMomentDate(request.initialSubmitDate) }}</strong>,
+                  at {{ getMomentDate(request.initialSubmitDate) }}
                 </p>
               </v-col>
             </v-row>
@@ -179,6 +184,7 @@
           <v-card
             height="100%"
             width="100%"
+            class="background-white"
             elevation="0"
           >
             <v-row
@@ -258,7 +264,7 @@
             >
               <PrimaryButton
                 id="back-to-list"
-                class="ml-2"
+                class="mt-2"
                 :short="true"
                 @click-action="backToList"
                 text="Back to List"
@@ -342,48 +348,78 @@
               class="fill-height"
             >
               <template #item.createDate="{ item }">
-                <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                <span>{{ item.raw.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
               <template #item.fileName="{item: document}">
                 <router-link
-                  v-if="document.fileSize && actionsEnabled && isPdf(document)"
-                  :to="{ path: documentUrl(requestId, document) }"
+                  v-if="document.raw.fileSize && actionsEnabled && isPdf(document.raw)"
+                  :to="{ path: documentUrl(requestId, document.raw) }"
                   target="_blank"
                 >
-                  {{ document.fileName }}
+                  {{ document.raw.fileName }}
                 </router-link>
                 <a
-                  v-else-if="document.fileSize && actionsEnabled"
-                  @click="showDocModal(requestId, document)"
+                  v-else-if="document.raw.fileSize && actionsEnabled"
+                  @click="showDocModal(requestId, document.raw)"
                 >
-                  {{ document.fileName }}
+                  {{ document.raw.fileName }}
                 </a>
-                <span v-else>{{ document.fileName }}</span>
+                <span v-else>{{ document.raw.fileName }}</span>
               </template>
               <template #item.fileSize="{ item }">
-                <span v-if="item.fileSize">{{ item.fileSize }}</span>
+                <span v-if="item.raw.fileSize">{{ item.raw.fileSize }}</span>
               </template>
               <template
                 v-if="actionsEnabled"
                 #item.documentTypeLabel="{item: document}"
               >
-                <v-edit-dialog
-                  v-model:return-value="document.documentTypeCode"
-                  large
-                  persistent
-                  @open="oldDocumentTypeCode=document.documentTypeCode"
-                  @save="saveDocumentType(document)"
+                <span style="cursor: pointer"
+                      @click="docChangeDialog = true"
+                >{{ document.raw.documentTypeLabel }}</span>
+                <v-dialog
+                  v-model="docChangeDialog"
+                  width="500px"
+                  @open="oldDocumentTypeCode=document.raw.documentTypeCode"
+                  @save="saveDocumentType(document.raw)"
                 >
-                  <div>{{ document.documentTypeLabel }}</div>
-                  <template #input>
-                    <v-select
-                      v-model="document.documentTypeCode"
-                      variant="underlined"
-                      style="max-width: 20em;"
-                      :items="documentTypes"
-                    />
-                  </template>
-                </v-edit-dialog>
+                  <v-card>
+                    <v-row no-gutters>
+                      <v-col class="pa-2 px-3">
+                        <v-row no-gutters>
+                          <v-col class="d-flex justify-center">
+                            <v-select
+                              v-model="document.raw.documentTypeCode"
+                              item-title="text"
+                              item-value="value"
+                              variant="underlined"
+                              :items="documentTypes"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters>
+                          <v-col class="d-flex justify-end">
+                            <PrimaryButton
+                              id="cancelButton"
+                              class="mr-2"
+                              secondary
+                              icon-left
+                              width="6em"
+                              text="Cancel"
+                              @click-action="docChangeDialog = false"
+                            />
+                            <PrimaryButton
+                              id="saveButton"
+                              icon-left
+                              width="6em"
+                              text="Save"
+                              @click-action="[saveDocumentType(document.raw),docChangeDialog = false]"
+                            />
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-dialog>
               </template>
             </v-data-table>
           </v-card>
@@ -395,7 +431,7 @@
             flat
             color="#036"
             dark
-            class="panel-header tester"
+            class="panel-header white--text tester"
           >
             <v-toolbar-title class="pa-0">
               <h2>Actions</h2>
@@ -435,7 +471,8 @@ import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
-import {requestStore} from '@/store/modules/request';
+import {getMomentDate, getFromMomentDate} from '@/utils/dateHelpers';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'RequestDetail',
@@ -467,14 +504,14 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       headers: [
-        { text: 'Type', value: 'documentTypeLabel',  },
-        { text: 'File Name', value: 'fileName' },
-        { text: 'Upload Date/time', value: 'createDate' },
-        { text: 'Size', value: 'fileSize' },
-        { text: '', value: 'action', sortable: false }
+        {title: 'Type', text: 'Type', value: 'documentTypeLabel', key: 'documentTypeLabel'},
+        {title: 'File Name', text: 'File Name', value: 'fileName', key: 'fileName'},
+        {title: 'Upload Date/time', text: 'Upload Date/time', value: 'createDate', key: 'createDate'},
+        {title: 'Size', text: 'Size', value: 'fileSize', key: 'fileSize'},
+        {title: '', text: '', value: 'action', sortable: false, key: 'action'}
       ],
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
@@ -482,13 +519,14 @@ export default {
         name: null,
         id: null,
       },
-      fileSizeConverter:humanFileSize,
+      docChangeDialog: false,
+      fileSizeConverter: humanFileSize,
       enableActions: true,
       loadingPen: true,
       loadingComments: true,
       loadingActionResults: false,
       loadingClaimAction: false,
-      filteredResults:[],
+      filteredResults: [],
       activeTab: 0,
       documentTypes: [],
       oldDocumentTypeCode: '',
@@ -517,13 +555,13 @@ export default {
       return Statuses[this.requestType];
     },
     returnMacros() {
-      return this.$store.getters[`${this.requestType}/returnMacros`];
+      return this.getRequestStore(this.requestType).returnMacros;
     },
     rejectMacros() {
-      return this.$store.getters[`${this.requestType}/rejectMacros`];
+      return this.getRequestStore(this.requestType).rejectMacros;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`];
+      return this.getRequestStore(this.requestType).completeMacros;
     },
     isClaimDisabled() {
       return !this.enableActions || !this.actionsEnabled || this.isRequestCompleted || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
@@ -538,7 +576,7 @@ export default {
       return this.enableActions && !this.isRequestCompleted && this.actionsEnabled;
     },
     actionsEnabled() {
-      if(this.requestType === REQUEST_TYPES.penRequest.name) {
+      if (this.requestType === REQUEST_TYPES.penRequest.name) {
         return this.ACTION_GMP_REQUESTS_ROLE;
       } else {
         return this.ACTION_UMP_REQUESTS_ROLE;
@@ -558,21 +596,19 @@ export default {
     this.loadingComments = true;
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
-    if(!this.returnMacros || ! this.rejectMacros) {
-      requestStore().getMacros(this.requestType);
+    if (!this.returnMacros || !this.rejectMacros) {
+      this.getRequestStore(this.requestType).getMacros();
     }
-    this.documentTypes = requestStore().documentTypes
-      .sort((a, b) => a.displayOrder - b.displayOrder)
-      .map(code => ({text: code.label, value: code.documentTypeCode}));
+    this.getDocumentTypes();
 
     ApiService.apiAxios
       .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
       .then(response => {
         this.setRequest(response.data);
-        if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
+        if (this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
           this.activeTab = 2;
         }
-        if(response.data && response.data.sagaInProgress){
+        if (response.data && response.data.sagaInProgress) {
           this.sagaInProgress = true;
         }
       })
@@ -580,7 +616,7 @@ export default {
         console.log(error);
       })
       .finally(() => {
-        if(!this.sagaInProgress) {
+        if (!this.sagaInProgress) {
           this.enableActions = true;
         }
         this.loadingPen = false;
@@ -596,7 +632,9 @@ export default {
       });
   },
   methods: {
-    ...mapActions(appStore, ['setRequest','setMessages','setParticipants']),
+    ...mapActions(appStore, ['setRequest', 'setMessages', 'setParticipants']),
+    getMomentDate,
+    getFromMomentDate,
     documentUrl(requestId, document) {
       return `${Routes[this.requestType].ROOT_ENDPOINT}/${requestId}/documents/${document.documentID}`;
     },
@@ -605,9 +643,24 @@ export default {
      * @param requestId
      * @param document
      */
-    showDocModal(requestId, document){
+    showDocModal(requestId, document) {
       this.imageId = document.documentID;
       this.imageRendererDialog = true;
+    },
+    getDocumentTypes() {
+      ApiService.apiAxios
+        .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
+        .then(response => {
+          if (response?.data) {
+            this.getRequestStore(this.requestType).setDocumentTypes(response.data);
+            this.documentTypes = this.getRequestStore(this.requestType).documentTypes
+              .sort((a, b) => a.displayOrder - b.displayOrder)
+              .map(code => ({text: code.label, value: code.documentTypeCode}));
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     async closeDialog() {
       this.documentId = '';
@@ -617,13 +670,12 @@ export default {
     },
     claimRequest() {
       this.loadingClaimAction = true;
-      this.claimErrorMessage='';
+      this.claimErrorMessage = '';
       this.disableActionButtons();
       let body = this.prepPut(this.requestId, this.request);
-      if(this.request.reviewer !== this.myself.name) {
+      if (this.request.reviewer !== this.myself.name) {
         body.reviewer = this.myself.name;
-      }
-      else {
+      } else {
         body.reviewer = null;
       }
       ApiService.apiAxios
@@ -632,7 +684,7 @@ export default {
           this.request.reviewer = response.data.reviewer;
         })
         .catch(error => {
-          this.claimErrorMessage=`There was an error trying to claim the ${this.requestTypeLabel} Request, please navigate to the list and select this ${this.requestTypeLabel} Request again.`;
+          this.claimErrorMessage = `There was an error trying to claim the ${this.requestTypeLabel} Request, please navigate to the list and select this ${this.requestTypeLabel} Request again.`;
           this.setFailureAlert(this.claimErrorMessage);
           console.log(error);
         })
@@ -648,14 +700,15 @@ export default {
       this.enableActions = true;
     },
     backToList() {
-      router.push({ name: REQUEST_TYPES[this.requestType].label, params: { requestType: this.requestType } });
+      router.push({name: REQUEST_TYPES[this.requestType].label});
     },
     setDocumentError(message) {
       this.documentErrorMessage = message;
       this.setFailureAlert(this.documentErrorMessage);
     },
+    getRequestStore,
     setDocumentTypeLabel(document) {
-      const documentTypeInfo = requestStore().documentTypes.find(typeInfo =>
+      const documentTypeInfo = this.getRequestStore(this.requestType).documentTypes.find(typeInfo =>
         typeInfo.documentTypeCode === document.documentTypeCode
       );
       document.documentTypeLabel = documentTypeInfo ? documentTypeInfo.label : document.documentTypeCode;
@@ -685,7 +738,7 @@ export default {
       this.switchLoading(false);
       this.enableActionButtons();
     },
-    refreshRequestDetailsAndComments(){
+    refreshRequestDetailsAndComments() {
       ApiService.apiAxios
         .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
         .then(response => {
@@ -700,7 +753,7 @@ export default {
         .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
         .then(response => {
           this.setRequest(response.data);
-          if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
+          if (this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
             this.activeTab = 2;
           }
         })
@@ -711,7 +764,7 @@ export default {
   },
   watch: {
     notification(val) {
-      if(val) {
+      if (val) {
         let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
           this.beforeSubmit();
@@ -727,36 +780,57 @@ export default {
 };
 </script>
 <style scoped>
-  .panel-header /deep/ .v-toolbar__content {
+.panel-header /deep/ .v-toolbar__content {
     padding-left: 20px !important;
-  }
-  .v-textarea /deep/ .v-text-field__details {
+}
+
+.v-textarea /deep/ .v-text-field__details {
     margin-bottom: 0 !important;
-  }
-  .v-textarea /deep/ .v-input__slot {
+}
+
+.v-textarea /deep/ .v-input__slot {
     margin-bottom: 0 !important;
-  }
-  .v-input--checkbox /deep/ .v-input__slot {
+}
+
+.v-input--checkbox /deep/ .v-input__slot {
     padding: 0 !important;
     justify-content: flex-end !important;
-  }
-  .v-card /deep/ .v-window__container {
-    height:100% !important;
-    background-color:#fafafa !important;
-  }
-  .v-card /deep/ .v-window-item--active {
-    height:100% !important;
-    background-color:#fafafa !important;
-  }
-  .v-tab--active {
+}
+
+.v-card /deep/ .v-window__container {
+    height: 100% !important;
+    background-color: #fafafa !important;
+}
+
+.v-card /deep/ .v-window-item--active {
+    height: 100% !important;
+    background-color: #fafafa !important;
+}
+
+.v-tab--active {
     background-color: aliceblue;
     font-weight: bold;
-  }
-  .v-card {
-    background-color:#fafafa;
-  }
-  h2 {
+}
+
+.white--text {
+    color: white;
+}
+
+:deep(.v-data-table-header__content){
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+.background-white{
+    background-color: #FFF !important;
+}
+
+.v-card {
+    background-color: #fafafa;
+}
+
+h2 {
     font-size: 1.25rem
-  }
+}
 </style>
 
