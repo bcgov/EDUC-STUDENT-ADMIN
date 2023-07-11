@@ -16,9 +16,8 @@
         :request="request"
       />
     </template>
-    <template #actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
+    <template #actions="{ request, enableActions, beforeSubmit, submitted, switchLoading}">
       <PenRequestActions
-        :active-tab="activeTab"
         :request="request"
         :enable-actions="enableActions"
         :prep-put="prepPut"

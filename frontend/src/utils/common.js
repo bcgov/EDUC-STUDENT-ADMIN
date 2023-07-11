@@ -6,6 +6,8 @@ import {getDateFormatter} from '@/utils/format';
 import ApiService from '../common/apiService';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import rfdc from 'rfdc/default';
+import {gmpRequestStore} from '@/store/modules/gmpRequest';
+import {umpRequestStore} from '@/store/modules/umpRequest';
 
 export function constructPenMatchObjectFromStudent(student) {
   return {
@@ -75,7 +77,7 @@ export function getPossibleMatches(penMatch) {
 }
 
 function orderStudentsAccordingToPenMatch(array, order) {
-  return array.sort(function(a, b){
+  return array.sort(function (a, b) {
     return order.indexOf(a['studentID']) - order.indexOf(b['studentID']);
   });
 }
@@ -132,7 +134,7 @@ export function getMatchedRecordsByStudent(studentID) {
  * @param includingQueriedStudent
  * @returns {Promise<*[]>|Promise<unknown>}
  */
-export async function getMatchedRecordssWithDemographicsByStudent(studentID, includingQueriedStudent=false) {
+export async function getMatchedRecordssWithDemographicsByStudent(studentID, includingQueriedStudent = false) {
   if (studentID) {
     const possibleMatches = await ApiService.apiAxios.get(`${Routes.penMatch.POSSIBLE_MATCHES}/${studentID}`);
     const matchedStudentIDs = possibleMatches.data.map(match => match.matchedStudentID);
@@ -143,7 +145,7 @@ export async function getMatchedRecordssWithDemographicsByStudent(studentID, inc
         studentIDs
       }
     };
-    const { data: result } = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
+    const {data: result} = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
     let matchedIndex = -1;
 
     result.forEach((item, index) => {
@@ -165,9 +167,9 @@ export async function getMatchedRecordssWithDemographicsByStudent(studentID, inc
 
 export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentRecords) {
   if ((prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
-    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS
-    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR)
+      || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
+      || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS
+      || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR)
     && possibleMatches && possibleMatches.length > 0) {
     let matchedRecordNumber = 3.0;
     let newPossibleRecordNumber = 2.0;
@@ -219,8 +221,8 @@ export function getSchoolData(mincode) {
 
 export function setEmptyInputParams(params, ...excludedParams) {
   Object.keys(params).forEach(key => {
-    if(!excludedParams.includes(key)) {
-      if(isPlainObject(params[key])) {
+    if (!excludedParams.includes(key)) {
+      if (isPlainObject(params[key])) {
         setEmptyInputParams(params[key], ...excludedParams);
       } else {
         params[key] = null;
@@ -258,7 +260,7 @@ export function capitalizeFirstLetter(string) {
  * This function will return the first letter of each word in the camel case string, like "penRequestBatch" will return "prb"
  */
 export function abbreviateCamelCase(string) {
-  return string.replace(/([A-Z])/g,' $1').match(/\b(\w)/g).join('').toLowerCase();
+  return string.replace(/([A-Z])/g, ' $1').match(/\b(\w)/g).join('').toLowerCase();
 }
 
 export function isOpenNotClosingAuthority(authority) {
@@ -267,3 +269,11 @@ export function isOpenNotClosingAuthority(authority) {
   const closedDate = authority?.closedDate;
   return authority?.name && openedDate && currentTime.isAfter(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && !closedDate;
 }
+
+export function getRequestStore(requestType) {
+  if (requestType === 'penRequest') {
+    return gmpRequestStore();
+  }
+  return umpRequestStore();
+}
+

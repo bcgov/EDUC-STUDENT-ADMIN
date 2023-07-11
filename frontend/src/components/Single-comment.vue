@@ -1,5 +1,5 @@
 <template>
-  <div :class="comment.color">
+  <div class="pa-4" :class="comment.color">
     <v-row class="mr-0">
       <v-col
         class="pa-0 iconCol"
@@ -8,11 +8,11 @@
         <v-icon
           class="pl-3"
           :size="iconSize"
+          :icon="comment.icon"
         >
-          {{ comment.icon }}
         </v-icon>
       </v-col>
-      <v-col class="pa-0 header-col">
+      <v-col class="header-col">
         <p
           class="username mb-0"
           href="#"

@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="fill-height my-10 px-16"
+    class="fill-height mb-10 mt-3 px-16"
   >
     <v-row no-gutters>
       <v-card
@@ -15,14 +15,16 @@
           v-model="selectedStatuses"
           :mandatory="false"
           :items="statusCodes"
-          :label="label"
+          :label="selectedStatuses.length > 0 ? '' : label"
           multiple
           small-chips
           auto-select-first
+          hide-details
           hide-selected
-          solo
+          variant="solo"
+          density="compact"
           :loading="loadingSelect"
-          class="mx-6 mt-6 pa-0"
+          class="mx-6 my-6 pa-0"
         >
           <template #selection="{ attrs, item, select, selected }">
             <FilterTag
@@ -32,130 +34,135 @@
             />
           </template>
         </v-combobox>
-        <v-data-table
+        <v-data-table-server
           v-model:items="requests"
           v-model:items-per-page="pageSize"
           v-model:page="pageNumber"
+          v-model:items-length="totalRequests"
           :headers="headers"
           :footer-props="{
             'items-per-page-options':itemsPerPageOptions
           }"
-          :server-items-length="totalRequests"
           :loading="loadingTable"
           class="fill-height"
+          style="border-radius: 0;"
           @click:row="viewRequestDetails"
         >
-          <template #[requestStatusHeaderSlotName]="{ header }">
+          <template #[requestStatusHeaderSlotName]="{ column }">
             <th
               id="status-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
               @click="sort(`${requestType}StatusCode`)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
           </template>
-          <template #header.initialSubmitDate="{ header }">
+          <template #column.initialSubmitDate="{ column }">
             <th
               id="submit-date-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-              @click="sort(header.value)"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
+              @click="sort(column.value)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
             <v-text-field
               id="date-picker-text-field"
-              :value="headerSearchParams.initialSubmitDate"
-              outlined
+              v-model="headerSearchParams.initialSubmitDate"
+              variant="outlined"
               density="compact"
               clearable
+              hide-details
               class="header-text"
               type="date"
               @click:clear="headerSearchParams.initialSubmitDate = []"
-              @update:model-value="validateForm"
             />
           </template>
-          <template #[penSlotName]="{ header }">
+          <template #[penSlotName]="{ column }">
             <th
               id="pen-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-              @click="sort(header.value)"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
+              @click="sort(column.value)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
             <v-text-field
               id="pen-text-field"
               v-model.trim="headerSearchParams[penName]"
               class="header-text"
-              outlined
+              hide-details
+              variant="outlined"
               density="compact"
               clearable
             />
           </template>
-          <template #header.legalLastName="{ header }">
+          <template #column.legalLastName="{ column }">
             <th
               id="last-name-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-              @click="sort(header.value)"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
+              @click="sort(column.value)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
             <v-text-field
               id="last-name-text-field"
               v-model.trim="headerSearchParams.legalLastName"
               class="header-text"
-              outlined
+              hide-details
+              variant="outlined"
               density="compact"
               clearable
             />
           </template>
-          <template #header.legalFirstName="{ header }">
+          <template #column.legalFirstName="{ column }">
             <th
               id="first-name-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-              @click="sort(header.value)"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
+              @click="sort(column.value)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
             <v-text-field
               id="first-name-text-field"
               v-model.trim="headerSearchParams.legalFirstName"
               class="header-text"
-              outlined
+              hide-details
+              variant="outlined"
               density="compact"
               clearable
             />
           </template>
-          <template #header.reviewer="{ header }">
+          <template #column.reviewer="{ column }">
             <th
               id="reviewer-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-              @click="sort(header.value)"
+              :class="['table-header ', column.value === headerSortParams.currentSort ? 'active' : '']"
+              @click="sort(column.value)"
             >
-              {{ header.text }}
+              {{ column.text }}
               <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
+                :class="['v-icon v-data-table-header__icon mdi ', headerSortParams.currentSortDir ? 'mdi-chevron-down' : 'mdi-chevron-up', column.value === headerSortParams.currentSort ? 'active' : '']"
               />
             </th>
             <v-text-field
               id="review-text-field"
               v-model.trim="headerSearchParams.reviewer"
               class="header-text"
-              outlined
+              variant="outlined"
+              hide-details
               density="compact"
               clearable
             />
@@ -164,13 +171,13 @@
             There are no requests with the selected statuses.
           </template>
           <template #item="{ item }">
-
             <tr
+              class="hoverTable"
               :class="item.raw.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
               @click="viewRequestDetails(item.raw)"
             >
               <td>{{ item.raw[`${requestType}StatusCode`].label }}</td>
-              <td>{{ item.raw.initialSubmitDate ? moment(item.raw.initialSubmitDate).format('YYYY/MM/DD LT') : '' }}</td>
+              <td>{{ getMomentDate(item.raw.initialSubmitDate) }}</td>
               <td>
                 {{ item.raw[`${penName}`] }}
                 <ClipboardButton
@@ -184,7 +191,7 @@
               <td>{{ item.raw.reviewer }}</td>
             </tr>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-card>
     </v-row>
   </v-container>
@@ -199,8 +206,8 @@ import ClipboardButton from './util/ClipboardButton.vue';
 import FilterTag from './util/FilterTag.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
-import {requestStore} from '@/store/modules/request';
-import moment from 'moment';
+import {getMomentDate} from '@/utils/dateHelpers';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'RequestsDisplay',
@@ -261,32 +268,31 @@ export default {
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
     },
-    requestStatusHeaderName() {
-      return `${this.requestStatusCodeName}.label`;
-    },
     requestStatusHeaderSlotName() {
-      return `header.${this.requestStatusHeaderName}`;
+      return `column.${this.requestStatusCodeName}`;
     },
     headers() {
       return [
         {
           text: 'Status',
-          value: this.requestStatusHeaderName,
-          sortable: false
+          value: this.requestStatusCodeName,
+          sortable: false,
+          key: this.requestStatusCodeName
         },
-        {text: 'Submitted Time', value: 'initialSubmitDate', sortable: false},
+        {text: 'Submitted Time', value: 'initialSubmitDate', sortable: false, key: 'initialSubmitDate'},
         {
           text: 'PEN',
           value: this.penName,
-          sortable: false
+          sortable: false,
+          key: this.penName
         },
-        {text: 'Last Name', value: 'legalLastName', sortable: false},
-        {text: 'First Name', value: 'legalFirstName', sortable: false},
-        {text: 'Reviewer', value: 'reviewer', sortable: false}
+        {text: 'Last Name', value: 'legalLastName', sortable: false, key: 'legalLastName'},
+        {text: 'First Name', value: 'legalFirstName', sortable: false, key: 'legalFirstName'},
+        {text: 'Reviewer', value: 'reviewer', sortable: false, key: 'reviewer'}
       ];
     },
     penSlotName() {
-      return `header.${this.penName}`;
+      return `column.${this.penName}`;
     },
     requestIdName() {
       return `${this.requestType}ID`;
@@ -300,7 +306,7 @@ export default {
     },
     pageNumber: {
       handler() {
-        requestStore().pageNumber = this.pageNumber;
+        this.getRequestStore(this.requestType).pageNumber = this.pageNumber;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -309,7 +315,7 @@ export default {
     },
     pageSize: {
       handler() {
-        requestStore().pageSize = this.pageSize;
+        this.getRequestStore(this.requestType).pageSize = this.pageSize;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -327,7 +333,7 @@ export default {
     },
     selectedStatuses: {
       handler() {
-        requestStore().setSelectedStatuses(this.selectedStatuses);
+        this.getRequestStore(this.requestType).setSelectedStatuses(this.selectedStatuses);
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
@@ -393,13 +399,15 @@ export default {
       const isValid = await this.$refs.form.validate();
       this.validForm = isValid.valid;
     },
+    getMomentDate,
+    getRequestStore,
     runInit() {
       this.requests = [];
       this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
-      this.headerSearchParams = requestStore().headerSearchParams;
-      this.headerSortParams = requestStore().headerSortParams;
-      this.pageSize = requestStore().pageSize;
-      this.pageNumber = requestStore().pageNumber;
+      this.headerSearchParams = this.getRequestStore(this.requestType).headerSearchParams;
+      this.headerSortParams = this.getRequestStore(this.requestType).headerSortParams;
+      this.pageSize = this.getRequestStore(this.requestType).pageSize;
+      this.pageNumber = this.getRequestStore(this.requestType).pageNumber;
       ApiService.apiAxios
         .get(Routes[this.requestType].STATUSES_URL)
         .then(response => {
@@ -407,7 +415,7 @@ export default {
             status => status[`${this.requestType}StatusCode`] !== 'AUTO'
           );
           this.statusCodes = this.getStatusCodes();
-          this.selectedStatuses = requestStore().selectedStatuses;
+          this.getRequestStore(this.requestType).setSelectedStatuses(this.selectedStatuses);
           this.comboboxKey += 1; //force component to re-render
         })
         .catch(error => {
@@ -487,7 +495,7 @@ export default {
         .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
         .then(response => {
           if (response && response.data) {
-            requestStore().documentTypes = response.data;
+            this.getRequestStore(this.requestType).setDocumentTypes(response.data);
           }
         })
         .catch(error => {
@@ -552,10 +560,32 @@ th {
     color: rgba(0, 0, 0, 0.87) !important;
 }
 
+
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
+}
+
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+.hoverTable:hover td {
+    background-color: transparent; /* or #000 */
+}
+
 .table-header {
     cursor: pointer;
     padding-top: 10px;
     margin-bottom: 0;
+    font-size: 0.75em;
 }
 
 .v-icon {
@@ -565,4 +595,5 @@ th {
 .tableRow {
     cursor: pointer;
 }
+
 </style>

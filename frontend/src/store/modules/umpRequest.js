@@ -3,7 +3,7 @@ import {Routes} from '@/utils/constants';
 import {groupBy} from 'lodash';
 import {defineStore} from 'pinia';
 
-export const requestStore = defineStore('request', {
+export const umpRequestStore = defineStore('umpRequest', {
   namespaced: true,
   state: () => ({
     pageSize: 15,
@@ -38,8 +38,11 @@ export const requestStore = defineStore('request', {
     async setCompleteMacros(macros){
       this.completeMacros = macros;
     },
-    async getMacros(requestType) {
-      const response = await ApiService.apiAxios.get(Routes[requestType].MACRO_URL);
+    async setDocumentTypes(docTypes){
+      this.documentTypes = docTypes;
+    },
+    async getMacros() {
+      const response = await ApiService.apiAxios.get(Routes.studentRequest.MACRO_URL);
       const macros = groupBy(response.data, 'macroTypeCode');
       await this.setReturnMacros(macros.MOREINFO);
       await this.setRejectMacros(macros.REJECT);

@@ -162,6 +162,10 @@ export default {
     background-color: #555;
   }
 
+  .white--text{
+    color: white;
+  }
+
   .v-toolbar /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }

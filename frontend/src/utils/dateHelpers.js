@@ -1,4 +1,5 @@
 import {LocalDate} from '@js-joda/core';
+import moment from 'moment';
 
 export function findUpcomingDate(month, day) {
   let currentDate = LocalDate.now();
@@ -11,4 +12,18 @@ export function parseDate(date) {
   if (!date) return null;
   const [year, month, day] = date.split('/');
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+
+export function getMomentDate(date, format= 'YYYY/MM/DD LT'){
+  if(date){
+    return moment(date).format(format);
+  }
+  return '';
+}
+
+export function getFromMomentDate(date){
+  if(date){
+    return moment(date).fromNow();
+  }
+  return '';
 }

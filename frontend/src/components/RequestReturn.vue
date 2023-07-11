@@ -6,7 +6,7 @@
       :disabled="!isRequestMoreInfoEnabledForUser"
     >
       <v-form ref="returnForm">
-        <v-card-text class="pa-0">
+        <v-card-text class="pa-0 pb-3">
           <v-row class="ma-0">
             <v-textarea
               id="return-comment-textarea"
@@ -63,6 +63,7 @@ import MacroMenu from './common/MacroMenu.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'RequestReturn',
@@ -113,7 +114,7 @@ export default {
       return this.selectedRequest;
     },
     returnMacros() {
-      return this.$store.getters[`${this.requestType}/returnMacros`];
+      return this.getRequestStore(this.requestType).returnMacros;
     },
     myself() {
       return {
@@ -152,6 +153,7 @@ export default {
     replaceReturnMacro() {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },
+    getRequestStore,
     returnToStudent() {
       if (this.$refs.returnForm.validate()) {
         this.beforeSubmit();

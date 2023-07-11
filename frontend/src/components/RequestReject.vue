@@ -9,7 +9,7 @@
         ref="form"
         v-model="validForm"
       >
-        <v-card-text class="pa-0">
+        <v-card-text class="pa-0 pb-3">
           <v-row class="ma-0">
             <v-textarea
               id="reject-comment-textarea"
@@ -57,7 +57,7 @@
 <script>
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
-import { replaceMacro, insertMacro } from '../utils/macro';
+import {replaceMacro, insertMacro} from '../utils/macro';
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
@@ -66,6 +66,7 @@ import MacroMenu from './common/MacroMenu.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'RequestReject',
@@ -96,12 +97,12 @@ export default {
       required: true
     },
   },
-  data () {
+  data() {
     return {
       validForm: false,
       requiredRules: isValidLength(4000),
       rejectComment: null,
-      rejectOperationOutcomeMessage : null,
+      rejectOperationOutcomeMessage: null,
     };
   },
   computed: {
@@ -115,7 +116,7 @@ export default {
       return this.selectedRequest;
     },
     rejectMacros() {
-      return this.$store.getters[`${this.requestType}/rejectMacros`];
+      return this.getRequestStore(this.requestType).rejectMacros;
     },
     myself() {
       return {
@@ -130,7 +131,7 @@ export default {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
     isRejectEnabledForUser() {
-      if(this.requestType === REQUEST_TYPES.penRequest.name) {
+      if (this.requestType === REQUEST_TYPES.penRequest.name) {
         return this.ACTION_GMP_REQUESTS_ROLE;
       } else {
         return this.ACTION_UMP_REQUESTS_ROLE;
@@ -142,7 +143,7 @@ export default {
       if (val) {
         let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
-          && (notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_REJECT_SAGA') ) {
+          && (notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_REJECT_SAGA')) {
           this.rejectOperationOutcomeMessage = 'Your request to reject is now completed.';
           this.setSuccessAlert(this.rejectOperationOutcomeMessage);
         }
@@ -157,6 +158,7 @@ export default {
     replaceRejectMacro() {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },
+    getRequestStore,
     submitReject() {
       this.rejectOperationOutcomeMessage = null;
       if (this.$refs.form.validate()) {

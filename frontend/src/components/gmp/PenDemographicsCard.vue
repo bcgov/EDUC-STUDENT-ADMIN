@@ -1,7 +1,7 @@
 <template>
-  <div
+  <v-col
+    class="py-2 px-0"
     v-if="request.pen"
-    class="flex"
   >
     <v-progress-linear
       indeterminate
@@ -20,22 +20,14 @@
         class="px-2"
       >
         <v-col
-          cols="12"
-          xl="1"
-          lg="1"
-          md="1"
-          sm="1"
+          cols="1"
         >
           <p class="mb-0">
             PEN:
           </p>
         </v-col>
         <v-col
-          cols="12"
-          xl="11"
-          lg="11"
-          md="11"
-          sm="11"
+          cols="11"
         >
           <p
             id="penNumber"
@@ -50,22 +42,14 @@
         class="px-2"
       >
         <v-col
-          cols="12"
-          xl="1"
-          lg="1"
-          md="1"
-          sm="1"
+          cols="1"
         >
           <p class="mb-0">
             Legal:
           </p>
         </v-col>
         <v-col
-          cols="12"
-          xl="11"
-          lg="11"
-          md="11"
-          sm="11"
+          cols="11"
         >
           <p
             v-if="!student.legalLastName && !student.legalFirstName && !student.legalMiddleNames"
@@ -86,22 +70,14 @@
         class="px-2"
       >
         <v-col
-          cols="12"
-          xl="1"
-          lg="1"
-          md="1"
-          sm="1"
+          cols="1"
         >
           <p class="mb-0">
             Usual:
           </p>
         </v-col>
         <v-col
-          cols="12"
-          xl="11"
-          lg="11"
-          md="11"
-          sm="11"
+          cols="11"
         >
           <p
             v-if="!student.usualLastName && !student.usualFirstName && !student.usualMiddleNames"
@@ -122,22 +98,14 @@
         class="px-2"
       >
         <v-col
-          cols="12"
-          xl="1"
-          lg="1"
-          md="1"
-          sm="1"
+          cols="1"
         >
           <p class="mb-0">
             DOB:
           </p>
         </v-col>
         <v-col
-          cols="12"
-          xl="11"
-          lg="11"
-          md="11"
-          sm="11"
+          cols="11"
         >
           <p
             id="studentDOB"
@@ -148,7 +116,7 @@
         </v-col>
       </v-row>
     </v-alert>
-  </div>
+  </v-col>
 </template>
 
 <script>

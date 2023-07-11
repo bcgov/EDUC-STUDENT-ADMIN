@@ -4,7 +4,7 @@
       flat
       :disabled="!isProvidePenEnabledForUser"
     >
-      <v-row class="mx-0">
+      <v-row class="mx-0 pt-6 pb-2">
         <v-col
           cols="12"
           xl="6"
@@ -148,7 +148,7 @@
                   sm="9"
                 >
                   <p class="mb-2">
-                    <strong>{{ formatDob(demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
+                    <strong>{{ formatDob(demographics.dob, 'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
                   </p>
                 </v-col>
               </v-row>
@@ -196,13 +196,13 @@
       max-width="400"
     >
       <v-card>
-        <v-card-title class="px-0 pb-0 pt-5" />
+        <v-card-title class="px-0 pb-0 pt-5"/>
         <div class="px-4">
           <p>Changes to student demographics do not match request.</p>
         </div>
 
         <v-card-actions>
-          <v-spacer />
+          <v-spacer/>
           <PrimaryButton
             id="confirm-request-changes"
             text="Confirm"
@@ -222,8 +222,8 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import { Routes, Statuses } from '@/utils/constants';
-import { replaceMacro, insertMacro } from '@/utils/macro';
+import {Routes, Statuses} from '@/utils/constants';
+import {replaceMacro, insertMacro} from '@/utils/macro';
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
@@ -233,6 +233,7 @@ import {isValidLength} from '@/utils/validation';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {getRequestStore} from '@/utils/common';
 
 export default {
   name: 'StudentRequestComplete',
@@ -263,14 +264,14 @@ export default {
       required: true
     },
   },
-  data () {
+  data() {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
-      completedUpdateSuccess:null,
+      completedUpdateSuccess: null,
       notAPenErrorMessage: 'The provided PEN is not valid.',
       autoPenResults: null,
-      numberOfDuplicatePenRequests:0,
+      numberOfDuplicatePenRequests: 0,
       completeSagaInProgress: false,
       dialog: false,
     };
@@ -286,7 +287,7 @@ export default {
       return this.selectedRequest;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`] || [];
+      return this.getRequestStore(this.requestType).completeMacros || [];
     },
     statusCodes() {
       return Statuses[this.requestType];
@@ -300,14 +301,14 @@ export default {
     isCompleteDisabled() {
       return !this.enableCompleteButton || !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
     },
-    isCompleteDark(){
-      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    isCompleteDark() {
+      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode !== 'DRAFT' && this.request.penRequestStatusCode !== 'ABANDONED';
     },
-    isRefreshStudInfoDisabled(){
+    isRefreshStudInfoDisabled() {
       return !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
     },
-    isRefreshStudInfoDark(){
-      return this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    isRefreshStudInfoDark() {
+      return this.enableActions && this.request.penRequestStatusCode !== 'DRAFT' && this.request.penRequestStatusCode !== 'ABANDONED';
     },
     completedRules() {
       return isValidLength(4000, false);
@@ -318,7 +319,7 @@ export default {
   },
   watch: {
     'request.completeComment': 'validateCompleteAction',
-    'request.recordedPen': function(val) {
+    'request.recordedPen': function (val) {
       this.penSearchId = val;
     },
     notification(val) {
@@ -329,9 +330,9 @@ export default {
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
             this.completeSagaInProgress = false;
           }
-        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload){
+        } else if (this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           const student = JSON.parse(notificationData.eventPayload);
-          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){
+          if (student?.pen === this.penSearchId && !this.completeSagaInProgress) {
             this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, Please do a search for the pen again.`);
             this.enableCompleteButton = false;
           }
@@ -340,19 +341,20 @@ export default {
     },
   },
   methods: {
-    ...mapActions(appStore, ['setRequest','pushMessage']),
+    ...mapActions(appStore, ['setRequest', 'pushMessage']),
     formatDob,
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
+    getRequestStore,
     replaceCompleteMacro() {
       this.request.completeComment = replaceMacro(this.request.completeComment, this.completeMacros);
     },
     sendChanges() {
-      if(this.$refs.completeForm.validate()) {
+      if (this.$refs.completeForm.validate()) {
         this.request.pen = this.penSearchId;
 
-        if(this.differentDemographicsData(this.request, this.demographics)) {
+        if (this.differentDemographicsData(this.request, this.demographics)) {
           this.dialog = true;
         } else {
           this.completeRequest();
@@ -370,7 +372,7 @@ export default {
         penNumbersInOps: this.request.pen
       };
       ApiService.apiAxios
-        .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request),{params})
+        .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request), {params})
         .then(() => {
           this.setSuccessAlert('Your request to complete is accepted.');
           this.completeSagaInProgress = true;
@@ -386,7 +388,7 @@ export default {
         });
     },
     refreshStudentInfo() {
-      if(this.penSearchId && this.penSearchId.length === 9) {
+      if (this.penSearchId && this.penSearchId.length === 9) {
         this.searchByPen();
       } else {
         this.setFailureAlert(this.notAPenErrorMessage);

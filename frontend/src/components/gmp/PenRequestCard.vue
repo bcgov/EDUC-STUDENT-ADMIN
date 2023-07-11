@@ -156,7 +156,7 @@
         sm="9"
       >
         <p class="mb-2">
-          <strong>{{ request.dob ? moment(request.dob).format('YYYY/MM/DD'):'' }}</strong>
+          <strong>{{ getMomentDate(request.dob, 'YYYY/MM/DD') }}</strong>
         </p>
       </v-col>
     </v-row>
@@ -299,6 +299,7 @@ import router from '@/router';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import {getMomentDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'PenRequestCard',
@@ -319,6 +320,7 @@ export default {
     },
   },
   methods: {
+    getMomentDate,
     searchStudent() {
       const searchParams = {
         legalLastName: this.request.legalLastName?? null,
