@@ -128,7 +128,7 @@ describe('getPenRequestCommentById', () => {
         'participantId': '11',
         'name': 'IDIR',
         'color': 'adminGreen',
-        'icon': '$question',
+        'icon': 'mdi-help-circle',
         'timestamp': '2020-03-18 2:22pm'
       },
       {
@@ -136,7 +136,7 @@ describe('getPenRequestCommentById', () => {
         'participantId': '1',
         'name': 'Student',
         'color': 'studentBlue',
-        'icon': '$info',
+        'icon': 'mdi-alert-circle',
         'timestamp': '2020-04-18 2:22pm'
       }
     ]
