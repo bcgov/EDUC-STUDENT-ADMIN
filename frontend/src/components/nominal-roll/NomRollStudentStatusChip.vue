@@ -2,6 +2,7 @@
   <v-chip
     :color="statusChipColors[statusCode][0] || '#027CB1' "
     :text-color="statusChipColors[statusCode][1] || 'white'"
+    class="mt-n1"
     small
   >
     <strong>{{ statusLabel || statusCode }}</strong>

@@ -140,7 +140,7 @@
               class="table-cell"
             >
               <span
-                class="column-item mt-1"
+                class="column-item mt-2"
                 style="text-align: left;"
               >
                 <v-tooltip
@@ -152,7 +152,7 @@
                   </template>
                   <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>
-                <span v-else-if="header.value === 'status'" class="mt-n1">
+                <span v-else-if="header.value === 'status'">
                   <NomRollStudentStatusChip
                     :status-code="item.item.raw[header.value]"
                   />
@@ -949,6 +949,7 @@ export default {
 
 .column-item {
     float: left;
+    font-size: 0.87em;
 }
 
 .header-checkbox :deep(.v-input__control) {
@@ -1027,5 +1028,10 @@ export default {
     font-size: 0.75em !important;
     font-weight: bold !important;
 }
+
+:deep(.v-data-table-footer__items-per-page){
+    display: none;
+}
+
 
 </style>
