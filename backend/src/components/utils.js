@@ -279,7 +279,7 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
           pageNumber: req.query.pageNumber,
           pageSize,
           sort: req.query.sort,
-          searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
+          searchCriteriaList: JSON.stringify(req.query.searchQueries)
         }
       };
 

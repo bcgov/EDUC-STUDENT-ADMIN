@@ -38,7 +38,7 @@ export default {
       type: String
     },
     classModifier: {
-      type: Object
+      type: String
     },
     short: {
       type: Boolean,

@@ -9,126 +9,138 @@
       no-gutters
       class="d-flex align-start"
     >
-      <h3
-        id="numberResults"
-        class="px-2 pb-2"
+      <v-col class="justify-start d-flex">
+        <h3
+          id="numberResults"
+          class="px-2 pb-2"
+        >
+          <strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong>
+        </h3>
+      </v-col>
+      <v-col
+        v-if="!hasReadOnlyRoleAccess()"
+        class="d-flex justify-end"
       >
-        <strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong>
-      </h3>
-      <v-spacer />
-      <v-flex class="select ml-3 mr-1">
-        <v-select
-          id="selectStatus"
-          v-model="selectedStudentStatus"
-          :items="studentStatuses"
-          dense
-          variant="outlined"
-          placeholder="Filter by status"
-          color="#38598a"
-          append-icon="mdi-chevron-down"
-          :menu-props="{ offsetY: true }"
-          clearable
-        />
-      </v-flex>
-      <div v-if="!hasReadOnlyRoleAccess()">
-        <PrimaryButton
-          v-if="!canIgnore"
-          id="unignoreRecord"
-          :disabled="!canRecover || isPosted"
-          @click-action="clickRecover"
-          text="Recover Record"
-        />
-        <PrimaryButton
-          v-else
-          id="ignoreRecord"
-          :disabled="!canIgnore || isPosted"
-          @click-action="clickIgnore"
-          text="Ignore Record"
-        />
-        <PrimaryButton
-          v-if="selected"
-          id="viewSelected"
-          class="ml-1"
-          :disabled="!viewSelectionEnabled || isPosted"
-          @click-action="clickViewSelected"
-          text="View Selected"
-        />
-        <PrimaryButton
-          v-else
-          id="viewDetails"
-          class="ml-1"
-          :loading="loadingRequestIDs"
-          :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted"
-          @click-action="clickViewDetails"
-          text="View Details"
-        />
-        <PrimaryButton
-          id="postRecords"
-          class="ml-1"
-          :loading="processing"
-          :disabled="isPosted || hasReadOnlyRoleAccess()"
-          @click-action="clickPostRecords"
-          text="Post"
-        />
-        <PrimaryButton
-          id="exportIgnored"
-          class="ml-1"
-          :loading="processing"
-          :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()"
-          @click-action="retrieveAndDownloadIgnoredPenRequests"
-          text="Export Ignored"
-        />
-      </div>
+        <v-row>
+          <v-col class="d-flex justify-end">
+            <div
+              style="min-width: 245px;"
+              class="mr-1"
+            >
+              <v-select
+                id="selectStatus"
+                v-model="selectedStudentStatus"
+                :items="studentStatuses"
+                item-title="text"
+                item-value="value"
+                density="compact"
+                variant="outlined"
+                placeholder="Filter by status"
+                color="#38598a"
+                clearable
+              />
+            </div>
+            <PrimaryButton
+              v-if="!canIgnore"
+              id="unignoreRecord"
+              class="mt-1"
+              :disabled="!canRecover || isPosted"
+              text="Recover Record"
+              @click-action="clickRecover"
+            />
+            <PrimaryButton
+              v-else
+              id="ignoreRecord"
+              class="mt-1"
+              :disabled="!canIgnore || isPosted"
+              text="Ignore Record"
+              @click-action="clickIgnore"
+            />
+            <PrimaryButton
+              v-if="selected"
+              id="viewSelected"
+              class="ml-1 mt-1"
+              :disabled="!viewSelectionEnabled || isPosted"
+              text="View Selected"
+              @click-action="clickViewSelected"
+            />
+            <PrimaryButton
+              v-else
+              id="viewDetails"
+              class="ml-1 mt-1"
+              :loading="loadingRequestIDs"
+              :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted"
+              text="View Details"
+              @click-action="clickViewDetails"
+            />
+            <PrimaryButton
+              id="postRecords"
+              class="ml-1 mt-1"
+              :loading="processing"
+              :disabled="isPosted || hasReadOnlyRoleAccess()"
+              text="Post"
+              @click-action="clickPostRecords"
+            />
+            <PrimaryButton
+              id="exportIgnored"
+              class="ml-1 mt-1"
+              :loading="processing"
+              :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()"
+              text="Export Ignored"
+              @click-action="retrieveAndDownloadIgnoredPenRequests"
+            />
+          </v-col>
+        </v-row>
+      </v-col>
     </v-row>
     <v-divider class="mb-1 subheader-divider" />
-    <v-data-table
+    <v-data-table-server
       id="dataTable"
       v-model="selectedRecords"
       v-model:page="pageNumber"
+      v-model:expanded="expanded"
+      v-model:items="nomRollStudentSearchResponse.content"
+      v-model:items-length="nomRollStudentSearchResponse.totalElements"
+      v-model:items-per-page="nomRollStudentSearchResponse.pageable.pageSize"
       :headers="headers"
-      :items="nomRollStudentSearchResponse.content"
-      :items-per-page="nomRollStudentSearchResponse.pageable.pageSize"
-      hide-default-footer
+      item-value="nominalRollStudentID"
       item-key="nominalRollStudentID"
       :loading="loading"
-      :expanded="expanded"
-      @page-count="nomRollStudentSearchResponse.pageable.pageNumber = $event"
     >
       <template
         v-for="h in headers"
         :key="h.id"
-        #[`header.${h.value}`]="{ header }"
+        #[`column.${h.value}`]="{ column }"
       >
         <span
-          :title="header.tooltip"
+          :title="column.tooltip"
           class="column-item"
         >
-          {{ header.text }}
+          {{ column.text }}
         </span>
       </template>
-      <template #item="props">
+      <template #item="item">
         <tr
-          :class="{'selected-record' : props.item.isSelected}"
-          @click="selectItem(props.item)"
+          :class="{'selected-record' : item.item.raw.isSelected}"
         >
           <td
-            v-for="header in props.headers"
+            v-for="header in item.columns"
             :key="header.id"
             :class="header.id"
           >
             <v-checkbox
               v-if="header.type && !hasReadOnlyRoleAccess()"
-              v-model="props.item.isSelected"
+              v-model="item.item.raw.isSelected"
               class="record-checkbox header-checkbox"
               color="#606060"
-              @click.stop="handleRecordCheckBoxClicked(props.item)"
+              @click="handleRecordCheckBoxClicked(item.item.raw)"
             />
             <div
               v-else
               class="table-cell"
             >
               <span
-                class="column-item"
+                class="column-item mt-2"
                 style="text-align: left;"
               >
                 <v-tooltip
@@ -136,222 +148,215 @@
                   right
                 >
                   <template #activator="{ on }">
-                    <span>{{ props.item[header.value] }}</span>
+                    <span>{{ item.item.raw[header.value] }}</span>
                   </template>
-                  <span>{{ getSchoolName(props.item) }}</span>
+                  <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>
                 <span v-else-if="header.value === 'status'">
                   <NomRollStudentStatusChip
-                    :status-code="props.item[header.value]"
+                    :status-code="item.item.raw[header.value]"
                   />
                   <v-icon
-                    v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
-                    @click-action="toggleRow(props.item)"
+                    v-if="!isEmpty(item.item.raw.validationErrors) && item.item.raw.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
+                    @click="toggleRow(item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
                 <span
-                  v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'"
+                  v-else-if="item.item.raw.validationErrors[header.text] && item.item.raw.status !== 'IGNORED'"
                   style="color: red"
                 >
-                  {{ formatTableColumn(header.format, props.item[header.value]) }}
+                  {{ formatTableColumn(header.format, item.item.raw[header.value]) }}
                   <v-tooltip bottom>
-                    <template #activator="{ on, attrs }">
+                    <template #activator="{ on, props }">
                       <v-icon
                         color="red"
-                        small
-                        v-bind="attrs"
-                      >mdi-alert</v-icon>
+                        size="small"
+                        icon="mdi-alert"
+                        v-bind="props"
+                      ></v-icon>
                     </template>
-                    {{ props.item.validationErrors[header.text] }}
+                    {{ item.item.raw.validationErrors[header.text] }}
                   </v-tooltip>
                 </span>
-                <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) || '' }}</span>
+                <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) || '' }}</span>
               </span>
             </div>
           </td>
         </tr>
       </template>
-      <template #expanded-item="{ headers, item }">
-        <td
-          style="border-bottom: 1px solid #ececec;"
-          :colspan="headers.length"
-        >
-          <v-form
-            ref="form"
-            v-model="validForm"
-            lazy-validation
+      <template #expanded-row="{ columns, item }">
+        <tr>
+          <td
+            style="border-bottom: 1px solid #ececec;"
+            :colspan="columns.length"
           >
-            <v-row class="px-4">
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete
-                  v-model="editedRecord.schoolDistrictNumber"
-                  :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
-                  outlined
-                  dense
-                  name="1"
-                  label="School District"
-                  :items="schoolApiDistrictCodesObjectSorted"
-                  :rules="[!validationErrors['School District'] || validationErrors['School District']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-row>
-                  <v-col
-                    class="pa-0"
-                    :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12"
-                  >
-                    <v-text-field
-                      v-model="editedRecord.schoolNumber"
-                      :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
-                      outlined
-                      dense
-                      name="2"
-                      label="School Number"
-                      :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
-                    />
-                  </v-col>
-                  <v-col
-                    v-if="item.validationErrors['School Number'] || validationErrors['School Number']"
-                    class="pa-0"
-                  >
-                    <MapSchoolCodeModal
-                      :fed-code="editedRecord.schoolNumber"
-                      @addFedProvCode="addFedProvCode(editedRecord)"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete
-                  v-model="editedRecord.schoolName"
-                  :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="3"
-                  label="School Name"
-                  :items="schoolApiMincodeSchoolNamesObjectSorted"
-                  :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete
-                  v-model="editedRecord.leaProvincial"
-                  :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="4"
-                  label="LEA/Provincial"
-                  :items="leaProvincialItems"
-                  :rules="[!validationErrors['LEA/Provincial'] || validationErrors['LEA/Provincial']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-text-field
-                  v-model="editedRecord.recipientNumber"
-                  :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="5"
-                  label="Recipient Number"
-                  :rules="[!validationErrors['Recipient Number'] || validationErrors['Recipient Number']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-text-field
-                  v-model="editedRecord.fte"
-                  :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="51"
-                  label="FTE"
-                  :rules="[!validationErrors['FTE'] || validationErrors['FTE']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-text-field
-                  v-model="editedRecord.surname"
-                  :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="52"
-                  label="Surname"
-                  :rules="[!validationErrors['Surname'] || validationErrors['Surname']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete
-                  v-model="editedRecord.gender"
-                  :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="4"
-                  label="Gender"
-                  :items="genders"
-                  item-title="label"
-                  item-value="genderCode"
-                  :rules="[!validationErrors['Gender'] || validationErrors['Gender']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-text-field
-                  id="date-picker-text-field"
-                  :value="editedRecord.birthDate"
-                  variant="underlined"
-                  dense
-                  :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
-                  :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
-                  type="date"
-                  clearable
-                  @update:model-value="validateForm"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete
-                  v-model="editedRecord.grade"
-                  :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
-                  outlined
-                  dense
-                  name="4"
-                  label="Grade"
-                  :items="gradeCodeObjects"
-                  item-title="label"
-                  item-value="gradeCode"
-                  :rules="[!validationErrors['Grade'] || validationErrors['Grade']]"
-                />
-              </v-col>
-              <v-col class="pb-0 pt-7">
-                <PrimaryButton
-                  width="100%"
-                  text="Save"
-                  :disabled="!validForm"
-                  @click-action="updateRequest(item)"
-                  :loading="updating"
-                />
-              </v-col>
-            </v-row>
-          </v-form>
-        </td>
+            <v-form
+              ref="form"
+              v-model="validForm"
+              lazy-validation
+              :disabled="validatingRecord"
+            >
+              <v-row class="px-4 py-3">
+                <v-col class="pb-0">
+                  <v-autocomplete
+                    v-model="editedRecord.schoolDistrictNumber"
+                    :disabled="!item.raw.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="1"
+                    label="School District"
+                    :items="schoolApiDistrictCodesObjectSorted"
+                    :rules="[!validationErrors['School District'] || validationErrors['School District']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-row no-gutters>
+                    <v-col
+                      class="pa-0"
+                      :cols="item.raw.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12"
+                    >
+                      <v-text-field
+                        v-model="editedRecord.schoolNumber"
+                        :disabled="!item.raw.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
+                        variant="outlined"
+                        density="compact"
+                        name="2"
+                        label="School Number"
+                        :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
+                      />
+                    </v-col>
+                    <v-col
+                      v-if="item.raw.validationErrors['School Number'] || validationErrors['School Number']"
+                      class="pa-0"
+                    >
+                      <v-row
+                        no-gutters
+                        align="center"
+                        justify="center"
+                      >
+                        <v-col>
+                          <MapSchoolCodeModal
+                            :fed-code="editedRecord.schoolNumber"
+                            @addFedProvCode="addFedProvCode(editedRecord)"
+                          />
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col class="pb-0">
+                  <v-autocomplete
+                    v-model="editedRecord.schoolName"
+                    :disabled="!item.raw.validationErrors['School Name'] && !validationErrors['School Name'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="3"
+                    label="School Name"
+                    :items="schoolApiMincodeSchoolNamesObjectSorted"
+                    :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-autocomplete
+                    v-model="editedRecord.leaProvincial"
+                    :disabled="!item.raw.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="4"
+                    label="LEA/Provincial"
+                    :items="leaProvincialItems"
+                    :rules="[!validationErrors['LEA/Provincial'] || validationErrors['LEA/Provincial']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-text-field
+                    v-model="editedRecord.recipientNumber"
+                    :disabled="!item.raw.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="5"
+                    label="Recipient Number"
+                    :rules="[!validationErrors['Recipient Number'] || validationErrors['Recipient Number']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-text-field
+                    v-model="editedRecord.fte"
+                    :disabled="!item.raw.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="51"
+                    label="FTE"
+                    :rules="[!validationErrors['FTE'] || validationErrors['FTE']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-text-field
+                    v-model="editedRecord.surname"
+                    :disabled="!item.raw.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="52"
+                    label="Surname"
+                    :rules="[!validationErrors['Surname'] || validationErrors['Surname']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-autocomplete
+                    v-model="editedRecord.gender"
+                    :disabled="!item.raw.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="53"
+                    label="Gender"
+                    :items="genders"
+                    item-title="label"
+                    item-value="genderCode"
+                    :rules="[!validationErrors['Gender'] || validationErrors['Gender']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-text-field
+                    id="date-picker-text-field"
+                    :value="editedRecord.birthDate"
+                    variant="outlined"
+                    density="compact"
+                    :disabled="!item.raw.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
+                    :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
+                    type="date"
+                    clearable
+                    @update:model-value="validateForm"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <v-autocomplete
+                    v-model="editedRecord.grade"
+                    :disabled="!item.raw.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
+                    variant="outlined"
+                    density="compact"
+                    name="54"
+                    label="Grade"
+                    :items="gradeCodeObjects"
+                    item-title="label"
+                    item-value="gradeCode"
+                    :rules="[!validationErrors['Grade'] || validationErrors['Grade']]"
+                  />
+                </v-col>
+                <v-col class="pb-0">
+                  <PrimaryButton
+                    width="100%"
+                    text="Save"
+                    :disabled="!validForm || validatingRecord"
+                    :loading="updating"
+                    @click-action="updateRequest(item.raw)"
+                  />
+                </v-col>
+              </v-row>
+            </v-form>
+          </td>
+        </tr>
       </template>
-    </v-data-table>
-    <v-row
-      class="pt-2"
-      justify="end"
-    >
-      <v-col cols="4">
-        <v-pagination
-          v-model="pageNumber"
-          color="#38598A"
-          :length="nomRollStudentSearchResponse.totalPages"
-        />
-      </v-col>
-      <v-col
-        id="currentItemsDisplay"
-        cols="4"
-      >
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0
-        }}
-      </v-col>
-    </v-row>
+    </v-data-table-server>
     <ConfirmationDialog ref="confirmationDialogIgnore">
       <template #message />
     </ConfirmationDialog>
@@ -410,35 +415,71 @@ export default {
       expanded: [],
       editedRecord: {},
       itemsPerPage: 10,
+      validatingRecord: false,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
-        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode'},
+        {
+          title: 'Mincode',
+          text: 'Mincode',
+          align: 'start',
+          sortable: false,
+          value: 'mincode',
+          key: 'mincode',
+          tooltip: 'Mincode'
+        },
         {
           text: 'School District',
           value: 'schoolDistrictNumber',
           sortable: false,
           tooltip: 'School District',
-          format: formatDistrictNumber
+          format: formatDistrictNumber,
+          key: 'schoolDistrictNumber'
         },
-        {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
-        {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
-        {text: 'LEA/Provincial', value: 'leaProvincial', sortable: false, tooltip: 'LEA/Provincial'},
-        {text: 'Recipient Number', value: 'recipientNumber', sortable: false, tooltip: 'Recipient Number'},
-        {text: 'Recipient Name', value: 'recipientName', sortable: false, tooltip: 'Recipient Name'},
-        {text: 'FTE', value: 'fte', sortable: false, tooltip: 'FTE'},
-        {text: 'Surname', value: 'surname', sortable: false, tooltip: 'Legal Surname'},
-        {text: 'Given Name(s)', value: 'givenNames', sortable: false, tooltip: 'Legal Given Name'},
-        {text: 'Gender', value: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number', key: 'schoolNumber'},
+        {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name', key: 'schoolName'},
+        {
+          text: 'LEA/Provincial',
+          value: 'leaProvincial',
+          sortable: false,
+          tooltip: 'LEA/Provincial',
+          key: 'leaProvincial'
+        },
+        {
+          text: 'Recipient Number',
+          value: 'recipientNumber',
+          sortable: false,
+          tooltip: 'Recipient Number',
+          key: 'recipientNumber'
+        },
+        {
+          text: 'Recipient Name',
+          value: 'recipientName',
+          sortable: false,
+          tooltip: 'Recipient Name',
+          key: 'recipientName'
+        },
+        {text: 'FTE', value: 'fte', sortable: false, tooltip: 'FTE', key: 'fte'},
+        {text: 'Surname', value: 'surname', sortable: false, tooltip: 'Legal Surname', key: 'surname'},
+        {text: 'Given Name(s)', value: 'givenNames', sortable: false, tooltip: 'Legal Given Name', key: 'givenNames'},
+        {text: 'Gender', value: 'gender', sortable: false, tooltip: 'Gender', key: 'gender'},
         {
           text: 'Birth Date',
           value: 'birthDate',
           sortable: false,
           tooltip: 'Birth Date',
+          key: 'birthDate',
           format: partialRight(formatDob, 'uuuu-MM-dd', 'uuuu/MM/dd')
         },
-        {text: 'Grade', value: 'grade', sortable: false, tooltip: 'Grade Code', format: formatGrade},
-        {text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen},
-        {text: 'Status', value: 'status', sortable: false, tooltip: 'Status'}
+        {text: 'Grade', value: 'grade', sortable: false, tooltip: 'Grade Code', format: formatGrade, key: 'grade'},
+        {
+          text: 'Assigned PEN',
+          value: 'assignedPEN',
+          sortable: false,
+          tooltip: 'Suggested PEN',
+          format: formatPen,
+          key: 'assignedPEN'
+        },
+        {text: 'Status', value: 'status', sortable: false, tooltip: 'Status', key: 'status'}
       ],
       leaProvincialItems: ['LEA', 'PROVINCIAL'],
       loadingRequestIDs: false,
@@ -452,11 +493,9 @@ export default {
   },
   async beforeMount() {
     if (!this.gradeCodeObjects || !this.genders) {
-      studentStore().getCodes();
+      await studentStore().getCodes();
     }
-    if (this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
-      appStore().getCodes();
-    }
+    await appStore().getCodes();
   },
   computed: {
     ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
@@ -711,9 +750,6 @@ export default {
         });
     },
     handleRecordCheckBoxClicked(item) {
-      this.selectRecord(item);
-    },
-    selectItem(item) {
       item.isSelected = !item.isSelected;
       this.selectRecord(item);
     },
@@ -735,10 +771,10 @@ export default {
       this.expanded = [];
     },
     async toggleRow(item) {
-      const index = this.expanded.indexOf(item);
+      const index = this.expanded.indexOf(item.item.raw.nominalRollStudentID);
       if (index === -1) {
         this.validationErrors = item?.validationErrors || {};
-        this.editedRecord = deepCloneObject(item);
+        this.editedRecord = deepCloneObject(item.item.raw);
         if (this.editedRecord.schoolDistrictNumber) {
           this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
         }
@@ -746,9 +782,9 @@ export default {
         if (this.expanded.length > 0) {
           this.expanded = [];
         }
-        this.expanded.push(item);
+        this.expanded.push(item.item.raw.nominalRollStudentID);
         await this.$nextTick();
-        this.$refs.form.validate();
+        await this.$refs.form.validate();
       } else {
         this.expanded.splice(index, 1);
       }
@@ -790,11 +826,14 @@ export default {
       this.updating = false;
     },
     async validateRecord() {
+      this.validatingRecord = true;
       const payload = {
         ...this.editedRecord
       };
       const response = await ApiService.apiAxios.post(`${Routes['nominalRoll'].ROOT_ENDPOINT}/validate`, payload);
       this.validationErrors = response?.data?.validationErrors || {};
+      await this.validateForm();
+      this.validatingRecord = false;
     },
     updateMincode(rec) {
       rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
@@ -910,6 +949,11 @@ export default {
 
 .column-item {
     float: left;
+    font-size: 0.87em;
+}
+
+.header-checkbox :deep(.v-input__control) {
+    height: 24px !important;
 }
 
 .table-checkbox {
@@ -956,7 +1000,7 @@ export default {
 }
 
 .record-checkbox {
-    margin-top: 0;
+    margin-top: -10px;
 }
 
 .record-checkbox /deep/ .v-input__slot {
@@ -975,7 +1019,19 @@ export default {
     padding-top: 0;
 }
 
-.select {
-    max-width: 245px;
+:deep(.v-table__wrapper) {
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
+
+:deep(.v-data-table__th){
+    font-size: 0.75em !important;
+    font-weight: bold !important;
+}
+
+:deep(.v-data-table-footer__items-per-page){
+    display: none;
+}
+
+
 </style>

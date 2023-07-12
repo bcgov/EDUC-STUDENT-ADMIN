@@ -4,36 +4,35 @@
       v-model="mapSchoolCodeDialog"
       max-width="60%"
     >
-      <template #activator="{ on, attrs }">
+      <template #activator="{ props }">
         <TertiaryButton
           id="add-school-code"
-          icon="$plus"
+          icon="mdi-plus-circle"
           short
-          class="mx-0 mt-1 pl-2 pr-0"
+          class-modifier="mt-4 pr-0 pl-1 ml-2"
           min-width="20px"
-          :bind="attrs"
-          :on="on"
+          :bind="props"
         />
       </template>
       <v-card fluid>
         <v-card-title>
-          <span> Map school code </span>
-          <v-spacer />
-          <v-btn
-            id="mapSchoolCodeDialogCloseBtn"
-            text
-            icon
-            @click="mapSchoolCodeDialog = false"
-          >
-            <v-icon
-              large
-              color="#38598A"
-            >
-              mdi-close
-            </v-icon>
-          </v-btn>
+          <v-row>
+            <v-col class="mt-2">
+              <span style="font-size: x-large;font-weight: bold">Map School Code</span>
+            </v-col>
+            <v-col class="d-flex justify-end">
+              <v-btn
+                id="mapSchoolCodeDialogCloseBtn"
+                text
+                variant="flat"
+                icon="mdi-close"
+                @click="mapSchoolCodeDialog = false"
+              >
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-card-title>
-        <v-spacer />
+        <v-spacer/>
         <v-card-text>
           <v-form
             ref="addSchoolCodeForm"
@@ -62,9 +61,8 @@
                     <v-text-field
                       id="federalCodeTxtField"
                       v-model="federalCode"
-                      outlined
-                      dense
-                      filled
+                      variant="outlined"
+                      density="compact"
                       :rules="requiredRules"
                       required
                       tabindex="1"
@@ -92,17 +90,14 @@
                       id="schoolNameTxtField"
                       v-model="mincode"
                       :items="schools"
-                      :messages="mincode && schoolApiMincodeSchoolNames.get(mincode)"
+                      item-title="text"
+                      item-value="value"
                       :rules="requiredRules"
                       tabindex="2"
                       clearable
-                      filled
-                      outlined
-                      dense
+                      variant="outlined"
+                      density="compact"
                     >
-                      <template #selection="{ item }">
-                        <span> {{ item.value }} </span>
-                      </template>
                     </v-autocomplete>
                   </v-col>
                 </v-row>
@@ -112,7 +107,7 @@
         </v-card-text>
 
         <v-card-actions class="mr-4 pb-6">
-          <v-spacer />
+          <v-spacer/>
           <PrimaryButton
             id="mapSchoolCodeDialogCancelBtn"
             text="Cancel"
@@ -170,7 +165,10 @@ export default {
     ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
     ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     schools() {
-      return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
+      return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({
+        text: `${school[0]} - ${school[1]}`,
+        value: school[0]
+      })), ['value']);
     },
   },
   beforeMount() {
@@ -179,7 +177,7 @@ export default {
   methods: {
     createFedProvSchoolCode() {
       if (this.$refs.addSchoolCodeForm.validate()) {
-        if(this.fedProvSchoolCodes.find(obj => obj.federalCode === this.federalCode)) {
+        if (this.fedProvSchoolCodes.find(obj => obj.federalCode === this.federalCode)) {
           this.setFailureAlert('Federal School Code already exists');
           return;
         }
@@ -213,9 +211,9 @@ export default {
 </script>
 
 <style scoped>
-  .v-select-list/deep/.v-list-item__mask {
+.v-select-list /deep/ .v-list-item__mask {
     color: rgb(0, 0, 0);
     font-weight: bold;
     background: rgba(238, 238, 238, 0.02);
-  }
+}
 </style>
