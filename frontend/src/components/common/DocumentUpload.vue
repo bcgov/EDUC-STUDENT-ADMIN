@@ -17,6 +17,7 @@
           :accept="fileAccept"
           :rules="fileRules"
           variant="underlined"
+          label="Select your file"
           :disabled="hasReadOnlyRoleAccess()"
           placeholder="Select your file"
           hint="JPEG, PNG, CSV, MS-WORD, MS-EXCEL, .STD, .VER and PDF files supported"

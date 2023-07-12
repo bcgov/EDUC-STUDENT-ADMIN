@@ -29,16 +29,21 @@
           class="ma-2"
         >
           <v-card-title>
-            Nominal Roll - {{ currentYear }} - Sanity Check
-            <v-spacer />
-            <PrimaryButton
-              v-if="items"
-              title="process nominal roll file"
-              text="Process"
-              :loading="processStudentsLoading"
-              :disabled="processing"
-              @click-action="processNominalRollStudents"
-            />
+            <v-row>
+              <v-col class="d-flex justify-start">
+                <span>Nominal Roll - {{ currentYear }} - Sanity Check</span>
+              </v-col>
+              <v-col class="d-flex justify-end">
+                <PrimaryButton
+                  v-if="items"
+                  title="process nominal roll file"
+                  text="Process"
+                  :loading="processStudentsLoading"
+                  :disabled="processing"
+                  @click-action="processNominalRollStudents"
+                />
+              </v-col>
+            </v-row>
           </v-card-title>
           <v-progress-linear
             v-model="progress"
@@ -49,17 +54,15 @@
           />
           <v-data-table
             v-if="items"
-            dense
+            density="compact"
             :headers="headers"
             :items="items"
-
             class="fill-height mt-4"
             :items-per-page="10"
             :footer-props="{
               'items-per-page-options': [10]
             }"
           >
-            <v-card-actions />
           </v-data-table>
         </v-card>
         <spinner
@@ -99,19 +102,19 @@ export default {
       dialog: false,
       search: '',
       headers: [
-        {text: 'School District', value: 'schoolDistrictNumber',},
-        {text: 'School Number', value: 'schoolNumber',},
-        {text: 'School Name', value: 'schoolName',},
-        {text: 'LEA/Provincial', value: 'leaProvincial',},
-        {text: 'Recipient Number', value: 'recipientNumber'},
-        {text: 'Recipient Name', value: 'recipientName'},
-        {text: 'Surname', value: 'surname'},
-        {text: 'Given Name(s)', value: 'givenNames'},
-        {text: 'Gender', value: 'gender'},
-        {text: 'Birth Date', value: 'birthDate'},
-        {text: 'Grade', value: 'grade'},
-        {text: 'FTE', value: 'fte'},
-        {text: 'Band of Residence', value: 'bandOfResidence'},
+        {title: 'School District', text: 'School District', value: 'schoolDistrictNumber', key: 'schoolDistrictNumber'},
+        {title: 'School Number', text: 'School Number', value: 'schoolNumber', key: 'schoolNumber'},
+        {title: 'School Name', text: 'School Name', value: 'schoolName', key: 'schoolName'},
+        {title: 'LEA/Provincial', text: 'LEA/Provincial', value: 'leaProvincial', key: 'leaProvincial'},
+        {title: 'Recipient Number', text: 'Recipient Number', value: 'recipientNumber', key: 'recipientNumber'},
+        {title: 'Recipient Name', text: 'Recipient Name', value: 'recipientName', key: 'recipientName'},
+        {title: 'Surname', text: 'Surname', value: 'surname', key: 'surname'},
+        {title: 'Given Name(s)', text: 'Given Name(s)', value: 'givenNames', key: 'givenNames'},
+        {title: 'Gender', text: 'Gender', value: 'gender', key: 'gender'},
+        {title: 'Birth Date', text: 'Birth Date', value: 'birthDate', key: 'birthDate'},
+        {title: 'Grade', text: 'Grade', value: 'grade', key: 'grade'},
+        {title: 'FTE', text: 'FTE', value: 'fte', key: 'fte'},
+        {title: 'Band of Residence', text: 'Band of Residence', value: 'bandOfResidence', key: 'bandOfResidence'},
       ],
       items: undefined,
       filters: {},
@@ -127,7 +130,7 @@ export default {
     try {
       this.loading = true;
       await this.getProcessStatus();
-      if(this.processing) {
+      if (this.processing) {
         this.setWarningAlert('Nominal roll is currently being processed. Please wait for the process to complete.');
         this.startPollingStatus();
       }
@@ -138,8 +141,8 @@ export default {
       this.loading = false;
     }
   },
-  beforeUnmount () {
-    if(this.interval) {
+  beforeUnmount() {
+    if (this.interval) {
       clearInterval(this.interval);
     }
   },
@@ -178,22 +181,22 @@ export default {
     async getProcessStatus() {
       try {
         const res = await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
-        if(res.data.length === 0) {
+        if (res.data.length === 0) {
           this.dialog = true; // there is no file in process show the dialog to upload a new file.
         } else {
           const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.LOADED)?.count || 0;
-          if(loadedCount === 0) {
-            if(this.interval) {
+          if (loadedCount === 0) {
+            if (this.interval) {
               this.progress = 100;
               clearInterval(this.interval);
             }
-            router.push({name:'nrStudentList'});
+            router.push({name: 'nrStudentList'});
           } else {
             this.processing = true;
             const allCount = res.data.reduce((acc, item) => {
               return acc + item.count;
             }, 0);
-            this.progress = Math.floor((allCount - loadedCount)/allCount * 100);
+            this.progress = Math.floor((allCount - loadedCount) / allCount * 100);
           }
         }
       } catch (e) {
@@ -204,3 +207,39 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-data-table__tr {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.v-data-table__tr:nth-child(1) {
+    border-top-style: groove;
+}
+
+:deep(.v-data-table__tr:hover) {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+:deep(.v-data-table__tr:hover) td {
+    background-color: transparent; /* or #000 */
+}
+
+:deep(.v-data-table__tr){
+    font-size: 0.87em;
+}
+
+:deep(.v-data-table-footer__items-per-page){
+    display: none;
+}
+
+:deep(.v-data-table-header__content){
+    font-weight: bold;
+    font-size: 0.75em;
+}
+
+</style>
