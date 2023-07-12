@@ -27,6 +27,7 @@ const handleJetStreamMessage = async (err, msg) => {
 };
 
 async function handleEdxEvent(data, topic) {
+  logger.debug('Received edx message: ' + JSON.stringify(data.eventPayload));
   NATS.publishMessage(topic, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
     logger.info(`Message published to ${topic}`, data);
   });
