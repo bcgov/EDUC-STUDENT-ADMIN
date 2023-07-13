@@ -38,16 +38,17 @@ const number = (message = 'Must be a number') => {
  * @param {String} [message]
  * @returns {(value: string) => true|string}
  */
-const noSpecialCharactersSchDisAuthName = (message = 'Remove or replace any special characters in this field.') =>
+const specialCharacterMessage = 'Special characters currently aren’t accepted, but we recognize their importance and are working on an update. For now, please remove or replace them.';
+const noSpecialCharactersSchDisAuthName = (message = specialCharacterMessage) =>
   v => !v || !/[^A-Za-z0-9\s-'.#():?&/@]/.test(v) || message;
 
-const noSpecialCharactersAddress = (message = 'Remove or replace any special characters in this field.') =>
+const noSpecialCharactersAddress = (message = specialCharacterMessage) =>
   v => !v || !/[^A-Za-z0-9\s-.#/]/.test(v) || message;
 
-const noSpecialCharactersContactTitle = (message = 'Remove or replace any special characters in this field.') =>
+const noSpecialCharactersContactTitle = (message = specialCharacterMessage) =>
   v => !v || !/[^A-Za-z.'\s-&()]/.test(v) || message;
 
-const noSpecialCharactersContactName = (message = 'Remove or replace any special characters in this field.') =>
+const noSpecialCharactersContactName = (message = specialCharacterMessage) =>
   v => !v || !/[^A-Za-z.'\s-]/.test(v) || message;
 
 /**
