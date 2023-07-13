@@ -39,10 +39,10 @@ async function subscribeToWebSocketMessageTopic(nats, topic) {
 
 
 const EdxSagaMessageHandler = {
-  async subscribe() {
-    for (const topic of TOPICS) {
+  subscribe() {
+    TOPICS.forEach(async (topic) =>{
       await subscribeToWebSocketMessageTopic(NATS.getConnection(), topic);
-    }
+    });
   },
 
 };
