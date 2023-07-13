@@ -8,31 +8,29 @@
         <v-card-title class="px-0 pb-0 pt-5">
           <v-list-item>
             <v-list-item class="pt-0 pl-2">
-              <slot name="headLine">
-                <v-list-item-title class="headline">
-                  Modify Query
-                </v-list-item-title>
-                <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
-              </slot>
+              <v-row>
+                <v-col cols="auto">
+                  <v-list-item-title class="headline">
+                    Modify Query
+                  </v-list-item-title>
+                  <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em>
+                  </v-list-item-subtitle>
+                </v-col>
+                <v-col class="d-flex justify-end">
+                  <v-btn
+                    id="closeSearchDemographicModalBtn"
+                    variant="flat"
+                    size="small"
+                    icon="mdi-close"
+                    @click="searchDemographicDialog=false"
+                  >
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-list-item>
-            <v-list-item-icon class="my-0">
-              <v-btn
-                id="closeSearchDemographicModalBtn"
-                text
-                icon
-                @click="searchDemographicDialog=false"
-              >
-                <v-icon
-                  large
-                  color="#38598A"
-                >
-                  mdi-close
-                </v-icon>
-              </v-btn>
-            </v-list-item-icon>
           </v-list-item>
         </v-card-title>
-        <v-spacer />
+        <v-spacer/>
         <v-card-text>
           <v-form
             ref="searchDemographicModalForm"
@@ -58,9 +56,8 @@
                     <v-text-field
                       id="searchDemogModalLegalLastNameTxtField"
                       v-model="student.legalLastName"
-                      outlined
+                      variant="outlined"
                       density="compact"
-                      filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                       :rules="validateLegalLastName()"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
@@ -86,7 +83,7 @@
                     <v-text-field
                       id="searchDemogModalLegalFirstNameTxtField"
                       v-model="student.legalFirstName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -115,7 +112,7 @@
                     <v-text-field
                       id="searchDemogModalLegalMiddleNameTxtField"
                       v-model="student.legalMiddleNames"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -144,7 +141,7 @@
                     <v-text-field
                       id="searchDemogModalUsualLastNameTxtField"
                       v-model="student.usualLastName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -173,7 +170,7 @@
                     <v-text-field
                       id="searchDemogModalUsualFirstNameTxtField"
                       v-model="student.usualFirstName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -202,7 +199,7 @@
                     <v-text-field
                       id="searchDemogModalUsualMiddleNameTxtField"
                       v-model="student.usualMiddleNames"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
@@ -215,21 +212,22 @@
               </v-col>
               <v-col cols="4">
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <strong>Gender</strong>
                 </v-row>
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <v-col cols="11">
                     <v-text-field
                       id="searchDemogModalGenderTxtField"
                       v-model="student.genderCode"
-                      outlined
-                      dense
+                      variant="outlined"
+                      density="compact"
+                      class="hoverField"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                       :rules="validateGender()"
@@ -243,22 +241,13 @@
               </v-col>
               <v-col cols="4">
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
-                  <strong>Birth Date</strong>
-                  <v-btn
-                    icon
-                    x-small
-                    title="YYYYMMDD"
-                  >
-                    <v-icon color="#2196f3">
-                      info
-                    </v-icon>
-                  </v-btn>
+                  <strong>Birth Date (YYYYMMDD)</strong>
                 </v-row>
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <v-col cols="11">
@@ -276,21 +265,21 @@
               </v-col>
               <v-col cols="4">
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <strong>Grade</strong>
                 </v-row>
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <v-col cols="11">
                     <v-text-field
                       id="searchDemogModalGradeTxtField"
                       v-model="student.gradeCode"
-                      outlined
-                      dense
+                      variant="outlined"
+                      density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                       :rules="validateGradeCode()"
@@ -307,13 +296,13 @@
                 cols="4"
               >
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <strong>Postal Code</strong>
                 </v-row>
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <v-col cols="11">
@@ -334,13 +323,13 @@
                 cols="4"
               >
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <strong>Mincode</strong>
                 </v-row>
                 <v-row
-                  dense
+                  density="compact"
                   no-gutters
                 >
                   <v-col cols="11">
@@ -359,11 +348,11 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-divider class="subheader-divider" />
+          <v-divider class="subheader-divider"/>
         </v-card-text>
 
         <v-card-actions class="mr-4 pb-6">
-          <v-spacer />
+          <v-spacer/>
           <slot
             name="actions"
             :is-form-valid="isFormValid"
@@ -377,7 +366,7 @@
 <script>
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import FormattedTextField from '../util/FormattedTextField.vue';
 import {formatPostalCode, formatDob, formatMincode} from '@/utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
@@ -400,7 +389,7 @@ export default {
       type: Function,
       required: true,
     },
-    hiddenFields:{
+    hiddenFields: {
       type: Array,
       required: true
     }
@@ -424,7 +413,7 @@ export default {
       this.searchDemographicDialog = newValue;
     },
     searchDemographicDialog(newValue) {
-      if(!newValue && this.dialog) {
+      if (!newValue && this.dialog) {
         this.$emit('closeDialog');
       }
     },
@@ -485,7 +474,7 @@ export default {
       if (!this.student.dob) {
         return ['Birth Date is Required.'];
       }
-      if (!isValidDOBAndAfter1900(this.student.dob,'uuuuMMdd')) {
+      if (!isValidDOBAndAfter1900(this.student.dob, 'uuuuMMdd')) {
         return ['Invalid Birth Date.'];
       }
     },
@@ -517,6 +506,16 @@ export default {
 
 <style scoped>
 .subheader-divider {
-  border-width: 0.75ex 0 0 0;
+    border-width: 0.2ex 0 0 0;
 }
+
+.headline{
+    font-weight: bold;
+    font-size: large;
+}
+
+:deep(.v-field:hover){
+    background-color: #f2f2f2;
+}
+
 </style>

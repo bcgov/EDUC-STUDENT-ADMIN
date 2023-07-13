@@ -9,7 +9,7 @@
     <v-row
       no-gutters
       justify="space-between"
-      class="sticky"
+      class="sticky pt-3"
       :style="{top: `${stickyInfoPanelHeight}px`}"
     >
       <v-col>
@@ -17,15 +17,15 @@
           <span
             id="numberMatches"
             class="px-4"
-          ><strong>{{ title }}</strong><v-btn
-            icon
-            @click="matchesExpanded=!matchesExpanded"
-          ><v-icon
-            nudge-bottom="4"
-            color="#003366"
-          >{{
-            !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down'
-          }}</v-icon></v-btn></span>
+          ><strong>{{ title }}</strong>
+            <v-btn
+              variant="flat"
+              color="#F2F2F2"
+              size="small"
+              :icon="!matchesExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              @click="matchesExpanded=!matchesExpanded"
+            />
+          </span>
         </v-card-title>
       </v-col>
       <v-col align-self="center">
@@ -34,20 +34,22 @@
           justify="end"
           class="mx-3"
         >
-          <CompareDemographicModal
-            v-model:selected-records="selectedRecords"
-            :disabled="selectedRecords.length<2 || selectedRecords.length>3"
-          />
-          <TertiaryButton
-            v-if="isRefreshRequired"
-            id="refreshButton"
-            :disabled="disableRefresh"
-            class="ma-0"
-            icon="mdi-cached"
-            icon-style="mdi-flip-h"
-            text="Refresh"
-            @click-action="$emit('refresh-match-results')"
-          />
+          <v-col class="d-flex justify-end">
+            <CompareDemographicModal
+              @close-compare="closeCompare"
+              v-model:selected-records="selectedRecords"
+              :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+            />
+            <TertiaryButton
+              v-if="isRefreshRequired"
+              id="refreshButton"
+              :disabled="disableRefresh"
+              icon="mdi-cached"
+              icon-style="mdi-flip-h"
+              text="Refresh"
+              @click-action="$emit('refresh-match-results')"
+            />
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -58,7 +60,7 @@
           key="results"
           class="pa-0"
         >
-          <v-divider />
+          <v-divider/>
           <v-data-table
             id="penMatchResultsDataTable"
             v-model="selectedRecords"
@@ -67,66 +69,65 @@
             hide-default-footer
             disable-pagination
             item-key="studentID"
+            item-value="studentID"
             :items="studentPossibleMatches"
           >
-            <template #item="props">
+            <template #item="item">
               <tr
-                :key="props.index"
+                :key="item.index"
                 :class="['resultsTableRow',
-                         hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
-                         props.isSelected?'selected-record':'',
-                         isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                         grayoutPossibleMatches(props.item) ? 'grayout':'']"
-                @mouseover="enableMatchOrUnMatch(props.item)"
-                @mouseleave="disableMatchOrUnMatch(props.item)"
+                         hoveredOveredRowStudentID === item.item.raw.studentID?'hovered-record-match-unmatch':'' ,
+                         item.item.raw.isSelected?'selected-record':'',
+                         isMatchedToStudent(item.item.raw)?'matchedStudentRow':'',
+                         grayoutPossibleMatches(item.item.raw) ? 'grayout':'']"
+                @mouseover="enableMatchOrUnMatch(item.item.raw)"
+                @mouseleave="disableMatchOrUnMatch(item.item.raw)"
               >
                 <td
-                  v-for="header in props.headers"
+                  v-for="header in item.columns"
                   :key="header.id"
                   :class="header.id"
                 >
-                  <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
+                  <div :class="[item.item.raw[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
                       <v-checkbox
                         :class="['checkbox', 'pl-3']"
                         color="#606060"
-                        :input-value="props.isSelected"
+                        :hide-details="isMatchedToStudent(item.item.raw) ? true : false"
+                        :input-value="item.item.raw.isSelected"
                         density="compact"
-                        @update:model-value="props.select($event)"
+                        @update:model-value="selectItem(item.item.raw)"
                       />
                       <v-icon
-                        v-if="header.bottomValue==='icon' && props.item['iconValue']"
-                        :class="['checkboxIcon', 'pl-3', ]"
+                        v-if="header.bottomValue==='icon' && item.item.raw['iconValue']"
+                        :class="['checkboxIcon', 'pl-6', 'mt-n3' ]"
                         color="#606060"
                       >
-                        {{ props.item['iconValue'] }}
+                        {{ item.item.raw['iconValue'] }}
                       </v-icon>
-                      <span
-                        v-else
-                        class="bottom-column-item"
-                      />
+
                     </span>
                     <span v-else>
                       <span v-if="header.topValue==='pen'">
                         <a
                           v-if="isPenLink"
                           class="pen-link"
-                          @click="popStudentDialog(props.item['studentID'])"
+                          @click="popStudentDialog(item.item.raw['studentID'])"
                         >
                           <span
-                            :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                            :class="['top-column-item', 'pen-link', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
                           >
-                            {{ formatPen(props.item[header.topValue]) }}
+                            {{ formatPen(item.item.raw[header.topValue]) }}
                           </span>
                         </a>
                         <span
                           v-else
-                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                          :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
                         >
-                          {{ formatPen(props.item[header.topValue]) }}
+                          {{ formatPen(item.item.raw[header.topValue]) }}
                         </span>
                         <v-tooltip
-                          v-if="props.item['memo']"
+                          v-if="item.item.raw['memo']"
                           top
                           max-width="40vw"
                         >
@@ -136,56 +137,57 @@
                             </v-icon>
                           </template>
                           <span>
-                            {{ props.item['memo'] }}
+                            {{ item.item.raw['memo'] }}
                           </span>
                         </v-tooltip>
                       </span>
                       <span
                         v-else-if="header.topValue==='mincode'"
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ formatMincode(props.item[header.topValue]) }}
+                        {{ formatMincode(item.item.raw[header.topValue]) }}
                       </span>
                       <span
                         v-else-if="header.topValue==='dob'"
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ formatDob(props.item[header.topValue], 'uuuu-MM-dd') }}
+                        {{ formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd') }}
                       </span>
                       <span
                         v-else
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ props.item[header.topValue] }}
+                        {{ item.item.raw[header.topValue] }}
                       </span>
                       <span
-                        :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']"
+                        :class="['double-column-item', item.item.raw[header.doubleValue] && demogValuesMatch(header.doubleValue, item.item.raw[header.doubleValue])? 'font-weight-bold':'']"
                       >
-                        {{ props.item[header.doubleValue] }}
+                        {{ item.item.raw[header.doubleValue] }}
                       </span>
                       <br>
-                      <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
+                      <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === item.item.raw.studentID">
                         <PrimaryButton
                           id="matchUnMatchButton"
                           :short="true"
                           :text="matchUnMatchButtonText"
                           :width="'6.5em'"
                           :disabled="disableMatchUnmatch"
-                          @click-action="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"
+                          @click-action="$emit('match-unmatch-student', item.item.raw, matchUnMatchButtonText)"
                         />
                       </span>
                       <span
                         v-else-if="header.bottomValue==='postalCode'"
-                        :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']"
+                        :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
                       >
-                        {{ formatPostalCode(props.item[header.bottomValue]) }}
+                        {{ formatPostalCode(item.item.raw[header.bottomValue]) }}
                       </span>
 
                       <!-- if top and bottom value are the same, do not display the bottom value -->
                       <span
                         v-else
-                        :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']"
-                      >{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
+                        :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
+                      >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue] : ''
+                        }}</span>
                     </span>
                   </div>
                 </td>
@@ -205,7 +207,7 @@
 
 <script>
 
-import CompareDemographicModal from './CompareDemographicsCommon.vue';
+import CompareDemographicModal from './CompareDemographicModal.vue';
 import TertiaryButton from '../util/TertiaryButton.vue';
 import StudentDetailModal from '../penreg/student/StudentDetailModal.vue';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
@@ -281,50 +283,61 @@ export default {
           id: 'table-checkbox',
           type: 'select',
           sortable: false,
-          bottomValue: 'icon'
+          bottomValue: 'icon',
+          key: 'icon'
         },
         {
+          title: 'Mincode',
           topText: 'Mincode',
           bottomText: 'Local ID',
           align: 'start',
           sortable: false,
           topValue: 'mincode',
+          key: 'mincode',
           bottomValue: 'localID',
           topTooltip: 'Mincode',
           bottomTooltip: 'Local ID'
         },
         {
+          title: 'Legal Surname',
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
+          key: 'legalLastName',
           bottomValue: 'usualLastName',
           sortable: false,
           topTooltip: 'Legal Surname',
           bottomTooltip: 'Usual Surname'
         },
         {
+          title: 'Legal Given',
           topText: 'Legal Given',
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
+          key: 'legalFirstName',
           bottomValue: 'usualFirstName',
           sortable: false,
           topTooltip: 'Legal Given',
           bottomTooltip: 'Usual Given'
         },
         {
+          title: 'Legal Middle',
           topText: 'Legal Middle',
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
+          key: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
           sortable: false,
           topTooltip: 'Legal Middle',
           bottomTooltip: 'Usual Middle'
         },
         {
+          title: 'DC',
           topText: 'DC',
           doubleText: 'Gen',
           bottomText: 'Postal Code',
           topValue: 'demogCode',
+          key: 'demogCode',
           doubleValue: 'genderCode',
           bottomValue: 'postalCode',
           sortable: false,
@@ -332,8 +345,27 @@ export default {
           bottomTooltip: 'Postal Code',
           doubleTooltip: 'Gender'
         },
-        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade Code'},
-        {topText: 'Sugg. PEN', bottomText: '', topValue: 'pen', bottomValue: 'button', sortable: false, topTooltip: 'Suggested PEN'},
+        {
+          title: 'Birth Date',
+          topText: 'Birth Date',
+          bottomText: 'Grade',
+          topValue: 'dob',
+          key: 'dob',
+          bottomValue: 'gradeCode',
+          sortable: false,
+          topTooltip: 'Birth Date',
+          bottomTooltip: 'Grade Code'
+        },
+        {
+          title: 'Sugg. PEN',
+          topText: 'Sugg. PEN',
+          bottomText: '',
+          topValue: 'pen',
+          key: 'pen',
+          bottomValue: 'button',
+          sortable: false,
+          topTooltip: 'Suggested PEN'
+        },
       ],
       studentPossibleMatches: [],
       loadingMatchResults: false,
@@ -355,7 +387,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['stickyInfoPanelHeight']),
-    isMatchedToStudent(){
+    isMatchedToStudent() {
       return item => !!item?.matchedToStudent;
     },
   },
@@ -363,6 +395,27 @@ export default {
     popStudentDialog(studentID) {
       this.currentStudentID = studentID;
       this.openStudentDialog = true;
+    },
+    closeCompare(){
+      this.selectedRecords = [];
+      if(this.studentPossibleMatches){
+        this.studentPossibleMatches.forEach(stud => {
+          stud.isSelected = false;
+        });
+      }
+      this.$emit('refresh-match-results');
+    },
+    selectItem(item){
+      item.isSelected = !item.isSelected;
+
+      if(item.isSelected){
+        this.selectedRecords.push(item);
+      }else{
+        const index = this.selectedRecords.indexOf(item);
+        if(index){
+          this.selectedRecords.splice(index, 1);
+        }
+      }
     },
     closeDialog() {
       this.openStudentDialog = false;
@@ -411,104 +464,126 @@ export default {
 <style scoped>
 
 #searchResults {
-  background-color: #F2F2F2;
-  z-index: 0;
+    background-color: #F2F2F2;
+    z-index: 0;
 }
 
 .bottom-column-item {
-  float: left;
-  min-height: 1.75rem;
+    float: left;
+    min-height: 1.75rem;
 }
 
 #penMatchResultsDataTable {
-  background-color: #F2F2F2;
+    background-color: #F2F2F2;
 }
 
 
 #penMatchResultsDataTable /deep/ table tbody tr:not(.selected-record):hover {
-  background-color: inherit;
+    background-color: inherit;
 }
 
 .double-column-item {
-  float: right;
+    float: right;
 }
 
 .top-column-item {
-  float: left;
-  min-height: 1rem;
+    float: left;
+    min-height: 1rem;
 }
 
 .value-half-width {
-  width: 3.9rem;
+    width: 3.9rem;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {
-  width: 6%;
+    width: 6%;
 }
+
 .v-data-table /deep/ tr td:nth-child(3),
 .v-data-table /deep/ tr td:nth-child(4) {
-  width: 17%;
+    width: 17%;
 }
+
 .v-data-table /deep/ tr td:nth-child(5) {
-  width: 17%;
+    width: 17%;
 }
+
 .v-data-table /deep/ tr td:nth-child(6) {
-  width: 11%;
+    width: 11%;
 }
+
 .v-data-table /deep/ tr td:nth-child(2),
 .v-data-table /deep/ tr td:nth-child(7) {
-  width: 10%;
+    width: 10%;
 }
 
 .v-data-table /deep/ tr td:nth-child(8) {
-  width: 12%;
+    width: 12%;
 }
 
 .pen-link {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .sticky {
-  position: sticky;
-  z-index: 6;
-  background-color: #F2F2F2;
+    position: sticky;
+    z-index: 6;
+    background-color: #F2F2F2;
 }
 
 .hovered-record-match-unmatch {
-  background-color: #dff4fd !important;
+    background-color: #dff4fd !important;
 }
 
 .grayout {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
-.matchedStudentRow {
-  background-color: #E0EFD9 !important;
+.matchedStudentRow :deep(td) {
+    background-color: #E0EFD9 !important;
 }
-.resultsTableRow {
-  height: 4.5rem; /*is effectively a 'min-height' with the way height on tables works*/
-}
+
 .resultsTableRow > td {
-  border-bottom: thin solid rgba(0, 0, 0, 0.12)
+    border-bottom: thin solid rgba(0, 0, 0, 0.12)
 }
+
 .v-input--checkbox {
-  margin-top: 0;
+    margin-top: 0;
 }
+
 .checkbox {
-  width: 100%;
-  min-height: 1.7rem;
+    width: 100%;
+    min-height: 1.7rem;
 }
+
 .checkbox /deep/ .v-messages {
-  display: none;
+    display: none;
 }
+
 .checkbox /deep/ .v-input__slot {
-  margin-bottom: 0;
-  padding-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
 }
+
 .checkboxIcon {
-  min-height: 1rem;
+    min-height: 1rem;
 }
+
 .tableCell {
-  padding-top: .3rem;
+    padding-top: .3rem;
+    font-size: 0.85em;
 }
+
+:deep(.v-data-table-footer){
+    display: none;
+}
+
+#penMatchResultsDataTable :deep(thead){
+    display: none;
+}
+
+#penMatchResultsDataTable :deep(td) {
+    background-color: #F2F2F2;
+}
+
 </style>

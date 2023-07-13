@@ -12,7 +12,7 @@
               Student Details
             </v-list-item-title>
           </v-list-item>
-          <v-list-item-icon style="margin: 0px;">
+          <v-list-item-media style="margin: 0px;">
             <v-btn
               text
               icon
@@ -25,7 +25,7 @@
                 mdi-close
               </v-icon>
             </v-btn>
-          </v-list-item-icon>
+          </v-list-item-media>
         </v-list-item>
       </v-card-title>
       <v-col>

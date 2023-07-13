@@ -72,7 +72,7 @@ import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
-  emits: ['update:selectedRecords'],
+  emits: ['update:selectedRecords','closeCompare'],
   name: 'CompareDemographicModal',
   components: {
     CompareDemographicsCommon,
@@ -121,6 +121,7 @@ export default {
       } else {
         this.studentRecords = [];
       }
+      this.$emit('closeCompare');
     },
     compare() {
       let warningMessage;

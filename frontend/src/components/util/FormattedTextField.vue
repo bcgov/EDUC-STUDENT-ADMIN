@@ -54,14 +54,16 @@ export default {
     },
     hasEdits: {
       type: Function,
-      required: true
+      required: false,
+      default: () => false,
     },
     id: {
       type: String
     },
     name: {
       type: String,
-      required: true
+      required: false,
+      default: 'nt'
     },
     maxlength: {
       type: String

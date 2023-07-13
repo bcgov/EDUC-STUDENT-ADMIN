@@ -52,51 +52,50 @@
           class="details-table mb-3"
           :headers="headers"
           :items="[studentDetails]"
-          hide-default-footer
-          dense
+          density="compact"
         >
           <template
             v-for="h in headers"
-            :key="h.id || h.topText"
-            #[`header.${h.value}`]="{ header }"
+            :key="h.key"
+            #[`column.${h.key}`]="{ column }"
           >
             <span
-              :title="header.topTooltip"
+              :title="column.topTooltip"
               class="top-column-item"
-              :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}"
+              :class="{'header-half-width': column.doubleText && !isFieldValueWarned(column.topValue)}"
             >
-              {{ header.topText }}
+              {{ column.topText }}
             </span>
             <StudentValidationWarningHint
-              v-if="header.topValue && isFieldValueWarned(header.topValue)"
-              :has-double-text="!!header.doubleText"
-              :validation-warnings="getValidationWarnings(header.topValue)"
+              v-if="column.topValue && isFieldValueWarned(column.topValue)"
+              :has-double-text="!!column.doubleText"
+              :validation-warnings="getValidationWarnings(column.topValue)"
             />
             <span
-              :title="header.doubleTooltip"
+              :title="column.doubleTooltip"
               class="double-column-item"
-            >{{ header.doubleText }}</span>
+            >{{ column.doubleText }}</span>
             <StudentValidationWarningHint
-              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)"
-              :has-double-text="!!header.doubleText"
-              :validation-warnings="getValidationWarnings(header.doubleValue)"
+              v-if="column.doubleValue && isFieldValueWarned(column.doubleValue)"
+              :has-double-text="!!column.doubleText"
+              :validation-warnings="getValidationWarnings(column.doubleValue)"
             />
           </template>
-          <template #item="props">
+          <template #item="item">
             <tr>
               <td
-                v-for="header in props.headers"
+                v-for="header in item.columns"
                 :key="header.id || header.topValue"
                 :class="header.id"
               >
                 <div
                   class="table-cell"
-                  :class="[props.item[header.doubleValue] ? 'value-half-width':'']"
+                  :class="[item.item.raw[header.doubleValue] ? 'value-half-width':'']"
                 >
                   <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
-                    <span><strong>{{ formatTableColumn(header.format, props.item[header.topValue]) }}</strong></span>
+                    <span><strong>{{ formatTableColumn(header.format, item.item.raw[header.topValue]) }}</strong></span>
                   </span>
-                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{ props.item[header.doubleValue] }}</strong></span>
+                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{ item.item.raw[header.doubleValue] }}</strong></span>
                 </div>
               </td>
             </tr>
@@ -107,34 +106,33 @@
           class="details-table"
           :headers="bottomTableHeaders"
           :items="[studentDetails]"
-          hide-default-footer
-          dense
+          density="compact"
         >
           <template
             v-for="h in bottomTableHeaders"
             :key="h.id || h.text"
-            #[`header.${h.value}`]="{ header }"
+            #[`column.${h.value}`]="{ column }"
           >
             <span
-              :title="header.tooltip"
+              :title="column.tooltip"
             >
-              {{ header.text }}
+              {{ column.text }}
             </span>
             <StudentValidationWarningHint
-              v-if="header.value && isFieldValueWarned(header.value)"
-              :validation-warnings="getValidationWarnings(header.value)"
+              v-if="column.value && isFieldValueWarned(column.value)"
+              :validation-warnings="getValidationWarnings(column.value)"
             />
           </template>
-          <template #item="props">
+          <template #item="item">
             <tr>
               <td
-                v-for="header in props.headers"
+                v-for="header in item.columns"
                 :key="header.id || header.value"
                 :class="header.id"
               >
                 <div class="table-cell">
                   <span :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
-                    <span><strong>{{ formatTableColumn(header.format, props.item[header.value]) }}</strong></span>
+                    <span><strong>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</strong></span>
                   </span>
                 </div>
               </td>
@@ -213,23 +211,23 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode, topTooltip: 'Mincode' },
-        { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false, topTooltip: 'Legal Surname' },
-        { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false, topTooltip: 'Legal Given Name' },
-        { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false, topTooltip: 'Legal Middle Names' },
-        { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false, topTooltip: 'Demographic Code', doubleTooltip: 'Gender' },
-        { topText: 'Birth Date', topValue: 'dob', sortable: false, topTooltip: 'Birth Date', format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
-        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', topTooltip: 'Suggested PEN', sortable: false, format: formatPen }
+        { title: 'Mincode', topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode, topTooltip: 'Mincode', key: 'mincode' },
+        { title: 'Legal Surname', topText: 'Legal Surname', topValue: 'legalLastName', sortable: false, topTooltip: 'Legal Surname', key: 'legalLastName' },
+        { title: 'Legal Given', topText: 'Legal Given', topValue: 'legalFirstName', sortable: false, topTooltip: 'Legal Given Name', key: 'legalFirstName' },
+        { title: 'Legal Middle', topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false, topTooltip: 'Legal Middle Names', key: 'legalMiddleNames' },
+        { title: 'DC', topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false, topTooltip: 'Demographic Code', doubleTooltip: 'Gender', key: 'genderCode' },
+        { title: 'Birth Date', topText: 'Birth Date', topValue: 'dob', sortable: false, topTooltip: 'Birth Date', format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd'), key: 'dob' },
+        { title: 'Sugg. PEN', topText: 'Sugg. PEN', topValue: 'bestMatchPEN', topTooltip: 'Suggested PEN', sortable: false, format: formatPen, key: 'bestMatchPEN' }
       ],
       bottomTableHeaders: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { text: 'Local ID', value: 'localID', sortable: false, tooltip: 'Local ID' },
-        { text: 'Usual Surname', value: 'usualLastName', sortable: false, tooltip: 'Usual Surname' },
-        { text: 'Usual Given', value: 'usualFirstName', sortable: false, tooltip: 'Usual Given Name' },
-        { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false, tooltip: 'Usual Middle Name' },
-        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode, tooltip: 'Postal Code' },
-        { text: 'Grade', value: 'gradeCode', sortable: false, tooltip: 'Grade Code' },
-        { text: '', value: '', sortable: false }
+        { title: 'Local ID', text: 'Local ID', value: 'localID', key: 'localID', sortable: false, tooltip: 'Local ID' },
+        { title: 'Usual Surname',text: 'Usual Surname', value: 'usualLastName', key: 'usualLastName', sortable: false, tooltip: 'Usual Surname' },
+        { title: 'Usual Given',text: 'Usual Given', value: 'usualFirstName', key: 'usualFirstName', sortable: false, tooltip: 'Usual Given Name' },
+        { title: 'Usual Middle',text: 'Usual Middle', value: 'usualMiddleNames', key: 'usualMiddleNames', sortable: false, tooltip: 'Usual Middle Name' },
+        { title: 'Postal Code',text: 'Postal Code', value: 'postalCode', key: 'postalCode', sortable: false, format: formatPostalCode, tooltip: 'Postal Code' },
+        { title: 'Grade',text: 'Grade', value: 'gradeCode', key: 'gradeCode', sortable: false, tooltip: 'Grade Code' },
+        { title: '',text: '', value: '', sortable: false, key: 'none' }
       ],
       validationErrorFieldHeaders: [
         { text: 'Field Name', value: 'uiFieldName', sortable: false },
@@ -412,5 +410,9 @@ export default {
 
   .v-data-table /deep/ tr td:nth-child(8) {
     width: 12%;
+  }
+
+  :deep(.v-data-table-footer){
+      display: none;
   }
 </style>
