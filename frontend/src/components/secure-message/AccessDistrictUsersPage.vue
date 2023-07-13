@@ -335,7 +335,7 @@ export default {
   computed: {
     ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
     hasAdminUsers() {
-      return this.filteredUsers.filter(user => {
+      return this.users.filter(user => {
         return user.edxUserDistricts.some(district => district.edxUserDistrictRoles.some(role => role.edxRoleCode === ROLE.EDX_DISTRICT_ADMIN));
       })?.length > 0;
     }
