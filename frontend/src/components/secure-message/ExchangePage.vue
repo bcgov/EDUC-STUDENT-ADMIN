@@ -516,7 +516,7 @@
 <script>
 
 import ApiService from '../../common/apiService';
-import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
@@ -527,6 +527,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'ExchangeInbox',
@@ -600,6 +601,7 @@ export default {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['schoolMap', 'districtMap', 'mincodeSchoolNames']),
     ...mapState(edxStore, ['statuses', 'ministryTeams']),
+    ...mapState(notificationsStore, ['notification']),
     secureExchangeStatusCodes() {
       return this.statuses;
     },
@@ -642,6 +644,11 @@ export default {
     },
     pageNumber() {
       this.getExchanges();
+    },
+    notification(notificationData) {
+      if (notificationData?.eventType === 'SEND_EMAIL_NOTIFICATION_FOR_NEW_SECURE_EXCHANGE' && notificationData?.eventOutcome === 'EMAIL_NOTIFICATION_FOR_NEW_SECURE_EXCHANGE_SENT') {
+        this.getExchanges();
+      }
     }
   },
   created() {
@@ -664,7 +671,6 @@ export default {
     },
     messageSent() {
       this.newMessageSheet = !this.newMessageSheet;
-      setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
     },
     getMinistryTeamNameByGroupRoleID() {
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;

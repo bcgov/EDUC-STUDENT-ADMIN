@@ -15,7 +15,10 @@ const handleJetStreamMessage = async (err, msg) => {
   logger.debug(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
     if (data.eventType === CONSTANTS.EVENT_TYPE.COPY_USERS_TO_NEW_SCHOOL && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.USERS_TO_NEW_SCHOOL_COPIED) {
-      await handleEdxMoveEvent(data);
+      await handleEdxEvent(data, CONSTANTS.WS_MOVE_SCHOOL_TOPIC);
+    }
+    else if (data.eventType === CONSTANTS.EVENT_TYPE.SEND_EMAIL_NOTIFICATION_FOR_NEW_SECURE_EXCHANGE && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.EMAIL_NOTIFICATION_FOR_NEW_SECURE_EXCHANGE_SENT) {
+      await handleEdxEvent(data, CONSTANTS.WS_NEW_SECURE_MESSAGE_TOPIC);
     }
     msg.ack(); // acknowledge to JetStream
   } catch (e) {
@@ -23,10 +26,10 @@ const handleJetStreamMessage = async (err, msg) => {
   }
 };
 
-async function handleEdxMoveEvent(data) {
+async function handleEdxEvent(data, topic) {
   logger.debug('Received edx message: ' + JSON.stringify(data.eventPayload));
-  NATS.publishMessage(CONSTANTS.WS_MOVE_SCHOOL_TOPIC, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
-    logger.debug(`Message published to ${CONSTANTS.WS_MOVE_SCHOOL_TOPIC}`, data);
+  NATS.publishMessage(topic, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
+    logger.info(`Message published to ${topic}`, data);
   });
 }
 
