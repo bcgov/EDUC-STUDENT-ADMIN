@@ -24,6 +24,8 @@ const roles = {
     Exchange: ['SECURE_EXCHANGE'],
     //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
     PenTeamRole: config.get('server:edx:teamRoles:pen'),
+    //Help functions created in auth module: isValidSchoolMoveUserToken, isValidSchoolMoveUser
+    School: ['SCHOOL_ADMIN']
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
