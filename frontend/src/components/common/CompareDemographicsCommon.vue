@@ -141,14 +141,14 @@
             v-if="students['statusCode']==='M'"
             bottom
           >
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-chip
                 v-if="students['statusCode']==='M'"
                 color="deep-purple"
                 text-color="white"
                 small
                 class="px-2"
-                v-bind="attrs"
+                v-bind="props"
               >M</v-chip>
             </template>
             <span>Merged to {{ students.truePen }}</span>

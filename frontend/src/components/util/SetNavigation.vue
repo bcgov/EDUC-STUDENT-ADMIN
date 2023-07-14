@@ -1,27 +1,25 @@
 <template>
   <div v-if="total > 0">
-    <span class="mr-8 nav-title">{{ title }}</span>
+    <span class="mr-6 nav-title">{{ title }}</span>
     <v-btn 
       id="preRecord"
-      class="mr-3"
-      icon
-      size="small"
+      icon="mdi-arrow-left-bold-circle"
+      density="comfortable"
+      size="x-large"
+      color="white"
       :disabled="preDisabled"
       @click="clickBtn(preRoute)"
     >
-      <v-icon large>
-        fa-arrow-alt-circle-left
-      </v-icon>
     </v-btn>
     <v-btn 
       id="nextRecord"
-      icon
+      density="comfortable"
+      size="x-large"
+      color="white"
+      icon="mdi-arrow-right-bold-circle"
       :disabled="nextDisabled"
       @click="clickBtn(nextRoute)"
     >
-      <v-icon large>
-        fa-arrow-alt-circle-right
-      </v-icon>
     </v-btn>
   </div>
 </template>
@@ -73,6 +71,7 @@ export default {
 
 .nav-title {
   font-size: 1.065rem;
+  color: white
 }
 
 </style>
