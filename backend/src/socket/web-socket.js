@@ -12,10 +12,8 @@ const webSocket = {
     require('express-ws')(app, server);
     app.ws('/api/socket', (ws) => {
       logger.debug('Connecting websocket client');
-
       connectedClients.push(ws);
       let isAlive = true;
-
       // Send a ping message every 30 seconds
       const pingInterval = setInterval(() => {
         if (!isAlive) {
@@ -23,7 +21,6 @@ const webSocket = {
           cleanupWebSocket(ws, pingInterval);
           return ws.terminate();
         }
-
         isAlive = false;
         ws.ping();
       }, 30000);

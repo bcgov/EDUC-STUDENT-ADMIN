@@ -9,11 +9,9 @@ webSocketsService.install = function (Vue, options) {
   Vue.config.globalProperties.$webSocketsConnect = () => {
     const token =localStorage.getItem('jwtToken');
     if(!token){
-      console.log('No jwt, not connecting');
       return;
     }
     if(ws && ws.readyState === WebSocket.OPEN){
-      console.log('Already has websocket connection');
       return;
     }
     ws = new WebSocket(options.url);
