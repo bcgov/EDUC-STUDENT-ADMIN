@@ -41,7 +41,7 @@ const number = (message = 'Must be a number') => {
 const noSpecialCharactersSchDisAuthName = (message = 'Remove or replace any special characters in this field.') =>
   v => !v || !/[^A-Za-z0-9\s-'.#():?&/@]/.test(v) || message;
 
-const noSpecialCharactersAddress = (message = 'Remove or replace any special characters in this field.') =>
+const noSpecialCharactersAddress = (message = 'Special characters currently aren’t accepted, but we recognize their importance and are working on an update. For now, please remove or replace them.') =>
   v => !v || !/[^A-Za-z0-9\s-.#/]/.test(v) || message;
 
 const noSpecialCharactersContactTitle = (message = 'Remove or replace any special characters in this field.') =>

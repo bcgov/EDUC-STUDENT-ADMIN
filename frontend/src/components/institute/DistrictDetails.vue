@@ -804,7 +804,7 @@ export default {
     },
     viewSchools() {
       this.schoolSearchParams.districtID = this.districtID;
-      this.schoolSearchParams.status = {name: 'Open', code: 'Open'};
+      this.schoolSearchParams.status = 'Open';
       this.setSchoolSearchParams(this.schoolSearchParams);
       this.$router.push({name: 'instituteSchoolList'});
     },

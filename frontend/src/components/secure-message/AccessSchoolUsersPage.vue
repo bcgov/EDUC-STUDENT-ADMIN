@@ -313,7 +313,7 @@ export default {
     ...mapState(appStore, ['schoolMap']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     hasAdminUsers() {
-      return this.filteredUsers.filter(user => {
+      return this.users.filter(user => {
         return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === ROLE.EDX_SCHOOL_ADMIN));
       })?.length > 0;
     }
