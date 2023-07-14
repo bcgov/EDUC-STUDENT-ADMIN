@@ -9,14 +9,17 @@ webSocketsService.install = function (Vue, options) {
   Vue.config.globalProperties.$webSocketsConnect = () => {
     const token =localStorage.getItem('jwtToken');
     if(!token){
+      console.log('No jwt, not connecting');
       return;
     }
     if(ws && ws.readyState === WebSocket.OPEN){
+      console.log('Already has websocket connection');
       return;
     }
     ws = new WebSocket(options.url);
 
     ws.onopen = () => {
+      console.log('connection opened');
       // Restart reconnect interval
       reconnectInterval = options.reconnectInterval || 1000;
     };
@@ -27,6 +30,7 @@ webSocketsService.install = function (Vue, options) {
     };
 
     ws.onclose = (event) => {
+      console.log('connection closed');
       if (event) {
         // Event.code 1000 is our normal close event
         if (event.code !== 1000) {
@@ -61,6 +65,7 @@ webSocketsService.install = function (Vue, options) {
     Here we write our custom functions to not make a mess in one function
   */
   function handleNotification (params) {
+    console.log('Received websocket event');
     const noteStore = notificationsStore();
     noteStore.setNotification(params.data);
   }
