@@ -147,7 +147,7 @@
                         title="Attach File"
                         color="#1A5A96"
                         variant="outlined"
-                        class="addButton pl-1 pr-2 mb-5"
+                        class="addButton pl-1 pr-2 mb-4"
                         @click="showAttachFilePanel"
                       >
                         <v-icon
@@ -165,7 +165,7 @@
                         title="Add Student"
                         color="#1A5A96"
                         variant="outlined"
-                        class="addButton px-2 ml-1 mb-5"
+                        class="addButton px-2 ml-1 mb-4"
                         :disabled="disableAddStudent"
                         @click="showAddStudentPanel"
                       >
