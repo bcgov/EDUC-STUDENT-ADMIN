@@ -14,6 +14,7 @@ function broadCastMessageToWebSocketClients(msg) {
   if (connectedClients && connectedClients.length > 0) {
     for (const connectedClient of connectedClients) {
       try {
+        log.debug(`Sending message to connected client ${connectedClient}`);
         connectedClient.send(msg);
       } catch (e) {
         log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
