@@ -156,8 +156,8 @@
               id="user-search-button"
               class="ml-2"
               text="Search"
+              :disabled="searchEnabled()"
               @click-action="searchButtonClick"
-              :disabled="searchEnabled"
             />
           </v-col>
         </v-row>
