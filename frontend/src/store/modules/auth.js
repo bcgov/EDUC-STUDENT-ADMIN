@@ -31,7 +31,8 @@ export const authStore = defineStore('auth', {
     isValidDistrictAdmin: localStorage.getItem('isValidDistrictAdmin') !== null,
     isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
     isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
-    isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null
+    isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null,
+    isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
   }),
   getters: {
     acronymsGet: state => state.acronyms,
@@ -286,6 +287,16 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem('isValidIndependentAuthorityAdmin');
       }
     },
+    async setAuthorizedWebsocketUser(isAuthorizedWebsocketUser){
+      console.log(isAuthorizedWebsocketUser);
+      if (isAuthorizedWebsocketUser) {
+        this.isAuthorizedWebsocketUser = true;
+        localStorage.setItem('isAuthorizedWebsocketUser', 'true');
+      } else {
+        this.isAuthorizedWebsocketUser = false;
+        localStorage.removeItem(('isAuthorizedWebsocketUser'));
+      }
+    },
     async setUserInfo(userInf) {
       if (userInf) {
         this.userInfo = userInf;
@@ -355,6 +366,7 @@ export const authStore = defineStore('auth', {
       await this.setIsValidSchoolAdmin(response.isValidSchoolAdmin);
       await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
       await this.setIsValidIndependentAuthorityAdmin(response.isValidIndependentAuthorityAdmin);
+      await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
 
       ApiService.setAuthHeader(response.jwtFrontend);
     }

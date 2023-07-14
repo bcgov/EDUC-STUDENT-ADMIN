@@ -47,11 +47,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['jwtToken', 'isAuthenticated', 'userInfo', 'isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
+    ...mapState(authStore, ['jwtToken', 'isAuthenticated', 'userInfo', 'isAuthorizedWebsocketUser']),
     ...mapState(appStore, ['pageTitle']),
   },
   watch: {
     isAuthenticated()  {
+      this.handleWebSocket();
+    },
+    isAuthorizedWebsocketUser() {
       this.handleWebSocket();
     }
   },
@@ -69,7 +72,7 @@ export default {
     authStore,
     ...mapActions(appStore, ['getConfig']),
     handleWebSocket() {
-      if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
+      if(this.isAuthenticated && this.isAuthorizedWebsocketUser) {
         this.$webSocketsConnect();
       } else {
         this.$webSocketsDisconnect();

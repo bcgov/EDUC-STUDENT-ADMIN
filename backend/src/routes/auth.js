@@ -15,6 +15,7 @@ const {
 } = require('express-validator');
 
 const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange]);
+const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & Exchange & School', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.Exchange, ...roles.User.School]);
 
 const router = express.Router();
 
@@ -75,11 +76,13 @@ async function generateTokens(req, res) {
     const isAuthorizedUser = isValidStaffUserWithRoles(req);
     const isValidUsers = auth.isValidUsers(req);
     const isValidAdminUsers = auth.isValidAdminUsers(req);
+    const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
     const responseJson = {
       jwtFrontend: req.user.jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
       ...isValidUsers,
-      ...isValidAdminUsers
+      ...isValidAdminUsers,
+      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
     };
     return res.status(HttpStatus.OK).json(responseJson);
   } else {
@@ -110,11 +113,13 @@ router.post('/refresh', [
       const isAuthorizedUser = isValidStaffUserWithRoles(req);
       const isValidUsers = auth.isValidUsers(req);
       const isValidAdminUsers = auth.isValidAdminUsers(req);
+      const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
         isAuthorizedUser: isAuthorizedUser,
         ...isValidUsers,
-        ...isValidAdminUsers
+        ...isValidAdminUsers,
+        isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
       };
       return res.status(HttpStatus.OK).json(responseJson);
     }
@@ -127,12 +132,14 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
   const isValidUsers = auth.isValidUsers(req);
   const isValidAdminUsers = auth.isValidAdminUsers(req);
+  const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
       ...isValidUsers,
-      ...isValidAdminUsers
+      ...isValidAdminUsers,
+      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
     };
     req.session.correlationID = uuidv4();
     res.status(HttpStatus.OK).json(responseJson);
