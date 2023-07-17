@@ -832,5 +832,9 @@ export default {
 h2 {
     font-size: 1.25rem
 }
+
+:deep(.v-data-table-footer){
+    display: none;
+}
 </style>
 

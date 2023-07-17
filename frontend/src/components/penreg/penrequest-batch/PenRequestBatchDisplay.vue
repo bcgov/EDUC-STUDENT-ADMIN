@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="fill-height px-0 mb-4"
+    class="px-0 mb-4"
   >
     <v-row
       no-gutters
@@ -10,22 +10,23 @@
     >
       <v-col
         cols="1"
-        class="mt-1"
+        class="mt-3"
       >
         <v-select
           id="select-school-group"
           v-model="selectedSchoolGroup"
           :items="schoolGroups"
           variant="outlined"
-          dense
+          item-value="value"
+          item-title="text"
+          density="compact"
           color="#38598a"
-          append-icon="mdi-chevron-down"
         />
       </v-col>
       <v-col>
         <v-form v-model="isValidSearchForm">
           <v-sheet
-            class="mx-4 px-2 py-0 mb-2 d-flex flex-row flex-grow-1 align-center align-self-start"
+            class="mx-4 px-2 py-0 mb-2 pt-3 d-flex flex-row flex-grow-1 align-center align-self-start"
             color="rgba(0, 0, 0, 0.06)"
             outlined
             rounded
@@ -37,7 +38,7 @@
               >
                 <v-col
                   cols="3"
-                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                  class="py-0 px-1"
                 >
                   <v-text-field
                     id="submissionNumber"
@@ -46,7 +47,8 @@
                     color="#003366"
                     label="Submission #"
                     maxlength="8"
-                    dense
+                    density="compact"
+                    variant="underlined"
                     autofocus
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
@@ -64,7 +66,8 @@
                     label="Mincode"
                     maxlength="8"
                     :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
-                    dense
+                    density="compact"
+                    variant="underlined"
                     autofocus
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
@@ -79,15 +82,16 @@
                     v-model="searchInputParams.schoolName"
                     tabindex="3"
                     color="#003366"
+                    variant="underlined"
                     label="School Name"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
                   />
                 </v-col>
               </v-row>
             </v-col>
-  
+
             <PrimaryButton
               id="refine-action"
               class="mr-2 mb-3"
@@ -103,63 +107,66 @@
               text="Search"
               @click-action="search"
             />
-          </v-sheet> 
+          </v-sheet>
         </v-form>
       </v-col>
-          
-      <PrimaryButton
-        id="view-list-action"
-        class="mr-2 mt-1"
-        :disabled="!filesSelected"
-        @click-action="clickViewList"
-        text="View List"
-      />
-      <PrimaryButton
-        id="view-details-action"
-        class="mx-2 mt-1"
-        :disabled="!filesSelected"
-        :loading="loadingRequestIDs"
-        @click-action="clickViewDetails"
-        text="View Details"
-      />
-      <v-menu offset-y>
-        <template #activator="{ on }">
-          <PrimaryButton
-            id="archive-action"
-            class="mt-1"
-            :disabled="!filesSelected || loadingFiles"
-            :on="on"
-            text="Finish Submission"
-            icon="mdi-chevron-down"
-            large-icon
-          />
-        </template>
-        <v-list>
-          <v-list-item @click="archiveAndReturnFixedOnly">
-            <v-list-item-title>Return Except Fix</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="archiveAndReturnAll">
-            <v-list-item-title>Return With Fix</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="archiveOnly">
-            <v-list-item-title>Archive Only</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <v-col cols="auto" class="mt-3">
+        <PrimaryButton
+          id="view-list-action"
+          class="mr-2 mt-1"
+          :disabled="!filesSelected"
+          @click-action="clickViewList"
+          text="View List"
+        />
+        <PrimaryButton
+          id="view-details-action"
+          class="mx-2 mt-1"
+          :disabled="!filesSelected"
+          :loading="loadingRequestIDs"
+          @click-action="clickViewDetails"
+          text="View Details"
+        />
+        <v-menu offset-y>
+          <template #activator="{ on }">
+            <PrimaryButton
+              id="archive-action"
+              class="mt-1"
+              :disabled="!filesSelected || loadingFiles"
+              :on="on"
+              text="Finish Submission"
+              icon="mdi-chevron-down"
+              large-icon
+            />
+          </template>
+          <v-list>
+            <v-list-item @click="archiveAndReturnFixedOnly">
+              <v-list-item-title>Return Except Fix</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="archiveAndReturnAll">
+              <v-list-item-title>Return With Fix</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="archiveOnly">
+              <v-list-item-title>Archive Only</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
     </v-row>
     <v-row
       no-gutters
       class="py-2"
       style="background-color:white;"
     >
-      <PenRequestBatchList
-        v-model:filters="filters"
-        :school-group="selectedSchoolGroup"
-        :search-params="searchParams"
-        :loading-files="loadingFiles"
-        :in-progress-saga-i-ds="inProgressSagaIDs"
-        @table-load="searchLoading=false"
-      />
+      <v-col>
+        <PenRequestBatchList
+          v-model:filters="filters"
+          :school-group="selectedSchoolGroup"
+          :search-params="searchParams"
+          :loading-files="loadingFiles"
+          :in-progress-saga-i-ds="inProgressSagaIDs"
+          @table-load="searchLoading=false"
+        />
+      </v-col>
     </v-row>
     <ConfirmationDialog ref="fixableConfirmationDialog">
       <template #title="{cancel}">
@@ -184,13 +191,13 @@
         </v-row>
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog ref="confirmationDialog" />
+    <ConfirmationDialog ref="confirmationDialog"/>
   </v-container>
 </template>
 
 <script>
-import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
-import { mapState, mapActions } from 'pinia';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
+import {mapState, mapActions} from 'pinia';
 import PenRequestBatchList from './PenRequestBatchList.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
@@ -223,7 +230,7 @@ export default {
   data() {
     return {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
-      filters:['Fixable'],
+      filters: ['Fixable'],
       loadingFiles: false,
       archiveAndReturnMessage: '',
       archiveAndReturnSubtext: '',
@@ -235,10 +242,10 @@ export default {
     ...mapState(penRequestBatchStore, ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
     ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
     selectedSchoolGroup: {
-      get(){
+      get() {
         return penRequestBatchStore().selectedSchoolGroup;
       },
-      set(newSchoolGroup){
+      set(newSchoolGroup) {
         return penRequestBatchStore().setSelectedSchoolGroup(newSchoolGroup);
       }
     },
@@ -281,7 +288,7 @@ export default {
       const batchIDs = this.selectedFileBatchIDs;
       const statusFilters = this.selectedFilterNames;
       this.clearPrbStudentSearchState();
-      router.push({name: 'prbStudentList', query: { batchIDs, statusFilters }});
+      router.push({name: 'prbStudentList', query: {batchIDs, statusFilters}});
     },
     async clickViewDetails() {
       this.loadingRequestIDs = true;
@@ -310,9 +317,18 @@ export default {
       const result = await this.$refs.confirmationDialog.open(
         `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`,
         'Note this action will not return any files to the submitting school.',
-        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+        {
+          width: '520px',
+          messagePadding: 'px-4 pt-4',
+          color: '',
+          dark: false,
+          closeIcon: true,
+          divider: true,
+          subtitle: true,
+          resolveText: 'Confirm'
+        }
       );
-      if(result) {
+      if (result) {
         const payload = {
           penRequestBatchIDs: this.selectedFiles.map(file => file.penRequestBatchID)
         };
@@ -321,7 +337,7 @@ export default {
           .then(response => {
             const archivedNumber = response.data.length;
             const archivedMessage = `${archivedNumber} PEN Request ${pluralize('File', archivedNumber)} ${pluralize('has', archivedNumber)} been archived.`;
-            if(archivedNumber === fileNumber) {
+            if (archivedNumber === fileNumber) {
               this.setSuccessAlert(`Success! ${archivedMessage}`);
             } else {
               this.setFailureAlert(`An error occurred while archiving PEN Request Files! ${archivedMessage} Please try again later.`);
@@ -329,9 +345,9 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            if(error?.response?.data?.code === 400) {
+            if (error?.response?.data?.code === 400) {
               this.setFailureAlert(`Unable to archive all the selected files due to the following reason. ${error?.response?.data?.message}`);
-            }else {
+            } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             }
           })
@@ -344,15 +360,24 @@ export default {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
       this.archiveAndReturnSubtext = 'Note this action will not return any files to the submitting school if FIXABLE requests exist.';
-      const result = await this.$refs.fixableConfirmationDialog.open(null,null,
-        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+      const result = await this.$refs.fixableConfirmationDialog.open(null, null,
+        {
+          width: '520px',
+          messagePadding: 'px-4 pt-4',
+          color: '',
+          dark: false,
+          closeIcon: true,
+          divider: true,
+          subtitle: true,
+          resolveText: 'Confirm'
+        }
       );
-      if(result) {
+      if (result) {
         const filesIDsWithFixableNumber = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID).length;
         const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => this.formatArchivePayload(file));
 
         this.loadingFiles = true;
-        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: filesIDsWithoutFixable})
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, {penRequestBatchIDs: filesIDsWithoutFixable})
           .then((archiveAndReturnResponse) => {
             const archivedAndReturnedNumber = archiveAndReturnResponse?.data?.length;
             let archivedMessage = `Archive requests for ${archivedAndReturnedNumber} PEN Request ${pluralize('File', archivedAndReturnedNumber)} ${pluralize('has', archivedAndReturnedNumber)} been initiated.`;
@@ -360,12 +385,12 @@ export default {
               archivedMessage += `\n${filesIDsWithFixableNumber} PEN Request ${pluralize('File', filesIDsWithFixableNumber)} with FIXABLE records ${pluralize('has', filesIDsWithFixableNumber)} been withheld.`;
             }
 
-            if(archiveAndReturnResponse?.data) {
+            if (archiveAndReturnResponse?.data) {
               archiveAndReturnResponse?.data?.forEach(response => {
                 this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
               });
             }
-            if(archivedAndReturnedNumber + filesIDsWithFixableNumber === fileNumber) {
+            if (archivedAndReturnedNumber + filesIDsWithFixableNumber === fileNumber) {
               this.setSuccessAlert(`Success! ${archivedMessage}`);
             } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
@@ -382,24 +407,33 @@ export default {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
       this.archiveAndReturnSubtext = 'Note this action will return all files to the submitting school.';
-      const result = await this.$refs.fixableConfirmationDialog.open(null,null,
-        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+      const result = await this.$refs.fixableConfirmationDialog.open(null, null,
+        {
+          width: '520px',
+          messagePadding: 'px-4 pt-4',
+          color: '',
+          dark: false,
+          closeIcon: true,
+          divider: true,
+          subtitle: true,
+          resolveText: 'Confirm'
+        }
       );
-      if(result) {
+      if (result) {
         const files = this.selectedFiles.map(file => this.formatArchivePayload(file));
 
         this.loadingFiles = true;
-        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: files})
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, {penRequestBatchIDs: files})
           .then((archiveAndReturnResponse) => {
             const archivedAndReturnedNumber = archiveAndReturnResponse?.data?.length;
             let archivedMessage = `Archive requests for ${archivedAndReturnedNumber} PEN Request ${pluralize('File', archivedAndReturnedNumber)} ${pluralize('has', archivedAndReturnedNumber)} been initiated.`;
 
-            if(archiveAndReturnResponse?.data) {
+            if (archiveAndReturnResponse?.data) {
               archiveAndReturnResponse?.data?.forEach(response => {
                 this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
               });
             }
-            if(archivedAndReturnedNumber === fileNumber) {
+            if (archivedAndReturnedNumber === fileNumber) {
               this.setSuccessAlert(`Success! ${archivedMessage}`);
             } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
@@ -419,9 +453,9 @@ export default {
       };
     },
     setSagaErrorMessage(error) {
-      if(error?.response?.data?.code === 409) {
+      if (error?.response?.data?.code === 409) {
         this.setFailureAlert('Another saga is in progress for this file, please try again later.');
-      }else if(error?.response?.data?.code === 400) {
+      } else if (error?.response?.data?.code === 400) {
         this.setFailureAlert(`Unable to archive all the selected files due to the following reason. ${error?.response?.data?.message}`);
       } else {
         this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
@@ -433,8 +467,8 @@ export default {
 </script>
 
 <style scoped>
-  .v-btn {
+.v-btn {
     text-transform: none !important;
-  }
+}
 
 </style>

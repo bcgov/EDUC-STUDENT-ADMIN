@@ -55,25 +55,27 @@ export default {
     return {
       itemsPerPage: 15,
       headers: [
-        { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
-        { text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name' },
-        { text: 'TOT', value: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
-        { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false, tooltip: 'Matched Requests' },
-        { text: 'NEW', value: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false, tooltip: 'New PEN Issued' },
-        { text: 'ERR', value: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false, tooltip: 'Requests with errors' },
-        { text: 'REP', value: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false, tooltip: 'Repeated Requests' },
-        { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixable Requests' },
-        { text: 'DUP', value: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
-        { text: 'FLT', value: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
+        { title: '', value: 'rowSelect', key: 'rowSelect', type: 'select', sortable: false },
+        { title: 'Mincode', text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
+        { title: 'School Name', text: 'School Name', value: 'schoolName', key: 'schoolName', sortable: false, tooltip: 'School Name' },
+        { title: 'TOT', text: 'TOT', value: 'studentCount', key: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
+        { title: 'MCH', text: 'MCH', value: 'matchedCount', key: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false, tooltip: 'Matched Requests' },
+        { title: 'NEW', text: 'NEW', value: 'newPenCount', key: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false, tooltip: 'New PEN Issued' },
+        { title: 'ERR', text: 'ERR', value: 'errorCount', key: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false, tooltip: 'Requests with errors' },
+        { title: 'REP', text: 'REP', value: 'repeatCount', key: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false, tooltip: 'Repeated Requests' },
+        { title: 'FIX', text: 'FIX', value: 'fixableCount', key: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixable Requests' },
+        { title: 'DUP', text: 'DUP', value: 'duplicateCount', key: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
+        { title: 'FLT', text: 'FLT', value: 'filteredCount', key: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
         {
+          title: 'Load Date',
           text: 'Load Date',
           value: 'extractDate',
+          key: 'extractDate',
           sortable: false,
           tooltip: 'Loaded Date',
           format: _.partialRight(formatDateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd')
         },
-        { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
+        { title: 'Submission', text: 'Submission', value: 'submissionNumber', key: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
       isFilterOperation: false,
@@ -184,6 +186,7 @@ export default {
       return !!foundItem;
     },
     pagination() {
+      console.log('Pagin');
       this.loadingTable = true;
       const req = {
         params: {
