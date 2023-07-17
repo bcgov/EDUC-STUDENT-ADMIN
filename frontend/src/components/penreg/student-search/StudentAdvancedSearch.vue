@@ -685,7 +685,7 @@ export default {
     validateDOBPast(year, month, day) {
       if (year || month || day) {
         if (!!year && month && day) {
-          return LocalDate.of(year, month, day) < LocalDate.now();
+          return LocalDate.of(year, month, day).isBefore(LocalDate.now());
         }
         return false;
       }

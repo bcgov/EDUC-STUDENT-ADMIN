@@ -402,6 +402,7 @@ export default {
     getMomentDate,
     getRequestStore,
     runInit() {
+      this.selectedStatuses = this.getRequestStore(this.requestType).selectedStatuses;
       this.requests = [];
       this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
       this.headerSearchParams = this.getRequestStore(this.requestType).headerSearchParams;
