@@ -96,28 +96,31 @@
                   id="newAuthorityMailingAddressLine1Input"
                   v-model="newAuthority.mailingAddrLine1"
                   :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                  class="pt-0"
+                  class="pt-0 pb-5"
                   variant="underlined"
                   :maxlength="255"
                   label="Line 1"
+                  hide-details="auto"
                 />
                 <v-text-field
                   id="newAuthorityMailingAddressLine2Input"
                   v-model="newAuthority.mailingAddrLine2"
                   :rules="[rules.noSpecialCharactersAddress()]"
-                  class="pt-0"
+                  class="pt-0 pb-5"
                   variant="underlined"
                   :maxlength="255"
                   label="Line 2"
+                  hide-details="auto"
                 />
                 <v-text-field
                   id="newContactMailingAddressCityInput"
                   v-model="newAuthority.mailingAddrCity"
                   :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                  class="pt-0"
+                  class="pt-0 pb-5"
                   variant="underlined"
                   :maxlength="255"
                   label="City"
+                  hide-details="auto"
                 />
                 <v-select
                   id="newAuthorityMailingAddressProvinceInput"
@@ -168,27 +171,30 @@
                       v-model="newAuthority.physicalAddrLine1"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                       variant="underlined"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       :maxlength="255"
                       label="Line 1"
+                      hide-details="auto"
                     />
                     <v-text-field
                       id="newAuthorityPhysicalAddressLine2Input"
                       v-model="newAuthority.physicalAddrLine2"
                       :rules="[rules.noSpecialCharactersAddress()]"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       variant="underlined"
                       :maxlength="255"
                       label="Line 2"
+                      hide-details="auto"
                     />
                     <v-text-field
                       id="newContactPhysicalAddressCityInput"
                       v-model="newAuthority.physicalAddrCity"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       variant="underlined"
                       :maxlength="255"
                       label="City"
+                      hide-details="auto"
                     />
                     <v-select
                       id="newAuthorityPhysicalAddressProvinceInput"
