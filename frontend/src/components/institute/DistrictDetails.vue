@@ -815,8 +815,14 @@ export default {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
     viewSchools() {
+      this.schoolSearchParams.schoolID = null;
       this.schoolSearchParams.districtID = this.districtID;
+      this.schoolSearchParams.authorityID = null;
       this.schoolSearchParams.status = 'Open';
+      this.schoolSearchParams.facilityType = null;
+      this.schoolSearchParams.schoolCategory = null;
+      this.schoolSearchParams.schoolReportingRequirementCode = null;
+      this.schoolSearchParams.pageNumber = 1;
       this.setSchoolSearchParams(this.schoolSearchParams);
       this.$router.push({name: 'instituteSchoolList'});
     },
