@@ -256,10 +256,11 @@
                       id="newSchoolMailingAddressLine1Input"
                       v-model="moveSchoolObject.mailingAddrLine1"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       variant="underlined"
                       :maxlength="255"
                       label="Line 1"
+                      hide-details="auto"
                     />
                   </v-col>
                   <v-col cols="4">
@@ -267,10 +268,11 @@
                       id="newSchoolMailingAddressLine2Input"
                       v-model="moveSchoolObject.mailingAddrLine2"
                       :rules="[rules.noSpecialCharactersAddress()]"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       variant="underlined"
                       :maxlength="255"
                       label="Line 2"
+                      hide-details="auto"
                     />
                   </v-col>
                   <v-col cols="4">
@@ -278,10 +280,11 @@
                       id="newContactMailingAddressCityInput"
                       v-model="moveSchoolObject.mailingAddrCity"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                      class="pt-0"
+                      class="pt-0 pb-5"
                       variant="underlined"
                       :maxlength="255"
                       label="City"
+                      hide-details="auto"
                     />
                   </v-col>
                 </v-row>
@@ -363,10 +366,11 @@
                               id="newSchoolPhysicalAddressLine1Input"
                               v-model="moveSchoolObject.physicalAddrLine1"
                               :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                              class="pt-0"
+                              class="pt-0 pb-5"
                               variant="underlined"
                               :maxlength="255"
                               label="Line 1"
+                              hide-details="auto"
                             />
                           </v-col>
                           <v-col cols="4">
@@ -374,10 +378,11 @@
                               id="newSchoolPhysicalAddressLine2Input"
                               v-model="moveSchoolObject.physicalAddrLine2"
                               :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                              class="pt-0"
+                              class="pt-0 pb-5"
                               variant="underlined"
                               :maxlength="255"
                               label="Line 2"
+                              hide-details="auto"
                             />
                           </v-col>
                           <v-col cols="4">
@@ -385,10 +390,11 @@
                               id="newContactPhysicalAddressCityInput"
                               v-model="moveSchoolObject.physicalAddrCity"
                               :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                              class="pt-0"
+                              class="pt-0 pb-5"
                               variant="underlined"
                               :maxlength="255"
                               label="City"
+                              hide-details="auto"
                             />
                           </v-col>
                         </v-row>

@@ -465,6 +465,8 @@
                         variant="underlined"
                         :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
+                        class="pb-5"
+                        hide-details="auto"
                       />
                     </v-col>
                   </v-row>
@@ -480,6 +482,8 @@
                         label="Line 2"
                         :rules="[rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
+                        class="pb-5"
+                        hide-details="auto"
                       />
                     </v-col>
                   </v-row>
@@ -496,6 +500,8 @@
                         variant="underlined"
                         :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
+                        class="pb-5"
+                        hide-details="auto"
                       />
                     </v-col>
                   </v-row>
@@ -648,6 +654,8 @@
                                         variant="underlined"
                                         :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
+                                        class="pb-5"
+                                        hide-details="auto"
                                       />
                                     </v-col>
                                   </v-row>
@@ -660,6 +668,8 @@
                                         label="Line 2"
                                         variant="underlined"
                                         :rules="[rules.noSpecialCharactersAddress()]"
+                                        class="pb-5"
+                                        hide-details="auto"
                                       />
                                     </v-col>
                                   </v-row>
@@ -673,6 +683,8 @@
                                         variant="underlined"
                                         :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
+                                        class="pb-5"
+                                        hide-details="auto"
                                       />
                                     </v-col>
                                   </v-row>
