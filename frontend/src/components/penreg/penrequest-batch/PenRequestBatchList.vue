@@ -1,21 +1,21 @@
 <template>
   <PenRequestBatchDataTable
-    v-model:batch-page-number="pageNumber"
+    :batch-page-number="pageNumber"
     :headers="headers"
     :pen-request-batch-response="penRequestBatchResponse"
     :loading-table="loadingTable || loadingFiles"
     page-commands
     :in-progress-saga-i-ds="inProgressSagaIDs"
     @select-filter="selectFilter"
+    @update:batch-page-number="updatePage"
   />
 </template>
 
 <script>
-import { mapActions, mapState } from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import filtersMixin from '@/mixins/filtersMixin';
 import alertMixin from '../../../mixins/alertMixin';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
 import {deepCloneObject} from '@/utils/common';
@@ -28,7 +28,7 @@ export default {
   components: {
     PenRequestBatchDataTable,
   },
-  mixins: [alertMixin, filtersMixin],
+  mixins: [alertMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -51,21 +51,113 @@ export default {
       type: Array
     }
   },
-  data () {
+  emits: ['table-load', 'select-filter'],
+  data() {
     return {
       itemsPerPage: 15,
       headers: [
-        { title: '', value: 'rowSelect', key: 'rowSelect', type: 'select', sortable: false },
-        { title: 'Mincode', text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
-        { title: 'School Name', text: 'School Name', value: 'schoolName', key: 'schoolName', sortable: false, tooltip: 'School Name' },
-        { title: 'TOT', text: 'TOT', value: 'studentCount', key: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
-        { title: 'MCH', text: 'MCH', value: 'matchedCount', key: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false, tooltip: 'Matched Requests' },
-        { title: 'NEW', text: 'NEW', value: 'newPenCount', key: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false, tooltip: 'New PEN Issued' },
-        { title: 'ERR', text: 'ERR', value: 'errorCount', key: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false, tooltip: 'Requests with errors' },
-        { title: 'REP', text: 'REP', value: 'repeatCount', key: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false, tooltip: 'Repeated Requests' },
-        { title: 'FIX', text: 'FIX', value: 'fixableCount', key: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixable Requests' },
-        { title: 'DUP', text: 'DUP', value: 'duplicateCount', key: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
-        { title: 'FLT', text: 'FLT', value: 'filteredCount', key: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
+        {title: '', value: 'rowSelect', key: 'rowSelect', type: 'select', sortable: false},
+        {
+          title: 'Mincode',
+          text: 'Mincode',
+          value: 'mincode',
+          key: 'mincode',
+          sortable: false,
+          align: 'start',
+          tooltip: 'Mincode'
+        },
+        {
+          title: 'School Name',
+          text: 'School Name',
+          value: 'schoolName',
+          key: 'schoolName',
+          sortable: false,
+          tooltip: 'School Name'
+        },
+        {
+          title: 'TOT',
+          text: 'TOT',
+          value: 'studentCount',
+          key: 'studentCount',
+          sortable: false,
+          countable: true,
+          tooltip: 'Total Requests'
+        },
+        {
+          title: 'MCH',
+          text: 'MCH',
+          value: 'matchedCount',
+          key: 'matchedCount',
+          sortable: false,
+          filterName: 'Matched',
+          countable: true,
+          isFiltered: false,
+          tooltip: 'Matched Requests'
+        },
+        {
+          title: 'NEW',
+          text: 'NEW',
+          value: 'newPenCount',
+          key: 'newPenCount',
+          sortable: false,
+          filterName: 'New PENs',
+          countable: true,
+          isFiltered: false,
+          tooltip: 'New PEN Issued'
+        },
+        {
+          title: 'ERR',
+          text: 'ERR',
+          value: 'errorCount',
+          key: 'errorCount',
+          sortable: false,
+          filterName: 'Errors',
+          countable: true,
+          isFiltered: false,
+          tooltip: 'Requests with errors'
+        },
+        {
+          title: 'REP',
+          text: 'REP',
+          value: 'repeatCount',
+          key: 'repeatCount',
+          sortable: false,
+          filterName: 'Repeated',
+          countable: true,
+          isFiltered: false,
+          tooltip: 'Repeated Requests'
+        },
+        {
+          title: 'FIX',
+          text: 'FIX',
+          value: 'fixableCount',
+          key: 'fixableCount',
+          sortable: false,
+          filterName: 'Fixable',
+          countable: true,
+          isFiltered: true,
+          tooltip: 'Fixable Requests'
+        },
+        {
+          title: 'DUP',
+          text: 'DUP',
+          value: 'duplicateCount',
+          key: 'duplicateCount',
+          sortable: false,
+          filterName: 'Duplicates',
+          countable: true,
+          isFiltered: false,
+          tooltip: 'Duplicate Requests'
+        },
+        {
+          title: 'FLT',
+          text: 'FLT',
+          value: 'filteredCount',
+          key: 'filteredCount',
+          sortable: false,
+          countable: true,
+          tooltip: 'Filtered Item Count'
+        },
         {
           title: 'Load Date',
           text: 'Load Date',
@@ -75,7 +167,14 @@ export default {
           tooltip: 'Loaded Date',
           format: _.partialRight(formatDateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd')
         },
-        { title: 'Submission', text: 'Submission', value: 'submissionNumber', key: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
+        {
+          title: 'Submission',
+          text: 'Submission',
+          value: 'submissionNumber',
+          key: 'submissionNumber',
+          sortable: false,
+          tooltip: 'Submission Number'
+        },
       ],
       loadingTable: true,
       isFilterOperation: false,
@@ -87,9 +186,9 @@ export default {
         this.pagination();
       }
     },
-    filters: {
+    searchCriteria: {
+      immediate: true,
       handler() {
-        this.setPrbStudentStatusFilters(this.selectFilters(this.headers, 'value'));
         this.reloadTable();
       }
     },
@@ -105,7 +204,7 @@ export default {
     },
     loadingFiles: {
       handler(v) {
-        if(!v) {
+        if (!v) {
           this.pagination();
         }
       }
@@ -114,10 +213,10 @@ export default {
   computed: {
     ...mapState(penRequestBatchStore, ['prbStudentStatusFilters', 'selectedFiles', 'penRequestBatchResponse']),
     pageNumber: {
-      get(){
+      get() {
         return penRequestBatchStore().pageNumber;
       },
-      set(newPage){
+      set(newPage) {
         penRequestBatchStore().pageNumber = newPage;
         return newPage;
       }
@@ -126,40 +225,67 @@ export default {
       return this.headers.filter(header => header.countable);
     },
     searchCriteria() {
-      const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
+      const statusCriteriaList = this.prbStudentStatusFilters?.map(statusCriteria => ({
+        key: statusCriteria,
+        operation: 'gt',
+        value: 0,
+        valueType: 'LONG',
+        condition: 'OR'
+      }));
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ACTIVE, PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED, PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG].join();
       const searchParamCriteriaList = _.compact(Object.entries(this.searchParams).map(([paramName, paramValue]) =>
         getSearchParam(paramName, paramValue))
       );
+
+      if (statusCriteriaList.length > 0) {
+        return [
+          {
+            searchCriteriaList: [
+              {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
+              {
+                key: 'penRequestBatchStatusCode',
+                operation: 'in',
+                value: statusCodeList,
+                valueType: 'STRING',
+                condition: 'AND'
+              },
+              ...searchParamCriteriaList
+            ]
+          },
+          {
+            condition: 'AND',
+            searchCriteriaList: statusCriteriaList
+          },
+        ];
+      }
+
       return [
         {
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
-            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING', condition: 'AND'},
+            {
+              key: 'penRequestBatchStatusCode',
+              operation: 'in',
+              value: statusCodeList,
+              valueType: 'STRING',
+              condition: 'AND'
+            },
             ...searchParamCriteriaList
           ]
-        },
-        {
-          condition: 'AND',
-          searchCriteriaList: statusCriteriaList
-        },
+        }
       ];
     },
   },
-  created(){
+  created() {
     this.setSelectedFiles();
-    this.initializeFilters();
   },
   methods: {
     ...mapActions(penRequestBatchStore, ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
-    initializeFilters() {
-      if(this.prbStudentStatusFilters?.length > 0) {
-        const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);
-        this.filters.splice(0, this.filters.length, ...filterNames);
-      } else {
-        this.filters.splice(0);
-        this.filters.push('Fixable');
-      }
+    selectFilter(header) {
+      this.$emit('select-filter', header);
+    },
+    updatePage(newPage) {
+      this.pageNumber = newPage;
     },
     initializeFiles(files) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.ACTIVE);
@@ -186,11 +312,10 @@ export default {
       return !!foundItem;
     },
     pagination() {
-      console.log('Pagin');
       this.loadingTable = true;
       const req = {
         params: {
-          pageNumber: this.pageNumber-1,
+          pageNumber: this.pageNumber - 1,
           pageSize: this.itemsPerPage,
           sort: {
             penRequestBatchStatusCode: 'DESC',

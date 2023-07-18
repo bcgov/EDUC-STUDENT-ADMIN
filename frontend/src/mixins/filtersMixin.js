@@ -1,4 +1,5 @@
 export default {
+  emits: ['update:filters'],
   props: {
     filters: {
       type: Array,
@@ -17,6 +18,7 @@ export default {
       return statusFilters;
     },
     selectFilter(header) {
+      console.log('Here ' + JSON.stringify(header));
       if(header.isFiltered) {
         this.filters.push(header.filterName);
       } else {
@@ -24,6 +26,7 @@ export default {
         this.filters.splice(index, 1);
       }
 
+      console.log('filters ' + JSON.stringify(this.filters));
       this.$emit('update:filters', this.filters);
     },
   }

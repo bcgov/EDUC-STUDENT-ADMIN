@@ -5,13 +5,12 @@
     max-width="50%"
     :disabled="disabled"
   >
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <PrimaryButton
         id="requestInfoBtn"
         text="Request info"
         :disabled="disabled"
-        :bind="attrs"
-        :on="on"
+        :bind="props"
       />
     </template>
     <v-card id="requestInfoDialogCard">
@@ -26,7 +25,7 @@
           id="requestInfoDialogTextArea"
           ref="requestInfoDialogTextArea"
           v-model="requestInfoDialogText"
-          outlined
+          variant="outlined"
           clearable
           rows="10"
           maxlength="4000"

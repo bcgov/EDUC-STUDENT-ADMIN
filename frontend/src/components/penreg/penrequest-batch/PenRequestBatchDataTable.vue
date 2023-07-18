@@ -5,17 +5,16 @@
     style="width: 100%"
     :overlay="false"
   >
-    <v-data-table
+    <v-data-table-server
       id="dataTable"
-      v-model:page="pageNumber"
+      v-model:page="currentPageNumber"
       :class="[{'filterable-table': hasFilterHeader}, 'batch-file-table']"
       :headers="headers"
+      :items-length="penRequestBatchResponse.length > 0 ? penRequestBatchResponse.totalElements : 0"
       :items="penRequestBatchResponse.content"
       :items-per-page="penRequestBatchResponse.pageable.pageSize"
-      hide-default-footer
       item-key="penRequestBatchID"
       :loading="loadingTable"
-      @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
       <template
         v-for="h in headers"
@@ -39,22 +38,23 @@
         >
           {{ column.text }}
         </span>
-        <template v-if="hasFilterHeader">
-          <br :key="h.id">
-          <span
-            :key="h.id"
-            :class="column.countable ? 'countable-column-header' : 'file-column'"
-          >
-            <v-checkbox
-              v-if="column.filterName"
-              v-model="column.isFiltered"
-              class="file-checkbox filter-checkbox"
-              hide-details="auto"
-              color="#606060"
-              @update:model-value="selectFilter(column)"
-            />
-          </span>
-        </template>
+        <v-row :key="h.id" v-if="hasFilterHeader">
+          <v-col class="d-flex justify-center">
+            <span
+              :key="h.id"
+              :class="column.countable ? 'countable-column-header' : 'file-column'"
+            >
+              <v-checkbox
+                v-if="column.filterName"
+                v-model="column.isFiltered"
+                class="file-checkbox filter-checkbox"
+                hide-details="auto"
+                color="#606060"
+                @update:model-value="selectFilter(column)"
+              />
+            </span>
+          </v-col>
+        </v-row>
       </template>
       <template #item="item">
         <tr
@@ -116,10 +116,10 @@
                 >{{ item.item.raw[header.value] }}</span>
               </span>
               <PrimaryButton
-                v-else-if="header.value === 'actions'" 
+                v-else-if="header.value === 'actions'"
                 :id="hoveredOveredRowBatchID === item.item.raw.penRequestBatchID ? 'more-info-action': ''"
                 :class="{'file-action': hoveredOveredRowBatchID != item.item.raw.penRequestBatchID}"
-                short 
+                short
                 text="More Info"
                 :disabled="item.item.raw.sagaInProgress"
                 @click-action="clickMoreInfo"
@@ -158,12 +158,13 @@
           </td>
         </tr>
       </template>
-    </v-data-table>
+    </v-data-table-server>
     <Pagination
       v-model="pageNumber"
       :value="pageNumber"
       :data-response="penRequestBatchResponse"
       :page-commands="pageCommands"
+      @page-change="pageChange"
     />
     <PenRequestBatchHistoryModal
       v-if="historyModalOpen"
@@ -187,6 +188,7 @@ import Pagination from '@/components/util/Pagination.vue';
 
 export default {
   name: 'PenRequestBatchDataTable',
+  emits: ['update:batchPageNumber','select-filter'],
   components: {
     PrimaryButton,
     Pagination,
@@ -222,22 +224,24 @@ export default {
       type: Array
     }
   },
-  data () {
+  data() {
     return {
       allSelected: false,
       partialSelected: false,
       hoveredOveredRowBatchID: null,
       historyModalOpen: false,
-      hoveredOveredRow: null
+      hoveredOveredRow: null,
+      currentPageNumber: 1
     };
   },
   computed: {
     ...mapState(notificationsStore, ['notification']),
     pageNumber: {
-      get(){
+      get() {
         return this.batchPageNumber;
       },
-      set(newPage){
+      set(newPage) {
+        this.currentPageNumber = newPage;
         return this.$emit('update:batchPageNumber', newPage);
       }
     },
@@ -254,7 +258,7 @@ export default {
   watch: {
     loadingTable: {
       handler(v) {
-        if(!v) {
+        if (!v) {
           const files = this.penRequestBatchResponse.content;
           this.allSelected = files?.length > 0 && files?.every(file => file.isSelected);
           this.partialSelected = files?.some(file => file.isSelected) && !this.allSelected;
@@ -268,17 +272,17 @@ export default {
       const notificationData = val;
       if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA' && this.inProgressSagaIDs) {
         this.inProgressSagaIDs.forEach(sagaObjects => {
-          if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
+          if (sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
             this.setSuccessAlert(`Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
           }
         });
       }
       this.penRequestBatchResponse.content.forEach((x, index) => {
         const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || (notificationData?.eventPayload && x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID);
-        if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
+        if (pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
           x.sagaInProgress = true;
           this.selectItem(x);
-        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
+        } else if (pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
           this.penRequestBatchResponse.content.splice(index, 1);
         }
       });
@@ -288,14 +292,17 @@ export default {
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },
+    pageChange(newPage){
+      this.pageNumber = newPage;
+    },
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
       (item.isSelected || item.viewMore) && rowClass.push('selected-file');
       return rowClass;
     },
     isUnarchived(item) {
-      return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED 
-      || item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
+      return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED
+        || item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isUnarchivedBatchChanged(item) {
       return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
@@ -328,7 +335,7 @@ export default {
       auStore.setSelectedFiles(newSelectedFiles);
     },
     selectItem(item) {
-      if(!item.sagaInProgress) {
+      if (!item.sagaInProgress) {
         item.isSelected = !item.isSelected;
       } else {
         item.isSelected = false;
@@ -345,7 +352,7 @@ export default {
         newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
       } else {
         const unselectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => !file.isSelected);
-        newSelectedFiles = [ ...this.selectedFiles];
+        newSelectedFiles = [...this.selectedFiles];
         unselectedFilesFromCurrentData.forEach(file => {
           newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
         });
@@ -359,7 +366,7 @@ export default {
     handleSubmissionNumberClicked(submissionNumber) {
       const batchID = this.penRequestBatchResponse.content.find(file => file.submissionNumber === submissionNumber)?.penRequestBatchID;
       const name = this.archived ? 'archivedPrbStudentList' : 'prbStudentList';
-      const route = router.resolve({name, query: { batchIDs: batchID, statusFilters: '' }});
+      const route = router.resolve({name, query: {batchIDs: batchID, statusFilters: ''}});
       window.open(route.href, '_blank');
     },
     enableActions(item) {
@@ -379,30 +386,32 @@ export default {
 };
 </script>
 
-<style scoped src="@/assets/styles/batchFileDataTable.css"></style>
+<style scoped
+       src="@/assets/styles/batchFileDataTable.css"
+></style>
 <style scoped>
-  .submission {
+.submission {
     text-decoration: underline;
-  }
+}
 
-  .file-action {
+.file-action {
     visibility: hidden;
-  }
+}
 
-  :deep(.v-data-table-footer){
+:deep(.v-data-table-footer) {
     display: none;
-  }
+}
 
-  :deep(.v-data-table__th){
+:deep(.v-data-table__th) {
     font-size: 0.75em !important;
     font-weight: bold !important;
-  }
+}
 
-  :deep(.batch-file){
-    font-size: 0.875em;
-  }
+:deep(.batch-file) {
+    font-size: 0.85em;
+}
 
-  #dataTable /deep/ table th {
-    font-size: 0.875rem;
-  }
+#dataTable /deep/ table th {
+    font-size: 0.85rem;
+}
 </style>

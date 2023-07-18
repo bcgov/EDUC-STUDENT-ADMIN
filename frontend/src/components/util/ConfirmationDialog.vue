@@ -18,7 +18,7 @@
           density="compact"
           flat
         >
-          <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle': options.subtitle}">
+          <v-toolbar-title class="pb-2" :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle': options.subtitle}">
             {{ title }}
           </v-toolbar-title>
           <v-spacer />

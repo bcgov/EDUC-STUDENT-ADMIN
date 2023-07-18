@@ -32,9 +32,10 @@
         </v-card-title>
         <v-spacer/>
         <v-card-text>
+          <div>{{isValidForm}}</div>
           <v-form
             ref="searchDemographicModalForm"
-            v-model="isValidForm"
+            :model-value="isValidForm"
           >
             <v-row
               density="compact"
@@ -411,6 +412,7 @@ export default {
   watch: {
     dialog(newValue) {
       this.searchDemographicDialog = newValue;
+      this.validateForm();
     },
     searchDemographicDialog(newValue) {
       if (!newValue && this.dialog) {
@@ -420,6 +422,9 @@ export default {
     studentData(newValue) {
       this.student = newValue;
     }
+  },
+  created(){
+    this.validateForm();
   },
   methods: {
     formatPostalCode,
@@ -469,6 +474,13 @@ export default {
         }
         return true;
       }];
+    },
+    async validateForm() {
+      await this.$nextTick();
+      if(this.$refs.searchDemographicModalForm){
+        const isValid = await this.$refs.searchDemographicModalForm?.validate();
+        this.isValidForm = isValid.valid;
+      }
     },
     validateDOB() {
       if (!this.student.dob) {

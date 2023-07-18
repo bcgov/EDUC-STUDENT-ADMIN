@@ -31,6 +31,7 @@
 
   #dataTable.batch-file-table /deep/ table td {
     border-bottom: none !important;
+    background: none;
   }
   #dataTable.batch-file-table /deep/ table td:nth-child(5),
   #dataTable.batch-file-table /deep/ table td:nth-child(8),
@@ -44,6 +45,7 @@
   }
   #dataTable.batch-file-table /deep/ table tr.first-active-file td{
     border-top: thin solid #d8d8d8;
+    font-size: 0.85em !important;
   }
   #dataTable.batch-file-table /deep/ table {
     border-top: thin solid #d7d7d7;
@@ -54,7 +56,7 @@
   }
   #dataTable.batch-file-table /deep/ table tr.selected-file,
   #dataTable.batch-file-table /deep/ table tbody tr:hover {
-    background-color: #E1F5FE
+    background-color: #E1F5FE !important;
   }
   #dataTable.batch-file-table /deep/ table td:nth-child(11),
   #dataTable.batch-file-table /deep/ table th:nth-child(11) {
