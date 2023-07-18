@@ -61,7 +61,7 @@
                       class="mx-2"
                       :disabled="disableModifySearch"
                       text="Modify search"
-                      @click-action="clickOpenSearch"
+                      @click-action="[clickOpenSearch(), openSearchDemographicsModal()]"
                     />
                     <PrimaryButton
                       id="issue-pen-action"
@@ -531,7 +531,6 @@ export default {
     },
     clickOpenSearch(){
       this.modifySearchDialog = true;
-      this.openSearchDemographicsModal();
     },
     updateInfoRequested(infoRequest) {
       this.loading = true;

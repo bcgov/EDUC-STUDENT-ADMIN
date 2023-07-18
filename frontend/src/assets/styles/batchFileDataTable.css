@@ -31,6 +31,7 @@
 
   #dataTable.batch-file-table /deep/ table td {
     border-bottom: none !important;
+    background: none;
   }
   #dataTable.batch-file-table /deep/ table td:nth-child(5),
   #dataTable.batch-file-table /deep/ table td:nth-child(8),
@@ -55,7 +56,7 @@
   }
   #dataTable.batch-file-table /deep/ table tr.selected-file,
   #dataTable.batch-file-table /deep/ table tbody tr:hover {
-    background-color: #E1F5FE
+    background-color: #E1F5FE !important;
   }
   #dataTable.batch-file-table /deep/ table td:nth-child(11),
   #dataTable.batch-file-table /deep/ table th:nth-child(11) {

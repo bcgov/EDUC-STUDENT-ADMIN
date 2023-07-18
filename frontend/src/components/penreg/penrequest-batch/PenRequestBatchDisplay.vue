@@ -110,7 +110,9 @@
           </v-sheet>
         </v-form>
       </v-col>
-      <v-col cols="auto" class="mt-3">
+      <v-col cols="auto"
+             class="mt-3"
+      >
         <PrimaryButton
           id="view-list-action"
           class="mr-2 mt-1"
@@ -166,6 +168,7 @@
           :in-progress-saga-i-ds="inProgressSagaIDs"
           @table-load="searchLoading=false"
           @update:filters="updateFilters"
+          @select-filter="selectFilter"
         />
       </v-col>
     </v-row>
@@ -272,6 +275,7 @@ export default {
   created() {
     this.selectedSchoolGroup || (this.selectedSchoolGroup = this.schoolGroup);
     this.searchInputParams = deepCloneObject(this.currentBatchFileSearchParams);
+    this.initializeFilters();
     this.searchHasValues();
     this.search();
   },
@@ -280,15 +284,43 @@ export default {
   },
   methods: {
     ...mapActions(penRequestBatchStudentSearchStore, ['clearPrbStudentSearchState']),
-    ...mapActions(penRequestBatchStore, ['setSelectedFiles']),
+    ...mapActions(penRequestBatchStore, ['setSelectedFiles','setPrbStudentStatusFilters']),
     ...mapActions(navigationStore, ['setSelectedIDs', 'setCurrentRequest']),
+    initializeFilters() {
+      if (this.prbStudentStatusFilters?.length > 0) {
+        const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);
+        this.filters.splice(0, this.filters.length, ...filterNames);
+      } else {
+        this.filters.splice(0);
+        this.filters.push('fixableCount');
+      }
+      this.setPrbStudentStatusFilters(this.filters);
+    },
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
-    updateFilters(newFilters){
-      console.log('Old ' + JSON.stringify(this.filters));
-      console.log('Updating1 ' + JSON.stringify(newFilters));
+    updateFilters(newFilters) {
       this.filters = newFilters;
+    },
+    selectFilter(header) {
+      if (header.isFiltered) {
+        this.filters.push(header.key);
+      } else {
+        const index = this.filters.findIndex(filter => filter === header.key);
+        this.filters.splice(index, 1);
+      }
+
+      this.setPrbStudentStatusFilters(this.filters);
+    },
+    selectFilters(headers, filterValueField) {
+      let statusFilters = [];
+      headers.filter(header => !!header.filterName).forEach(header => {
+        header.isFiltered = this.filters.some(filter => filter === header.filterName);
+        if (header.isFiltered) {
+          statusFilters.push(header[filterValueField]);
+        }
+      });
+      return statusFilters;
     },
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
