@@ -195,7 +195,7 @@
         content-class="match-confirmation-dialog"
       >
         <template #message>
-          <v-col class="pt-0">
+          <v-col class="pt-5 pb-8">
             <v-row class="mb-3">
               There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
@@ -594,7 +594,7 @@ export default {
       if (this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
           {
-            width: '680px',
+            width: '730px',
             messagePadding: 'px-4 pt-1',
             color: '',
             dark: false,
