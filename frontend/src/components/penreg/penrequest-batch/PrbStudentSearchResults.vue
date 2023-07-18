@@ -23,30 +23,34 @@
         mdi-package-up
       </v-icon>
       <v-spacer />
-      <v-flex class="select mr-n10">
+      <div class="select d-flex mt-n2 mr-2">
         <v-checkbox
           id="showSamePENAssignedCheckbox"
           v-model="showSamePENAssigned"
+          hide-details="auto"
           class="ma-0 pa-0"
           height="100%"
           label="Same PEN Assigned"
           color="#606060"
         />
-      </v-flex>
-      <v-flex class="select mr-1">
+      </div>
+      <div class="select mr-6 mt-n1 d-flex">
         <v-select
           id="selectStatus"
           v-model="selectedStudentStatus"
           :items="studentStatuses"
-          dense
+          item-title="text"
+          item-value="value"
+          density="compact"
+          hide-details="auto"
+          style="min-width: 265px;"
           variant="outlined"
           placeholder="Filter by status"
           color="#38598a"
-          append-icon="mdi-chevron-down"
           :menu-props="{ offsetY: true }"
           clearable
         />
-      </v-flex>
+      </div>
       <PrimaryButton
         v-if="selected"
         id="viewSelected"
@@ -78,41 +82,43 @@
     >
       <template
         v-for="h in headers"
-        :key="h.id"
-        #[`header.${h.value}`]="{ header }"
+        :key="h.key"
+        #[`column.${h.topValue}`]="{ column }"
       >
         <span
-          :title="header.topTooltip"
+          :title="column.topTooltip"
           class="top-column-item"
         >
-          {{ header.topText }}
+          {{ column.topText }}
         </span>
         <span
-          :title="header.doubleTooltip"
+          :title="column.doubleTooltip"
           class="double-column-item"
-        >{{ header.doubleText }}</span>
-        <br :key="h.id">
+        >{{ column.doubleText }}</span>
+        <br :key="h.key">
         <span
-          :title="header.bottomTooltip"
+          :title="column.bottomTooltip"
           class="bottom-column-item"
-        >{{ header.bottomText }}</span>
+        >{{ column.bottomText }}</span>
       </template>
-      <template #item="props">
+      <template #item="item">
         <tr
-          :class="{'selected-record' : props.item.isSelected}"
-          @click="selectItem(props.item)"
+          :class="{'selected-record' : item.item.raw.isSelected}"
+          @click="selectItem(item.item.raw)"
         >
           <td
-            v-for="header in props.headers"
+            v-for="header in item.columns"
             :key="header.id"
             :class="header.id"
           >
             <v-checkbox
               v-if="header.type"
-              v-model="props.item.isSelected"
+              v-model="item.item.raw.isSelected"
               class="record-checkbox header-checkbox"
+              density="compact"
+              hide-details="auto"
               color="#606060"
-              @click.stop="handleRecordCheckBoxClicked(props.item)"
+              @click.stop="handleRecordCheckBoxClicked(item.item.raw)"
             />
             <div
               v-else
@@ -122,39 +128,39 @@
                 <a
                   v-if="header.topValue === 'submissionNumber'"
                   class="submission"
-                  @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])"
-                >{{ props.item[header.topValue] }}</a>
+                  @click.stop="handleSubmissionNumberClicked(item.item.raw[header.topValue])"
+                >{{ item.item.raw[header.topValue] }}</a>
                 <v-tooltip
                   v-else-if="header.topValue === 'mincode'"
                   right
                 >
                   <template #activator="{ on }">
-                    <span>{{ props.item[header.topValue] }}</span>
+                    <span>{{ item.item.raw[header.topValue] }}</span>
                   </template>
-                  <span>{{ getSchoolName(props.item) }}</span>
+                  <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>
                 <span
                   v-else
-                  :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, props.item)}]"
-                >{{ props.item[header.topValue] }}</span>
+                  :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, item.item.raw)}]"
+                >{{ item.item.raw[header.topValue] }}</span>
               </span>
-              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, props.item)}]">{{ props.item[header.doubleValue] }}</span>
+              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, item.item.raw)}]">{{ item.item.raw[header.doubleValue] }}</span>
               <br>
               <span class="bottom-column-item mt-1">
                 <PrbStudentStatusChip 
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
-                  :prb-student="props.item"
+                  :prb-student="item.item.raw"
                 />
                 <span
                   v-else-if="header.bottomValue === 'submittedPen'"
                   class="bottom-column-item"
                 >
-                  {{ props.item[header.bottomValue] }}
+                  {{ item.item.raw[header.bottomValue] }}
                 </span>
                 <span
                   v-else
-                  :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, props.item)}]"
-                >{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
+                  :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, item.item.raw)}]"
+                >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue]: '' }}</span>
               </span>
             </div>
           </td>
@@ -219,15 +225,15 @@ export default {
     return {
       itemsPerPage: 10,
       headers: [
-        { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'mincode', bottomValue: 'localID', topTooltip: 'Mincode', bottomTooltip: 'Local ID' },
-        { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false, topTooltip: 'Legal Surname', bottomTooltip: 'Legal Surname' },
-        { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false, topTooltip: 'Legal Given Name', bottomTooltip: 'Usual Given Name' },
-        { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false, topTooltip: 'Legal Middle Name', bottomTooltip: 'Usual Middle Name' },
-        { topText: 'DC', doubleText: 'Gen', bottomText: 'Postal Code', topValue: 'dc', doubleValue: 'genderCode', bottomValue: 'postalCode', sortable: false, topTooltip: 'Demographic Code', bottomTooltip: 'Postal Code', doubleTooltip: 'Gender' },
-        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade Code' },
-        { topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false, topTooltip: 'Suggested PEN', bottomTooltip: 'Submitted PEN' },
-        { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false, topTooltip: 'Submission Number', bottomTooltip: 'Status' },
+        { title: '', id: 'table-checkbox', key: 'table-checkbox', type: 'select', sortable: false },
+        { title: 'Mincode', topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'mincode', key: 'mincode', bottomValue: 'localID', topTooltip: 'Mincode', bottomTooltip: 'Local ID' },
+        { title: 'Legal Surname', topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', key: 'legalLastName', bottomValue: 'usualLastName', sortable: false, topTooltip: 'Legal Surname', bottomTooltip: 'Legal Surname' },
+        { title: 'Legal Given', topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', key: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false, topTooltip: 'Legal Given Name', bottomTooltip: 'Usual Given Name' },
+        { title: 'Legal Middle', topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', key: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false, topTooltip: 'Legal Middle Name', bottomTooltip: 'Usual Middle Name' },
+        { title: 'DC', topText: 'DC', doubleText: 'Gen', bottomText: 'Postal Code', topValue: 'dc', key: 'dc', doubleValue: 'genderCode', bottomValue: 'postalCode', sortable: false, topTooltip: 'Demographic Code', bottomTooltip: 'Postal Code', doubleTooltip: 'Gender' },
+        { title: 'Birth Date', topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', key: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade Code' },
+        { title: 'Suggested PEN', topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', key: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false, topTooltip: 'Suggested PEN', bottomTooltip: 'Submitted PEN' },
+        { title: 'Submission', topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', key: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false, topTooltip: 'Submission Number', bottomTooltip: 'Status' },
       ],
       loadingRequestIDs: false
     };
@@ -498,4 +504,14 @@ export default {
     color: #D8292F !important;
     font-weight: bold;
   }
+
+  :deep(.v-data-table__th){
+    font-weight: bold !important;
+    font-size: 0.85em !important;
+  }
+
+  :deep(.table-cell){
+    font-size: 0.875em;
+  }
+
 </style>

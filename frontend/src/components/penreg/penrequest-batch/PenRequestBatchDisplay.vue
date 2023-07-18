@@ -127,12 +127,12 @@
           text="View Details"
         />
         <v-menu offset-y>
-          <template #activator="{ on }">
+          <template #activator="{ props }">
             <PrimaryButton
               id="archive-action"
               class="mt-1"
               :disabled="!filesSelected || loadingFiles"
-              :on="on"
+              :bind="props"
               text="Finish Submission"
               icon="mdi-chevron-down"
               large-icon
@@ -165,6 +165,7 @@
           :loading-files="loadingFiles"
           :in-progress-saga-i-ds="inProgressSagaIDs"
           @table-load="searchLoading=false"
+          @update:filters="updateFilters"
         />
       </v-col>
     </v-row>
@@ -265,7 +266,7 @@ export default {
         duplicateCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE],
       };
 
-      return this.prbStudentStatusFilters.map(filter => filterNames[filter]).join(',');
+      return this.prbStudentStatusFilters?.map(filter => filterNames[filter]).join(',');
     }
   },
   created() {
@@ -284,6 +285,11 @@ export default {
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
+    updateFilters(newFilters){
+      console.log('Old ' + JSON.stringify(this.filters));
+      console.log('Updating1 ' + JSON.stringify(newFilters));
+      this.filters = newFilters;
+    },
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       const statusFilters = this.selectedFilterNames;
@@ -295,7 +301,7 @@ export default {
       const query = {
         params: {
           penRequestBatchIDs: this.selectedFileBatchIDs,
-          penRequestBatchStudentStatusCodes: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).join(',')
+          penRequestBatchStudentStatusCodes: this.selectedFilterNames?.length > 0 ? this.selectedFilterNames : Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).join(',')
         }
       };
 

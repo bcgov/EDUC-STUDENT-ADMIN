@@ -1,12 +1,13 @@
 <template>
   <PenRequestBatchDataTable
-    v-model:batch-page-number="pageNumber"
+    :batch-page-number="pageNumber"
     :headers="headers"
     :pen-request-batch-response="penRequestBatchResponse"
     :loading-table="loadingTable || loadingFiles"
     page-commands
     :in-progress-saga-i-ds="inProgressSagaIDs"
     @select-filter="selectFilter"
+    @update:batch-page-number="updatePage"
   />
 </template>
 
@@ -15,7 +16,6 @@ import { mapActions, mapState } from 'pinia';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import filtersMixin from '@/mixins/filtersMixin';
 import alertMixin from '../../../mixins/alertMixin';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
 import {deepCloneObject} from '@/utils/common';
@@ -25,10 +25,11 @@ import _ from 'lodash';
 
 export default {
   name: 'PenRequestBatchList',
+  emits: ['table-load','update:filters'],
   components: {
     PenRequestBatchDataTable,
   },
-  mixins: [alertMixin, filtersMixin],
+  mixins: [alertMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -88,7 +89,9 @@ export default {
       }
     },
     filters: {
+      immediate: true,
       handler() {
+        console.log('headers: ' + JSON.stringify(this.filters));
         this.setPrbStudentStatusFilters(this.selectFilters(this.headers, 'value'));
         this.reloadTable();
       }
@@ -126,7 +129,7 @@ export default {
       return this.headers.filter(header => header.countable);
     },
     searchCriteria() {
-      const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
+      const statusCriteriaList = this.prbStudentStatusFilters?.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ACTIVE, PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED, PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG].join();
       const searchParamCriteriaList = _.compact(Object.entries(this.searchParams).map(([paramName, paramValue]) =>
         getSearchParam(paramName, paramValue))
@@ -161,6 +164,31 @@ export default {
         this.filters.push('Fixable');
       }
     },
+    async selectFilter(header) {
+      console.log('Here ' + JSON.stringify(header));
+      if(header.isFiltered) {
+        this.filters.push(header.filterName);
+      } else {
+        const index = this.filters.findIndex(filter => filter === header.filterName);
+        this.filters.splice(index, 1);
+      }
+
+      console.log('filters ' + JSON.stringify(this.filters));
+      this.$emit('update:filters', this.filters);
+    },
+    selectFilters(headers, filterValueField) {
+      let statusFilters = [];
+      headers.filter(header => !!header.filterName).forEach(header => {
+        header.isFiltered = this.filters.some(filter => filter === header.filterName);
+        if(header.isFiltered) {
+          statusFilters.push(header[filterValueField]);
+        }
+      });
+      return statusFilters;
+    },
+    updatePage(newPage){
+      this.pageNumber = newPage;
+    },
     initializeFiles(files) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.ACTIVE);
       activeFile && (activeFile.firstActiveFile = true);
@@ -186,7 +214,6 @@ export default {
       return !!foundItem;
     },
     pagination() {
-      console.log('Pagin');
       this.loadingTable = true;
       const req = {
         params: {

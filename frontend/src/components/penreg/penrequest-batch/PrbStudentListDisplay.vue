@@ -393,4 +393,8 @@ export default {
   .header-divider {
     border-width: 0.35ex 0 0 0;
   }
+
+  :deep(.v-data-table-footer){
+    display: none;
+  }
 </style>

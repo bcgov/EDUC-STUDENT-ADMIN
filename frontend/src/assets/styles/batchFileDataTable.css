@@ -44,6 +44,7 @@
   }
   #dataTable.batch-file-table /deep/ table tr.first-active-file td{
     border-top: thin solid #d8d8d8;
+    font-size: 0.85em !important;
   }
   #dataTable.batch-file-table /deep/ table {
     border-top: thin solid #d7d7d7;

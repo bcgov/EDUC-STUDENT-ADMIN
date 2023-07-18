@@ -7,7 +7,7 @@
       <v-btn
         v-if="pageCommands"
         id="page-commands"
-        text
+        variant="text"
         color="#38598a"
       >
         Showing page commands
@@ -19,9 +19,9 @@
     <v-col cols="4">
       <v-pagination
         color="#38598A"
-        :value="value"
+        :model-value="value"
         :length="dataResponse.totalPages"
-        @input="handlePageNumberInput"
+        @update:model-value="handlePageNumberInput"
       />
     </v-col>
     <v-col
@@ -36,6 +36,7 @@
 <script>
 
 export default {
+  emits: ['pageChange'],
   name: 'Pagination',
   props: {
     value: {
@@ -61,7 +62,7 @@ export default {
   },
   methods: {
     handlePageNumberInput(v) {
-      this.$emit('input', v);
+      this.$emit('pageChange', v);
     },
   }
 };
