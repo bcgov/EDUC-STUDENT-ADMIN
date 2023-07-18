@@ -1,12 +1,13 @@
 <template>
   <v-tooltip right>
-    <template #activator="{ on }">
+    <template #activator="{ props }">
       <v-icon
-        small
+        v-bind="props"
+        icon="mdi-alert-circle"
         color="#FCBA19"
+        class="mt-n1"
         :class="[hasDoubleText ? 'mx-1' : 'ml-2']"
       >
-        fa-exclamation-circle
       </v-icon>
     </template>
     <span

@@ -159,7 +159,7 @@
                     color="#FCBA19"
                     class="ml-2"
                   >
-                    fa-exclamation-circle
+                    mdi-alert-circle
                   </v-icon>
                 </v-row>
                 <v-row>{{ warning.description }}</v-row>
