@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="fill-height px-0 mb-4"
+    class="px-0 mb-4"
   >
     <v-row
       no-gutters
@@ -38,11 +38,12 @@
         style="width: 100%"
         :overlay="false"
       >
-        <v-data-table
+        <v-data-table-server
           id="dataTable"
           v-model:page="pageNumber"
           :headers="headers"
           :items="prbResponse.content"
+          :items-length="prbResponse.length > 0 ? prbResponse.totalElements : 0"
           :items-per-page="prbResponse.pageable.pageSize"
           hide-default-footer
           item-key="penRequestBatchID"
@@ -52,28 +53,29 @@
           <template
             v-for="h in headers"
             :key="h.id"
-            #[`header.${h.value}`]="{ header }"
+            #[`column.${h.value}`]="{ column }"
           >
             <span
-              :title="header.tooltip"
-              :class="{'file-column' : !header.countable}"
+              :title="column.tooltip"
+              :class="{'file-column' : !column.countable}"
             >
-              {{ header.text }}
+              {{ column.text }}
             </span>
           </template>
-          <template #item="props">
-            <tr @click="showFile(props.item)">
+          <template #item="item">
+            <tr @click="showFile(item.item.raw)">
               <td
-                v-for="header in props.headers"
+                v-for="header in item.columns"
                 :key="header.id"
                 :class="{[header.value]: true, 'select-column': header.type}"
               >
                 <v-checkbox
                   v-if="header.type"
-                  v-model="props.item.isChecked"
+                  v-model="item.item.raw.isChecked"
                   class="file-checkbox"
+                  hide-details="auto"
                   color="#606060"
-                  @click.stop="handleFileCheckBoxClicked(props.item)"
+                  @click.stop="handleFileCheckBoxClicked(item.item.raw)"
                 />
                 <div
                   v-else
@@ -82,44 +84,20 @@
                   <span
                     v-if="header.countable"
                     class="countable-column-data"
-                  >{{ props.item[header.value] || '' }}</span>
-                  <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
+                  >{{ item.item.raw[header.value] || '' }}</span>
+                  <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
                 </div>
               </td>
             </tr>
           </template>
-        </v-data-table>
-        <v-row
-          class="pt-2"
-          justify="end"
-        >
-          <v-col cols="4">
-            <v-btn
-              v-if="pageCommands"
-              id="page-commands"
-              text
-              color="#38598a"
-            >
-              Showing page commands
-              <v-icon>
-                mdi-chevron-down
-              </v-icon>
-            </v-btn>
-          </v-col>
-          <v-col cols="4">
-            <v-pagination
-              v-model="pageNumber"
-              color="#38598A"
-              :length="prbResponse.totalPages"
-            />
-          </v-col>
-          <v-col
-            id="currentItemsDisplay"
-            cols="4"
-          >
-            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (prbResponse.totalElements || 0) }}
-          </v-col>
-        </v-row>
+        </v-data-table-server>
+        <Pagination
+          v-model="pageNumber"
+          :value="pageNumber"
+          :data-response="prbResponse"
+          page-commands
+          @page-change="pageChange"
+        />
       </div>
     </v-row>
     <PrbFileModal
@@ -132,7 +110,8 @@
       <template #message>
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-3">
-            <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{ submissionNumber }}</strong>?</span>
+            <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{ submissionNumber
+              }}</strong>?</span>
           </v-row>
         </v-col>
       </template>
@@ -149,10 +128,12 @@ import moment from 'moment';
 import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal.vue';
 import pluralize from 'pluralize';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import Pagination from '@/components/util/Pagination.vue';
 
 export default {
   name: 'LoadFailedBatchList',
   components: {
+    Pagination,
     PrbFileModal,
     PrimaryButton,
     ConfirmationDialog
@@ -167,18 +148,49 @@ export default {
       },
       itemsPerPage: 15,
       headers: [
-        {value: 'rowSelect', type: 'select', sortable: false},
-        {text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode'},
-        {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
-        {text: 'Failed Reason', value: 'penRequestBatchStatusReason', sortable: false, tooltip: 'Failed Reason'},
+        {title: '', value: 'rowSelect', key: 'rowSelect', type: 'select', sortable: false},
         {
+          title: 'Mincode',
+          text: 'Mincode',
+          value: 'mincode',
+          key: 'mincode',
+          sortable: false,
+          align: 'start',
+          tooltip: 'Mincode'
+        },
+        {
+          title: 'School Name',
+          text: 'School Name',
+          value: 'schoolName',
+          key: 'schoolName',
+          sortable: false,
+          tooltip: 'School Name'
+        },
+        {
+          title: 'Failed Reason',
+          text: 'Failed Reason',
+          value: 'penRequestBatchStatusReason',
+          key: 'penRequestBatchStatusReason',
+          sortable: false,
+          tooltip: 'Failed Reason'
+        },
+        {
+          title: 'Date and Time Submitted',
           text: 'Date and Time Submitted',
+          key: 'insertDate',
           value: 'insertDate',
           sortable: false,
           format: this.frontEndDateTimeFormat,
           tooltip: 'Date and Time Submitted'
         },
-        {text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number'},
+        {
+          title: 'Submission',
+          text: 'Submission',
+          value: 'submissionNumber',
+          key: 'submissionNumber',
+          sortable: false,
+          tooltip: 'Submission Number'
+        },
       ],
       loadingTable: true,
       reloading: false,
@@ -192,10 +204,10 @@ export default {
   },
   computed: {
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.prbResponse.pageable.pageSize || 0) + ((this.prbResponse.numberOfElements || 0)  > 0 ? 1 : 0));
+      return ((this.pageNumber - 1) * (this.prbResponse.pageable.pageSize || 0) + ((this.prbResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.prbResponse.pageable.pageSize || 0) + (this.prbResponse.numberOfElements || 0));
+      return ((this.pageNumber - 1) * (this.prbResponse.pageable.pageSize || 0) + (this.prbResponse.numberOfElements || 0));
     },
     searchCriteria() {
       return [
@@ -231,6 +243,9 @@ export default {
     this.pagination();
   },
   methods: {
+    pageChange(newPage) {
+      this.pageNumber = newPage;
+    },
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },
@@ -293,7 +308,10 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
-        .finally(() => {this.loadingTable = false; this.reloading = false;});
+        .finally(() => {
+          this.loadingTable = false;
+          this.reloading = false;
+        });
     },
     reviewFile() {
       const selectedItem = this.prbResponse.content.find(file => file.isChecked);
@@ -318,7 +336,7 @@ export default {
         .then(response => {
           const deletedNumber = response.data.length;
           const deletedMessage = `${deletedNumber} ${pluralize('file', deletedNumber)} ${pluralize('has', deletedNumber)} been deleted.`;
-          if(deletedNumber === fileNumber) {
+          if (deletedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${deletedMessage}`);
           } else {
             this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
@@ -336,3 +354,23 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+:deep(.v-data-table-footer) {
+    display: none;
+}
+
+:deep(.v-data-table__th) {
+    font-size: 0.75em !important;
+    font-weight: bold !important;
+}
+
+:deep(td) {
+    font-size: 0.85em;
+    cursor: pointer;
+}
+
+#dataTable /deep/ table th {
+    font-size: 0.85rem;
+}
+</style>

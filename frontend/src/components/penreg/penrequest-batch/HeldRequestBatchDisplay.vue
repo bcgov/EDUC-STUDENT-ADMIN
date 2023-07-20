@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="fill-height px-0 mb-4"
+    class="px-0 mb-4"
   >
     <v-row
       no-gutters
@@ -11,10 +11,10 @@
       <v-col cols="1">
         <v-text-field
           class="readonly-text-field"
-          outlined
+          variant="outlined"
           value="PSI"
           readonly
-          dense
+          density="compact"
         />
       </v-col>
       <v-sheet
@@ -25,14 +25,17 @@
         rounded
       >
         <span class="mr-4"><strong>Filtered by</strong></span>
-        <FilterTag
-          v-for="(filter, index) in filters"
-          :id="index + 'tag'"
-          :key="index"
-          :text="filter"
-          class="mr-2"
-          @close-item="removeFilter(index)"
-        />
+        <div
+          v-for="(filter) in filters"
+          :key="filter.value"
+        >
+          <FilterTag
+            class="mr-2"
+            :id="filter + 'tag'"
+            :text="filter"
+            @close-item="removeFilter(filter)"
+          />
+        </div>
       </v-sheet>
       <v-spacer v-else />
       <PrimaryButton
@@ -71,6 +74,7 @@
         :school-group="schoolGroup"
         :loading-files="loadingFiles"
         @file-click="clickFile"
+        @update:selected-file="selectFile"
       />
     </v-row>
     <PrbFileModal
@@ -120,7 +124,7 @@ export default {
       selectedFile: null,
       isDeleting: false,
       isProcessing: false,
-      operation:undefined,
+      operation: undefined,
       openFileViewer: false,
       submissionNumber: '',
       isActioned: false,
@@ -136,8 +140,15 @@ export default {
     },
   },
   methods: {
-    removeFilter(index) {
-      this.filters.splice(index, 1);
+    selectFile(file) {
+      if (file?.isSelected) {
+        this.selectedFile = file;
+      } else {
+        this.selectedFile = null;
+      }
+    },
+    removeFilter(filter) {
+      this.filters = this.filters.filter(tFilter => tFilter !== filter);
     },
     async deleteFile() {
       const userConfirmed = await this.isConfirmedByUser('Delete');
@@ -165,7 +176,7 @@ export default {
           });
       }
     },
-    async markRecordForProcessing(){
+    async markRecordForProcessing() {
       const userConfirmed = await this.isConfirmedByUser('Process');
       if (userConfirmed) {
         const penRequestBatchIDs = [];
@@ -191,7 +202,7 @@ export default {
           });
       }
     },
-    async isConfirmedByUser(operation){
+    async isConfirmedByUser(operation) {
       this.operation = operation;
       this.submissionNumber = this.selectedFile.submissionNumber;
       return this.$refs.confirmationDialog.open(null, null,
@@ -213,7 +224,7 @@ export default {
 </script>
 
 <style scoped>
-  .readonly-text-field.v-text-field /deep/ .v-text-field__details {
+.readonly-text-field.v-text-field /deep/ .v-text-field__details {
     display: none;
-  }
+}
 </style>
