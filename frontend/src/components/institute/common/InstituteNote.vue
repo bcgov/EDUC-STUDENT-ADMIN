@@ -32,6 +32,7 @@
             color="white"
             depressed
             small
+            variant="flat"
             @click="openEditInstituteNoteDialog"
           >
             <v-icon
@@ -50,6 +51,7 @@
             color="white"
             depressed
             small
+            variant="flat"
             @click="openRemoveInstituteNoteDialog"
           >
             <v-icon
