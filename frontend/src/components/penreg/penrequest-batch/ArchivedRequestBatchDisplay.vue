@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="fill-height px-0 mb-4"
+    class="px-0 mb-4"
   >
     <v-form v-model="isValidSearchForm">
       <v-row
@@ -10,12 +10,11 @@
         style="background-color:white;"
       >
         <v-col
-          cols="9"
-          xl="8"
+          cols="7"
           class="pa-0"
         >
           <v-sheet
-            class="mx-0 px-2 py-1 d-flex align-end align-self-start"
+            class="mx-0 px-2 pb-1 pt-3 d-flex align-end align-self-start"
             color="rgba(0, 0, 0, 0.06)"
             outlined
             rounded
@@ -36,7 +35,8 @@
                     color="#003366"
                     label="Submission #"
                     maxlength="8"
-                    dense
+                    density="compact"
+                    variant="underlined"
                     autofocus
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
@@ -54,7 +54,8 @@
                     label="Mincode"
                     maxlength="8"
                     :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
-                    dense
+                    density="compact"
+                    variant="underlined"
                     autofocus
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
@@ -69,8 +70,9 @@
                     v-model="searchInputParams.schoolName"
                     tabindex="3"
                     color="#003366"
+                    variant="underlined"
                     label="School Name"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
                   />
@@ -89,6 +91,7 @@
                     :outlined="false"
                     :rules="[validateStartDate,validateEndDate]"
                     :tabindex="'4'"
+                    variant="underlined"
                     maxlength="8"
                     @input="searchHasValues"
                     @keyup.enter="enterPushed()"
@@ -106,6 +109,7 @@
                     :format="formatDob"
                     :label="'Date To'"
                     :outlined="false"
+                    variant="underlined"
                     :rules="[validateEndDate]"
                     :tabindex="'5'"
                     maxlength="8"
@@ -128,8 +132,9 @@
                     tabindex="6"
                     color="#003366"
                     label="Legal Surname"
+                    variant="underlined"
                     maxlength="255"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalLastName')]"
                   />
@@ -145,7 +150,8 @@
                     color="#003366"
                     label="Legal Given"
                     maxlength="255"
-                    dense
+                    variant="underlined"
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalFirstName')]"
                   />
@@ -160,8 +166,9 @@
                     tabindex="8"
                     color="#003366"
                     label="Legal Middle"
+                    variant="underlined"
                     maxlength="255"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalMiddleNames')]"
                   />
@@ -176,9 +183,10 @@
                     tabindex="9"
                     color="#003366"
                     label="Gender"
+                    variant="underlined"
                     maxlength="1"
                     :rules="validateField(searchInputParams.prbStudent.genderCode, isValidGender, genderHint)"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'genderCode')]"
                   />
@@ -195,6 +203,7 @@
                     :format="formatDob"
                     :label="'Birth Date'"
                     :outlined="false"
+                    variant="underlined"
                     :rules="[validateDOB]"
                     :tabindex="'10'"
                     maxlength="8"
@@ -212,9 +221,10 @@
                     tabindex="11"
                     color="#003366"
                     label="PEN"
+                    variant="underlined"
                     maxlength="9"
                     :rules="validateField(searchInputParams.prbStudent.assignedPEN, isValidPEN, penHint)"
-                    dense
+                    density="compact"
                     @keyup.enter="enterPushed()"
                     @input="searchHasValues"
                   />
@@ -241,17 +251,16 @@
         </v-col>
 
         <v-col
-          cols="3"
-          xl="4"
+          cols="5"
           class="pa-0 d-flex justify-end align-end"
         >
           <v-menu offset-y>
-            <template #activator="{ on }">
+            <template #activator="{ props }">
               <PrimaryButton
                 id="view-action"
                 :loading="loadingRequestIDs"
                 :disabled="!filesSelected"
-                :on="on"
+                :bind="props"
                 text="View"
                 icon="mdi-chevron-down"
                 large-icon
@@ -260,14 +269,14 @@
             <v-list>
               <v-list-item
                 id="view-list-action"
-                @click-action="clickViewList"
+                @click="clickViewList"
                 link
               >
                 <v-list-item-title>View List</v-list-item-title>
               </v-list-item>
               <v-list-item
                 id="view-details-action"
-                @click-action="clickViewDetails"
+                @click="clickViewDetails"
                 link
               >
                 <v-list-item-title>View Details</v-list-item-title>

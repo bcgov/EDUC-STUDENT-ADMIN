@@ -14,7 +14,7 @@
       :min-height="minheight"
       :loading="loading"
       v-bind="bind"
-      @click="$emit('clickAction')"
+      @click="$emit('clickAction', $event)"
     >
       <v-icon
         v-if="icon"

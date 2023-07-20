@@ -5,12 +5,13 @@
     style="width: 100%"
     :overlay="false"
   >
-    <v-data-table
+    <v-data-table-server
       id="dataTable"
       v-model:page="pageNumber"
       :class="[{'filterable-table': hasFilterHeader}, 'batch-file-table']"
       :headers="headers"
       :items="penRequestBatchResponse.content"
+      :items-length="penRequestBatchResponse.length > 0 ? penRequestBatchResponse.totalElements : 0"
       :items-per-page="penRequestBatchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchID"
@@ -20,60 +21,69 @@
       <template
         v-for="h in headers"
         :key="h.id"
-        #[`header.${h.value}`]="{ header }"
+        #[`column.${h.value}`]="{ column }"
       >
         <span
-          :title="header.tooltip"
-          :class="{'file-column' : !header.countable}"
+          :title="column.tooltip"
+          :class="{'file-column' : !column.countable}"
         >
-          {{ header.text }}
+          {{ column.text }}
         </span>
-        <template v-if="hasFilterHeader">
-          <br>
-          <span
-            :class="header.countable ? 'countable-column-header' : 'file-column'"
-          >
-            <v-checkbox
-              v-if="header.filterName"
-              v-model="header.isFiltered"
-              class="file-checkbox filter-checkbox"
-              color="#606060"
-              @update:model-value="selectFilter(header)"
-            />
-          </span>
-        </template>
+        <v-row
+          v-if="hasFilterHeader"
+          :key="h.id"
+        >
+          <v-col class="d-flex justify-center">
+            <span
+              :key="h.id"
+              :class="column.countable ? 'countable-column-header' : 'file-column'"
+            >
+              <v-checkbox
+                v-if="column.filterName"
+                v-model="column.isFiltered"
+                class="file-checkbox filter-checkbox"
+                hide-details="auto"
+                color="#606060"
+                @update:model-value="selectFilter(column)"
+              />
+            </span>
+          </v-col>
+        </v-row>
       </template>
-      <template #item="props">
+      <template #item="item">
         <tr
-          :class="{'selected-file': props.item.isSelected}"
-          @click="clickItem(props.item)"
+          :class="{'selected-file': item.item.raw.isSelected}"
+          @click="clickItem(item.item.raw)"
         >
           <td
-            v-for="header in props.headers"
+            v-for="header in item.columns"
             :key="header.id"
             :class="{[header.value]: true, 'select-column': header.type}"
           >
             <v-checkbox
               v-if="header.type"
-              v-model="props.item.isSelected"
+              v-model="item.item.raw.isSelected"
               class="file-checkbox"
+              hide-details="auto"
               color="#606060"
-              @click.stop="selectFile(props.item)"
+              @click.stop="selectFile(item.item.raw)"
             />
             <div
               v-else
               :class="{'countable-column-div': header.countable}"
             >
-              <span :class="{'countable-column-data': header.countable}">{{ props.item[header.value] || '' }}</span>
+              <span :class="{'countable-column-data': header.countable}">{{ item.item.raw[header.value] || '' }}</span>
             </div>
           </td>
         </tr>
       </template>
-    </v-data-table>
+    </v-data-table-server>
     <Pagination
       v-model="pageNumber"
+      :value="pageNumber"
       :data-response="penRequestBatchResponse"
       page-commands
+      @page-change="pageChange"
     />
   </div>
 </template>
@@ -81,16 +91,18 @@
 <script>
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import filtersMixin from '@/mixins/filtersMixin';
 import Pagination from '@/components/util/Pagination.vue';
 import alertMixin from '../../../mixins/alertMixin';
+import {mapActions} from 'pinia';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
+  emits: ['update:selectedFile','select-filter'],
   name: 'HeldRequestBatchList',
   components: {
     Pagination,
   },
-  mixins: [alertMixin, filtersMixin],
+  mixins: [alertMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -112,13 +124,13 @@ export default {
     return {
       itemsPerPage: 15,
       headers: [
-        { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
-        { text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name' },
-        { text: 'TOT', value: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
-        { text: 'LRG', value: 'lrgCount', sortable: false, filterName: 'Large', filterValue: PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE, countable: true, isFiltered: false, tooltip: 'Large File Request Count' },
-        { text: 'DPF', value: 'dpfCount', sortable: false, filterName: 'Duplicate File', filterValue: PEN_REQ_BATCH_STATUS_CODES.DUPLICATE, countable: true, isFiltered: false, tooltip: 'Duplicate File Request Count' },
-        { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
+        { title: '', value: 'rowSelect', key: 'rowSelect', type: 'select', sortable: false },
+        { title: 'Mincode', text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
+        { title: 'School Name', text: 'School Name', value: 'schoolName', key: 'schoolName', sortable: false, tooltip: 'School Name' },
+        { title: 'TOT', text: 'TOT', value: 'studentCount', key: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
+        { title: 'LRG', text: 'LRG', value: 'lrgCount', key: 'lrgCount', sortable: false, filterName: 'Large', filterValue: PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE, countable: true, isFiltered: false, tooltip: 'Large File Request Count' },
+        { title: 'DPF', text: 'DPF', value: 'dpfCount', key: 'dpfCount', sortable: false, filterName: 'Duplicate File', filterValue: PEN_REQ_BATCH_STATUS_CODES.DUPLICATE, countable: true, isFiltered: false, tooltip: 'Duplicate File Request Count' },
+        { title: 'Submission', text: 'Submission', value: 'submissionNumber', key: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
       pageNumber: 1,
@@ -163,7 +175,8 @@ export default {
         } else {
           this.pageNumber = 1;
         }
-      }
+      },
+      deep: true
     },
     loadingFiles: {
       handler(v) {
@@ -177,17 +190,40 @@ export default {
     this.pagination();
   },
   methods: {
+    ...mapActions(penRequestBatchStore, ['setPrbStudentStatusFilters']),
+    async selectFilter(header) {
+      const parsedHeader = this.headers.filter(nHeader => nHeader.value === header.value);
+      parsedHeader.isFiltered = header.isFiltered;
+      await this.$nextTick();
+      if (header.isFiltered) {
+        this.filters.push(header.filterName);
+      } else {
+        const index = this.filters.findIndex(filter => filter === header.filterName);
+        this.filters.splice(index, 1);
+      }
+      await this.setPrbStudentStatusFilters(this.filters);
+    },
+    selectFilters(headers, filterValueField) {
+      let statusFilters = [];
+      headers.filter(header => !!header.filterName).forEach(header => {
+        header.isFiltered = this.filters.some(filter => filter === header.filterName);
+        if (header.isFiltered) {
+          statusFilters.push(header[filterValueField]);
+        }
+      });
+      return statusFilters;
+    },
+    pageChange(newPage){
+      this.pageNumber = newPage;
+    },
     selectFile(file) {
-      this.selectedFile && (this.selectedFile.isSelected = false);
-      this.$emit('update:selectedFile', file?.isSelected ? file : null);
+      file.isSelected = !file.isSelected;
+      this.$emit('update:selectedFile', file);
     },
     clickItem(item) {
       this.$emit('file-click', item);
     },
     initializeFiles(files) {
-      //reset
-      this.selectFile();
-
       files.forEach(file => {
         file.isSelected = false;
         file.lrgCount = file.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE ? file.studentCount : 0;
@@ -240,4 +276,20 @@ export default {
     border-left: thin solid #d7d7d7;
   }
 
+  :deep(.v-data-table-footer) {
+    display: none;
+  }
+  
+  :deep(.v-data-table__th) {
+      font-size: 0.75em !important;
+      font-weight: bold !important;
+  }
+  
+  :deep(td) {
+      font-size: 0.85em;
+  }
+  
+  #dataTable /deep/ table th {
+      font-size: 0.85rem;
+  }
 </style>

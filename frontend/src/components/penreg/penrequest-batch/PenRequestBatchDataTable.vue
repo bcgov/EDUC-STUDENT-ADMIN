@@ -185,6 +185,7 @@ import alertMixin from '../../../mixins/alertMixin';
 import {notificationsStore} from '@/store/modules/notifications';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 import Pagination from '@/components/util/Pagination.vue';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -248,11 +249,11 @@ export default {
     hasFilterHeader() {
       return this.headers.some(header => header.filterName);
     },
-    penRequestBatchStore() {
-      return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
+    batchStore() {
+      return this.archived ? archivedRequestBatchStore() : penRequestBatchStore();
     },
     selectedFiles() {
-      return penRequestBatchStore().selectedFiles;
+      return this.batchStore.selectedFiles;
     }
   },
   watch: {
@@ -317,7 +318,7 @@ export default {
       return '';
     },
     handleFileCheckBoxClicked(item) {
-      this.selectFile(item);
+      this.selectItem(item);
     },
     selectFile(item) {
       this.allSelected = this.penRequestBatchResponse.content.every(file => file.isSelected);
@@ -331,7 +332,7 @@ export default {
       } else {
         newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
       }
-      const auStore = penRequestBatchStore();
+      const auStore = this.batchStore;
       auStore.setSelectedFiles(newSelectedFiles);
     },
     selectItem(item) {
@@ -357,7 +358,7 @@ export default {
           newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
         });
       }
-      const auStore = penRequestBatchStore();
+      const auStore = this.batchStore;
       auStore.setSelectedFiles(newSelectedFiles);
     },
     selectFilter(header) {

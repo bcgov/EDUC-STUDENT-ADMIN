@@ -2,10 +2,9 @@
   <v-chip
     :id="id"
     class="filter-chip"
-    label
     closable
     :text="text"
-    @click:close="$emit('closeItem')"
+    @click="$emit('closeItem')"
   >
   </v-chip>
 </template>
