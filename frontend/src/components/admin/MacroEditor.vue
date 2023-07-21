@@ -61,6 +61,9 @@ export default {
       default: false
     }
   },
+  data: () => ({
+    isValidForm: false,
+  }),
   methods:{
     validateMaxLength(){
       if(!this.macro?.macroText){

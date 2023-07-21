@@ -25,28 +25,37 @@
     />
     <v-row>
       <v-col>
-        <v-card-text>
-          <v-treeview
-            v-model:active="active"
-            :items="items"
-            :load-children="loadMacros"
-            open-on-click
-            transition
-            activatable
-            return-object
-            @click-action="clickTreeView"
-          />
-        </v-card-text>
+        <v-list lines="one">
+          <v-list-group
+            v-for="item in items"
+            :key="item.id"
+            :title="item.name"
+          >
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.name"
+              :title="child.name"
+              :style="child.isSelected ? 'background-color: #E1F5FE' : ''"
+              @click="selectMacroType(child)"
+            />
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :title="item.name"
+              />
+            </template>
+          </v-list-group>
+        </v-list>
       </v-col>
 
       <v-divider vertical />
 
       <v-col
-        cols="8"
+        cols="10"
         class="macro-col"
       >
         <v-scroll-y-transition mode="out-in">
-          <v-simple-table class="macro-list">
+          <v-data-table class="macro-list">
             <template #default>
               <tbody>
                 <tr
@@ -79,7 +88,7 @@
                 </tr>
               </tbody>
             </template>
-          </v-simple-table>
+          </v-data-table>
         </v-scroll-y-transition>
       </v-col>
     </v-row>
@@ -91,6 +100,7 @@
       <v-card>
         <v-toolbar
           density="compact"
+          color="#FFF"
           flat
         >
           <v-spacer />
@@ -128,7 +138,7 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
@@ -138,26 +148,32 @@ import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import MacroEditor from './MacroEditor.vue';
 import _ from 'lodash';
 import {notificationsStore} from '@/store/modules/notifications';
+import {edxStore} from '@/store/modules/edx';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {studentStore} from '@/store/modules/student';
+import {umpRequestStore} from '@/store/modules/umpRequest';
+import {gmpRequestStore} from '@/store/modules/gmpRequest';
 
 export default {
   name: 'MacrosDisplay',
   components: {
     PrimaryButton,
     ConfirmationDialog,
-    MacroEditor,
+    MacroEditor
   },
   mixins: [alertMixin],
   data() {
     return {
-      active: [],
-      gmpMacros:[],
-      umpMacros:[],
-      penRegMacros:[],
-      edxMacros:[],
+      gmpMacros: [],
+      umpMacros: [],
+      penRegMacros: [],
+      edxMacros: [],
       loading: false,
       processing: false,
       macroDialogOpen: false,
       newMacro: {},
+      macros: [],
+      selected: null,
       currentActive: [],
       currentMacro: null,
       originalMacro: null,
@@ -166,89 +182,94 @@ export default {
   },
   computed: {
     ...mapState(notificationsStore, ['notification']),
-    items () {
+    items() {
       return [
         {
-          id: 'gmp',
           name: 'Get My PEN',
-          macroTypes: {
-            MOREINFO: {
+          children: [
+            {
+              id: 'gmp',
+              dbVal: 'MOREINFO',
               name: 'Request Info',
-              storeMutation: 'penRequest/setReturnMacros'
+              storeMutation: 'gmpRequestInfo'
             },
-            REJECT: {
+            {
+              id: 'gmp',
+              dbVal: 'REJECT',
               name: 'Reject',
-              storeMutation: 'penRequest/setRejectMacros'
+              storeMutation: 'gmpReject'
             },
-            COMPLETE: {
+            {
+              id: 'gmp',
+              dbVal: 'COMPLETE',
               name: 'Provide PEN',
-              storeMutation: 'penRequest/setCompleteMacros'
-            },
-          },
-          children: this.gmpMacros,
-        },
-        {
-          id: 'ump',
-          name: 'Update My PEN',
-          macroTypes: {
-            MOREINFO: {
-              name: 'Request Info',
-              storeMutation: 'studentRequest/setReturnMacros'
-            },
-            REJECT: {
-              name: 'Reject',
-              storeMutation: 'studentRequest/setRejectMacros'
-            },
-            COMPLETE: {
-              name: 'Send Updates',
-              storeMutation: 'studentRequest/setCompleteMacros'
-            },
-          },
-          children: this.umpMacros,
-        },
-        {
-          id: 'penReg',
-          name: 'PEN Registry',
-          macroTypes: {
-            MERGE: {
-              name: 'Merge',
-              storeMutation: 'student/setMergeMacros'
-            },
-            INFOREQ: {
-              name: 'Post Info',
-              storeMutation: 'penRequestBatch/setStudentInfoMacros'
-            },
-          },
-          children: this.penRegMacros,
-        },
-        {
-          id: 'edx',
-          name: 'EDX',
-          macroTypes: {
-            MESSAGE: {
-              name: 'Message',
-              storeMutation: 'edx/setMessageMacros'
+              storeMutation: 'gmpComplete'
             }
-          },
-          children: this.edxMacros
+          ],
+          macros: this.gmpMacros
+        },
+        {
+          name: 'Update My PEN',
+          children: [
+            {
+              id: 'ump',
+              dbVal: 'MOREINFO',
+              name: 'Request Info',
+              storeMutation: 'umpRequestInfo'
+            },
+            {
+              id: 'ump',
+              dbVal: 'REJECT',
+              name: 'Reject',
+              storeMutation: 'umpReject'
+            },
+            {
+              id: 'ump',
+              dbVal: 'COMPLETE',
+              name: 'Send Updates',
+              storeMutation: 'umpComplete'
+            }
+          ],
+          macros: this.umpMacros
+        },
+        {
+          name: 'PEN Registry',
+          children: [
+            {
+              id: 'penReg',
+              dbVal: 'MERGE',
+              name: 'Merge',
+              storeMutation: 'merge'
+            },
+            {
+              id: 'penReg',
+              dbVal: 'INFOREQ',
+              name: 'Post Info',
+              storeMutation: 'batch'
+            }
+          ],
+          macros: this.penRegMacros
+        },
+        {
+          name: 'EDX',
+          children: [
+            {
+              id: 'edx',
+              dbVal: 'MESSAGE',
+              name: 'Message',
+              storeMutation: 'edx'
+            }
+          ],
+          macros: this.edxMacros
         },
       ];
     },
-    selected() {
-      return this.active.length > 0 ? this.activeItem : undefined;
-    },
-    macros() {
-      return this.selected?.macros || [];
-    },
     title() {
       let item;
-      if(this.selected) {
-        item = this.items.find(item => this.selected.id.startsWith(item.id)); 
+      if (this.selected) {
+        item = this.items.find(item => this.selected.id.startsWith(item.id));
       }
       return item ? `${item.name} ${this.selected.name}` : 'Macro Management';
-    },
-    activeItem() {
-      return this.active[0];
     },
     isValidForm() {
       return !!this.currentMacro.macroText;
@@ -258,7 +279,7 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (this.itemInProcess && notificationData && this.itemInProcess.sagaId === notificationData.sagaId  && notificationData.sagaStatus === 'COMPLETED') {
+        if (this.itemInProcess && notificationData && this.itemInProcess.sagaId === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'MACRO_UPDATE_SAGA') {
             this.setSuccessAlert('Success! Your request to update macro data is completed.');
           } else if (notificationData.sagaName === 'MACRO_CREATE_SAGA') {
@@ -274,6 +295,27 @@ export default {
     this.openConfirmation(() => next(), () => next(false));
   },
   methods: {
+    saveMacrosInStore(store, macros){
+      if(store === 'edx'){
+        edxStore().setMessageMacros(macros);
+      }else if(store === 'batch'){
+        penRequestBatchStore().setStudentInfoMacros(macros);
+      }else if(store === 'merge'){
+        studentStore().setMergeMacros(macros);
+      }else if(store === 'umpRequestInfo'){
+        umpRequestStore().setReturnMacros(macros);
+      }else if(store === 'umpReject'){
+        umpRequestStore().setRejectMacros(macros);
+      }else if(store === 'umpComplete'){
+        umpRequestStore().setCompleteMacros(macros);
+      }else if(store === 'gmpRequestInfo'){
+        gmpRequestStore().setReturnMacros(macros);
+      }else if(store === 'gmpReject'){
+        gmpRequestStore().setRejectMacros(macros);
+      }else if(store === 'gmpComplete'){
+        gmpRequestStore().setCompleteMacros(macros);
+      }
+    },
     async loadMacros(item) {
       this.loading = true;
       const params = {
@@ -285,29 +327,18 @@ export default {
         .get(Routes.MACRO_URL, params)
         .then(response => {
           if (response.data) {
-            const children = []; 
             const macros = _.groupBy(response.data, 'macroTypeCode');
-            Object.entries(item.macroTypes).forEach(([macroTypeCode, value]) => {
-              this.$store.commit(value.storeMutation, deepCloneObject(macros[macroTypeCode]));
-
-              macros[macroTypeCode].forEach(macro => macro.editable = false);
-              children.push({
-                id: `${item.id}-${macroTypeCode}`, 
-                name: value.name, 
-                macros: _.sortBy(macros[macroTypeCode], ['macroCode']), 
-                businessUseTypeCode: item.id.toUpperCase(),
-                macroTypeCode, 
-                storeMutation: value.storeMutation
-              });
-            });
-            item.children.push(...children);
+            const selectedMacros = macros[item.dbVal];
+            this.saveMacrosInStore(selectedMacros.storeMutation, deepCloneObject(selectedMacros));
+            selectedMacros.forEach(macro => macro.editable = false);
+            this.macros = selectedMacros;
           }
         })
         .catch(error => {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the macro data. Please try again later.');
         })
-        .finally(() => (this.loading = false));      
+        .finally(() => (this.loading = false));
     },
     async loadMacrosByMacroType(item) {
       this.loading = true;
@@ -322,7 +353,7 @@ export default {
         .then(response => {
           if (response.data) {
             const macros = response.data;
-            this.$store.commit(item.storeMutation, deepCloneObject(macros));
+            this.saveMacrosInStore(item.storeMutation, deepCloneObject(macros[item.dbVal]));
 
             macros.forEach(macro => macro.editable = false);
             item.macros = _.sortBy(macros, ['macroCode']);
@@ -332,13 +363,13 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the macro data. Please try again later.');
         })
-        .finally(() => (this.loading = false));      
+        .finally(() => (this.loading = false));
     },
     hasAnyEdits() {
       return this.currentMacro && this.originalMacro && JSON.stringify(this.currentMacro) !== JSON.stringify(this.originalMacro);
     },
     revertChanges() {
-      if(this.hasAnyEdits()) {
+      if (this.hasAnyEdits()) {
         Object.assign(this.currentMacro, this.originalMacro);
       }
       this.resetCurrentMacro();
@@ -346,23 +377,28 @@ export default {
     setCurrentMacro(macro) {
       this.resetCurrentMacro();
 
-      this.currentActive = [...this.active];
+      this.currentActive = macro;
       this.currentMacro = macro;
-      if(!macro.editable) {
+      if (!macro.editable) {
         macro.editable = true;
         this.originalMacro = deepCloneObject(macro);
       }
     },
     resetCurrentMacro() {
-      if(this.currentMacro) {
+      if (this.currentMacro) {
         this.currentMacro.editable = false;
         this.currentMacro = null;
       }
     },
     openConfirmation(cancel, save) {
-      if(this.hasAnyEdits() && !this.loading) {
+      if (this.hasAnyEdits() && !this.loading) {
         this.$refs.confirmationDialog.open(null, null, {
-          color: '#fff', width: 480, closeIcon: true, dark: false, resolveText: 'Save Changes', resolveDisabled: !this.isValidForm
+          color: '#fff',
+          width: 480,
+          closeIcon: true,
+          dark: false,
+          resolveText: 'Save Changes',
+          resolveDisabled: !this.isValidForm
         }).then((result) => {
           if (result) {
             this.updateMacro(this.currentMacro);
@@ -376,12 +412,17 @@ export default {
         cancel && cancel();
       }
     },
-    clickTreeView() {
-      const activeItems = [...this.active];
-      this.active = [...this.currentActive];
-      this.openConfirmation(() => {
-        this.resetCurrentMacro();
-        this.active = [...activeItems];
+    selectMacroType(item){
+      this.loadMacros(item);
+      this.deselectAll();
+      item.isSelected = true;
+      this.selected = item;
+    },
+    deselectAll(){
+      this.items.forEach(item => {
+        item.children.forEach(child => {
+          child.isSelected = false;
+        });
       });
     },
     clickMacroText(macro) {
@@ -402,14 +443,13 @@ export default {
     updateMacro(macro) {
       this.processing = true;
       macro.sagaInProgress = true;
-      const activeItem = this.activeItem;
       return ApiService.apiAxios.post(`${Routes.MACRO_URL}/${macro.macroId}/updateMacro`, macro)
         .then((response) => {
           this.resetCurrentMacro();
           this.setSuccessAlert('Your request to update macro data is accepted.');
           this.itemInProcess = {
             sagaId: response.data,
-            item: activeItem
+            item: macro
           };
         })
         .catch(error => {
@@ -426,11 +466,10 @@ export default {
     createMacro(macro) {
       this.processing = true;
 
-      if(this.activeItem.macros.length > 0 && this.activeItem.macros[0].macroTypeCode) {
-        macro.macroTypeCode = this.activeItem.macros[0].macroTypeCode;
-        macro.businessUseTypeCode = this.activeItem.macros[0].businessUseTypeCode;
+      if (this.macros.length > 0 && this.macros[0].macroTypeCode) {
+        macro.macroTypeCode = this.macros[0].macroTypeCode;
+        macro.businessUseTypeCode = this.macros[0].businessUseTypeCode;
       }
-      const activeItem = this.activeItem;
 
       return ApiService.apiAxios.post(`${Routes.MACRO_URL}/createMacro`, macro)
         .then((response) => {
@@ -438,7 +477,7 @@ export default {
           this.setSuccessAlert('Your request to add new macro is accepted.');
           this.itemInProcess = {
             sagaId: response.data,
-            item: activeItem
+            item: macro
           };
         })
         .catch(error => {
@@ -455,13 +494,32 @@ export default {
 };
 </script>
 
-<style scoped>  
-  .macro-list {
+<style scoped>
+.macro-list {
     max-height: 100vh;
     overflow-y: auto;
-  }
+}
 
-  .macro-list /deep/ table td { 
+.macro-list /deep/ table td {
     border-bottom: none !important;
-  }
+}
+
+:deep(.v-list-item-title){
+  font-size: 0.85em;
+}
+
+:deep(.v-list-item__content){
+  cursor: pointer;
+}
+
+:deep(.v-list-item:hover){
+    background-color:  #E1F5FE !important;
+}
+:deep(tr){
+    font-size: 0.85em;
+}
+
+:deep(.v-data-table-footer){
+    display: none;
+}
 </style>
