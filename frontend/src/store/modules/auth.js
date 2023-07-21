@@ -288,7 +288,6 @@ export const authStore = defineStore('auth', {
       }
     },
     async setAuthorizedWebsocketUser(isAuthorizedWebsocketUser){
-      console.log(isAuthorizedWebsocketUser);
       if (isAuthorizedWebsocketUser) {
         this.isAuthorizedWebsocketUser = true;
         localStorage.setItem('isAuthorizedWebsocketUser', 'true');
