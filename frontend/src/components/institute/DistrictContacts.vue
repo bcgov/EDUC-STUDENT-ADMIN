@@ -107,6 +107,7 @@
             v-model="searchFilter.firstName"
             variant="underlined"
             label="Contact First Name"
+            clearable="true"
           />
         </v-col>
         <v-col>
@@ -115,6 +116,7 @@
             v-model="searchFilter.lastName"
             variant="underlined"
             label="Contact Last Name"
+            clearable="true"
           />
         </v-col>
         <v-col
@@ -152,7 +154,10 @@
               </h2>
             </v-col>
           </v-row>
-          <v-row v-if="!districtContactType.publiclyAvailable" no-gutters>
+          <v-row
+            v-if="!districtContactType.publiclyAvailable"
+            no-gutters
+          >
             <v-col>
               <v-alert
                 style="background-color: #003366"
