@@ -478,9 +478,9 @@
         id="newSchoolPostBtn"
         text="Save"
         width="7rem"
-        @click-action="addNewSchool"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="addNewSchool"
       />
     </v-card-actions>
   </v-card>
@@ -515,6 +515,7 @@ export default {
       required: true
     },
   },
+  emits: ['newSchool:closeNewSchoolPage'],
   data() {
     return {
       isFormValid: false,
@@ -570,13 +571,6 @@ export default {
       }
     };
   },
-  mounted() {
-    this.validateForm();
-    this.addressButton = {
-      icon: 'mdi-plus-thick',
-      label: 'Add Address'
-    };
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
@@ -585,9 +579,7 @@ export default {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
         return [];
       }
-
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode => this.activeFacilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
-      this.enableOrDisableFacilityType(facilityTypes);
       return sortBy(facilityTypes, ['displayOrder']);
     },
     schoolCategoryTypeCodes() {
@@ -622,6 +614,13 @@ export default {
       return this.schoolReportingRequirementTypeCodes ? this.schoolReportingRequirementTypeCodes : [];
     }
   },
+  mounted() {
+    this.validateForm();
+    this.addressButton = {
+      icon: 'mdi-plus-thick',
+      label: 'Add Address'
+    };
+  },
   created() {
     const instStore = instituteStore();
     instStore.getAllActiveFacilityTypeCodes();
@@ -635,16 +634,6 @@ export default {
     instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
-    enableOrDisableFacilityType(facilityTypes) {
-      this.isFacilityTypeDisabled = facilityTypes && facilityTypes.length === 1;
-      if (this.isFacilityTypeDisabled) {
-        this.newSchool.facilityTypeCode = facilityTypes[0].facilityTypeCode;
-      } else {
-        this.newSchool.facilityTypeCode = null;
-      }
-
-      this.validateForm();
-    },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
     },
@@ -704,6 +693,13 @@ export default {
       }
     },
     async schoolCategoryChanged() {
+      if (this.allowedFacilityTypeCodesForSchoolCategoryCode.length <= 1) {
+        this.isFacilityTypeDisabled = true;
+        this.newSchool.facilityTypeCode = this.allowedFacilityTypeCodesForSchoolCategoryCode[0]?.facilityTypeCode ?? null;
+      } else {
+        this.isFacilityTypeDisabled = false;
+        this.newSchool.facilityTypeCode = null;
+      }
       if (this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)) {
         this.authorityDisabled = false;
       } else {
