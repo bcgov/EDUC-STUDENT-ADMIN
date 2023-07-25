@@ -50,40 +50,43 @@
             append-icon=""
             @click="setActive(item)"
           >
-            <template #activator>
-              <v-list-item>
+            <template #activator="{props}">
+              <v-list-item
+                v-bind="props"
+              >
                 <v-list-item-title
                   class="menuItem ml-4"
                   v-text="item.title"
                 />
               </v-list-item>
-              <v-list-item
-                v-for="subItem in item.items.filter(obj => obj.authorized)"
-                :id="stripWhitespace(subItem.title) + `MenuBtn`"
-                :key="subItem.title"
-                class="subMenuRow pl-9"
-              >
-                <router-link
-                  :to="{ name: subItem.link }"
-                  :target="subItem.newTab ? '_blank' : '_self'"
-                  class="router"
-                >
-                  <v-list-item>
-                    <v-list-item-title
-                      v-if="subItem.link === $route.name"
-                      class="menuItem"
-                    >
-                      <strong>{{ subItem.title }}</strong>
-                    </v-list-item-title>
-                    <v-list-item-title
-                      v-else
-                      class="menuItem"
-                      v-text="subItem.title"
-                    />
-                  </v-list-item>
-                </router-link>
-              </v-list-item>
             </template>
+
+            <v-list-item
+              v-for="subItem in item.items.filter(obj => obj.authorized)"
+              :id="stripWhitespace(subItem.title) + `MenuBtn`"
+              :key="subItem.title"
+              class="subMenuRow pl-9"
+            >
+              <router-link
+                :to="{ name: subItem.link }"
+                :target="subItem.newTab ? '_blank' : '_self'"
+                class="router"
+              >
+                <v-list-item>
+                  <v-list-item-title
+                    v-if="subItem.link === $route.name"
+                    class="menuItem"
+                  >
+                    <strong>{{ subItem.title }}</strong>
+                  </v-list-item-title>
+                  <v-list-item-title
+                    v-else
+                    class="menuItem"
+                    v-text="subItem.title"
+                  />
+                </v-list-item>
+              </router-link>
+            </v-list-item>
           </v-list-group>
         </div>
       </v-list>
