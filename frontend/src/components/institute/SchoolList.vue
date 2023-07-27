@@ -258,8 +258,8 @@
                   class="ml-3"
                   width="8em"
                   text="Search"
-                  @click-action="searchButtonClick"
                   :disabled="!searchEnabled()"
+                  @click-action="searchButtonClick"
                 />
               </v-col>
             </v-row>
@@ -873,6 +873,10 @@ export default {
 
 :deep(.v-list-item__prepend){
     margin-right: -2em;
+}
+
+:deep(.v-data-table-footer__items-per-page) {
+  display: none;
 }
 
 </style>

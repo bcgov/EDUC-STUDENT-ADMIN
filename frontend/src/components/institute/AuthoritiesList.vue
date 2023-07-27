@@ -132,8 +132,8 @@
                 id="user-search-button"
                 class="ml-3"
                 text="Search"
-                @click-action="searchButtonClick"
                 :disabled="!searchEnabled()"
+                @click-action="searchButtonClick"
               />
             </v-col>
           </v-row>
@@ -562,4 +562,7 @@ export default {
     margin-right: -2em;
 }
 
+:deep(.v-data-table-footer__items-per-page) {
+  display: none;
+}
 </style>
