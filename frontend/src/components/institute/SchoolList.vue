@@ -273,9 +273,6 @@
               v-model:page="pageNumber"
               v-model:items="schools"
               v-model:items-length="totalSchools"
-              :footer-props="{
-                'items-per-page-options': itemsPerPageOptions
-              }"
               :loading="loadingTable"
               class="elevation-1"
               hide-default-header
