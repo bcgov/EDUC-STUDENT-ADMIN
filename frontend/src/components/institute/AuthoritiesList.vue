@@ -147,9 +147,6 @@
             v-model:page="pageNumber"
             v-model:items="authorities"
             v-model:items-length="totalAuthorities"
-            :footer-props="{
-              'items-per-page-options': itemsPerPageOptions
-            }"
             :loading="loadingTable"
             class="elevation-1"
             hide-default-header
@@ -303,7 +300,6 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       totalAuthorities: 0,
-      itemsPerPageOptions: [15],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {

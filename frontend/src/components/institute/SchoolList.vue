@@ -442,7 +442,6 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       totalSchools: 0,
-      itemsPerPageOptions: [15],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
