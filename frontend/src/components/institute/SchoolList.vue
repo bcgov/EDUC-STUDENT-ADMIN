@@ -258,8 +258,8 @@
                   class="ml-3"
                   width="8em"
                   text="Search"
-                  @click-action="searchButtonClick"
                   :disabled="!searchEnabled()"
+                  @click-action="searchButtonClick"
                 />
               </v-col>
             </v-row>
@@ -273,9 +273,6 @@
               v-model:page="pageNumber"
               v-model:items="schools"
               v-model:items-length="totalSchools"
-              :footer-props="{
-                'items-per-page-options': itemsPerPageOptions
-              }"
               :loading="loadingTable"
               class="elevation-1"
               hide-default-header
@@ -445,7 +442,6 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       totalSchools: 0,
-      itemsPerPageOptions: [15],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
@@ -873,6 +869,10 @@ export default {
 
 :deep(.v-list-item__prepend){
     margin-right: -2em;
+}
+
+:deep(.v-data-table-footer__items-per-page) {
+  display: none;
 }
 
 </style>

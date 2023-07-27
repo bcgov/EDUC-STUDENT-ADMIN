@@ -132,8 +132,8 @@
                 id="user-search-button"
                 class="ml-3"
                 text="Search"
-                @click-action="searchButtonClick"
                 :disabled="!searchEnabled()"
+                @click-action="searchButtonClick"
               />
             </v-col>
           </v-row>
@@ -147,9 +147,6 @@
             v-model:page="pageNumber"
             v-model:items="authorities"
             v-model:items-length="totalAuthorities"
-            :footer-props="{
-              'items-per-page-options': itemsPerPageOptions
-            }"
             :loading="loadingTable"
             class="elevation-1"
             hide-default-header
@@ -303,7 +300,6 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       totalAuthorities: 0,
-      itemsPerPageOptions: [15],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
@@ -562,4 +558,7 @@ export default {
     margin-right: -2em;
 }
 
+:deep(.v-data-table-footer__items-per-page) {
+  display: none;
+}
 </style>
