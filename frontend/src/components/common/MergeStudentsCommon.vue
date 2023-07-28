@@ -814,7 +814,7 @@ export default {
         return;
       }
       let result = await this.$refs.confirmationDialog.open('Are you sure you want to merge PENs?', null,
-        {color: '#fff', width: 520, closeIcon: true, dark: false, rejectText: 'No'});
+        {color: '#fff', width: 800, closeIcon: true, dark: false, rejectText: 'No'});
       if (!result) {
         return;
       }

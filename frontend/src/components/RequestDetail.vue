@@ -829,6 +829,19 @@ export default {
     background-color: #fafafa;
 }
 
+.blue--text{
+   color: #2196f3 !important;
+}
+
+.green--text{
+    color: #4caf50 !important;
+}
+
+.orange--text{
+    color: #ff9800 !important;;
+}
+
+
 h2 {
     font-size: 1.25rem
 }

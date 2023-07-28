@@ -119,11 +119,10 @@
                         <span class="mr-3"><strong>Info requested</strong></span>
                         <v-btn
                           id="clear-info-requested"
-                          icon
-                          color="#003366"
+                          variant="flat"
+                          icon="mdi-close-circle"
                           @click="updateInfoRequested()"
                         >
-                          <v-icon>fa-times-circle</v-icon>
                         </v-btn>
                       </v-row>
                       <v-row no-gutters>
@@ -183,7 +182,7 @@
       </div>
       <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
         <template #message>
-          <v-col class="mt-n6">
+          <v-col>
             <v-row class="mb-3">
               This PEN must be merged to another PEN. Are you sure you want to unmatch this student?
             </v-row>
@@ -594,7 +593,7 @@ export default {
       if (this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
           {
-            width: '730px',
+            width: '750px',
             messagePadding: 'px-4 pt-1',
             color: '',
             dark: false,
@@ -937,6 +936,10 @@ export default {
 .full-width {
   margin-left: -32px;
   margin-right: -32px;
+}
+
+:deep(.mdi-close-circle){
+    color: #003366;
 }
 
 pre {

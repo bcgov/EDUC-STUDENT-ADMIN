@@ -120,7 +120,7 @@
             density="compact"
             label="Use range"
             color="#606060"
-            @change="[searchHasValues(), $emit('valueChange')]"
+            @update:model-value="[searchHasValues(), $emit('valueChange')]"
           />
         </v-col>
         <v-col cols="3">
@@ -208,7 +208,7 @@
             bg-color="#efefef"
             density="compact"
             clearable
-            @change="[searchHasValues(),$emit('valueChange')]"
+            @update:model-value="[searchHasValues(),$emit('valueChange')]"
           />
         </v-col>
       </v-row>
@@ -233,7 +233,7 @@
             bg-color="#efefef"
             density="compact"
             clearable
-            @change="[searchHasValues(),$emit('valueChange')]"
+            @update:model-value="[searchHasValues(),$emit('valueChange')]"
           />
         </v-col>
       </v-row>
@@ -755,7 +755,7 @@ export default {
       if (this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.endDate.month && this.isValidEndDOB.year) {
         const validMonthResponse = this.validateDOBMonth(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month);
         const startDOBMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1 ? 1 : this.advancedSearchCriteria.startDate.month;
-        if (validMonthResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, 1) < LocalDate.of(this.advancedSearchCriteria.startDate.year, startDOBMonth, 1)) {
+        if (validMonthResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, 1).isBefore(LocalDate.of(this.advancedSearchCriteria.startDate.year, startDOBMonth, 1))) {
           this.isValidEndDOB.month = false;
           this.isValidEndDOB.day = false;
           return ['End Date must be the same as or later than the Start Date'];
@@ -791,7 +791,7 @@ export default {
         const validDayResponse = this.validateDOBDay(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day);
         const startMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1 ? 1 : this.advancedSearchCriteria.startDate.month;
         const startDay = !this.advancedSearchCriteria.startDate.day || this.advancedSearchCriteria.startDate.day < 1 ? 1 : this.advancedSearchCriteria.startDate.day;
-        if (validDayResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day) < LocalDate.of(this.advancedSearchCriteria.startDate.year, startMonth, startDay)) {
+        if (validDayResponse.length === 0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, this.advancedSearchCriteria.endDate.day).isBefore(LocalDate.of(this.advancedSearchCriteria.startDate.year, startMonth, startDay))) {
           this.isValidEndDOB.day = false;
           return ['End Date must be the same as or later than the Start Date'];
         } else {

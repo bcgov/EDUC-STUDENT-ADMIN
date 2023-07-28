@@ -597,4 +597,8 @@ th {
     cursor: pointer;
 }
 
+:deep(.v-data-table-footer__items-per-page) {
+    display: none;
+}
+
 </style>

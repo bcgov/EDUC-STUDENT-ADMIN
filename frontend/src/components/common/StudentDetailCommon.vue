@@ -701,7 +701,7 @@
                 :id="STUDENT_DETAILS_FIELDS.MEMO"
                 v-model="studentCopy.memo"
                 tabindex="13"
-                class="onhoverEdit bolder customNoBorder"
+                class="onhoverEdit bolder customNoBorder mt-n2"
                 :class="{onhoverPad: !hoveringMemo && !hasEdits('memo'), darkBackgound: hoveringMemo || hasEdits('memo')}"
                 color="#000000"
                 maxlength="4000"
@@ -737,7 +737,6 @@
               />
             </v-col>
           </v-row>
-          <v-divider />
           <v-progress-linear
             indeterminate
             color="blue"
@@ -857,7 +856,7 @@
     </ConfirmationDialog>
     <ConfirmationDialog ref="demergeConfirmationDialog" :show-title-bar="false">
       <template #message>
-        <v-col class="mt-n6">
+        <v-col>
           <v-row
             v-if="isConfirmedStudent"
             class="mb-3"
