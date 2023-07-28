@@ -18,9 +18,9 @@
           density="compact"
           flat
         >
-          <v-toolbar-title class="pb-2" :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle': options.subtitle}">
+          <span class="pb-2 pl-3" style="font-size: 1.15em" :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle': options.subtitle}">
             {{ title }}
-          </v-toolbar-title>
+          </span>
           <v-spacer />
           <v-btn
             v-if="options.closeIcon"

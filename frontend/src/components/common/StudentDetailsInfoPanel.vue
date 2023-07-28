@@ -15,7 +15,7 @@
       @closeDialog="closeDialog"
       @updateStudent="updateStudent"
     >
-      <template #actions="{ isFormValid }">
+      <template #actions="{ modifySearch, searchEnabled }">
         <PrimaryButton
           id="cancel"
           :secondary="true"
@@ -27,7 +27,8 @@
           id="searchDemogModalSearchBtn"
           width="15%"
           text="Modify Request"
-          @click-action="isFormValid"
+          :disabled="!searchEnabled"
+          @click-action="modifySearch()"
         />
         <PrimaryButton
           id="runAdvancedSearch"
@@ -155,7 +156,6 @@
         <v-data-table
           :headers="validationErrorFieldHeaders"
           :items="validationErrorFields"
-          hide-default-footer
         />
       </v-card>
     </v-row>
@@ -230,8 +230,8 @@ export default {
         { title: '',text: '', value: '', sortable: false, key: 'none' }
       ],
       validationErrorFieldHeaders: [
-        { text: 'Field Name', value: 'uiFieldName', sortable: false },
-        { text: 'Error Description', value: 'description', sortable: false }
+        { title: 'Field Name', text: 'Field Name', value: 'uiFieldName', key: 'uiFieldName', sortable: false },
+        { title: 'Error Description', text: 'Error Description', value: 'description', key: 'description', sortable: false }
       ],
       modalStudent: {},
       dialog: false,

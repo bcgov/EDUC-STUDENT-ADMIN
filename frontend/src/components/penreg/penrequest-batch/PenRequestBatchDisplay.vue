@@ -356,7 +356,7 @@ export default {
         `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`,
         'Note this action will not return any files to the submitting school.',
         {
-          width: '750px',
+          width: '800px',
           messagePadding: 'px-4 pt-4',
           color: '',
           dark: false,

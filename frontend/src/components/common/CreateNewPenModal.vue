@@ -6,18 +6,14 @@
     >
       <v-card>
         <v-card-title class="px-0 pb-0 pt-5">
-          <v-list-item>
-            <v-list-item class="pt-0 pl-2">
-              <slot name="headLine">
-                <v-list-item-title class="headline">
-                  Create New PEN
-                </v-list-item-title>
-              </slot>
-            </v-list-item>
-            <v-list-item-media class="my-0">
+          <v-row class="px-6">
+            <v-col class="d-flex justify-start">
+              <span class="headline">Create New PEN</span>
+            </v-col>
+            <v-col class="d-flex justify-end">
               <v-btn
                 id="closeCreateNewPenModalBtn"
-                text
+                variant="flat"
                 icon
                 @click="createNewPenDialog=false"
               >
@@ -28,8 +24,8 @@
                   mdi-close
                 </v-icon>
               </v-btn>
-            </v-list-item-media>
-          </v-list-item>
+            </v-col>
+          </v-row>
         </v-card-title>
         <v-spacer />
         <v-card-text>
@@ -61,7 +57,7 @@
                     <v-text-field
                       id="createNewPenFormLegalLastName"
                       v-model="student.legalLastName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       readonly
@@ -77,7 +73,7 @@
                     <v-text-field
                       id="createNewPenFormLegalFirstName"
                       v-model="student.legalFirstName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       readonly
@@ -93,7 +89,7 @@
                     <v-text-field
                       id="createNewPenFormLegalMiddleNames"
                       v-model="student.legalMiddleNames"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       tabindex="3"
@@ -129,7 +125,7 @@
                     <v-text-field
                       id="createNewPenFormUsualLastName"
                       v-model="student.usualLastName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       tabindex="4"
@@ -146,7 +142,7 @@
                     <v-text-field
                       id="createNewPenFormUsualFirstName"
                       v-model="student.usualFirstName"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       tabindex="5"
@@ -163,7 +159,7 @@
                     <v-text-field
                       id="createNewPenFormUsualMiddleNames"
                       v-model="student.usualMiddleNames"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       tabindex="6"
@@ -186,16 +182,7 @@
                   </v-col>
                   <v-spacer />
                   <v-col cols="3">
-                    <strong>Birth Date
-                      <v-btn
-                        icon
-                        x-small
-                        title="YYYYMMDD"
-                      >
-                        <v-icon color="#2196f3">
-                          info
-                        </v-icon>
-                      </v-btn>
+                    <strong>Birth Date (YYYYMMDD)
                     </strong>
                   </v-col>
                   <v-spacer />
@@ -209,7 +196,7 @@
                     <v-text-field
                       id="createNewPenFormGender"
                       v-model="student.genderCode"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       readonly
@@ -223,7 +210,7 @@
                       id="createNewPenFormDOB"
                       v-model="student.dob"
                       readonly
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       :error-messages="err.birthDateError"
@@ -235,7 +222,7 @@
                     <v-text-field
                       id="createNewPenFormLocalID"
                       v-model="student.localID"
-                      outlined
+                      variant="outlined"
                       density="compact"
                       filled
                       tabindex="9"

@@ -168,8 +168,9 @@
     />
     <PenRequestBatchHistoryModal
       v-if="historyModalOpen"
-      v-model="historyModalOpen"
+      :value="historyModalOpen"
       :batch-file="hoveredOveredRow"
+      @close-dialog="historyModalOpen = false"
     />
   </div>
 </template>

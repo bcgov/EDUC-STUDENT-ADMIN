@@ -678,7 +678,7 @@ export default {
       let result = true;
       result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore these student record(s)?', 'All selected records will be ignored.',
         {
-          width: '680px',
+          width: '850px',
           messagePadding: 'px-4 pt-1',
           color: '',
           dark: false,

@@ -9,9 +9,9 @@
       class="px-6 pt-2"
       elevation="0"
     >
-      <v-card-title class="px-0 pb-0 pt-5" />
+      <v-card-title class="px-0 pb-0 pt-5"/>
       <v-row>
-        <div class="flex-grow-1 pt-0 px-3">
+        <div class="flex-grow-1 pt-0 pb-2 px-3">
           <DataListItem
             v-for="(item, i) in fileItems"
             :key="item.name + i"
@@ -32,7 +32,7 @@
           />
           <v-btn
             id="closeModalBtn"
-            text
+            variant="flat"
             icon
             @click="modalOpen=false"
           >
@@ -43,36 +43,35 @@
               mdi-close
             </v-icon>
           </v-btn>
-        </div>     
+        </div>
       </v-row>
       <v-data-table
         id="fileHistoryTable"
         class="py-5"
         :headers="headers"
         :items="penWebBlobs"
-        hide-default-footer
         :loading="loadingTable"
         :items-per-page="1000"
       >
         <template
           v-for="h in headers"
           :key="h.id"
-          #[`header.${h.value}`]="{ header }"
+          #[`column.${h.key}`]="{ column }"
         >
           <span
-            :title="header.tooltip"
-            :class="{'file-column' : !header.countable}"
+            :title="column.tooltip"
+            class="file-column"
           >
-            {{ header.text }}
+            {{ column.text }}
           </span>
         </template>
-        <template #item="props">
+        <template #item="item">
           <tr>
             <td
-              v-for="header in props.headers"
+              v-for="header in item.columns"
               :key="header.id"
             >
-              <span>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
+              <span>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
             </td>
           </tr>
         </template>
@@ -86,9 +85,9 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import DataListItem from '@/components/util/DataListItem.vue';
 import ApiService from '@/common/apiService';
-import { Routes } from '@/utils/constants';
-import { formatTableColumn, formatDateTime } from '@/utils/format';
-import { mapState } from 'pinia';
+import {Routes} from '@/utils/constants';
+import {formatTableColumn, formatDateTime} from '@/utils/format';
+import {mapState} from 'pinia';
 import {notificationsStore} from '@/store/modules/notifications';
 import _ from 'lodash';
 
@@ -117,11 +116,43 @@ export default {
       isProcessing: false,
       penWebBlobs: [],
       headers: [
-        { text: 'Type', value: 'fileType', sortable: false, align: 'start', tooltip: 'Type' },
-        { text: 'Insert Date', value: 'insertDateTime', sortable: false, format: this.formateDate, tooltip: 'Insert Date' },
-        { text: 'Insert Time', value: 'insertDateTime', sortable: false, format: this.formateTime, tooltip: 'Insert Time' },
-        { text: 'Extract Date', value: 'extractDateTime', sortable: false, format: this.formateDate, tooltip: 'Extract Date' },
-        { text: '', value: '', sortable: false},
+        {
+          title: 'Type',
+          text: 'Type',
+          value: 'fileType',
+          key: 'fileType',
+          sortable: false,
+          align: 'start',
+          tooltip: 'Type'
+        },
+        {
+          title: 'Insert Date',
+          text: 'Insert Date',
+          value: 'insertDateTime',
+          key: 'insertDate',
+          sortable: false,
+          format: this.formateDate,
+          tooltip: 'Insert Date'
+        },
+        {
+          title: 'Insert Time',
+          text: 'Insert Time',
+          value: 'insertDateTime',
+          key: 'insertTime',
+          sortable: false,
+          format: this.formateTime,
+          tooltip: 'Insert Time'
+        },
+        {
+          title: 'Extract Date',
+          text: 'Extract Date',
+          value: 'extractDateTime',
+          key: 'extractDateTime',
+          sortable: false,
+          format: this.formateDate,
+          tooltip: 'Extract Date'
+        },
+        {title: '', text: '', value: '', sortable: false},
       ],
       penCoordinator: {},
     };
@@ -130,18 +161,18 @@ export default {
     ...mapState(notificationsStore, ['notification']),
     fileItems() {
       return [
-        { name: 'district', label: this.districtFieldLabel, value: this.districtName },
-        { name: 'school', label: this.schoolFieldLabel, value: this.batchFile.schoolName },
-        { name: 'coord', label: 'PEN Coord:', value: this.penCoordinator.penCoordinatorName, type: 'coord' },
-        { name: 'email', label: 'Email:', value: this.penCoordinator.penCoordinatorEmail, type: 'coord' },
-        { name: 'breakLine', label: '', value: '' },
-        { name: 'fileName', label: 'File Name:', value: this.batchFile.fileName },
-        { name: 'submission', label: 'Submission #:', value: this.batchFile.submissionNumber },
-        { name: 'dateCreated', label: 'Date Created:', value: this.formateDate(this.batchFile.extractDate) },
-        { name: 'timeCreated', label: 'Time Created:', value: this.formateTime(this.batchFile.extractDate) },
-        { name: 'resultSent', label: 'Result Sent:', value: this.resultSentDateTime },
-        { name: 'studentCount', label: 'Student Count:', value: '' + this.batchFile.studentCount },
-        { name: 'errorCount', label: 'Error Count', value: '' + this.batchFile.errorCount },
+        {name: 'district', label: this.districtFieldLabel, value: this.districtName},
+        {name: 'school', label: this.schoolFieldLabel, value: this.batchFile.schoolName},
+        {name: 'coord', label: 'PEN Coord:', value: this.penCoordinator.penCoordinatorName, type: 'coord'},
+        {name: 'email', label: 'Email:', value: this.penCoordinator.penCoordinatorEmail, type: 'coord'},
+        {name: 'breakLine', label: '', value: ''},
+        {name: 'fileName', label: 'File Name:', value: this.batchFile.fileName},
+        {name: 'submission', label: 'Submission #:', value: this.batchFile.submissionNumber},
+        {name: 'dateCreated', label: 'Date Created:', value: this.formateDate(this.batchFile.extractDate)},
+        {name: 'timeCreated', label: 'Time Created:', value: this.formateTime(this.batchFile.extractDate)},
+        {name: 'resultSent', label: 'Result Sent:', value: this.resultSentDateTime},
+        {name: 'studentCount', label: 'Student Count:', value: '' + this.batchFile.studentCount},
+        {name: 'errorCount', label: 'Error Count', value: '' + this.batchFile.errorCount},
       ];
     },
     districtFieldLabel() {
@@ -172,8 +203,8 @@ export default {
       }
     },
     modalOpen(newValue) {
-      if(!newValue && this.value) {
-        this.$emit('input', this.modalOpen);
+      if (!newValue && this.value) {
+        this.$emit('closeDialog', this.modalOpen);
       }
     },
     notification(notificationData) {
@@ -254,45 +285,54 @@ export default {
         });
     },
     formateDate(dateTime) {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
+      return formatDateTime(dateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd', true);
     },
     formateTime(dateTime, timeFormat = 'HH:mm:ss') {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat, true);
+      return formatDateTime(dateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat, true);
     }
   }
 };
 </script>
 
 <style scoped>
-  #fileHistoryTable {
+#fileHistoryTable {
     overflow: auto;
-  }
+}
 
-  #fileHistoryTable /deep/ table { 
+#fileHistoryTable /deep/ table {
     border-top: solid #d7d7d7;
-  }
+}
 
-  #fileHistoryTable /deep/ table th{
+#fileHistoryTable /deep/ table th {
     text-align: center !important;
     font-size: 0.875rem;
-  }
+}
 
-  #fileHistoryTable /deep/ table td{
+#fileHistoryTable /deep/ table td {
     text-align: center !important;
     border-bottom: none !important;
-  }
+}
 
-  #fileHistoryTable /deep/ table td:nth-child(2),
-  #fileHistoryTable /deep/ table th:nth-child(2) { 
+#fileHistoryTable /deep/ table td:nth-child(2),
+#fileHistoryTable /deep/ table th:nth-child(2) {
     border-left: thin solid #d7d7d7;
-  }
+}
 
-  #fileHistoryTable /deep/ table th:nth-child(1) {
+#fileHistoryTable /deep/ table th:nth-child(1) {
     width: 10%;
-  }
-  #fileHistoryTable /deep/ table th:nth-child(2),
-  #fileHistoryTable /deep/ table th:nth-child(3),
-  #fileHistoryTable /deep/ table th:nth-child(4) {
+}
+
+#fileHistoryTable /deep/ table th:nth-child(2),
+#fileHistoryTable /deep/ table th:nth-child(3),
+#fileHistoryTable /deep/ table th:nth-child(4) {
     width: 20%;
-  }
+}
+
+:deep(.v-data-table-footer) {
+    display: none;
+}
+
+:deep(td){
+    font-size: 0.85em;
+}
 </style>

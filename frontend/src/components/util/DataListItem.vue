@@ -4,32 +4,30 @@
     :class="[{'py-1': !breakLine}, 'data-list-item']"
   >
     <br v-if="breakLine">
-    <template>
-      <v-col :cols="labelSpan">
-        <p class="mb-0">
-          {{ label }}
-        </p>
-      </v-col>
-      <v-col
-        :id="name"
-        :cols="colspan"
+    <v-col :cols="labelSpan">
+      <p class="mb-0">
+        {{ label }}
+      </p>
+    </v-col>
+    <v-col
+      :id="name"
+      :cols="colspan"
+    >
+      <v-progress-circular
+        v-if="loading"
+        color="primary"
+        indeterminate
+        :size="18"
+        :width="2"
+        class="ml-3"
+      />
+      <p
+        v-else
+        class="mb-0"
       >
-        <v-progress-circular
-          v-if="loading"
-          color="primary"
-          indeterminate
-          :size="18"
-          :width="2"
-          class="ml-3"
-        />
-        <p
-          v-else
-          class="mb-0"
-        >
-          {{ value }}
-        </p>
-      </v-col>
-    </template>
+        {{ value }}
+      </p>
+    </v-col>
   </v-row>
 </template>
 
@@ -39,7 +37,7 @@ export default {
   props: {
     labelSpan: {
       type: String,
-      default: '3',
+      default: '1',
     },
     colspan: {
       type: String,
