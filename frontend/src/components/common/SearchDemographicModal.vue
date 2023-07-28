@@ -32,7 +32,6 @@
         </v-card-title>
         <v-spacer/>
         <v-card-text>
-          <div>{{isValidForm}}</div>
           <v-form
             ref="searchDemographicModalForm"
             :model-value="isValidForm"
@@ -62,6 +61,7 @@
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                       :rules="validateLegalLastName()"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                      @update:model-value="validateForm"
                       required
                       tabindex="1"
                       clearable
@@ -87,6 +87,7 @@
                       variant="outlined"
                       density="compact"
                       filled
+                      @update:model-value="validateForm"
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                       tabindex="2"
@@ -115,6 +116,7 @@
                       v-model="student.legalMiddleNames"
                       variant="outlined"
                       density="compact"
+                      @update:model-value="validateForm"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                       tabindex="3"
@@ -144,6 +146,7 @@
                       v-model="student.usualLastName"
                       variant="outlined"
                       density="compact"
+                      @update:model-value="validateForm"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                       tabindex="4"
@@ -172,6 +175,7 @@
                       id="searchDemogModalUsualFirstNameTxtField"
                       v-model="student.usualFirstName"
                       variant="outlined"
+                      @update:model-value="validateForm"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -201,6 +205,7 @@
                       id="searchDemogModalUsualMiddleNameTxtField"
                       v-model="student.usualMiddleNames"
                       variant="outlined"
+                      @update:model-value="validateForm"
                       density="compact"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
@@ -228,6 +233,7 @@
                       v-model="student.genderCode"
                       variant="outlined"
                       density="compact"
+                      @update:model-value="validateForm"
                       class="hoverField"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
@@ -255,6 +261,7 @@
                     <FormattedTextField
                       id="searchDemogModalDobTxtField"
                       v-model="student.dob"
+                      @update:model-value="validateForm"
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
                       :rules="validateDOB()"
                       maxlength="8"
@@ -281,6 +288,7 @@
                       v-model="student.gradeCode"
                       variant="outlined"
                       density="compact"
+                      @update:model-value="validateForm"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                       :rules="validateGradeCode()"
@@ -312,6 +320,7 @@
                       v-model="student.postalCode"
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                       maxlength="7"
+                      @update:model-value="validateForm"
                       tabindex="10"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                       :format="formatPostalCode"
@@ -339,6 +348,7 @@
                       v-model="student.mincode"
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                       :rules="validateMincode()"
+                      @update:model-value="validateForm"
                       maxlength="8"
                       :async-messages="mincodeErrors"
                       tabindex="11"
@@ -356,7 +366,8 @@
           <v-spacer/>
           <slot
             name="actions"
-            :is-form-valid="isFormValid"
+            :searchEnabled="isValidForm"
+            :modifySearch="modifySearch"
           />
         </v-card-actions>
       </v-card>
@@ -453,7 +464,7 @@ export default {
         'Invalid Gender Code'
       ];
     },
-    isFormValid() {
+    modifySearch() {
       if (this.$refs.searchDemographicModalForm.validate()) {
         this.$emit('updateStudent', this.student);
       }
