@@ -2,7 +2,6 @@
   <v-card
     fluid
     class="px-4"
-    style="overflow-y: scroll"
     elevation="0"
   >
     <MergeStudentsModal

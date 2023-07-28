@@ -102,7 +102,8 @@ export default {
 }
 
 .macroRow{
-    width: 40em;
+    width: 60em;
+    font-size: 0.85em;
 }
 
 .macroListItem:hover {

@@ -422,7 +422,7 @@ export default {
       if (this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
           {
-            width: '680px',
+            width: '760px',
             messagePadding: 'px-4 pt-1',
             color: '',
             dark: false,
@@ -438,7 +438,7 @@ export default {
       let result = true;
       result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore this student record?', '',
         {
-          width: '680px',
+          width: '760px',
           messagePadding: 'px-4 pt-1',
           color: '',
           dark: false,

@@ -184,7 +184,7 @@
           </v-col>
           <v-btn
             id="closeBtn"
-            text
+            variant="flat"
             icon
             @click-action="cancel"
           >
@@ -356,7 +356,7 @@ export default {
         `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`,
         'Note this action will not return any files to the submitting school.',
         {
-          width: '520px',
+          width: '750px',
           messagePadding: 'px-4 pt-4',
           color: '',
           dark: false,
@@ -400,7 +400,7 @@ export default {
       this.archiveAndReturnSubtext = 'Note this action will not return any files to the submitting school if FIXABLE requests exist.';
       const result = await this.$refs.fixableConfirmationDialog.open(null, null,
         {
-          width: '520px',
+          width: '620px',
           messagePadding: 'px-4 pt-4',
           color: '',
           dark: false,

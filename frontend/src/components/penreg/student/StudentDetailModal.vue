@@ -6,15 +6,14 @@
   >
     <v-card class="studentDetailDialogCard fill-height ma-0 px-4 pb-4">
       <v-card-title class="px-0 pb-0 pt-5">
-        <v-list-item>
-          <v-list-item style="padding-bottom: 0px; padding-top: 0px">
-            <v-list-item-title class="headline">
-              Student Details
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item-media style="margin: 0px;">
+        <v-row>
+          <v-col class="d-flex justify-start">
+            <span class="headline">Student Details</span>
+          </v-col>
+          <v-col class="d-flex justify-end">
             <v-btn
               text
+              variant="flat"
               icon
               @click="isDialogOpen=false"
             >
@@ -25,8 +24,8 @@
                 mdi-close
               </v-icon>
             </v-btn>
-          </v-list-item-media>
-        </v-list-item>
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-col>
         <StudentDetailCommon 
@@ -135,7 +134,7 @@ export default {
 
 .studentDialog{
   max-height: 100% !important;
-  max-width: 1200px;
+  max-width: 60% !important;
 }
 
 .studentDetailDialogCard {
