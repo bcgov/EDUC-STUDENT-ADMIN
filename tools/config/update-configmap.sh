@@ -260,8 +260,7 @@ bannerEnvironment=""
 bannerColor=""
 SCHEDULER_CRON_DOC_TYPE_MIGRATION=""
 ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
-BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
-
+BACKEND_ROOT=student-admin-backend-master.$PEN_NAMESPACE-$envValue.svc.cluster.local
 if [ "$envValue" = "dev" ]; then
   bannerEnvironment="DEV"
   bannerColor="#8d28d7"

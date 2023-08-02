@@ -41,4 +41,4 @@ log {
 	output stdout
 }
 
-reverse_proxy /api/* {$HOST_ROUTE}
+reverse_proxy /api/* {$BACKEND_ROOT}

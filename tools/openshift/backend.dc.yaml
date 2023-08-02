@@ -148,27 +148,6 @@ objects:
     selector:
       app: "${APP_NAME}-${BRANCH}"
       deploymentconfig: "${APP_NAME}-backend-${BRANCH}"
-- apiVersion: v1
-  kind: Route
-  metadata:
-    annotations:
-      openshift.io/host.generated: 'true'
-    labels:
-      app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend-${BRANCH}"
-  spec:
-    host: "${HOST_ROUTE}"
-    path: /api
-    port:
-      targetPort: 8080-tcp
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: edge
-    to:
-      kind: Service
-      name: "${APP_NAME}-backend-${BRANCH}"
-      weight: 100
-    wildcardPolicy: None
 - apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
