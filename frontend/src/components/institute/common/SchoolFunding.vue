@@ -185,7 +185,6 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatDob} from '@/utils/format';
 import {mapState} from 'pinia';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import TertiaryButton from '../../util/TertiaryButton.vue';
 import {appStore} from '@/store/modules/app';
 import {instituteStore} from '@/store/modules/institute';
 import AddSchoolFunding from '@/components/institute/common/AddSchoolFunding.vue';
@@ -196,7 +195,6 @@ export default {
   name: 'SchoolFunding',
   components: {
     PrimaryButton,
-    TertiaryButton,
     AddSchoolFunding,
     ConfirmationDialog
   },
@@ -263,7 +261,7 @@ export default {
             if(elem) {
               this.mapFundingData(elem);
             }  
-          })
+          });
           this.sortedFunding = sortBy(this.funding, ['displayOrder']);
           let existingGrades = this.sortedFunding.map(grade => grade?.schoolGradeCode);
           this.sortedGrades = sortBy(this.gradeCodes.filter(grade => !existingGrades.includes(grade?.schoolGradeCode)), ['displayOrder']);
@@ -297,7 +295,7 @@ export default {
           this.pastCollections = response.data;
           this.pastCollections.forEach(collection => {
             collection.formattedCollectionOpenDate = this.formatDate(collection.collectionOpenDate);
-          })
+          });
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -370,7 +368,7 @@ export default {
             if(elem) {
               this.mapFundingData(elem);
             }  
-          })
+          });
           this.snapshotData = sortBy(this.snapshotData, ['displayOrder']);
         }).catch(error => {
           console.error(error);
