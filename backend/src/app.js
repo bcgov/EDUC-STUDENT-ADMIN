@@ -42,6 +42,7 @@ const analyticsRouter = require('./routes/analytics-router');
 const nominalRollRouter = require('./routes/nominal-roll');
 const edxRouter = require('./routes/edx-router');
 const instituteRouter = require('./routes/institute');
+const sdcRouter = require('./routes/sdc');
 const cacheRouter = require('./routes/cache-router');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
@@ -183,6 +184,7 @@ apiRouter.use('/analytics', analyticsRouter);
 apiRouter.use('/nominal-roll', nominalRollRouter);
 apiRouter.use('/edx', edxRouter);
 apiRouter.use('/institute', instituteRouter);
+apiRouter.use('/sdc', sdcRouter);
 apiRouter.use('/cache', cacheRouter);
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

@@ -178,5 +178,11 @@ nconf.defaults({
     bannerColor: process.env.BANNER_COLOR,
     webSocketURL: process.env.WEB_SOCKET_URL
   },
+  sdc: {
+    rootURL: process.env.SDC_API_URL,
+    schoolCollectionURL: process.env.SDC_API_URL + '/sdcSchoolCollection',
+    fundingGroupsURL: process.env.SDC_API_URL + '/funding-group-codes',
+    fundingGroupDataURL: process.env.SDC_API_URL + '/schoolFundingGroup'
+  }
 });
 module.exports = nconf;

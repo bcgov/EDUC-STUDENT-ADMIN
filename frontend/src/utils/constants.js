@@ -16,6 +16,7 @@ const nominalRollRoot= baseRoot+'/nominal-roll';
 const edxRoot= baseRoot+'/edx';
 const instituteRoot = baseRoot + '/institute';
 const cacheRoot = baseRoot + '/cache';
+const sdcRoot = baseRoot + '/sdc';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -165,6 +166,10 @@ let object = {
     PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
     NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
     NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite'
+  },
+  sdc: {
+    FUNDING_DATA_URL: sdcRoot + '/funding-groups',
+    SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection'
   }
 };
 
