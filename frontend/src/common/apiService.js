@@ -117,6 +117,7 @@ export default {
   getAllActiveInstituteGradeCodes: getCodes(`${Routes.cache.GRADE_TYPES_URL}?active=true`),
   getAllActiveInstituteProvinceCodes: getCodes(`${Routes.cache.PROVINCES_URL}?active=true`),
   getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
+  getAllFundingGroups: getCodes(`${Routes.sdc.FUNDING_DATA_URL}`),
   async getConfig() {
     try {
       const response = await apiAxios.get(Routes.CONFIG);

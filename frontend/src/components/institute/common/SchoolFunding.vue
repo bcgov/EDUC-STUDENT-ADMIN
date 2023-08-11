@@ -66,7 +66,7 @@
                     <v-col>
                       <v-select
                         v-model="item.item.raw[header.value]"
-                        :items="fundingGroups"
+                        :items="schoolFundingGroups"
                         item-value="schoolFundingGroupCode"
                         item-title="label"
                         variant="underlined"
@@ -168,7 +168,7 @@
       <AddSchoolFunding
         v-if="addFundingSheet"
         :school-i-d="schoolID"
-        :funding-groups="fundingGroups"
+        :funding-groups="schoolFundingGroups"
         :filteredgrade-codes="sortedGrades"
         @closeAddFunding="addFundingSheet = !addFundingSheet"
         @saveNewFundingData="saveNewFundingData"
@@ -226,7 +226,7 @@ export default {
       hoveredOveredRow: null,
       hoveredOveredHeader: null,
       isValidFundingForm: false,
-      fundingGroups: [],
+      schoolFundingGroups: [],
       isEditing: false,
       collectionDates: ['2017/09/30', '2016/09/30'],
       selectedCollectionDate: '',
@@ -240,14 +240,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']), 
+    ...mapState(appStore, ['fundingGroups']), 
     ...mapState(instituteStore, ['gradeCodes']),
   },
-  beforeCreate() {
-    instituteStore().getAllGradeCodes().then(() => this.loadFundingGroups());
-  },
   mounted() {
+    instituteStore().getAllGradeCodes();
     appStore().getCodes().then(() => {
+      this.schoolFundingGroups = this.fundingGroups;
       this.getHistoricalCollectionsForSchool();
       this.loadSchoolsFundingData();
     });
@@ -275,19 +274,8 @@ export default {
     mapFundingData(incomingFundingData) {
       incomingFundingData.gradeLabel = this.gradeCodes?.find(grade => grade?.schoolGradeCode === incomingFundingData?.schoolGradeCode)?.label;
       incomingFundingData.displayOrder = this.gradeCodes?.find(grade => grade?.schoolGradeCode === incomingFundingData?.schoolGradeCode)?.displayOrder;
-      incomingFundingData.fundingGroupLabel = this.fundingGroups?.find(group => group.schoolFundingGroupCode === incomingFundingData.schoolFundingGroupCode)?.label;
+      incomingFundingData.fundingGroupLabel = this.schoolFundingGroups?.find(group => group.schoolFundingGroupCode === incomingFundingData.schoolFundingGroupCode)?.label;
       incomingFundingData.updateDate = this.formatDate(incomingFundingData.updateDate);
-    },
-    loadFundingGroups() {
-      ApiService.apiAxios.get(`${Routes.sdc.FUNDING_DATA_URL}`)
-        .then(response => {
-          this.fundingGroups = response.data;
-        }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
     },
     getHistoricalCollectionsForSchool() {
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION}/${this.schoolID}`)
