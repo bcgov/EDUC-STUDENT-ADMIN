@@ -138,7 +138,10 @@
               <v-tab value="moves">
                 Moves
               </v-tab>
-              <v-tab value="funding">
+              <v-tab
+                v-if="canViewFundingTab()"
+                value="funding"
+              >
                 Funding
               </v-tab>
             </v-tabs>
@@ -177,7 +180,9 @@
                   />
                 </v-window-item>
                 <v-window-item value="funding">
-                  <p>Funding Tab</p>
+                  <SchoolFunding
+                    :school-i-d="schoolID"
+                  />
                 </v-window-item>
               </v-window>
             </v-card-text>
@@ -202,6 +207,7 @@ import Details from './common/Details.vue';
 import SchoolHistory from './common/SchoolHistory.vue';
 import SchoolContacts from './common/SchoolContacts.vue';
 import SchoolMove from './common/SchoolMove.vue';
+import SchoolFunding from './common/SchoolFunding.vue';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
@@ -213,7 +219,8 @@ export default {
     Details,
     SchoolHistory,
     SchoolContacts,
-    SchoolMove
+    SchoolMove,
+    SchoolFunding
   },
   mixins: [alertMixin],
   props: {
@@ -333,6 +340,9 @@ export default {
         return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
+    },
+    canViewFundingTab() {
+      return this.independentArray.includes(this.school.schoolCategoryCode);
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
