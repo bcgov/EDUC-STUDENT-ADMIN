@@ -18,7 +18,8 @@ cacheKeys = {
   SCHOOL_FACILITY_TYPES: 'school_facilityTypes',
   SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES: 'school-neighborhood-learning-types',
   SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
-  SCHOOL_REPORTING_REQUIREMENT_CODES: 'school-reporting-requirement-codes'
+  SCHOOL_REPORTING_REQUIREMENT_CODES: 'school-reporting-requirement-codes',
+  SDC_FUNDING_GROUPS: 'sdc_funding_groups'
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);

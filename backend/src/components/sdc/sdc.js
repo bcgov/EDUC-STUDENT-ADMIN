@@ -47,19 +47,6 @@ async function getSnapshotFundingDataForSchool(req, res) {
   }
 }
 
-async function getFundingGroupsForSchool(req, res) {
-  try {
-    const accessToken = getBackendToken(req);   
-    validateAccessToken(accessToken, res);
-
-    const data = await getData(accessToken, `${config.get('sdc:fundingGroupsURL')}`);
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    logApiError(e, 'getFundingGroupsForSchool', 'Error getting funding groups');
-    return errorResponse(res);
-  }
-}
-
 async function deleteFundingDataForSchool(req, res) {
   try {
     const accessToken = getBackendToken(req);
@@ -163,7 +150,6 @@ function hasSchoolAdminRole(req, school){
 
 
 module.exports = {
-  getFundingGroupsForSchool,
   getFundingGroupDataForSchool,
   deleteFundingDataForSchool,
   updateFundingDataForSchool,

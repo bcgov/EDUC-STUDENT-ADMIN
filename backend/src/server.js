@@ -107,6 +107,11 @@ cacheService.loadDataToCache( constants.CACHE_KEYS.AUTHORITY_CONTACT_TYPES, 'ser
 }).catch((e) => {
   log.error('Error loading AUTHORITY_CONTACT_TYPES data during boot .', e);
 });
+cacheService.loadDataToCache( constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL').then(() => {
+  log.info('Loaded FUNDING_GROUPS data to memory');
+}).catch((e) => {
+  log.error('Error loading FUNDING_GROUPS data during boot .', e);
+});
 
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');

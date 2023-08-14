@@ -26,7 +26,9 @@ export const appStore = defineStore('app', {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-    config: ''
+    config: '',
+    fundingGroupsMap: new Map(),
+    fundingGroups: []
   }),
   actions: {
     async setConfig(config){
@@ -107,6 +109,13 @@ export const appStore = defineStore('app', {
         this.schoolApiDistrictCodes.add(element.mincode?.substring(0, 3));
       });
     },
+    async setFundingGroups(fundingGroups) {
+      this.fundingGroups = fundingGroups;
+      this.fundingGroupsMap = new Map();
+      fundingGroups.forEach(element => {
+        this.fundingGroupsMap.set(element.schoolFundingGroupCode, element);
+      });
+    },
     async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(this.mincodeSchoolNames.size === 0) {
@@ -133,6 +142,10 @@ export const appStore = defineStore('app', {
           const response = await ApiService.getSchoolApiMincodeSchoolNames();
           await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(response.data);
         }
+        if(this.fundingGroupsMap.size === 0) {
+          const response = await ApiService.getAllFundingGroups();
+          await this.setFundingGroups(response.data);
+        }
       }
     },
     async getConfig() {
@@ -158,6 +171,9 @@ export const appStore = defineStore('app', {
 
         const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
         await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(responseSchoolApiMin.data);
+
+        const responseFunding = await ApiService.getAllFundingGroups();
+        await this.setFundingGroups(responseFunding.data);
       }
     },
   },
