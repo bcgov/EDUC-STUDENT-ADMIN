@@ -983,7 +983,7 @@
                   </v-col>
                 </v-row>
                 <v-row
-                  v-if="displayPhysicalAddress"
+                  v-if="displayPhysicalAddress()"
                   no-gutters
                 >
                   <v-col>
