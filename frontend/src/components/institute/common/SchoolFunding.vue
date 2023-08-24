@@ -23,34 +23,36 @@
       <v-col cols="7">
         <v-row>
           <v-col>
-            <h3 class="subHeading pt-2 pb-2">
+            <h3 class="subHeading pt-2 pb-8">
               Current Funding Configuration
             </h3>
           </v-col>
-          <v-col class="add-funding">
-            <PrimaryButton         
+        </v-row>
+
+        <v-row no-gutters>
+          <v-col class="justify-end d-flex">
+            <PrimaryButton
               id="add-action"
               class="pr-4"
               secondary
               text="Add Funding"
               icon-left
-              icon="mdi-plus"  
+              icon="mdi-plus"
               @click-action="addFunding()"
             />
           </v-col>
         </v-row>
-            
        
         <v-form
           v-model="isValidFundingForm"
-          class="mt-15"
-        > 
+          class="mt-6 pb-1 pl-1"
+        >
           <v-data-table
             :headers="headers"
             :items="sortedFunding"
             :loading="loading"
             :items-per-page="25"
-            class="elevation-1 pt-9"
+            class="elevation-1"
             item-value="schoolFundingGroupID"
           >
             <template #item="item">
@@ -130,32 +132,40 @@
 
       <v-col
         cols="5"
-        class="pl-5"
+        class="pl-5 pr-1"
       >
-        <h3 class="subHeading pt-2 pb-2 ">
+        <h3 class="subHeading pt-2 pb-2">
           Historic Funding Configurations
         </h3>
 
-        <v-select
-          v-model="selectedCollectionDate"
-          :items="pastCollections"
-          item-value="collectionID"
-          item-title="formattedCollectionOpenDate"
-          class="mt-5"
-          variant="underlined"
-          label="Select collection"
-          @update:modelValue="getSnapshotData($event)"
-        />
-
-        <v-data-table
-          v-if="showSnapshotData"
-          :headers="historicFundingHeaders"
-          :items="snapshotData"
-          :items-per-page="25"
-          :loading="loading"
-          class="elevation-1"
-          item-value="schoolFundingGroupID"
-        />
+        <v-row>
+          <v-col cols="5">
+            <v-select
+              v-model="selectedCollectionDate"
+              :items="pastCollections"
+              item-value="collectionID"
+              density="compact"
+              item-title="formattedCollectionOpenDate"
+              class="mt-5"
+              variant="underlined"
+              label="Select Historic Collection"
+              @update:modelValue="getSnapshotData($event)"
+            />
+          </v-col>
+        </v-row>
+        <v-row no-gutters="">
+          <v-col>
+            <v-data-table
+              v-if="showSnapshotData"
+              :headers="historicFundingHeaders"
+              :items="snapshotData"
+              :items-per-page="25"
+              :loading="loading"
+              class="elevation-1"
+              item-value="schoolFundingGroupID"
+            />
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-bottom-sheet
@@ -229,7 +239,7 @@ export default {
       schoolFundingGroups: [],
       isEditing: false,
       collectionDates: ['2017/09/30', '2016/09/30'],
-      selectedCollectionDate: '',
+      selectedCollectionDate: null,
       showSnapshotData: false,
       snapshotData: [],
       addFundingSheet: false,
@@ -284,6 +294,7 @@ export default {
           this.pastCollections.forEach(collection => {
             collection.formattedCollectionOpenDate = this.formatDate(collection.collectionOpenDate);
           });
+          this.pastCollections = sortBy(this.pastCollections, ['formattedCollectionOpenDate']);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -388,22 +399,22 @@ export default {
 };
 </script>
   
-  <style scoped>
-    :deep(.v-data-table-footer) {
-      display: none;
-    }
+<style scoped>
+  :deep(.v-data-table-footer) {
+    display: none;
+  }
 
-    .subHeading {
+  .subHeading {
     color: #38598a;
-}
+  }
 
-.icon-color {
+  .icon-color {
     color: rgb(0, 51, 102);
-}
+  }
 
-.add-funding {
-  text-align: end;
-}
-  </style>
-  
+  .add-funding {
+    text-align: end;
+  }
+</style>
+
   
