@@ -139,13 +139,13 @@
         </h3>
 
         <v-row>
-          <v-col cols="5">
+          <v-col class="mt-n1 mb-1" cols="7">
             <v-select
               v-model="selectedCollectionDate"
               :items="pastCollections"
               item-value="collectionID"
               density="compact"
-              item-title="formattedCollectionOpenDate"
+              item-title="displayDate"
               class="mt-5"
               variant="underlined"
               label="Select Historic Collection"
@@ -293,6 +293,7 @@ export default {
           this.pastCollections = response.data;
           this.pastCollections.forEach(collection => {
             collection.formattedCollectionOpenDate = this.formatDate(collection.collectionOpenDate);
+            collection.displayDate = this.formatDateYear(collection.collectionOpenDate) + ' - ' + this.capitalize(collection.collectionTypeCode.toLowerCase());
           });
           this.pastCollections = sortBy(this.pastCollections, ['formattedCollectionOpenDate']);
         }).catch(error => {
@@ -304,6 +305,12 @@ export default {
     },
     formatDate(datetime) {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
+    },
+    formatDateYear(datetime) {
+      return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd', 'uuuu');
+    },
+    capitalize(s) {
+      return s && s[0].toUpperCase() + s.slice(1);
     },
     cancel() {
       this.isEditing = false;
