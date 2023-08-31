@@ -509,6 +509,7 @@ export default {
       required: true
     },
   },
+  emits: ['newSchool:closeNewSchoolPage'],
   data() {
     return {
       isFormValid: false,
@@ -564,13 +565,6 @@ export default {
       }
     };
   },
-  mounted() {
-    this.validateForm();
-    this.addressButton = {
-      icon: 'mdi-plus-thick',
-      label: 'Add Address'
-    };
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
@@ -615,6 +609,13 @@ export default {
     schoolReportingRequirementCodes() {
       return this.schoolReportingRequirementTypeCodes ? this.schoolReportingRequirementTypeCodes : [];
     }
+  },
+  mounted() {
+    this.validateForm();
+    this.addressButton = {
+      icon: 'mdi-plus-thick',
+      label: 'Add Address'
+    };
   },
   created() {
     const instStore = instituteStore();
