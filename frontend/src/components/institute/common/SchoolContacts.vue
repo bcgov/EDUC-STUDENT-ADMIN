@@ -150,6 +150,7 @@ export default {
   data() {
     return {
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      offshoreArray: ['OFFSHORE'],
       loadingCount: 0,
       schoolContactTypes: [],
       schoolContacts: new Map(),
@@ -160,13 +161,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },
     canAddEditSchoolContact() {
       if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return (this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
+        return (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
+      } else if(this.school.schoolCategoryCode && this.offshoreArray.includes(this.school.schoolCategoryCode)) {
+        return (this.OFFSHORE_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
       }
       return this.SCHOOL_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
     },

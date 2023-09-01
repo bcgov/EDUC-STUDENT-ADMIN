@@ -24,6 +24,7 @@ function generateAuthorityObject(authority) {
     name: authority.displayName,
     openedDate: authority.openedDate,
     closedDate: authority.closedDate,
+    authorityTypeCode: authority.authorityTypeCode
   };
 }
 

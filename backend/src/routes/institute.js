@@ -30,13 +30,13 @@ router.delete('/district/note/:districtId/:noteId', passport.authenticate('jwt',
 
 router.post('/district/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addDistrictContact);
 
-router.put('/authority/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthorityContact);
+router.put('/authority/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthorityContact);
 
-router.delete('/authority/contact/:independentAuthorityId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, deleteAuthorityContact);
+router.delete('/authority/contact/:independentAuthorityId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, deleteAuthorityContact);
 
 router.post('/authority', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, addAuthority);
 
-router.post('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, addAuthorityContact);
+router.post('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addAuthorityContact);
 
 router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchools);
 
@@ -66,13 +66,13 @@ router.post('/school/moveSchool', passport.authenticate('jwt', {session: false},
 
 router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthoritiesPaginated);
 
-router.post('/authority/note', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, addNewAuthorityNote);
+router.post('/authority/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewAuthorityNote);
 
 router.put('/authority/note/:noteId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthorityNote);
 
 router.delete('/authority/note/:independentAuthorityId/:noteId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, deleteAuthorityNote);
 
-router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthority);
+router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthority);
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityByID);
 

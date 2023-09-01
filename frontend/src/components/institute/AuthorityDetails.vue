@@ -46,9 +46,9 @@
             >
               <h2 id="authorityName">
                 {{
-                  authority.authorityNumber
+                  authority?.authorityNumber
                 }} - {{
-                  authority.displayName
+                  authority?.displayName
                 }}
               </h2>
             </v-col>
@@ -58,7 +58,7 @@
             >
               <h2 id="authorityName">
                 {{
-                  authority.authorityNumber
+                  authority?.authorityNumber
                 }} -
               </h2>
               <v-text-field
@@ -126,14 +126,14 @@
             >
               <v-icon
                 class="pb-1"
-                :color="getStatusColorAuthorityOrSchool(authority.status)"
+                :color="getStatusColorAuthorityOrSchool(authority?.status)"
                 right
                 dark
               >
                 mdi-circle-medium
               </v-icon>
               <span>{{
-                authority.status
+                authority?.status
               }}</span>
             </v-col>
             <v-col
@@ -165,13 +165,13 @@
                   mdi-phone-outline
                 </v-icon>
                 <span
-                  v-if="authority.phoneNumber"
+                  v-if="authority?.phoneNumber"
                   class="ml-n1"
                 >{{
-                  formatPhoneNumber(authority.phoneNumber)
+                  formatPhoneNumber(authority?.phoneNumber)
                 }}</span>
                 <a
-                  v-if="showEditLinks(authority.phoneNumber)"
+                  v-if="showEditLinks(authority?.phoneNumber)"
                   class="editField"
                   @click="toggleEdit"
                 >+Phone</a>
@@ -195,13 +195,13 @@
                   mdi-fax
                 </v-icon>
                 <span
-                  v-if="authority.faxNumber"
+                  v-if="authority?.faxNumber"
                   class="ml-n1"
                 >{{
-                  formatPhoneNumber(authority.faxNumber)
+                  formatPhoneNumber(authority?.faxNumber)
                 }}</span>
                 <a
-                  v-if="showEditLinks(authority.faxNumber)"
+                  v-if="showEditLinks(authority?.faxNumber)"
                   class="editField mt-n1"
                   @click="toggleEdit"
                 >+Fax</a>
@@ -224,11 +224,11 @@
                   mdi-at
                 </v-icon>
                 <span
-                  v-if="authority.email"
+                  v-if="authority?.email"
                   style="word-break: break-all;"
                   class="ml-n1"
                 >{{
-                  authority.email
+                  authority?.email
                 }}</span>
               </div>
               <v-text-field
@@ -280,7 +280,7 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                    formatDate(authority.openedDate) || '-'
+                    formatDate(authority?.openedDate) || '-'
                   }}</span>
                   <span
                     v-else
@@ -315,7 +315,7 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                    formatDate(authority.closedDate) || '-'
+                    formatDate(authority?.closedDate) || '-'
                   }}</span>
                   <span
                     v-else
@@ -353,7 +353,7 @@
                     class="ministryLine"
                     style="color: black"
                   >{{
-                    authority.type
+                    authority?.type
                   }}</span>
                   <v-select
                     v-else
@@ -857,22 +857,23 @@ export default {
       excludeShowingPhysicalAddressesForAuthoritiesOfType: [
         'OFFSHORE',
       ],
+
     };
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
     hasSamePhysicalAddress() {
-      return !this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
+      return !this.authority?.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },
     showPhysicalAddress() {
       if (this.editing) {
         return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy.authorityTypeCode);
       }
-      return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority.authorityTypeCode);
+      return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     }
   },
   created() {
@@ -973,7 +974,7 @@ export default {
     },
     deepCloneObject,
     addAddressesIfRequired(authority) {
-      let addresses = authority.addresses;
+      let addresses = authority?.addresses;
       if (!this.hasMailingAddress()) {
         addresses.push({
           'createUser': null,
@@ -1018,6 +1019,11 @@ export default {
       }
     },
     canEditAuthorities() {
+      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'INDEPENDNT') {
+        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
+      } else if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
+        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
+      }
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
     },
     setHasSamePhysicalFlag() {
@@ -1059,19 +1065,19 @@ export default {
       await this.$refs.authorityForm.validate();
     },
     getAuthorityType(authority) {
-      return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority.authorityTypeCode).label;
+      return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority?.authorityTypeCode).label;
     },
     hasMailingAddress() {
-      return this.authority.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0;
+      return this.authority?.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0;
     },
     hasPhysicalAddress() {
-      return this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
+      return this.authority?.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },
     getMailingAddress() {
-      return this.authority.addresses.filter(address => address.addressTypeCode === 'MAILING');
+      return this.authority?.addresses.filter(address => address.addressTypeCode === 'MAILING');
     },
     getPhysicalAddress() {
-      return this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL');
+      return this.authority?.addresses.filter(address => address.addressTypeCode === 'PHYSICAL');
     },
     getMailingAddressCopy() {
       return this.authorityCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
@@ -1080,7 +1086,7 @@ export default {
       return this.authorityCopy.addresses.filter(address => address.addressTypeCode === 'PHYSICAL');
     },
     getMailingAddressItem(item) {
-      let mailingAddress = this.authority.addresses.filter(address => address.addressTypeCode === 'MAILING');
+      let mailingAddress = this.authority?.addresses.filter(address => address.addressTypeCode === 'MAILING');
       for (const x in mailingAddress[0]) {
         if (x === item) {
           return mailingAddress[0][item];
@@ -1088,7 +1094,7 @@ export default {
       }
     },
     getPhysicalAddressItem(item) {
-      let physicalAddress = this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL');
+      let physicalAddress = this.authority?.addresses.filter(address => address.addressTypeCode === 'PHYSICAL');
       for (const x in physicalAddress[0]) {
         if (x === item) {
           return physicalAddress[0][item];
