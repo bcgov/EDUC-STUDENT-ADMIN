@@ -158,12 +158,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"SCHOOL_ADMIN\",\"description\" : \"Allows access to edit schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating SCHOOL_INDEPENDENT_ADMIN role
+echo Creating INDEPENDENT_SCHOOLS_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"SCHOOL_INDEPENDENT_ADMIN\",\"description\" : \"Allows access to edit independent schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-  
+  -d "{\"name\" : \"INDEPENDENT_SCHOOLS_ADMIN\",\"description\" : \"Allows access to edit independent schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating OFFSHORE_SCHOOLS_ADMIN role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"OFFSHORE_SCHOOLS_ADMIN\",\"description\" : \"Allows access to edit offshore schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+
 echo
 echo Creating INDEPENDENT_AUTHORITY_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
