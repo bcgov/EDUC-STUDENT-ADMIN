@@ -185,6 +185,7 @@ import {sortBy} from 'lodash';
 import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'AuthorityContactPage',
@@ -212,12 +213,9 @@ export default {
       editContactSheet: false
     };
   },
-  created() {
-    this.getThisAuthorityContacts();
-    this.getAuthorityContactTypeCodes();
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['authorityContactTypeCodes', 'independentAuthorityAuthorityContacts', 'offshoreAuthorityContacts', 'regularAuthorityContactTypes']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -225,14 +223,27 @@ export default {
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
     },
   },
+  watch: {
+    async authority(value) {
+      if (!this.authorityContactTypeCodes) {
+        await this.loadAuthorityContactTypeCodes();
+      }
+      if (value?.authorityTypeCode === 'OFFSHORE') {
+        this.authorityContactTypes = this.offshoreAuthorityContacts;
+      } else if (value?.authorityTypeCode === 'INDEPENDNT') {
+        this.authorityContactTypes = this.independentAuthorityAuthorityContacts;
+      } else {
+        this.authorityContactTypes = this.regularAuthorityContactTypes;
+      }
+    }
+  },
+  created() {
+    this.getThisAuthorityContacts();
+  },
   methods: {
-    getAuthorityContactTypeCodes() {
+    async loadAuthorityContactTypeCodes() {
       this.loadingCount += 1;
-
-      ApiService.apiAxios.get(Routes.cache.AUTHORITY_CONTACT_TYPES_URL)
-        .then(response => {
-          this.authorityContactTypes = response.data;
-        })
+      await instituteStore().getAllAuthorityContactTypeCodes()
         .catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available Authority Contact Type Codes. Please try again later.');

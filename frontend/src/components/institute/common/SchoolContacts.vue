@@ -61,6 +61,22 @@
           cols="2"
         >
           <v-col
+            v-if="schoolContactType.schoolContactTypeCode === SCHOOL_CONTACT_TYPES.SAFE_COORD"
+            cols="12"
+          >
+            <v-alert
+              :id="`publiclyAvailableAlert${schoolContactType.label}`"
+              color="#003366"
+              density="compact"
+              type="info"
+              variant="tonal"
+            >
+              <p>
+                Contacts of this type are only available to the ministry and not available to public.
+              </p>
+            </v-alert>
+          </v-col>
+          <v-col
             v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)"
             :key="contact.schoolId"
             cols="5"
@@ -134,6 +150,8 @@ import {mapState} from 'pinia';
 import {isExpired, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
+import {SCHOOL_CONTACT_TYPES} from '@/utils/constants/SchoolContactTypes';
 
 export default {
   name: 'SchoolContacts',
@@ -156,11 +174,13 @@ export default {
       school: {},
       editContact: null,
       newContactSheet: false,
-      editContactSheet: false
+      editContactSheet: false,
+      SCHOOL_CONTACT_TYPES: SCHOOL_CONTACT_TYPES
     };
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['schoolContactTypeCodes', 'independentAuthoritySchoolContacts', 'offshoreSchoolContacts', 'regularSchoolContactTypes']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -171,17 +191,27 @@ export default {
       return this.SCHOOL_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
     },
   },
+  watch: {
+    async school(value) {
+      if (!this.schoolContactTypeCodes) {
+        await this.loadSchoolContactTypeCodes();
+      }
+      if (value?.schoolCategoryCode === 'OFFSHORE') {
+        this.schoolContactTypes = this.offshoreSchoolContacts;
+      } else if (value?.schoolCategoryCode === 'INDEPEND') {
+        this.schoolContactTypes = this.independentAuthoritySchoolContacts;
+      } else {
+        this.schoolContactTypes = this.regularSchoolContactTypes;
+      }
+    }
+  },
   created() {
-    this.getSchoolContactTypeCodes();
     this.getThisSchoolsContacts();
   },
   methods: {
-    getSchoolContactTypeCodes() {
+    loadSchoolContactTypeCodes() {
       this.loadingCount += 1;
-      ApiService.apiAxios.get(Routes.cache.SCHOOL_CONTACT_TYPES_URL)
-        .then(response => {
-          this.schoolContactTypes = response.data;
-        })
+      instituteStore().getSchoolContactTypeCodes()
         .catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available School Contact Type Codes. Please try again later.');
