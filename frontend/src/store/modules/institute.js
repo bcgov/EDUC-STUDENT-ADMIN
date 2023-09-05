@@ -1,5 +1,6 @@
 import ApiService from '@/common/apiService';
 import {defineStore} from 'pinia';
+import {Routes} from '@/utils/constants';
 
 export const instituteStore = defineStore('institute', {
   namespaced: true,
@@ -22,8 +23,18 @@ export const instituteStore = defineStore('institute', {
     activeGradeCodes: null,
     activeProvinceCodes: null,
     activeCountryCodes: null,
-    movedSchoolNumber: null
+    movedSchoolNumber: null,
+    schoolContactTypeCodes: null,
+    authorityContactTypeCodes: null
   }),
+  getters: {
+    independentAuthoritySchoolContacts: state => state.schoolContactTypeCodes?.filter(type => !type.offshoreOnly),
+    offshoreSchoolContacts: state => state.schoolContactTypeCodes?.filter(type => !type.indOnly),
+    regularSchoolContactTypes: state => state.schoolContactTypeCodes?.filter(type => !type.indOnly && !type.offshoreOnly),
+    independentAuthorityAuthorityContacts: state => state.authorityContactTypeCodes?.filter(type => !type.offshoreOnly),
+    offshoreAuthorityContacts: state => state.authorityContactTypeCodes?.filter(type => !type.indOnly),
+    regularAuthorityContactTypes: state => state.authorityContactTypeCodes?.filter(type => !type.indOnly && !type.offshoreOnly)
+  },
   actions: {
     async setFacilityTypeCodes(facilityTypeCodes) {
       this.facilityTypeCodes = facilityTypeCodes;
@@ -78,6 +89,12 @@ export const instituteStore = defineStore('institute', {
     },
     async setActiveCountryCodes(activeCountryCodes) {
       this.activeCountryCodes = activeCountryCodes;
+    },
+    async setSchoolContactTypeCodes(schoolContactTypeCodes) {
+      this.schoolContactTypeCodes = schoolContactTypeCodes;
+    },
+    async setAuthorityContactTypeCodes(authorityContactTypeCodes) {
+      this.authorityContactTypeCodes = authorityContactTypeCodes;
     },
     async getAllFacilityTypeCodes() {
       const response = await ApiService.getFacilityTypeCodes();
@@ -150,6 +167,14 @@ export const instituteStore = defineStore('institute', {
     async getAllActiveCountryCodes() {
       const response = await ApiService.getAllActiveInstituteCountryCodes();
       await this.setActiveCountryCodes(response.data);
+    },
+    async getSchoolContactTypeCodes() {
+      const response = await ApiService.apiAxios.get(Routes.cache.SCHOOL_CONTACT_TYPES_URL);
+      await this.setSchoolContactTypeCodes(response.data);
+    },
+    async getAllAuthorityContactTypeCodes() {
+      const response = await ApiService.apiAxios.get(Routes.cache.AUTHORITY_CONTACT_TYPES_URL);
+      await this.setAuthorityContactTypeCodes(response.data);
     },
   }
 });
