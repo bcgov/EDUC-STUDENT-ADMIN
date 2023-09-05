@@ -45,7 +45,7 @@
                   item-value="districtId"
                   item-title="districtNumberName"
                   variant="underlined"
-                  :items="districtNames"
+                  :items="getDistrictNames()"
                   clearable
                   @update:model-value="schoolDistrictChanged"
                 />
@@ -524,6 +524,7 @@ export default {
       isGradeOfferedDisabled: false,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      offshoreArray: ['OFFSHORE'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       districtSchoolCategoryConstraints: [
@@ -572,7 +573,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
@@ -585,6 +586,8 @@ export default {
     schoolCategoryTypeCodes() {
       if (this.isIndependentOnlyUser()) {
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
+      } else if(this.isOffshoreOnlyUser()) {
+        return this.activeSchoolCategoryTypeCodes?.filter(cat => this.offshoreArray.includes(cat.schoolCategoryCode));
       }
       return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
     },
@@ -634,6 +637,12 @@ export default {
     instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
+    getDistrictNames() {
+      if(this.isOffshoreOnlyUser()) {
+        return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
+      } 
+      return this.districtNames
+    },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
     },
@@ -646,7 +655,10 @@ export default {
       }
     },
     isIndependentOnlyUser() {
-      return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
+      return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
+    },
+    isOffshoreOnlyUser() {
+      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     authorityRule(value) {
       if (this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode) && !value) {
