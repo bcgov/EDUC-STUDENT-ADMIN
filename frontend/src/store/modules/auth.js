@@ -32,6 +32,7 @@ export const authStore = defineStore('auth', {
     isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
     isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
     isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null,
+    isValidSchoolOffshoreAdmin: localStorage.getItem('isValidSchoolOffshoreAdmin') !== null,
     isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
   }),
   getters: {
@@ -66,7 +67,8 @@ export const authStore = defineStore('auth', {
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
-    SCHOOL_INDEPENDENT_OFFSHORE_ADMIN: state => state.isValidSchoolIndependentOffshoreAdmin,
+    INDEPENDENT_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
+    OFFSHORE_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolOffshoreAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   actions: {
@@ -278,6 +280,15 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem('isValidSchoolIndependentAdmin');
       }
     },
+    async setIsValidSchoolOffshoreAdmin(isValidSchoolOffshoreAdmin) {
+      if (isValidSchoolOffshoreAdmin) {
+        this.isValidSchoolOffshoreAdmin = true;
+        localStorage.setItem('isValidSchoolOffshoreAdmin', 'true');
+      } else {
+        this.isValidSchoolOffshoreAdmin = false;
+        localStorage.removeItem('isValidSchoolOffshoreAdmin');
+      }
+    },
     async setIsValidIndependentAuthorityAdmin(isValidIndependentAuthorityAdmin) {
       if (isValidIndependentAuthorityAdmin) {
         this.isValidIndependentAuthorityAdmin = true;
@@ -364,6 +375,7 @@ export const authStore = defineStore('auth', {
       await this.setIsValidDistrictAdmin(response.isValidDistrictAdmin);
       await this.setIsValidSchoolAdmin(response.isValidSchoolAdmin);
       await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
+      await this.setIsValidSchoolOffshoreAdmin(response.isValidSchoolOffshoreAdmin);
       await this.setIsValidIndependentAuthorityAdmin(response.isValidIndependentAuthorityAdmin);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
 

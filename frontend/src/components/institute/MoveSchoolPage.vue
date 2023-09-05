@@ -577,7 +577,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
@@ -712,7 +712,7 @@ export default {
       this.fireFormValidate();
     },
     isIndependentOnlyUser() {
-      return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
+      return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
     },
     authorityRule(value) {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode) && !value) {

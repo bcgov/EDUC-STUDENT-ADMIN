@@ -479,7 +479,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(appStore, ['schoolsMap']),
     ...mapState(edxStore, ['schoolSearchParams']),
     ...mapState(instituteStore, ['facilityTypeCodes', 'activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
@@ -536,7 +536,7 @@ export default {
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
     canAddSchool() {
-      return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
+      return this.SCHOOL_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     isOpenNotClosingAuthority,
     setSchoolStatuses() {

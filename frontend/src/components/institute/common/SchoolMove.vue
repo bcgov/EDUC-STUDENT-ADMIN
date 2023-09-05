@@ -73,6 +73,7 @@ import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 
 export default {
@@ -86,15 +87,12 @@ export default {
     schoolID: {
       type: String,
       required: true
-    },
-    hasAccess: {
-      type: Boolean,
-      required: true
     }
   },
   data() {
     return {
       schoolMoveDataFormatted: [],
+      independentArray: ['INDEPEND', 'INDP_FNS'],
       loading: true,
       moveSchoolSheet: false,
       school: '',
@@ -112,6 +110,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE']),
     ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
   },
   watch: {
@@ -192,8 +191,14 @@ export default {
     formatDate(datetime) {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
     },
+    canEditSchoolDetails() {
+      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
+        return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
+      } 
+      return this.SCHOOL_ADMIN_ROLE;
+    },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.hasAccess;
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.canEditSchoolDetails();
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;

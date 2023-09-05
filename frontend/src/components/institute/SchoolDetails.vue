@@ -176,7 +176,6 @@
                 <v-window-item value="moves">
                   <SchoolMove
                     :school-i-d="schoolID"
-                    :has-access="canEditSchoolDetails()"
                   />
                 </v-window-item>
                 <v-window-item value="funding">
@@ -238,6 +237,7 @@ export default {
       loading: true,
       noteRequestCount: 0,
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      offshoreArray: ['OFFSHORE'],
       tab: null,
       items: [
         'Details', 'Contacts', 'Ministry Notes', 'History', 'Moves', 'Funding'
@@ -245,7 +245,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(notificationsStore, ['notification']),
     notesLoading() {
       return this.noteRequestCount > 0;
@@ -337,7 +337,9 @@ export default {
     },
     canEditSchoolDetails() {
       if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
+        return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
+      } else if(this.school.schoolCategoryCode && this.offshoreArray.includes(this.school.schoolCategoryCode)) {
+        return this.OFFSHORE_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
