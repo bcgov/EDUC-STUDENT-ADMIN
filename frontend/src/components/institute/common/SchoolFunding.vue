@@ -250,13 +250,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['fundingGroups']), 
+    ...mapState(appStore, ['activeFundingGroups']),
     ...mapState(instituteStore, ['gradeCodes']),
   },
   mounted() {
     instituteStore().getAllGradeCodes();
     appStore().getCodes().then(() => {
-      this.schoolFundingGroups = this.fundingGroups;
+      this.schoolFundingGroups = this.activeFundingGroups;
       this.getHistoricalCollectionsForSchool();
       this.loadSchoolsFundingData();
     });

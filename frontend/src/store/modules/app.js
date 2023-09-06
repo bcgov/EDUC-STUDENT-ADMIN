@@ -1,7 +1,7 @@
 import { REQUEST_TYPES } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import {defineStore} from 'pinia';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate, LocalDateTime} from '@js-joda/core';
 export const appStore = defineStore('app', {
   namespaced: true,
   state: () => ({
@@ -30,6 +30,9 @@ export const appStore = defineStore('app', {
     fundingGroupsMap: new Map(),
     fundingGroups: []
   }),
+  getters: {
+    activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString())
+  },
   actions: {
     async setConfig(config){
       this.config = config;
