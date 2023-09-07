@@ -57,13 +57,10 @@
           </v-col>
         </v-row>
         <v-row
-          v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)"
+          v-if="!schoolContactType.publiclyAvailable"
           cols="2"
         >
-          <v-col
-            v-if="schoolContactType.schoolContactTypeCode === SCHOOL_CONTACT_TYPES.SAFE_COORD"
-            cols="12"
-          >
+          <v-col cols="12">
             <v-alert
               :id="`publiclyAvailableAlert${schoolContactType.label}`"
               color="#003366"
@@ -76,6 +73,11 @@
               </p>
             </v-alert>
           </v-col>
+        </v-row>
+        <v-row
+          v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)"
+          cols="2"
+        >
           <v-col
             v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)"
             :key="contact.schoolId"
@@ -199,6 +201,7 @@ export default {
       if (!this.schoolContactTypeCodes) {
         await this.loadSchoolContactTypeCodes();
       }
+
       if (value?.schoolCategoryCode === 'OFFSHORE') {
         this.schoolContactTypes = this.offshoreSchoolContacts;
       } else if (value?.schoolCategoryCode === 'INDEPEND') {
@@ -206,15 +209,17 @@ export default {
       } else {
         this.schoolContactTypes = this.regularSchoolContactTypes;
       }
+
+      this.schoolContactTypes.sort((schoolContactA, schoolContactB) => schoolContactA.displayOrder - schoolContactB.displayOrder);
     }
   },
   created() {
     this.getThisSchoolsContacts();
   },
   methods: {
-    loadSchoolContactTypeCodes() {
+    async loadSchoolContactTypeCodes() {
       this.loadingCount += 1;
-      instituteStore().getSchoolContactTypeCodes()
+      await instituteStore().getSchoolContactTypeCodes()
         .catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available School Contact Type Codes. Please try again later.');

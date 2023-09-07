@@ -156,19 +156,19 @@
           </v-row>
           <v-row
             v-if="!districtContactType.publiclyAvailable"
-            no-gutters
+            cols="2"
           >
-            <v-col>
+            <v-col cols="12">
               <v-alert
-                style="background-color: #003366"
-                color="white"
+                :id="`publiclyAvailableAlert${districtContactType.label}`"
+                color="#003366"
                 density="compact"
-                variant="text"
                 type="info"
-                width="50vw"
+                variant="tonal"
               >
-                Contacts of this type are only available to the
-                ministry and not available to public.
+                <p>
+                  Contacts of this type are only available to the ministry and not available to public.
+                </p>
               </v-alert>
             </v-col>
           </v-row>
