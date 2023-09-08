@@ -344,7 +344,7 @@ export default {
       return this.SCHOOL_ADMIN_ROLE;
     },
     canViewFundingTab() {
-      return this.independentArray.includes(this.school.schoolCategoryCode);
+      return this.independentArray.includes(this.school.schoolCategoryCode) && (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE);
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
