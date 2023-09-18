@@ -45,7 +45,8 @@
                   item-value="districtId"
                   item-title="districtNumberName"
                   variant="underlined"
-                  :items="getDistrictNames()"
+                  :items="filteredDistrictNames"
+                  :disabled="schoolDistrictDisabled"
                   clearable
                   @update:model-value="schoolDistrictChanged"
                 />
@@ -532,6 +533,7 @@ export default {
         {districtRegionCode: 'PSI', schoolCategory: 'POST_SEC'},
         {districtRegionCode: 'YUKON', schoolCategory: 'YUKON'}
       ],
+      schoolDistrictDisabled: false,
       schoolCategoryDisabled: false,
       newSchool: {
         districtID: null,
@@ -582,6 +584,12 @@ export default {
       }
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode => this.activeFacilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       return sortBy(facilityTypes, ['displayOrder']);
+    },
+    filteredDistrictNames() {
+      if (this.isOffshoreOnlyUser()) {
+        return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
+      }
+      return this.districtNames;
     },
     schoolCategoryTypeCodes() {
       if (this.isIndependentOnlyUser()) {
@@ -635,16 +643,19 @@ export default {
     instStore.getAllActiveCountryCodes();
     instStore.getSchoolCategoryFacilityTypesMap();
     instStore.getSchoolReportingRequirementTypeCodes();
+    this.preselectSchoolDistrict();
   },
   methods: {
-    getDistrictNames() {
-      if(this.isOffshoreOnlyUser()) {
-        return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
-      } 
-      return this.districtNames
-    },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
+    },
+    preselectSchoolDistrict() {
+      if (this.filteredDistrictNames.length !== 1) {
+        return;
+      }
+      this.newSchool.districtID = this.filteredDistrictNames[0].districtId;
+      this.schoolDistrictDisabled = true;
+      this.schoolDistrictChanged();
     },
     constrainSchoolCategoryByDistrict(districtRegionCode) {
       const schoolCategory = this.districtSchoolCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
