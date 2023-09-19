@@ -349,7 +349,7 @@
                   <v-select
                     v-else
                     v-model="schoolDetailsCopy.grades"
-                    :items="gradeCodes"
+                    :items="filteredGradeOptions"
                     item-value="schoolGradeCode"
                     item-title="label"
                     label="Grades Offered"
@@ -1209,7 +1209,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
-    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes', 'countryCodes', 'schoolCategoryFacilityTypesMap']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes', 'countryCodes', 'schoolCategoryFacilityTypesMap', 'gradeOptions']),
     ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
       return this.userInfo;
@@ -1245,6 +1245,12 @@ export default {
     },
     isGradeOfferedUpdateAllowed() {
       return this.school.schoolCategoryCode === 'POST_SEC' || this.school.schoolCategoryCode === 'EAR_LEARN';
+    },
+    filteredGradeOptions(){
+      if(!this.independentArray.includes(this.school.schoolCategoryCode)){
+        return this.gradeOptions.filter(gradeObj => gradeObj.schoolGradeCode !== 'KINDHALF');
+      }
+      return this.gradeOptions;
     },
     schoolReportingRequirementType() {
       const code = this.school.schoolReportingRequirementCode;

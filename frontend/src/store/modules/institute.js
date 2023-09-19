@@ -33,7 +33,8 @@ export const instituteStore = defineStore('institute', {
     regularSchoolContactTypes: state => state.schoolContactTypeCodes?.filter(type => !type.indOnly && !type.offshoreOnly),
     independentAuthorityAuthorityContacts: state => state.authorityContactTypeCodes?.filter(type => !type.offshoreOnly),
     offshoreAuthorityContacts: state => state.authorityContactTypeCodes?.filter(type => !type.indOnly),
-    regularAuthorityContactTypes: state => state.authorityContactTypeCodes?.filter(type => !type.indOnly && !type.offshoreOnly)
+    regularAuthorityContactTypes: state => state.authorityContactTypeCodes?.filter(type => !type.indOnly && !type.offshoreOnly),
+    gradeOptions: state => state.gradeCodes?.filter(grade => !['ELEMUNGR', 'SECUNGR'].includes(grade.schoolGradeCode))
   },
   actions: {
     async setFacilityTypeCodes(facilityTypeCodes) {
