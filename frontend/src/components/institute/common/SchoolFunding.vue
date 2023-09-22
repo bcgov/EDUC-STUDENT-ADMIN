@@ -20,7 +20,7 @@
       v-else
       no-gutters
     >
-      <v-col cols="7">
+      <v-col>
         <v-row>
           <v-col>
             <h3 class="subHeading pt-2 pb-8">
@@ -79,6 +79,7 @@
                   <v-row
                     v-else-if="header.value === 'actions' && !isEditing"
                     no-gutters
+                    class="flex-nowrap"
                   >
                     <v-col>
                       <v-btn
@@ -100,8 +101,9 @@
                   <v-row
                     v-else-if="header.value === 'actions' && isEditing && hoveredOveredRowID === item.item.raw.schoolGradeCode"
                     no-gutters
+                    class="flex-nowrap"
                   >
-                    <v-col cols="6">
+                    <v-col class="pa-2">
                       <PrimaryButton         
                         id="cancel-action"
                         class="pr-4"
@@ -111,7 +113,7 @@
                         @click-action="cancel"
                       />
                     </v-col>
-                    <v-col cols="6">
+                    <v-col class="pa-2">
                       <PrimaryButton           
                         id="save-action"
                         short
@@ -122,7 +124,7 @@
                     </v-col>
                   </v-row>
                   <span v-else-if="header.value === 'schoolFundingGroupCode'">{{ item.item.raw['fundingGroupLabel'] }}</span>
-                  <span v-else>{{ item.item.raw[header.value] ? item.item.raw[header.value] : '-' }}</span>
+                  <span v-else>{{ item.item.raw[header.value] ? item.item.raw[header.value] : '' }}</span>
                 </td>
               </tr>
             </template>
@@ -130,10 +132,7 @@
         </v-form>
       </v-col>
 
-      <v-col
-        cols="5"
-        class="pl-5 pr-1"
-      >
+      <v-col class="pl-5 pr-1" >
         <h3 class="subHeading pt-2 pb-2">
           Historic Funding Configurations
         </h3>
@@ -148,7 +147,7 @@
               item-title="displayDate"
               class="mt-5"
               variant="underlined"
-              label="Select Historic Collection"
+              label="Select Collection"
               @update:modelValue="getSnapshotData($event)"
             />
           </v-col>
@@ -198,7 +197,7 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import {appStore} from '@/store/modules/app';
 import {instituteStore} from '@/store/modules/institute';
 import AddSchoolFunding from '@/components/institute/common/AddSchoolFunding.vue';
-import {sortBy} from 'lodash';
+import {sortBy, orderBy} from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
   
 export default {
@@ -295,7 +294,7 @@ export default {
             collection.formattedCollectionOpenDate = this.formatDate(collection.collectionOpenDate);
             collection.displayDate = this.formatDateYear(collection.collectionOpenDate) + ' - ' + this.capitalize(collection.collectionTypeCode.toLowerCase());
           });
-          this.pastCollections = sortBy(this.pastCollections, ['formattedCollectionOpenDate']);
+          this.pastCollections = orderBy(this.pastCollections, ['formattedCollectionOpenDate'], ['desc']);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
