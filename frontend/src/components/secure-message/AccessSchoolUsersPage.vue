@@ -117,7 +117,7 @@
           v-model="searchFilter.roleName"
           clearable
           variant="underlined"
-          :items="schoolRoles"
+          :items="filteredSchoolRoles"
           item-title="label"
           item-value="edxRoleCode"
           label="Role"
@@ -174,7 +174,7 @@
           :user-roles="user.edxUserSchools[0].edxUserSchoolRoles"
           :user="user"
           :institute-code="schoolID"
-          :institute-roles="schoolRoles"
+          :institute-roles="filteredSchoolRoles"
           institute-type-code="SCHOOL"
           institute-type-label="School"
           @refresh="getUsersData"
@@ -246,7 +246,7 @@
         <v-divider />
         <v-card-text>
           <InviteUserPage
-            :user-roles="schoolRoles"
+            :user-roles="filteredSchoolRoles"
             :institute-code="schoolID"
             institute-type-code="SCHOOL"
             institute-type-label="School"
@@ -278,6 +278,7 @@ import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import { ROLE } from '@/utils/constants/Roles';
+import { PERMISSION } from '@/utils/constants/Permission';
 
 export default {
   name: 'AccessUsersPage',
@@ -310,12 +311,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['schoolMap']),
+    ...mapState(appStore, ['schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     hasAdminUsers() {
       return this.users.filter(user => {
         return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === ROLE.EDX_SCHOOL_ADMIN));
       })?.length > 0;
+    },
+    filteredSchoolRoles() {
+      return this.config.DISABLE_SDC_FUNCTIONALITY ? this.schoolRoles.filter(role => role.edxRoleCode !== PERMISSION.STUDENT_DATA_COLLECTION) : this.schoolRoles;
     }
   },
   async beforeMount() {

@@ -12,7 +12,8 @@ async function getConfig(req, res) {
   const frontConfig = {
     BANNER_ENVIRONMENT: frontendConfig.bannerEnvironment,
     BANNER_COLOR: frontendConfig.bannerColor,
-    WEB_SOCKET_URL: frontendConfig.webSocketURL
+    WEB_SOCKET_URL: frontendConfig.webSocketURL,
+    DISABLE_SDC_FUNCTIONALITY: frontendConfig.disableSdcFunctionality
   };
   return res.status(HttpStatus.OK).json(frontConfig);
 }
