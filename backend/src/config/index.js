@@ -176,7 +176,8 @@ nconf.defaults({
   frontendConfig: {
     bannerEnvironment: process.env.BANNER_ENVIRONMENT,
     bannerColor: process.env.BANNER_COLOR,
-    webSocketURL: process.env.WEB_SOCKET_URL
+    webSocketURL: process.env.WEB_SOCKET_URL,
+    disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY
   },
   sdc: {
     rootURL: process.env.SDC_API_URL,

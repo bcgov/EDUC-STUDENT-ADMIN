@@ -210,6 +210,7 @@ import SchoolFunding from './common/SchoolFunding.vue';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -247,6 +248,7 @@ export default {
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(notificationsStore, ['notification']),
+    ...mapState(appStore, ['config']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -344,7 +346,7 @@ export default {
       return this.SCHOOL_ADMIN_ROLE;
     },
     canViewFundingTab() {
-      return this.independentArray.includes(this.school.schoolCategoryCode) && (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE);
+      return this.independentArray.includes(this.school.schoolCategoryCode) && (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
