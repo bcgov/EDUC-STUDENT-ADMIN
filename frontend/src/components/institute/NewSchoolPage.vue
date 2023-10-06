@@ -702,11 +702,11 @@ export default {
         lastName: this.rules
           .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.email], message),
         email: v => {
-          const reqFieldsValid = this.rules
+          const requiredFieldsValid = this.rules
             .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.lastName], message)(v);
 
-          if (reqFieldsValid !== true) {
-            return reqFieldsValid;
+          if (requiredFieldsValid !== true) {
+            return requiredFieldsValid;
           }
           return this.rules.email()(v);
         }
