@@ -464,6 +464,49 @@
                 </v-row>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <h3>Initial EDX User</h3>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="initialUser.firstName"
+                  class="pt-0 pb-5"
+                  :rules="[userFieldRules().firstName]"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="First name"
+                  hide-details="auto"
+                  @update:model-value="validateForm"
+                />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="initialUser.lastName"
+                  class="pt-0 pb-5"
+                  :rules="[userFieldRules().lastName]"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="Last Name"
+                  hide-details="auto"
+                  @update:model-value="validateForm"
+                />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="initialUser.email"
+                  class="pt-0 pb-5"
+                  :rules="[userFieldRules().email]"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="Email Address"
+                  hide-details="auto"
+                  @update:model-value="validateForm"
+                />
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-form>
@@ -564,6 +607,11 @@ export default {
         physicalAddrCountry: null,
         physicalAddrPostal: null,
       },
+      initialUser: {
+        firstName: '',
+        lastName: '',
+        email: ''
+      },
       rules: Rules,
       newSchoolOpenDatePicker: null,
       sameAsMailingCheckbox: true,
@@ -646,6 +694,24 @@ export default {
     this.preselectSchoolDistrict();
   },
   methods: {
+    userFieldRules() {
+      const message = 'Please fulfill all initial user fields.';
+      return {
+        firstName:  this.rules
+          .requiredWithOtherFieldValues([this.initialUser?.lastName, this.initialUser?.email], message),
+        lastName: this.rules
+          .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.email], message),
+        email: v => {
+          const reqFieldsValid = this.rules
+            .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.lastName], message)(v);
+
+          if (reqFieldsValid !== true) {
+            return reqFieldsValid;
+          }
+          return this.rules.email()(v);
+        }
+      };
+    },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
     },
