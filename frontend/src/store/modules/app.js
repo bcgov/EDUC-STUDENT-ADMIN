@@ -145,7 +145,7 @@ export const appStore = defineStore('app', {
           const response = await ApiService.getSchoolApiMincodeSchoolNames();
           await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(response.data);
         }
-        if(this.fundingGroupsMap.size === 0) {
+        if(this.fundingGroupsMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
           const response = await ApiService.getAllFundingGroups();
           await this.setFundingGroups(response.data);
         }
@@ -175,8 +175,10 @@ export const appStore = defineStore('app', {
         const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
         await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(responseSchoolApiMin.data);
 
-        const responseFunding = await ApiService.getAllFundingGroups();
-        await this.setFundingGroups(responseFunding.data);
+        if(!this.config.DISABLE_SDC_FUNCTIONALITY) {
+          const responseFunding = await ApiService.getAllFundingGroups();
+          await this.setFundingGroups(responseFunding.data);
+        }
       }
     },
   },
