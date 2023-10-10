@@ -6,7 +6,7 @@ const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
-const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
+const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
 const log = require('../logger');
 
@@ -497,6 +497,7 @@ async function checkIfPrimaryCodeExists(req,res, token, instituteType, institute
 
 async function districtUserActivationInvite(req, res) {
   const token = utils.getBackendToken(req);
+  const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
   if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
@@ -510,7 +511,8 @@ async function districtUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate ? LocalDate.parse(req.body.edxUserExpiryDate).atStartOfDay().format(formatter) : null
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -536,7 +538,8 @@ async function schoolUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -552,6 +555,7 @@ async function updateEdxUserSchoolRoles(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
     let selectedUserSchools = edxUser.edxUserSchools.filter(school => school.schoolID === req.body.params.schoolID);
@@ -580,6 +584,7 @@ async function updateEdxUserSchoolRoles(req, res) {
 
     selectedUserSchool.updateDate = null;
     selectedUserSchool.createDate = null;
+    selectedUserSchool.expiryDate = req.body.params.expiryDate ? LocalDate.parse(req.body.params.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -593,6 +598,7 @@ async function updateEdxUserDistrictRoles(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
     let selectedUserDistricts = edxUser.edxUserDistricts.filter(district => district.districtID === req.body.params.districtId);
@@ -621,6 +627,7 @@ async function updateEdxUserDistrictRoles(req, res) {
 
     selectedUserDistrict.updateDate = null;
     selectedUserDistrict.createDate = null;
+    selectedUserSchool.expiryDate = req.body.params.expiryDate ? LocalDate.parse(req.body.params.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
