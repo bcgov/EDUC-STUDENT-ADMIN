@@ -363,9 +363,6 @@ export default {
       }
       return '';
     },
-    formatExpiryDate(date) {
-      return formatDate(date, this.from, this.pickerFormat);
-    },
     clickEditButton() {
       this.relinkState = false;
       this.deleteState = false;
