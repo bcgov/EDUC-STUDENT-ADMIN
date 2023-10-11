@@ -63,9 +63,7 @@ export default defineComponent({
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
       <v-text-field
-        class="datepicker-text-field"
         type="text"
-        height="26px"
         :model-value="value"
         :rules="rules"
         prepend-inner-icon="mdi-calendar"
@@ -82,18 +80,10 @@ export default defineComponent({
     </template>
   </VueDatePicker>
 </template>
-
 <style scoped>
-.datepicker-text-field > input {
-  height: 26px;
-  max-height: 26px;
-  min-height: 26px;
-}
-
 :deep(.dp__input_wrap) {
-   position: relative;
-   width: 100%;
+  position: relative;
+  width: 100%;
   box-sizing: border-box !important;
 }
-
 </style>
