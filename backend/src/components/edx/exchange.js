@@ -6,7 +6,7 @@ const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
-const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
+const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
 const log = require('../logger');
 
