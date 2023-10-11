@@ -84,6 +84,6 @@ export default defineComponent({
 :deep(.dp__input_wrap) {
   position: relative;
   width: 100%;
-  box-sizing: border-box !important;
+  box-sizing: border-box;
 }
 </style>
