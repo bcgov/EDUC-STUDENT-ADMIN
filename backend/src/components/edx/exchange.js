@@ -510,7 +510,8 @@ async function districtUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -536,7 +537,8 @@ async function schoolUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -580,6 +582,7 @@ async function updateEdxUserSchoolRoles(req, res) {
 
     selectedUserSchool.updateDate = null;
     selectedUserSchool.createDate = null;
+    selectedUserSchool.expiryDate = req.body.params.expiryDate;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -621,6 +624,7 @@ async function updateEdxUserDistrictRoles(req, res) {
 
     selectedUserDistrict.updateDate = null;
     selectedUserDistrict.createDate = null;
+    selectedUserDistrict.expiryDate = req.body.params.expiryDate;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
