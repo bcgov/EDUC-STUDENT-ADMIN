@@ -154,6 +154,7 @@
             id="accessExpiryDate"
             v-model="accessExpiryDate"
             label="Access Expiry Date"
+            model-type="yyyy-MM-dd'T'00:00:00"
             @clear-date="clearExpiryDate"
           />
           </div>
@@ -479,7 +480,7 @@ export default {
       });
 
       this.selectedRoles = [...mySelection];
-      this.accessExpiryDate = this.formatExpiryDate(this.user.edxUserSchools[0].expiryDate);
+      this.accessExpiryDate = this.user.edxUserSchools[0].expiryDate;
     },
     clearExpiryDate(){
       this.accessExpiryDate = null;
