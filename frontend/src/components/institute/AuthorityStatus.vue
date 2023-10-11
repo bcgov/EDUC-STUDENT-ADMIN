@@ -55,15 +55,13 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field
+                    <DatePicker
                       id="newOpenDateTextField"
                       v-model="newOpenDate"
-                      :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, `The open date must occur on or prior to ${currentDateFormatted}.`)]"
-                      class="pt-0 mt-0"
                       label="Open Date"
-                      :max="currentDate"
-                      type="date"
-                      clearable
+                      :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, true,`The open date must occur on or prior to ${currentDateFormatted}.`)]"
+                      :max-date="cutOffDate"
+                      model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
                     />
                   </v-col>
@@ -104,8 +102,9 @@
                   v-if="showAlertForFutureClosureDate"
                   color="#003366"
                   density="compact"
-                  text
                   type="info"
+                  class="px-2"
+                  variant="tonal"
                 >
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>
@@ -132,23 +131,20 @@
                   </ul>
                   <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
-                <v-row class="d-flex justify-start">
+                <v-row class="d-flex justify-start mt-3">
                   <h3>Select the closure date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field
+                    <DatePicker
                       id="newCloseDateTextField"
                       v-model="newCloseDate"
+                      label="Close Date"
                       :rules="[rules.required(),
                                rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
                                rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                      class="pt-0 mt-0"
-                      label="Close Date"
-                      :min="dateOfLastSchoolClosure"
-                      :show-current="dateOfLastSchoolClosure"
-                      type="date"
-                      clearable
+                      :min-date="dateOfLastSchoolClosure"
+                      model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
                     />
                   </v-col>
@@ -164,8 +160,9 @@
                   v-if="showAlertForFutureClosureDate"
                   color="#003366"
                   density="compact"
-                  text
                   type="info"
+                  class="px-2"
+                  variant="tonal"
                 >
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>
@@ -192,23 +189,20 @@
                   </ul>
                   <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
-                <v-row class="d-flex justify-start">
+                <v-row class="d-flex justify-start mt-3">
                   <h3>Select the new closing date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field
+                    <DatePicker
                       id="updatedCloseDateTextField"
                       v-model="updatedCloseDate"
-                      :min="dateOfLastSchoolClosure"
+                      label="Close Date"
                       :rules="[rules.required(),
                                rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
                                rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                      class="pt-0 mt-0"
-                      label="Close Date"
-                      variant="underlined"
-                      type="date"
-                      clearable
+                      :min-date="dateOfLastSchoolClosure"
+                      model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
                     />
                   </v-col>
@@ -243,12 +237,13 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
 import {formatDate, formatDisplayDate} from '@/utils/format';
-import {parseDate} from '@/utils/dateHelpers';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate, LocalDateTime} from '@js-joda/core';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'AuthorityStatus',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -283,16 +278,17 @@ export default {
     }
   },
   data() {
-    let currentLocalDate = LocalDate.now().toString();
+    let currentLocalDate = LocalDate.now();
     return {
-      currentDate: currentLocalDate,
+      currentDate: currentLocalDate.toString(),
+      cutOffDate: currentLocalDate.plusDays(1).toString(),
       isFormValid: false,
       processing: false,
       rules: Rules,
       action: this.defaultUpdateActionForAuthority(),
-      newOpenDate: currentLocalDate,
+      newOpenDate: currentLocalDate.atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')),
       newCloseDate: null,
-      updatedCloseDate: this.parseDate(formatDate(this.authorityCloseDate))
+      updatedCloseDate: this.authorityCloseDate
     };
   },
   computed: {
@@ -318,37 +314,13 @@ export default {
       if (!this.dateOfLastSchoolClosure) {
         return '';
       }
-      return this.formatDisplayDate(this.dateOfLastSchoolClosure);
+      return this.formatDate(this.dateOfLastSchoolClosure);
     },
     showAlertForFutureClosureDate() {
       if (!this.dateOfLastSchoolClosure) {
         return false;
       }
-      return LocalDate.now().isBefore(LocalDate.parse(this.dateOfLastSchoolClosure));
-    },
-    newOpenDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.newOpenDate);
-      },
-      set(newValue) {
-        this.newOpenDate = this.parseDate(newValue);
-      }
-    },
-    newCloseDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.newCloseDate);
-      },
-      set(newValue) {
-        this.newCloseDate = this.parseDate(newValue);
-      }
-    },
-    updatedCloseDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.updatedCloseDate);
-      },
-      set(newValue) {
-        this.updatedCloseDate = this.parseDate(newValue);
-      }
+      return LocalDateTime.now().isBefore(LocalDateTime.parse(this.dateOfLastSchoolClosure));
     },
     listOfOpenSchoolsByMincode() {
       return [...this.listOfOpenSchools].sort((schoolA, schoolB) => {
@@ -360,24 +332,6 @@ export default {
         return schoolA.mincode.localeCompare(schoolB.mincode);
       });
     },
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'newOpenDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'newCloseDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'updatedCloseDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
   },
   mounted() {
     this.validateForm();
@@ -394,15 +348,6 @@ export default {
         return '';
       }
     },
-    saveNewOpenDate(date) {
-      this.$refs.newOpenDateFilter.save(date);
-    },
-    saveNewCloseDate(date) {
-      this.$refs.newCloseDateFilter.save(date);
-    },
-    saveUpdatedCloseDate(date) {
-      this.$refs.updatedCloseDateFilter.save(date);
-    },
     closeEditAuthorityStatus() {
       this.resetForm();
       this.$emit('authorityStatus:closeEditAuthorityStatusPage');
@@ -416,20 +361,20 @@ export default {
       switch (this.action) {
       case 'setOpenDate':
         updatedAuthorityDates = {
-          openedDate: this.newOpenDateFormatted,
+          openedDate: this.newOpenDate,
           closedDate: null,
         };
         break;
       case 'setCloseDate':
         updatedAuthorityDates = {
-          openedDate: this.parseDate(formatDate(this.authorityOpenDate)),
-          closedDate: this.newCloseDateFormatted
+          openedDate: this.authorityOpenDate,
+          closedDate: this.newCloseDate
         };
         break;
       case 'updateCloseDate':
         updatedAuthorityDates = {
-          openedDate: this.parseDate(formatDate(this.authorityOpenDate)),
-          closedDate: this.updatedCloseDateFormatted,
+          openedDate: this.authorityOpenDate,
+          closedDate: this.updatedCloseDate,
         };
         break;
       default:
@@ -451,8 +396,7 @@ export default {
       this.isFormValid = isValid.valid;
     },
     formatDate,
-    formatDisplayDate,
-    parseDate
+    formatDisplayDate
   }
 };
 </script>

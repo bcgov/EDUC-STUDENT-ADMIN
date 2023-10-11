@@ -47,14 +47,13 @@
             </v-row>
             <v-row>
               <v-col cols="4">
-                <v-text-field
+                <DatePicker
                   id="moveDateTextField"
                   v-model="moveSchoolObject.moveDate"
-                  :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
-                  class="pt-0"
                   label="Move Date"
-                  variant="underlined"
-                  type="date"
+                  :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
+                  @update:model-value="validateForm"
                 />
               </v-col>
               <v-col cols="4">
@@ -492,14 +491,16 @@ import * as Rules from '@/utils/institute/formRules';
 import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {isOpenNotClosingAuthority} from '@/utils/common';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'MoveSchoolPage',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -564,7 +565,6 @@ export default {
         moveDate: this.calculateDefaultMoveDate(),
       },
       rules: Rules,
-      moveDatePicker: null,
       sameAsMailingCheckbox: true,
       showAddress: false,
     };
@@ -720,9 +720,6 @@ export default {
       }
       return true;
     },
-    saveMoveSchoolDate(date) {
-      this.$refs.moveDateFilter.save(date);
-    },
     closeMoveSchoolPage() {
       this.$emit('moveSchool:closeMoveSchoolPage');
     },
@@ -746,7 +743,7 @@ export default {
         });
     },
     calculateDefaultMoveDate() {
-      return (LocalDate.now()).toString();
+      return (LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'))).toString();
     },
     schoolDistrictChanged() {
       this.schoolCategoryDisabled = false;

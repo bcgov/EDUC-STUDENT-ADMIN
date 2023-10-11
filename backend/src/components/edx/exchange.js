@@ -709,7 +709,7 @@ const createSearchParamObject = (key, value) => {
     valueType = VALUE_TYPE.UUID;
   } else if (key === 'createDate') {
     value.forEach((date, index) => {
-      value[index] = date + 'T00:00:00';
+      value[index] = date;
     });
     if (value.length === 1) {
       value.push(LocalDateTime.parse(value[0]).plusHours(23).plusMinutes(59).plusSeconds(59));

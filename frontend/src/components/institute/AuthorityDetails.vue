@@ -797,8 +797,8 @@
         :date-of-last-school-closure="closedDateOfLastClosingSchool"
         :list-of-open-schools="listOfOpenSchools"
         :list-of-closing-schools="listOfClosingSchools"
-        @updateAuthorityDates="handleUpdatesToAuthorityStatus"
-        @authorityStatus:closeEditAuthorityStatusPage="openAuthorityStatusEditCard = !openAuthorityStatusEditCard"
+        @update-authority-dates="handleUpdatesToAuthorityStatus"
+        @authority-status:close-edit-authority-status-page="openAuthorityStatusEditCard = !openAuthorityStatusEditCard"
       />
     </v-dialog>
   </v-form>
@@ -961,7 +961,7 @@ export default {
         }
       }).then(response => {
         this.listOfClosingSchools = response.data.content;
-        this.closedDateOfLastClosingSchool = response.data.content[0] ? response.data.content[0].closedDate.substring(0, 10) : null;
+        this.closedDateOfLastClosingSchool = response.data.content[0] ? response.data.content[0].closedDate : null;
       }).catch(error => {
         console.error(error);
         this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to find the closed date of the last closing school. Please try again later.');
@@ -1107,12 +1107,12 @@ export default {
     async handleUpdatesToAuthorityStatus(updatedDatesForAuthority) {
       await this.$nextTick();
       if (updatedDatesForAuthority.openedDate) {
-        this.authorityCopy.openedDate = updatedDatesForAuthority.openedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.authorityCopy.openedDate = updatedDatesForAuthority.openedDate;
       } else {
         this.authorityCopy.openedDate = null;
       }
       if (updatedDatesForAuthority.closedDate) {
-        this.authorityCopy.closedDate = updatedDatesForAuthority.closedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.authorityCopy.closedDate = updatedDatesForAuthority.closedDate;
       } else {
         this.authorityCopy.closedDate = null;
       }
