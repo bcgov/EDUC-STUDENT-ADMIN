@@ -97,15 +97,12 @@
                   </v-row>
                   <v-row>
                     <v-col cols="4">
-                      <v-text-field
+                      <DatePicker
                         id="newOpenDateTextField"
                         v-model="newOpenDate"
-                        :rules="[rules.required()]"
-                        class="pt-0 mt-0"
                         label="Open Date"
-                        variant="underlined"
-                        clearable
-                        type="date"
+                        :rules="[rules.required()]"
+                        model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
                       />
                     </v-col>
@@ -122,15 +119,12 @@
                   </v-row>
                   <v-row>
                     <v-col cols="4">
-                      <v-text-field
+                      <DatePicker
                         id="updatedOpenDateTextField"
                         v-model="updatedOpenDate"
-                        :rules="[rules.required()]"
-                        class="pt-0 mt-0"
                         label="Open Date"
-                        variant="underlined"
-                        clearable
-                        type="date"
+                        :rules="[rules.required()]"
+                        model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
                       />
                     </v-col>
@@ -147,15 +141,12 @@
                   </v-row>
                   <v-row>
                     <v-col cols="4">
-                      <v-text-field
+                      <DatePicker
                         id="newCloseDateTextField"
                         v-model="newCloseDate"
-                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
-                        class="pt-0 mt-0"
-                        variant="underlined"
                         label="Close Date"
-                        type="date"
-                        clearable
+                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
+                        model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
                       />
                     </v-col>
@@ -172,15 +163,12 @@
                   </v-row>
                   <v-row>
                     <v-col cols="6">
-                      <v-text-field
+                      <DatePicker
                         id="updatedCloseDateTextField"
                         v-model="updatedCloseDate"
-                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
-                        class="pt-0 mt-0"
                         label="Close Date"
-                        variant="underlined"
-                        type="date"
-                        clearable
+                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
+                        model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
                       />
                     </v-col>
@@ -215,12 +203,14 @@
 import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
-import {formatDate, formatDisplayDate} from '@/utils/format';
-import {findUpcomingDate, parseDate} from '@/utils/dateHelpers';
+import {formatDate} from '@/utils/format';
+import {findUpcomingDate} from '@/utils/dateHelpers';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'SchoolStatus',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -249,9 +239,9 @@ export default {
       rules: Rules,
       action: this.defaultUpdateActionForSchool(),
       newOpenDate: findUpcomingDate(7, 1).toString(),
-      updatedOpenDate: this.parseDate(formatDate(this.schoolOpenDate)),
+      updatedOpenDate: this.schoolOpenDate,
       newCloseDate: findUpcomingDate(6, 30).toString(),
-      updatedCloseDate: this.parseDate(formatDate(this.schoolCloseDate))
+      updatedCloseDate: this.schoolCloseDate
     };
   },
   computed: {
@@ -270,66 +260,11 @@ export default {
     displayOptionsForNeverOpenedSchoolStatus() {
       return this.schoolStatus === 'Never Opened';
     },
-    newOpenDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.newOpenDate);
-      },
-      set(newValue) {
-        this.newOpenDate = this.parseDate(newValue);
-      }
-    },
-    updatedOpenDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.updatedOpenDate);
-      },
-      set(newValue) {
-        this.updatedOpenDate = this.parseDate(newValue);
-      }
-    },
-    newCloseDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.newCloseDate);
-      },
-      set(newValue) {
-        this.newCloseDate = this.parseDate(newValue);
-      }
-    },
-    updatedCloseDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.updatedCloseDate);
-      },
-      set(newValue) {
-        this.updatedCloseDate = this.parseDate(newValue);
-      }
-    },
     openDateFormatted() {
       if (!this.schoolOpenDate) {
         return '';
       }
       return this.formatDate(this.schoolOpenDate);
-    }
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'newOpenDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'updatedOpenDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'newCloseDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'updatedCloseDate': {
-      handler() {
-        this.validateForm();
-      }
     }
   },
   mounted() {
@@ -352,18 +287,6 @@ export default {
         return '';
       }
     },
-    saveNewOpenDate(date) {
-      this.$refs.newOpenDateFilter.save(date);
-    },
-    saveUpdatedOpenDate(date) {
-      this.$refs.updatedOpenDateFilter.save(date);
-    },
-    saveNewCloseDate(date) {
-      this.$refs.newCloseDateFilter.save(date);
-    },
-    saveUpdatedCloseDate(date) {
-      this.$refs.updatedCloseDateFilter.save(date);
-    },
     closeEditSchoolStatus() {
       this.resetForm();
       this.$emit('schoolStatus:closeEditSchoolStatusPage');
@@ -382,26 +305,26 @@ export default {
         break;
       case 'setOpenDate':
         updatedSchoolDates = {
-          openedDate: this.newOpenDateFormatted,
+          openedDate: this.newOpenDate,
           closedDate: null,
         };
         break;
       case 'updateOpenDate':
         updatedSchoolDates = {
-          openedDate: this.updatedOpenDateFormatted,
+          openedDate: this.updatedOpenDate,
           closedDate: null,
         };
         break;
       case 'setCloseDate':
         updatedSchoolDates = {
-          openedDate: this.parseDate(formatDate(this.schoolOpenDate)),
-          closedDate: this.newCloseDateFormatted
+          openedDate: this.schoolOpenDate,
+          closedDate: this.newCloseDate
         };
         break;
       case 'updateCloseDate':
         updatedSchoolDates = {
-          openedDate: this.parseDate(formatDate(this.schoolOpenDate)),
-          closedDate: this.updatedCloseDateFormatted,
+          openedDate: this.schoolOpenDate,
+          closedDate: this.updatedCloseDate,
         };
         break;
       default:
@@ -418,9 +341,7 @@ export default {
       const isValid = await this.$refs.schoolStatusForm.validate();
       this.isFormValid = isValid.valid;
     },
-    formatDate,
-    formatDisplayDate,
-    parseDate
+    formatDate
   }
 };
 </script>

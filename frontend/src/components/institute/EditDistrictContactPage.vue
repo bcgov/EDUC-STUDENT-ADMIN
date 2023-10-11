@@ -114,29 +114,25 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editDistrictContactEffectiveDateTextField"
                   v-model="editContact.effectiveDate"
-                  :rules="[rules.required()]"
-                  class="pt-0 mt-0"
                   label="Start Date"
-                  variant="underlined"
-                  type="date"
-                  clearable
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearEffectiveDate"
                 />
               </v-col>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editDistrictContactExpiryDateTextField"
                   v-model="editContact.expiryDate"
-                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                  class="pt-0 mt-0"
                   label="End Date"
-                  variant="underlined"
-                  clearable
-                  type="date"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearExpiryDate"
                 />
               </v-col>
             </v-row>
@@ -171,14 +167,14 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {formatDate, formatDisplayDate} from '@/utils/format';
-import {parseDate} from '@/utils/dateHelpers';
 import {authStore} from '@/store/modules/auth';
 import _ from 'lodash';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'EditDistrictContactPage',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -199,48 +195,28 @@ export default {
   emits: ['edit-district-contact:cancel-edit-district-contact-page', 'edit-district-contact:edit-district-contact-success'],
   data() {
     let clonedContact = _.cloneDeep(this.contact);
-    clonedContact.effectiveDate = this.parseDate(formatDate(clonedContact.effectiveDate));
-    clonedContact.expiryDate = this.parseDate(formatDate(clonedContact.expiryDate));
     return {
       isFormValid: false,
       processing: false,
       editContact: clonedContact,
-      rules: Rules,
-      editDistrictContactEffectiveDatePicker: null,
-      editDistrictContactExpiryDatePicker: null
+      rules: Rules
     };
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    districtContactEffectiveDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.effectiveDate);
-      },
-      set(newValue) {
-        this.editContact.effectiveDate = this.parseDate(newValue);
-      }
-    },
-    districtContactExpiryDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.expiryDate);
-      },
-      set(newValue) {
-        this.editContact.expiryDate = this.parseDate(newValue);
-      }
-    }
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'editContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
   },
   mounted() {
     this.validateForm();
   },
   methods: {
+    clearEffectiveDate() {
+      this.editContact.effectiveDate = null;
+      this.validateForm();
+    },
+    clearExpiryDate() {
+      this.editContact.expiryDate = null;
+      this.validateForm();
+    },
     cancelEditDistrictContactPage() {
       this.resetForm();
       this.$emit('edit-district-contact:cancel-edit-district-contact-page');
@@ -265,12 +241,6 @@ export default {
           this.processing = false;
         });
     },
-    saveEditDistrictContactEffectiveDate(date) {
-      this.$refs.editDistrictContactEffectiveDateFilter.save(date);
-    },
-    saveEditDistrictContactExpiryDate(date) {
-      this.$refs.editDistrictContactExpiryDateFilter.save(date);
-    },
     resetForm() {
       this.$refs.editDistrictContactForm.reset();
     },
@@ -278,10 +248,7 @@ export default {
       const isValid = await this.$refs.editDistrictContactForm.validate();
       this.isFormValid = isValid.valid;
     },
-    isNumber,
-    formatDate,
-    formatDisplayDate,
-    parseDate
+    isNumber
   }
 };
 </script>

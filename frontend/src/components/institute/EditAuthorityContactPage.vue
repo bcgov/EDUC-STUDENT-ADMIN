@@ -105,29 +105,25 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editAuthorityContactEffectiveDateTextField"
                   v-model="editContact.effectiveDate"
-                  :rules="[rules.required()]"
-                  class="pt-0 mt-0"
                   label="Start Date"
-                  variant="underlined"
-                  clearable
-                  type="date"
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearEffectiveDate"
                 />
               </v-col>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editAuthorityContactExpiryDateTextField"
                   v-model="editContact.expiryDate"
-                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                  class="pt-0 mt-0"
-                  variant="underlined"
                   label="End Date"
-                  clearable
-                  type="date"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearExpiryDate"
                 />
               </v-col>
             </v-row>
@@ -162,14 +158,14 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {formatDate, formatDisplayDate} from '@/utils/format';
-import {parseDate} from '@/utils/dateHelpers';
 import {authStore} from '@/store/modules/auth';
 import _ from 'lodash';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'EditAuthorityContactPage',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -189,40 +185,28 @@ export default {
   },
   data() {
     let clonedContact = _.cloneDeep(this.contact);
-    clonedContact.effectiveDate = this.parseDate(formatDate(clonedContact.effectiveDate));
-    clonedContact.expiryDate = this.parseDate(formatDate(clonedContact.expiryDate));
     return {
       isFormValid: false,
       processing: false,
       editContact: clonedContact,
-      rules: Rules,
-      editAuthorityContactEffectiveDatePicker: null,
-      editAuthorityContactExpiryDatePicker: null
+      rules: Rules
     };
+  },
+  computed: {
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
   },
   mounted() {
     this.validateForm();
   },
-  computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    authorityContactEffectiveDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.effectiveDate);
-      },
-      set(newValue) {
-        this.editContact.effectiveDate = this.parseDate(newValue);
-      }
-    },
-    authorityContactExpiryDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.expiryDate);
-      },
-      set(newValue) {
-        this.editContact.expiryDate = this.parseDate(newValue);
-      }
-    }
-  },
   methods: {
+    clearEffectiveDate() {
+      this.editContact.effectiveDate = null;
+      this.validateForm();
+    },
+    clearExpiryDate() {
+      this.editContact.expiryDate = null;
+      this.validateForm();
+    },
     cancelEditAuthorityContactPage() {
       this.resetForm();
       this.$emit('editAuthorityContact:cancelEditAuthorityContactPage');
@@ -254,18 +238,7 @@ export default {
       const isValid = await this.$refs.editAuthorityContactForm.validate();
       this.isFormValid = isValid.valid;
     },
-    isNumber,
-    formatDate,
-    formatDisplayDate,
-    parseDate
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'editContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
+    isNumber
   }
 };
 </script>

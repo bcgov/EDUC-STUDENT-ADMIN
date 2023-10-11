@@ -187,16 +187,14 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0 pl-12 pr-12"
+                  class="pl-12 pr-12 pt-0"
                 >
-                  <v-text-field
+                  <DatePicker
                     id="messageDateTextField"
                     v-model="messageDate"
-                    variant="underlined"
                     label="Message Date"
-                    type="date"
-                    clearable
-                    @keyup.enter="filterRequests()"
+                    model-type="yyyy-MM-dd'T'00:00:00"
+                    @keyup.enter="enterPushed()"
                   />
                 </v-col>
               </v-row>
@@ -528,10 +526,12 @@ import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'ExchangeInbox',
   components: {
+    DatePicker,
     PrimaryButton,
     NewMessagePage
   },
@@ -548,8 +548,6 @@ export default {
       statusSelectFilter: null,
       statusRadioGroup: 'statusFilterAllActive',
       statusRadioGroupEnabled: true,
-      messageDateFilter: false,
-      activeMessageDatePicker: null,
       messageDate: null,
       subjectFilter: '',
       messageIDFilter: '',
@@ -580,17 +578,12 @@ export default {
         {value: 50, title: '50'}
       ],
       loadingTableCount: 0,
-      dateMenu: false,
       headerSearchParams: {
         sequenceNumber: '',
         contact: '',
         subject: '',
         createDate: [],
         secureExchangeStatusCode: ''
-      },
-      headerSortParams: {
-        currentSort: 'createDate',
-        currentSortDir: true
       },
       exchanges: [],
       selectedExchanges: [],
@@ -665,9 +658,6 @@ export default {
       if (this.searchEnabled) {
         this.filterExchanges();
       }
-    },
-    openMessageDatePicker() {
-      this.$refs.messageDatePicker.openMenu();
     },
     messageSent() {
       this.newMessageSheet = !this.newMessageSheet;
@@ -746,7 +736,6 @@ export default {
       this.claimedByFilter = null;
       this.contactNameFilter = null;
       this.messageDate = null;
-      this.messageDateFilter = null;
       this.statusSelectFilter = null;
       if (runSearch) {
         this.resetPageNumber();

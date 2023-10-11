@@ -68,7 +68,6 @@ export default defineComponent({
         :rules="rules"
         prepend-inner-icon="mdi-calendar"
         :label="label"
-        density="compact"
         variant="underlined"
         placeholder="yyyy-mm-dd"
         :persistent-placeholder="true"
@@ -81,17 +80,10 @@ export default defineComponent({
     </template>
   </VueDatePicker>
 </template>
-
 <style scoped>
-.dp__main{
-  font-family: inherit;
-  user-select: auto;
-  box-sizing: border-box;
+:deep(.dp__input_wrap) {
   position: relative;
   width: 100%;
-}
-
-.v-input--density-compact{
-  --v-input-chips-margin-bottom: 0;
+  box-sizing: border-box;
 }
 </style>

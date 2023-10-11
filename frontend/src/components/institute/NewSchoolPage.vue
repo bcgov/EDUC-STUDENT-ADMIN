@@ -66,15 +66,12 @@
                 />
               </v-col>
               <v-col cols="4">
-                <v-text-field
+                <DatePicker
                   id="newSchoolOpenDateTextField"
                   v-model="newSchool.openedDate"
-                  :rules="[rules.required()]"
-                  class="pt-0 mt-0"
                   label="Open Date"
-                  variant="underlined"
-                  type="date"
-                  clearable
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -499,10 +496,12 @@ import {findUpcomingDate} from '@/utils/dateHelpers';
 import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'NewSchoolPage',
   components: {
+    DatePicker,
     PrimaryButton
   },
   mixins: [alertMixin],
@@ -565,7 +564,6 @@ export default {
         physicalAddrPostal: null,
       },
       rules: Rules,
-      newSchoolOpenDatePicker: null,
       sameAsMailingCheckbox: true,
       showAddress: false,
       addressButton: {
@@ -646,9 +644,6 @@ export default {
     this.preselectSchoolDistrict();
   },
   methods: {
-    openEffectiveDatePicker() {
-      this.$refs.newSchoolDatePicker.openMenu();
-    },
     preselectSchoolDistrict() {
       if (this.filteredDistrictNames.length !== 1) {
         return;

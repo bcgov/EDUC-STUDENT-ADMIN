@@ -1589,12 +1589,12 @@ export default {
     async handleUpdatesToSchoolStatus(updatedDatesForSchool) {
       await this.$nextTick();
       if (updatedDatesForSchool.openedDate) {
-        this.schoolDetailsCopy.openedDate = updatedDatesForSchool.openedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.schoolDetailsCopy.openedDate = updatedDatesForSchool.openedDate;
       } else {
         this.schoolDetailsCopy.openedDate = null;
       }
       if (updatedDatesForSchool.closedDate) {
-        this.schoolDetailsCopy.closedDate = updatedDatesForSchool.closedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.schoolDetailsCopy.closedDate = updatedDatesForSchool.closedDate;
       } else {
         this.schoolDetailsCopy.closedDate = null;
       }

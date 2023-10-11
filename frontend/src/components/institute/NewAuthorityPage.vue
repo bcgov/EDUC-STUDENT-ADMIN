@@ -31,20 +31,16 @@
                   variant="underlined"
                   :items="authorityTypes"
                   :rules="[rules.required()]"
-                  clearable
+                  :clearable="true"
                 />
               </v-col>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="newAuthorityOpenDateTextField"
                   v-model="newAuthority.openDate"
-                  :rules="[rules.required()]"
-                  class="mt-0"
-                  variant="underlined"
                   label="Open Date"
-                  :max="new Date(localDate.now().toString()).toISOString().substr(0, 10)"
-                  type="date"
-                  clearable
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -256,9 +252,9 @@
         id="newAuthorityPostBtn"
         text="Save"
         width="7rem"
-        @click-action="addNewAuthority"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="addNewAuthority"
       />
     </v-card-actions>
   </v-card>
@@ -272,21 +268,23 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'NewAuthorityPage',
   components: {
+    DatePicker,
     PrimaryButton
   },
   mixins: [alertMixin],
+  emits: ['newAuthority:closeNewAuthorityPage'],
   data() {
     return {
       isFormValid: false,
       processing: false,
-      localDate: LocalDate,
       newAuthority: {
         authorityName: null,
         authorityTypeCode: null,
@@ -308,7 +306,6 @@ export default {
         physicalAddrPostal: null,
       },
       rules: Rules,
-      newAuthorityOpenDatePicker: null,
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
       schoolOrganizationTypes: [],
@@ -323,15 +320,15 @@ export default {
       ],
     };
   },
-  mounted() {
-    this.validateForm();
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
     showPhysicalAddress() {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     }
+  },
+  mounted() {
+    this.validateForm();
   },
   created() {
     const instStore = instituteStore();
@@ -347,10 +344,7 @@ export default {
   },
   methods: {
     calculateDefaultOpenDate() {
-      return LocalDate.now().toString();
-    },
-    openDatePicker() {
-      this.$refs.newAuthorityDatePicker.openMenu();
+      return LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString();
     },
     closeNewAuthorityPage() {
       this.resetForm();
@@ -401,13 +395,4 @@ export default {
     font-size: medium !important;
     font-weight: bolder !important;
 }
-
-:deep(.dp__input) {
-    display: none;
-}
-
-:deep(.dp__icon) {
-    display: none;
-}
-
 </style>
