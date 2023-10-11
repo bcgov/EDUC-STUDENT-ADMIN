@@ -92,7 +92,8 @@
           class="pt-2"
           :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
         >
-          <v-chip-group v-if="!editState">
+        <div v-if="!editState">
+          <v-chip-group >
             <v-chip
               v-for="role in userRoles"
               :key="role.edxRoleCode"
@@ -101,8 +102,19 @@
               {{ getRoleLabel(role) }}
             </v-chip>
           </v-chip-group>
-          <v-list
-            v-else
+          <p 
+            v-if="getExpiryDate(user)"
+            class="expiry-date"
+          >
+            <v-icon size="large">
+              mdi-delete-clock-outline
+            </v-icon>
+            {{ formatExpiryDate(getExpiryDate(user)) }}
+          </p>
+        </div>
+          
+          <div v-else>
+            <v-list
             v-model:selected="selectedRoles"
             lines="two"
             return-object
@@ -137,6 +149,16 @@
               </v-list-item>
             </div>
           </v-list>
+
+          <DatePicker
+            id="accessExpiryDate"
+            v-model="accessExpiryDate"
+            label="Access Expiry Date"
+            model-type="yyyy-MM-dd'T'00:00:00"
+            @clear-date="clearExpiryDate"
+          />
+          </div>
+          
         </v-card-text>
         <Transition name="bounce">
           <v-card-text
@@ -252,10 +274,12 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import {formatDate} from '../../utils/format';
+import DatePicker from '../util/DatePicker.vue';
 
 export default {
   name: 'AccessUserCard',
-  components: {PrimaryButton},
+  components: {PrimaryButton, DatePicker},
   mixins: [alertMixin],
   props: {
     user: {
@@ -289,7 +313,10 @@ export default {
       deleteState: false,
       relinkState: false,
       isRelinking: false,
-      selectedRoles: []
+      selectedRoles: [],
+      accessExpiryDate: null,
+      from: 'uuuu-MM-dd\'T\'HH:mm:ss',
+      pickerFormat: 'uuuu-MM-dd'
     };
   },
   computed: {
@@ -322,6 +349,15 @@ export default {
     getButtonWidth() {
       return '7em';
     },
+    isDistrictUser(){
+      return this.instituteTypeCode === 'DISTRICT';
+    },
+    getExpiryDate(user){
+      if(!this.isDistrictUser()){
+        return user.edxUserSchools[0].expiryDate;
+      }
+      return user.edxUserDistricts[0].expiryDate;
+    },
     getRoleLabel(curRole) {
       if (this.instituteRoles.length > 0) {
         return this.instituteRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
@@ -343,6 +379,9 @@ export default {
       this.editState = false;
       this.deleteState = false;
       this.relinkState = !this.relinkState;
+    },
+    formatExpiryDate(date) {
+      return formatDate(date, this.from, this.pickerFormat);
     },
     clickActionRelinkButton() {
       this.isRelinking = true;
@@ -405,7 +444,8 @@ export default {
       const payload = {
         params: {
           edxUserID: this.user.edxUserID,
-          selectedRoles: this.selectedRoles
+          selectedRoles: this.selectedRoles,
+          expiryDate: this.accessExpiryDate
         }
       };
       let url = Routes.edx.EXCHANGE_ACCESS_ROLES_URL;
@@ -440,7 +480,11 @@ export default {
       });
 
       this.selectedRoles = [...mySelection];
-    }
+      this.accessExpiryDate = this.user.edxUserSchools[0].expiryDate;
+    },
+    clearExpiryDate(){
+      this.accessExpiryDate = null;
+    },
   }
 };
 </script>
@@ -469,6 +513,11 @@ export default {
     100% {
         transform: scale(1);
     }
+}
+
+.expiry-date {
+  color: grey;
+  text-align: right;
 }
 </style>
 

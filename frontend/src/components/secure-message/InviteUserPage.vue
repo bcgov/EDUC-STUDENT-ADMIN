@@ -114,6 +114,15 @@
                               </v-list>
                             </template>
                           </v-select>
+                          
+                          <DatePicker
+                            id="accessExpiryDate"
+                            v-model="accessExpiryDate"
+                            class="pb-3 mt-0 pt-0"
+                            label="Access Expiry Date"
+                            model-type="yyyy-MM-dd'T'00:00:00"
+                            @clear-date="clearExpiryDate"
+                          />
                         </v-card-text>
                       </v-col>
                     </v-row>
@@ -155,12 +164,14 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
+import DatePicker from '../util/DatePicker.vue';
 
 export default {
   name: 'InviteUserPage',
   components: {
     PrimaryButton,
     ConfirmationDialog,
+    DatePicker
   },
   mixins: [alertMixin],
   props: {
@@ -207,7 +218,8 @@ export default {
       processing: false,
       edxAdminUserCode: '',
       rolesHint: 'Pick the roles to be assigned to the new user',
-      emailHint: 'Valid Email Required'
+      emailHint: 'Valid Email Required',
+      accessExpiryDate: null
     };
   },
   mounted() {
@@ -286,7 +298,8 @@ export default {
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
-        edxActivationRoleCodes: this.edxActivationRoleCodes
+        edxActivationRoleCodes: this.edxActivationRoleCodes,
+        edxUserExpiryDate: this.accessExpiryDate
       };
       let url = null;
       if (this.instituteTypeCode === 'SCHOOL') {
@@ -315,6 +328,9 @@ export default {
     validateForm() {
       const isValid = this.$refs.newUserForm.validate();
       this.isValidForm = isValid.valid;
+    },
+    clearExpiryDate(){
+      this.accessExpiryDate = null;
     },
   }
 };
