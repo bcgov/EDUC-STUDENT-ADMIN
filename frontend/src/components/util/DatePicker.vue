@@ -29,7 +29,7 @@ export default defineComponent({
     },
     modelType: {
       type: String,
-      default: 'format'
+      required: true
     }
   },
   emits: ['update:modelValue', 'clearDate'],
@@ -43,17 +43,16 @@ export default defineComponent({
 
 <template>
   <VueDatePicker
-    class="v-input--horizontal"
     :model-value="modelValue"
     :enable-time-picker="false"
     :model-type="modelType"
-    format="yyyy-MM-dd"
-    preview-format="yyyy-MM-dd"
+    format="yyyy/MM/dd"
+    preview-format="yyyy/MM/dd"
     :text-input="{
       enterSubmit: true,
       tabSubmit: true,
       openMenu: true,
-      format: 'yyyy-MM-dd'
+      format: 'yyyy/MM/dd'
     }"
     :clearable="false"
     :min-date="minDate"
@@ -69,8 +68,7 @@ export default defineComponent({
         prepend-inner-icon="mdi-calendar"
         :label="label"
         variant="underlined"
-        placeholder="yyyy-mm-dd"
-        :persistent-placeholder="true"
+        placeholder="yyyy/mm/dd"
         :clearable="true"
         @input="onInput"
         @keydown.enter.prevent="onEnter"
