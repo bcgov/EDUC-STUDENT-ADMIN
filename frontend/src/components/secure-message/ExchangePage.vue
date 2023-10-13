@@ -144,7 +144,7 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-autocomplete
                     id="schoolName"
@@ -154,7 +154,8 @@
                     item-value="value"
                     item-title="text"
                     variant="underlined"
-                    clearable
+                    prepend-inner-icon="mdi-card-account-mail-outline"
+                    :clearable="true"
                     :items="contacts"
                   >
                     <template #selection="{ item }">
@@ -171,12 +172,12 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     id="subject-text-field"
                     v-model="subjectFilter"
-                    class="pt-0 mt-0 pl-9"
+                    class="pt-0 mt-0"
                     variant="underlined"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
@@ -187,7 +188,7 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pl-12 pr-12 pt-0"
+                  class="pt-0 px-7"
                 >
                   <DatePicker
                     id="messageDateTextField"
@@ -197,12 +198,10 @@
                     @keyup.enter="enterPushed()"
                   />
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-select
                     id="statusSelector"
@@ -241,12 +240,12 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     id="claimed-by-text-field"
                     v-model="claimedByFilter"
-                    class="pt-0 mt-0 pl-9"
+                    class="pt-0 mt-0"
                     label="Claimed By"
                     variant="underlined"
                     prepend-inner-icon="mdi-account-check-outline"
@@ -257,11 +256,11 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     v-model="messageIDFilter"
-                    class="pt-0 mt-0 pl-9 pr-9"
+                    class="pt-0 mt-0"
                     label="Message ID"
                     variant="underlined"
                     prepend-inner-icon="mdi-pound"
@@ -269,12 +268,10 @@
                     @keyup.enter="enterPushed()"
                   />
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     v-model="studentIDFilter"
@@ -520,13 +517,14 @@ import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
 import router from '@/router';
 import _, {isEmpty, omitBy} from 'lodash';
-import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
+import {ChronoUnit, LocalDateTime} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import DatePicker from '@/components/util/DatePicker.vue';
+import {formatDate} from '@/utils/format';
 
 export default {
   name: 'ExchangeInbox',
@@ -666,8 +664,8 @@ export default {
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
     getNumberOfDays(start) {
-      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('yyyy/MM/dd'));
-      const end_date = LocalDate.now();
+      const start_date = new LocalDateTime.parse(start);
+      const end_date = LocalDateTime.now();
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
@@ -677,9 +675,9 @@ export default {
     getContactLineItem(item) {
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${item?.createDate}`;
+        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${formatDate(item?.createDate)}`;
       case 'DISTRICT':
-        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${item?.createDate}`;
+        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${formatDate(item?.createDate)}`;
       }
     },
     getReviewer(reviewer) {
@@ -957,9 +955,23 @@ export default {
 }
 
 
-.containerSetup {
-    padding-right: 26em !important;
-    padding-left: 26em !important;
+.containerSetup{
+  padding-right: 32em !important;
+  padding-left: 32em !important;
+}
+
+@media screen and (max-width: 1950px) {
+  .containerSetup{
+    padding-right: 20em !important;
+    padding-left: 20em !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 4em !important;
+    padding-left: 4em !important;
+  }
 }
 
 :deep(.dp__input) {

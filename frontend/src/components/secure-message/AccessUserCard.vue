@@ -458,9 +458,9 @@ export default {
       }
       ApiService.apiAxios.post(url, payload)
         .then(() => {
-          this.setSuccessAlert('User roles have been updated.');
+          this.setSuccessAlert('User has been updated.');
         }).catch(error => {
-          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+          this.setFailureAlert('An error occurred while updating the user. Please try again later.');
           console.log(error);
         }).finally(() => {
           this.$emit('refresh');
