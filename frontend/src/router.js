@@ -43,7 +43,6 @@ import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictU
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage.vue';
 import DistrictList from '@/components/institute/DistrictList.vue';
 import DistrictDetailsPage from '@/components/institute/DistrictDetails.vue';
-import DistrictContactsPage from '@/components/institute/DistrictContacts.vue';
 import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
@@ -442,17 +441,6 @@ const router = createRouter({
           component: DistrictDetailsPage,
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
-            requiresAuth: true,
-            permission: 'SECURE_EXCHANGE'
-          }
-        },
-        {
-          path: 'districtContacts/:districtID',
-          name: 'districtContacts',
-          component: DistrictContactsPage,
-          props: true,
-          meta: {
-            pageTitle: PAGE_TITLES.DISTRICT_CONTACTS,
             requiresAuth: true,
             permission: 'SECURE_EXCHANGE'
           }
