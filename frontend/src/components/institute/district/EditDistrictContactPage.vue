@@ -151,16 +151,16 @@
         id="saveChangesToDistrictContactButton"
         text="Save"
         width="7rem"
-        @click-action="saveChangesToDistrictContact"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="saveChangesToDistrictContact"
       />
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
