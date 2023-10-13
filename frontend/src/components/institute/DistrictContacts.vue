@@ -85,7 +85,7 @@
         </v-col>
       </v-row>
       <v-row
-        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']"
+        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2', 'mb-3']"
         @keydown.enter="searchButtonClicked"
       >
         <v-col>
@@ -139,14 +139,14 @@
       <div
         v-for="districtContactType in districtContactTypes"
         :key="districtContactType.code"
-        class="mt-5"
+        class="pb-4"
       >
         <div v-if="hasContactsWhenFiltered(districtContactType)">
           <v-row
             class="mb-1"
             no-gutters
           >
-            <v-col>
+            <v-col class="pb-0">
               <h2 style="color:#1A5A96">
                 {{
                   districtContactType.label
@@ -158,7 +158,7 @@
             v-if="!districtContactType.publiclyAvailable"
             cols="2"
           >
-            <v-col cols="12">
+            <v-col class="pt-0" cols="12">
               <v-alert
                 :id="`publiclyAvailableAlert${districtContactType.label}`"
                 color="#003366"
@@ -174,12 +174,12 @@
           </v-row>
           <v-row
             v-if="hasContactsForThisType(districtContactType)"
-            class="mt-0 mb-0"
             cols="2"
           >
             <v-col
               v-for="contact in filteredDistrictContacts.get(districtContactType.districtContactTypeCode)"
               :key="contact.schoolId"
+              class="pt-0"
               cols="5"
               lg="4"
             >
@@ -196,7 +196,7 @@
             no-gutters
             cols="2"
           >
-            <v-col class="mt-2">
+            <v-col  class="pt-0">
               <p>No contacts of this type have been listed.</p>
             </v-col>
           </v-row>

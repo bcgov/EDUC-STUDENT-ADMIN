@@ -94,9 +94,10 @@
       <div
         v-for="authorityContactType in authorityContactTypes"
         :key="authorityContactType.code"
+        class="pb-4"
       >
         <v-row>
-          <v-col>
+          <v-col class="pb-0">
             <h2
               id="authorityTypeLabel"
               style="color:#1A5A96"
@@ -114,6 +115,7 @@
           <v-col
             v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)"
             :key="contact.independentAuthorityId"
+            class="pt-0"
             cols="5"
             lg="4"
           >
@@ -129,7 +131,7 @@
           v-else
           cols="2"
         >
-          <v-col>
+          <v-col class="pt-0">
             <p>No contacts of this type have been listed.</p>
           </v-col>
         </v-row>
