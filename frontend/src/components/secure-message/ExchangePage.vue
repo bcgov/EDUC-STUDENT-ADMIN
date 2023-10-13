@@ -517,13 +517,14 @@ import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
 import router from '@/router';
 import _, {isEmpty, omitBy} from 'lodash';
-import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
+import {ChronoUnit, LocalDateTime} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import DatePicker from '@/components/util/DatePicker.vue';
+import {formatDate} from '@/utils/format';
 
 export default {
   name: 'ExchangeInbox',
@@ -663,8 +664,8 @@ export default {
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
     getNumberOfDays(start) {
-      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('yyyy/MM/dd'));
-      const end_date = LocalDate.now();
+      const start_date = new LocalDateTime.parse(start);
+      const end_date = LocalDateTime.now();
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
@@ -674,9 +675,9 @@ export default {
     getContactLineItem(item) {
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${item?.createDate}`;
+        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${formatDate(item?.createDate)}`;
       case 'DISTRICT':
-        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${item?.createDate}`;
+        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${formatDate(item?.createDate)}`;
       }
     },
     getReviewer(reviewer) {
