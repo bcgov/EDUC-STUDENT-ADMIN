@@ -223,9 +223,9 @@
           id="newContactPostBtn"
           text="Okay"
           width="7rem"
-          @click-action="updateAuthorityDates"
           :disabled="!isFormValid"
           :loading="processing"
+          @click-action="updateAuthorityDates"
         />
       </v-card-actions>
     </v-form>

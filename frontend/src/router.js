@@ -47,7 +47,6 @@ import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
-import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -483,16 +482,6 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
         requiresAuth: true
-      }
-    },
-    {
-      path: '/authorityContacts/:authorityID',
-      name: 'authorityContacts',
-      props: true,
-      component: AuthorityContactsPage,
-      meta: {
-        pageTitle: PAGE_TITLES.AUTHORITY_CONTACTS,
-        requiresAuth: true,
       }
     },
     {

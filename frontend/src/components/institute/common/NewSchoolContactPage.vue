@@ -149,9 +149,9 @@
         id="newContactPostBtn"
         text="Save"
         width="7rem"
-        @click-action="addNewSchoolContact"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="addNewSchoolContact"
       />
     </v-card-actions>
   </v-card>
