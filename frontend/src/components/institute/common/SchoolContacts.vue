@@ -61,7 +61,10 @@
           v-if="!schoolContactType.publiclyAvailable"
           cols="2"
         >
-          <v-col class="pt-0" cols="12">
+          <v-col
+            class="pt-0"
+            cols="12"
+          >
             <v-alert
               :id="`publiclyAvailableAlert${schoolContactType.label}`"
               color="#003366"

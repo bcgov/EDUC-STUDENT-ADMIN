@@ -210,30 +210,6 @@
                     formatPhoneNumber(item.raw.phoneNumber)
                   }}</span>
                 </v-col>
-                <v-col class="d-flex justify-end">
-                  <v-tooltip bottom>
-                    <template #activator="{ on, props }">
-                      <v-btn
-                        id="authorityContacts"
-                        color="#003366"
-                        outlined
-                        v-bind="props"
-                        class="mt-0 pt-0 filterButton ml-2"
-                        style="text-transform: initial"
-                        @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
-                      >
-                        <v-icon
-                          color="white"
-                          style="margin-top: 0.07em"
-                          dark
-                        >
-                          mdi-account-multiple-outline
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>View Contacts</span>
-                  </v-tooltip>
-                </v-col>
               </v-row>
             </template>
 

@@ -3,7 +3,7 @@
     id="newContactVCard"
   >
     <v-card-title class="sheetHeader pt-1 pb-1">
-      New School Contact
+      New Authority Contact
     </v-card-title>
     <v-divider />
     <v-card-text>
@@ -15,48 +15,39 @@
           <v-col>
             <v-select
               id="newContactDropdown"
-              v-model="newContact.schoolContactTypeCode"
+              v-model="newContact.authorityContactTypeCode"
               :rules="[rules.required()]"
-              :items="schoolContactTypes"
+              :items="authorityContactTypes"
               item-title="label"
               variant="underlined"
               class="pt-0"
-              item-value="schoolContactTypeCode"
-              label="School Contact Type"
+              item-value="authorityContactTypeCode"
+              label="Authority Contact Type"
             />
             <v-text-field
               id="newContactFirstNameInput"
               v-model="newContact.firstName"
+              :rules="[rules.noSpecialCharactersContactName()]"
               variant="underlined"
               class="pt-0"
-              :rules="[rules.noSpecialCharactersContactName()]"
               :maxlength="255"
               label="First Name"
             />
             <v-text-field
               id="newContactLastNameInput"
               v-model="newContact.lastName"
-              variant="underlined"
               :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
+              variant="underlined"
               class="pt-0"
               :maxlength="255"
               label="Last Name"
             />
             <v-text-field
-              id="newContactJobTitleInput"
-              v-model="newContact.jobTitle"
-              class="pt-0"
-              variant="underlined"
-              :rules="[rules.noSpecialCharactersContactTitle()]"
-              :maxlength="255"
-              label="Position Title"
-            />
-            <v-text-field
               id="newContactEmailInput"
               v-model="newContact.email"
               :rules="[rules.required(), rules.email()]"
-              class="pt-0"
               variant="underlined"
+              class="pt-0"
               :maxlength="255"
               label="Email"
             />
@@ -151,7 +142,7 @@
         width="7rem"
         :disabled="!isFormValid"
         :loading="processing"
-        @click-action="addNewSchoolContact"
+        @click-action="addNewAuthorityContact"
       />
     </v-card-actions>
   </v-card>
@@ -170,18 +161,18 @@ import {authStore} from '@/store/modules/auth';
 import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
-  name: 'NewSchoolContactPage',
+  name: 'NewAuthorityContactPage',
   components: {
     DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
   props: {
-    schoolContactTypes: {
+    authorityContactTypes: {
       type: Array,
       required: true
     },
-    schoolID: {
+    authorityID: {
       type: String,
       required: true
     }
@@ -191,10 +182,9 @@ export default {
       isFormValid: false,
       processing: false,
       newContact: {
-        schoolContactTypeCode: null,
+        authorityContactTypeCode: this.authorityContactTypes.length === 1 ? this.authorityContactTypes[0].authorityContactTypeCode : null,
         firstName: null,
         lastName: null,
-        jobTitle: null,
         email: null,
         phoneNumber: null,
         phoneExtension: null,
@@ -215,20 +205,20 @@ export default {
   methods: {
     closeNewContactPage() {
       this.resetForm();
-      this.$emit('newSchoolContact:closeNewSchoolContactPage');
+      this.$emit('newAuthorityContact:closeNewAuthorityContactPage');
     },
-    addNewSchoolContact() {
+    addNewAuthorityContact() {
       this.processing = true;
-      this.newContact.schoolID = this.schoolID;
+      this.newContact.authorityID = this.authorityID;
 
-      ApiService.apiAxios.post(Routes.institute.SCHOOL_CONTACT_URL, this.newContact)
+      ApiService.apiAxios.post(Routes.institute.AUTHORITY_CONTACT_URL, this.newContact)
         .then(() => {
-          this.setSuccessAlert('Success! The school contact has been created.');
+          this.setSuccessAlert('Success! The authority contact has been created.');
           this.resetForm();
-          this.$emit('newSchoolContact:addNewSchoolContact');
+          this.$emit('newAuthorityContact:addNewAuthorityContact');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while adding the new school contact. Please try again later.');
+          this.setFailureAlert('An error occurred while adding the new authority contact. Please try again later.');
           console.log(error);
         })
         .finally(() => {

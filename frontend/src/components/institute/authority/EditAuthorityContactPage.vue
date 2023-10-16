@@ -1,59 +1,50 @@
 <template>
   <v-card
-    id="newContactVCard"
+    id="editAuthorityContactCard"
   >
     <v-card-title class="sheetHeader pt-1 pb-1">
-      New School Contact
+      Edit Authority Contact
     </v-card-title>
     <v-divider />
     <v-card-text>
       <v-form
-        ref="newContactForm"
+        ref="editAuthorityContactForm"
         v-model="isFormValid"
       >
         <v-row class="d-flex justify-center">
           <v-col>
             <v-select
-              id="newContactDropdown"
-              v-model="newContact.schoolContactTypeCode"
+              id="editAuthorityContactTypeDropdown"
+              v-model="editContact.authorityContactTypeCode"
               :rules="[rules.required()]"
-              :items="schoolContactTypes"
+              :items="authorityContactTypes"
               item-title="label"
               variant="underlined"
               class="pt-0"
-              item-value="schoolContactTypeCode"
-              label="School Contact Type"
+              item-value="authorityContactTypeCode"
+              label="Authority Contact Type"
             />
             <v-text-field
-              id="newContactFirstNameInput"
-              v-model="newContact.firstName"
-              variant="underlined"
+              id="editAuthorityContactFirstNameInput"
+              v-model="editContact.firstName"
               class="pt-0"
+              variant="underlined"
               :rules="[rules.noSpecialCharactersContactName()]"
               :maxlength="255"
               label="First Name"
             />
             <v-text-field
-              id="newContactLastNameInput"
-              v-model="newContact.lastName"
-              variant="underlined"
+              id="editAuthorityContactLastNameInput"
+              v-model="editContact.lastName"
               :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
               class="pt-0"
+              variant="underlined"
               :maxlength="255"
               label="Last Name"
             />
             <v-text-field
-              id="newContactJobTitleInput"
-              v-model="newContact.jobTitle"
-              class="pt-0"
-              variant="underlined"
-              :rules="[rules.noSpecialCharactersContactTitle()]"
-              :maxlength="255"
-              label="Position Title"
-            />
-            <v-text-field
-              id="newContactEmailInput"
-              v-model="newContact.email"
+              id="editAuthorityContactEmailInput"
+              v-model="editContact.email"
               :rules="[rules.required(), rules.email()]"
               class="pt-0"
               variant="underlined"
@@ -63,20 +54,20 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  id="newContactPhoneNumberInput"
-                  v-model="newContact.phoneNumber"
+                  id="editAuthorityContactPhoneNumberInput"
+                  v-model="editContact.phoneNumber"
                   :rules="[rules.required(), rules.phoneNumber()]"
                   class="pt-0"
-                  variant="underlined"
                   :maxlength="10"
+                  variant="underlined"
                   label="Phone Number"
                   @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  id="newContactPhoneExtensionInput"
-                  v-model="newContact.phoneExtension"
+                  id="editAuthorityContactPhoneExtensionInput"
+                  v-model="editContact.phoneExtension"
                   :rules="[rules.number()]"
                   :maxlength="10"
                   variant="underlined"
@@ -89,8 +80,8 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  id="newContactAltPhoneNumberInput"
-                  v-model="newContact.alternatePhoneNumber"
+                  id="editAuthorityContactAltPhoneNumberInput"
+                  v-model="editContact.alternatePhoneNumber"
                   :rules="[rules.phoneNumber()]"
                   class="pt-0"
                   variant="underlined"
@@ -101,12 +92,12 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  id="newContactAltPhoneExtensionInput"
-                  v-model="newContact.alternatePhoneExtension"
+                  id="editAuthorityContactAltPhoneExtensionInput"
+                  v-model="editContact.alternatePhoneExtension"
                   :rules="[rules.number()]"
                   class="pt-0"
-                  variant="underlined"
                   :maxlength="10"
+                  variant="underlined"
                   label="Alt. Phone Ext."
                   @keypress="isNumber($event)"
                 />
@@ -115,22 +106,24 @@
             <v-row>
               <v-col cols="6">
                 <DatePicker
-                  id="newContactEffectiveDateTextField"
-                  v-model="newContact.effectiveDate"
+                  id="editAuthorityContactEffectiveDateTextField"
+                  v-model="editContact.effectiveDate"
                   label="Start Date"
                   :rules="[rules.required()]"
                   model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearEffectiveDate"
                 />
               </v-col>
               <v-col cols="6">
                 <DatePicker
-                  id="newContactExpiryDateTextField"
-                  v-model="newContact.expiryDate"
+                  id="editAuthorityContactExpiryDateTextField"
+                  v-model="editContact.expiryDate"
                   label="End Date"
-                  :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
                   model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearExpiryDate"
                 />
               </v-col>
             </v-row>
@@ -140,18 +133,18 @@
     </v-card-text>
     <v-card-actions class="justify-end">
       <PrimaryButton
-        id="cancelNewContactBtn"
+        id="cancelChangesToAuthorityContactButton"
         secondary
         text="Cancel"
-        @click-action="closeNewContactPage"
+        @click-action="cancelEditAuthorityContactPage"
       />
       <PrimaryButton
-        id="newContactPostBtn"
+        id="saveChangesToAuthorityContactButton"
         text="Save"
         width="7rem"
         :disabled="!isFormValid"
         :loading="processing"
-        @click-action="addNewSchoolContact"
+        @click-action="saveChangesToAuthorityContact"
       />
     </v-card-actions>
   </v-card>
@@ -165,44 +158,37 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
+import _ from 'lodash';
 import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
-  name: 'NewSchoolContactPage',
+  name: 'EditAuthorityContactPage',
   components: {
     DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
   props: {
-    schoolContactTypes: {
+    contact: {
+      type: Object,
+      required: true
+    },
+    authorityContactTypes: {
       type: Array,
       required: true
     },
-    schoolID: {
+    authorityID: {
       type: String,
       required: true
     }
   },
   data() {
+    let clonedContact = _.cloneDeep(this.contact);
     return {
       isFormValid: false,
       processing: false,
-      newContact: {
-        schoolContactTypeCode: null,
-        firstName: null,
-        lastName: null,
-        jobTitle: null,
-        email: null,
-        phoneNumber: null,
-        phoneExtension: null,
-        alternatePhoneNumber: null,
-        alternatePhoneExtension: null,
-        effectiveDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString(),
-        expiryDate: null
-      },
+      editContact: clonedContact,
       rules: Rules
     };
   },
@@ -213,36 +199,46 @@ export default {
     this.validateForm();
   },
   methods: {
-    closeNewContactPage() {
-      this.resetForm();
-      this.$emit('newSchoolContact:closeNewSchoolContactPage');
+    clearEffectiveDate() {
+      this.editContact.effectiveDate = null;
+      this.validateForm();
     },
-    addNewSchoolContact() {
+    clearExpiryDate() {
+      this.editContact.expiryDate = null;
+      this.validateForm();
+    },
+    cancelEditAuthorityContactPage() {
+      this.resetForm();
+      this.$emit('editAuthorityContact:cancelEditAuthorityContactPage');
+    },
+    saveChangesToAuthorityContact() {
       this.processing = true;
-      this.newContact.schoolID = this.schoolID;
+      this.validateForm();
 
-      ApiService.apiAxios.post(Routes.institute.SCHOOL_CONTACT_URL, this.newContact)
+      this.editContact.independentAuthorityId = this.authorityID;
+
+      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_CONTACT_URL}/${this.editContact.authorityContactId}`, this.editContact)
         .then(() => {
-          this.setSuccessAlert('Success! The school contact has been created.');
+          this.setSuccessAlert('Success! The authority contact has been updated.');
           this.resetForm();
-          this.$emit('newSchoolContact:addNewSchoolContact');
+          this.$emit('editAuthorityContact:editAuthorityContactSuccess');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while adding the new school contact. Please try again later.');
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the authority contact information. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
         });
     },
     resetForm() {
-      this.$refs.newContactForm.reset();
+      this.$refs.editAuthorityContactForm.reset();
     },
     async validateForm() {
-      const isValid = await this.$refs.newContactForm.validate();
+      const isValid = await this.$refs.editAuthorityContactForm.validate();
       this.isFormValid = isValid.valid;
     },
-    isNumber,
+    isNumber
   }
 };
 </script>
