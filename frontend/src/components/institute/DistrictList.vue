@@ -122,7 +122,7 @@
         :headers="headers"
         :items="filteredDistrictList"
         items-per-page="-1"
-        class="elevation-1 mt-5"
+        class="elevation-1 mt-5 rounded"
         mobile-breakpoint="0"
       >
         <template #item="{ item }">
@@ -157,6 +157,7 @@
               }}</span>
             </v-col>
           </v-row>
+          <v-divider />
         </template>
 
         <template #no-data>
@@ -305,17 +306,6 @@ export default {
 .containerSetup {
     padding-right: 30em !important;
     padding-left: 30em !important;
-}
-
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
 }
 
 .hoverTable:hover {

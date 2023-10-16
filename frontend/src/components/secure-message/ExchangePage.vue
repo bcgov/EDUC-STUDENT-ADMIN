@@ -326,7 +326,7 @@
               select-strategy="page"
               :items-per-page-options="itemsPerPageOptions"
               :loading="loadingTable"
-              class="elevation-1 mt-2"
+              class="elevation-1 mt-2 rounded"
               mobile-breakpoint="0"
             >
               <template #no-data>
@@ -340,7 +340,6 @@
               <template #item="{ item, index }">
                 <v-row
                   class="hoverTable pa-2"
-                  style="cursor: pointer;"
                   no-gutters
                 >
                   <v-col cols="auto">
@@ -475,6 +474,7 @@
                     </v-row>
                   </v-col>
                 </v-row>
+                <v-divider />
               </template>
             </v-data-table-server>
           </v-col>
@@ -936,17 +936,6 @@ export default {
 .ministryLine {
     color: black;
     font-size: medium;
-}
-
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
 }
 
 .hoverTable:hover {
