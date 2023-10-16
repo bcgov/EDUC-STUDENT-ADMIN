@@ -88,9 +88,6 @@ async function getExchanges(req, res) {
               element['contactIdentifierName'] = tempMinTeam.teamName;
             }
           }
-          if (element['createDate']) {
-            element['createDate'] = LocalDateTime.parse(element['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
-          }
         });
       }
       return res.status(200).json(dataResponse);
@@ -188,10 +185,6 @@ async function getExchange(req, res) {
       if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
         dataResponse['contactName'] = district.name + '(' + district.districtNumber+ ')';
         dataResponse['districtName'] = district.name;
-      }
-
-      if (dataResponse['createDate']) {
-        dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       }
 
       //creating activities list for timeline display on the frontend
