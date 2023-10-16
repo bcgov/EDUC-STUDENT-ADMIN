@@ -102,10 +102,7 @@
         class="pb-4"
       >
         <div v-if="hasContactsWhenFiltered(districtContactType)">
-          <v-row
-            class="mb-1"
-            no-gutters
-          >
+          <v-row>
             <v-col class="pb-0">
               <h2 style="color:#1A5A96">
                 {{
@@ -153,7 +150,6 @@
           </v-row>
           <v-row
             v-else
-            no-gutters
             cols="2"
           >
             <v-col class="pt-0">

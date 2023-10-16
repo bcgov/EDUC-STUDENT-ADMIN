@@ -148,7 +148,7 @@
             v-model:items="authorities"
             v-model:items-length="totalAuthorities"
             :loading="loadingTable"
-            class="elevation-1"
+            class="elevation-1 rounded"
             hide-default-header
             mobile-breakpoint="0"
           >
@@ -235,6 +235,7 @@
                   </v-tooltip>
                 </v-col>
               </v-row>
+              <v-divider />
             </template>
 
             <template #no-data>
@@ -531,17 +532,6 @@ export default {
 
 .v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
     display: none;
-}
-
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
 }
 
 .hoverTable:hover {

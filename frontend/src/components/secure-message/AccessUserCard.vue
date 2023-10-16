@@ -92,73 +92,74 @@
           class="pt-2"
           :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
         >
-        <div v-if="!editState">
-          <v-chip-group >
-            <v-chip
-              v-for="role in userRoles"
-              :key="role.edxRoleCode"
-              disabled
+          <div v-if="!editState">
+            <v-chip-group>
+              <v-chip
+                v-for="role in userRoles"
+                :key="role.edxRoleCode"
+                disabled
+              >
+                {{ getRoleLabel(role) }}
+              </v-chip>
+            </v-chip-group>
+            <p 
+              v-if="getExpiryDate(user)"
+              class="expiry-date"
             >
-              {{ getRoleLabel(role) }}
-            </v-chip>
-          </v-chip-group>
-          <p 
-            v-if="getExpiryDate(user)"
-            class="expiry-date"
-          >
-            <v-icon size="large">
-              mdi-delete-clock-outline
-            </v-icon>
-            {{ formatExpiryDate(getExpiryDate(user)) }}
-          </p>
-        </div>
+              <v-icon size="large">
+                mdi-delete-clock-outline
+              </v-icon>
+              {{ formatExpiryDate(getExpiryDate(user)) }}
+            </p>
+          </div>
           
           <div v-else>
             <v-list
-            v-model:selected="selectedRoles"
-            lines="two"
-            return-object
-            select-strategy="classic"
-            style="background-color: #e7ebf0"
-            @update:selected="selectedRolesChanged"
-          >
-            <div
-              v-for="newrole in instituteRoles"
-              :key="newrole.edxRoleCode"
-              :value="newrole.edxRoleCode"
+              v-model:selected="selectedRoles"
+              lines="two"
+              return-object
+              select-strategy="classic"
+              style="background-color: #e7ebf0"
+              @update:selected="selectedRolesChanged"
             >
-              <v-list-item
-                :disabled="roleDisabled(newrole)"
+              <div
+                v-for="newrole in instituteRoles"
+                :key="newrole.edxRoleCode"
                 :value="newrole.edxRoleCode"
               >
-                <template #prepend="{ isActive }">
-                  <v-list-item-action>
-                    <v-checkbox-btn :model-value="isActive" />
-                  </v-list-item-action>
-                </template>
+                <v-list-item
+                  :disabled="roleDisabled(newrole)"
+                  :value="newrole.edxRoleCode"
+                >
+                  <template #prepend="{ isActive }">
+                    <v-list-item-action>
+                      <v-checkbox-btn :model-value="isActive" />
+                    </v-list-item-action>
+                  </template>
 
-                <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+                  <v-list-item-title>{{ newrole.label }}</v-list-item-title>
 
-                <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
-                  EDX {{ instituteTypeLabel }} Admin users will be set up with all
-                  {{ instituteTypeLabel.toLowerCase() }} roles.
-                </v-list-item-subtitle>
-                <v-list-item-subtitle v-else>
-                  {{ newrole.roleDescription }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </div>
-          </v-list>
+                  <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
+                    EDX {{ instituteTypeLabel }} Admin users will be set up with all
+                    {{ instituteTypeLabel.toLowerCase() }} roles.
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else>
+                    {{ newrole.roleDescription }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </div>
+            </v-list>
 
-          <DatePicker
-            id="accessExpiryDate"
-            v-model="accessExpiryDate"
-            label="Access Expiry Date"
-            model-type="yyyy-MM-dd'T'00:00:00"
-            @clear-date="clearExpiryDate"
-          />
+            <DatePicker
+              id="accessExpiryDate"
+              v-model="accessExpiryDate"
+              class="pl-7"
+              label="Access Expiry Date"
+              model-type="yyyy-MM-dd'T'00:00:00"
+              :min-date="minExpiryDate"
+              @clear-date="clearExpiryDate"
+            />
           </div>
-          
         </v-card-text>
         <Transition name="bounce">
           <v-card-text
@@ -214,15 +215,15 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  @click-action="clickRelinkButton"
                   :disabled="isRelinking"
+                  @click-action="clickRelinkButton"
                 />
                 <PrimaryButton
                   :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
                   text="Re-Link"
-                  @click-action="clickActionRelinkButton"
                   :disabled="isRelinking"
                   :loading="isRelinking"
+                  @click-action="clickActionRelinkButton"
                 />
               </v-col>
             </v-row>
@@ -274,8 +275,9 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import {formatDate} from '../../utils/format';
+import {formatDate} from '@/utils/format';
 import DatePicker from '../util/DatePicker.vue';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'AccessUserCard',
@@ -316,7 +318,8 @@ export default {
       selectedRoles: [],
       accessExpiryDate: null,
       from: 'uuuu-MM-dd\'T\'HH:mm:ss',
-      pickerFormat: 'uuuu-MM-dd'
+      pickerFormat: 'uuuu-MM-dd',
+      minExpiryDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString()
     };
   },
   computed: {
