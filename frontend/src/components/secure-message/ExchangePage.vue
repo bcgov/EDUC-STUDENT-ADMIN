@@ -211,11 +211,15 @@
                     item-title="label"
                     variant="underlined"
                     item-value="secureExchangeStatusCode"
-                    prepend-inner-icon="mdi-circle-medium"
                     class="pt-0 mt-0"
                     :menu-props="{closeOnContentClick:true}"
                     label="Status"
                   >
+                    <template #prepend-inner>
+                      <v-icon :color="getStatusColor(statusSelectFilter ? statusSelectFilter : '')">
+                        mdi-circle-medium
+                      </v-icon>
+                    </template>
                     <template #selection="{ item, index }">
                       {{
                         item.raw.label
@@ -760,9 +764,9 @@ export default {
 
     },
     getStatusColor(status) {
-      if (status === 'Open') {
+      if (status?.toLowerCase() === 'open') {
         return 'green';
-      } else if (status === 'Closed') {
+      } else if (status?.toLowerCase() === 'closed') {
         return 'red';
       }
     },
