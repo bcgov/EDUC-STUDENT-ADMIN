@@ -76,7 +76,6 @@
             id="generateNewPrimaryEdxActivationCodeDialog"
             :class="['d-sm-flex', 'align-center', 'searchBox']"
             class="px-2 mb-4"
-            style="margin-right: 14em;margin-left: 14em;"
           >
             <v-col>
               <v-row no-gutters>
@@ -184,8 +183,9 @@
           <v-col
             v-for="user in filteredUsers"
             :key="user.digitalID"
-            xl="4"
-            cols="6"
+            lg="4"
+            sm="6"
+            cols="12"
             class="pb-0"
           >
             <AccessUserCard
@@ -199,8 +199,9 @@
             />
           </v-col>
           <v-col
-            xl="4"
-            cols="6"
+            lg="4"
+            sm="6"
+            cols="12"
             class="pb-0"
           >
             <v-row style="height: 100%;">
@@ -534,11 +535,6 @@ export default {
 
 .add-new-user {
     min-height: 150px;
-}
-
-.containerSetup {
-    padding-right: 10em !important;
-    padding-left: 10em !important;
 }
 
 </style>
