@@ -853,6 +853,7 @@ async function relinkUserSchoolOrDistrictAccess(req, res) {
         email: edxUserDetails.email,
         edxUserId: req.body.params.userToRelink,
         edxUserSchoolID: req.body.params.userSchoolID,
+        edxUserExpiryDate: req.body.params.edxUserExpiryDate
       };
       await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
     } else {
@@ -867,6 +868,7 @@ async function relinkUserSchoolOrDistrictAccess(req, res) {
         email: edxUserDetails.email,
         edxUserId: req.body.params.userToRelink,
         edxUserDistrictID: req.body.params.edxUserDistrictID,
+        edxUserExpiryDate: req.body.params.edxUserExpiryDate
       };
       await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
     }
