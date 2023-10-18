@@ -119,11 +119,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.containerSetup{
-  padding-right: 20em !important;
-  padding-left: 20em !important;
-}
-
-</style>
