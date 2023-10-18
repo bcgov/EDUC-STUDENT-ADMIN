@@ -144,7 +144,7 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-autocomplete
                     id="schoolName"
@@ -154,7 +154,8 @@
                     item-value="value"
                     item-title="text"
                     variant="underlined"
-                    clearable
+                    prepend-inner-icon="mdi-card-account-mail-outline"
+                    :clearable="true"
                     :items="contacts"
                   >
                     <template #selection="{ item }">
@@ -171,12 +172,12 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     id="subject-text-field"
                     v-model="subjectFilter"
-                    class="pt-0 mt-0 pl-9"
+                    class="pt-0 mt-0"
                     variant="underlined"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
@@ -187,24 +188,20 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0 pl-12 pr-12"
+                  class="pt-0 px-7"
                 >
-                  <v-text-field
+                  <DatePicker
                     id="messageDateTextField"
                     v-model="messageDate"
-                    variant="underlined"
                     label="Message Date"
-                    type="date"
-                    clearable
-                    @keyup.enter="filterRequests()"
+                    model-type="yyyy-MM-dd'T'00:00:00"
+                    @keyup.enter="enterPushed()"
                   />
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-select
                     id="statusSelector"
@@ -214,11 +211,15 @@
                     item-title="label"
                     variant="underlined"
                     item-value="secureExchangeStatusCode"
-                    prepend-inner-icon="mdi-circle-medium"
                     class="pt-0 mt-0"
                     :menu-props="{closeOnContentClick:true}"
                     label="Status"
                   >
+                    <template #prepend-inner>
+                      <v-icon :color="getStatusColor(statusSelectFilter ? statusSelectFilter : '')">
+                        mdi-circle-medium
+                      </v-icon>
+                    </template>
                     <template #selection="{ item, index }">
                       {{
                         item.raw.label
@@ -243,12 +244,12 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     id="claimed-by-text-field"
                     v-model="claimedByFilter"
-                    class="pt-0 mt-0 pl-9"
+                    class="pt-0 mt-0"
                     label="Claimed By"
                     variant="underlined"
                     prepend-inner-icon="mdi-account-check-outline"
@@ -259,11 +260,11 @@
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     v-model="messageIDFilter"
-                    class="pt-0 mt-0 pl-9 pr-9"
+                    class="pt-0 mt-0"
                     label="Message ID"
                     variant="underlined"
                     prepend-inner-icon="mdi-pound"
@@ -271,12 +272,10 @@
                     @keyup.enter="enterPushed()"
                   />
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col
                   cols="12"
                   md="4"
-                  class="pt-0"
+                  class="pt-0 px-7"
                 >
                   <v-text-field
                     v-model="studentIDFilter"
@@ -331,7 +330,7 @@
               select-strategy="page"
               :items-per-page-options="itemsPerPageOptions"
               :loading="loadingTable"
-              class="elevation-1 mt-2"
+              class="elevation-1 mt-2 rounded"
               mobile-breakpoint="0"
             >
               <template #no-data>
@@ -345,7 +344,6 @@
               <template #item="{ item, index }">
                 <v-row
                   class="hoverTable pa-2"
-                  style="cursor: pointer;"
                   no-gutters
                 >
                   <v-col cols="auto">
@@ -480,6 +478,7 @@
                     </v-row>
                   </v-col>
                 </v-row>
+                <v-divider />
               </template>
             </v-data-table-server>
           </v-col>
@@ -522,16 +521,19 @@ import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
 import router from '@/router';
 import _, {isEmpty, omitBy} from 'lodash';
-import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
+import {ChronoUnit, LocalDateTime} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
+import DatePicker from '@/components/util/DatePicker.vue';
+import {formatDate} from '@/utils/format';
 
 export default {
   name: 'ExchangeInbox',
   components: {
+    DatePicker,
     PrimaryButton,
     NewMessagePage
   },
@@ -548,8 +550,6 @@ export default {
       statusSelectFilter: null,
       statusRadioGroup: 'statusFilterAllActive',
       statusRadioGroupEnabled: true,
-      messageDateFilter: false,
-      activeMessageDatePicker: null,
       messageDate: null,
       subjectFilter: '',
       messageIDFilter: '',
@@ -580,17 +580,12 @@ export default {
         {value: 50, title: '50'}
       ],
       loadingTableCount: 0,
-      dateMenu: false,
       headerSearchParams: {
         sequenceNumber: '',
         contact: '',
         subject: '',
         createDate: [],
         secureExchangeStatusCode: ''
-      },
-      headerSortParams: {
-        currentSort: 'createDate',
-        currentSortDir: true
       },
       exchanges: [],
       selectedExchanges: [],
@@ -666,9 +661,6 @@ export default {
         this.filterExchanges();
       }
     },
-    openMessageDatePicker() {
-      this.$refs.messageDatePicker.openMenu();
-    },
     messageSent() {
       this.newMessageSheet = !this.newMessageSheet;
     },
@@ -676,8 +668,8 @@ export default {
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
     getNumberOfDays(start) {
-      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('yyyy/MM/dd'));
-      const end_date = LocalDate.now();
+      const start_date = new LocalDateTime.parse(start);
+      const end_date = LocalDateTime.now();
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
@@ -687,9 +679,9 @@ export default {
     getContactLineItem(item) {
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${item?.createDate}`;
+        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${formatDate(item?.createDate)}`;
       case 'DISTRICT':
-        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${item?.createDate}`;
+        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${formatDate(item?.createDate)}`;
       }
     },
     getReviewer(reviewer) {
@@ -746,7 +738,6 @@ export default {
       this.claimedByFilter = null;
       this.contactNameFilter = null;
       this.messageDate = null;
-      this.messageDateFilter = null;
       this.statusSelectFilter = null;
       if (runSearch) {
         this.resetPageNumber();
@@ -773,9 +764,9 @@ export default {
 
     },
     getStatusColor(status) {
-      if (status === 'Open') {
+      if (status?.toLowerCase() === 'open') {
         return 'green';
-      } else if (status === 'Closed') {
+      } else if (status?.toLowerCase() === 'closed') {
         return 'red';
       }
     },
@@ -951,26 +942,29 @@ export default {
     font-size: medium;
 }
 
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
-}
-
 .hoverTable:hover {
     background-color: #e8e8e8;
     cursor: pointer;
 }
 
 
-.containerSetup {
-    padding-right: 26em !important;
-    padding-left: 26em !important;
+.containerSetup{
+  padding-right: 32em !important;
+  padding-left: 32em !important;
+}
+
+@media screen and (max-width: 1950px) {
+  .containerSetup{
+    padding-right: 20em !important;
+    padding-left: 20em !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 4em !important;
+    padding-left: 4em !important;
+  }
 }
 
 :deep(.dp__input) {

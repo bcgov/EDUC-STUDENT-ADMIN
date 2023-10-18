@@ -274,7 +274,7 @@
               v-model:items="schools"
               v-model:items-length="totalSchools"
               :loading="loadingTable"
-              class="elevation-1"
+              class="elevation-1 rounded"
               hide-default-header
               mobile-breakpoint="0"
             >
@@ -374,6 +374,7 @@
                     </v-row>
                   </v-col>
                 </v-row>
+                <v-divider />
               </template>
             </v-data-table-server>
           </v-col>
@@ -849,17 +850,6 @@ export default {
 .containerSetup {
     padding-right: 24em !important;
     padding-left: 24em !important;
-}
-
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
 }
 
 .hoverTable:hover {

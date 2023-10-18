@@ -1,20 +1,7 @@
 <template>
   <v-container
-    class="containerSetup"
     fluid
   >
-    <v-col class="mt-1 d-flex justify-start">
-      <v-icon
-        small
-        color="#1976d2"
-      >
-        mdi-arrow-left
-      </v-icon>
-      <a
-        class="ml-1"
-        @click="backButtonClick"
-      >Return to District List</a>
-    </v-col>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -28,24 +15,6 @@
       </v-col>
     </v-row>
     <template v-if="!loading">
-      <v-row>
-        <v-col
-          cols="12"
-          class="d-flex justify-start"
-        >
-          <v-row no-gutters>
-            <v-col cols="12">
-              <h2 class="subjectHeading">
-                {{
-                  districtDetails.districtNumber
-                }} - {{
-                  districtDetails.displayName
-                }}
-              </h2>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
       <v-row cols="2">
         <v-col class="d-flex justify-start">
           <v-chip
@@ -66,15 +35,6 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            id="viewDistrictDetailsButton"
-            class="mr-2"
-            secondary
-            icon-left
-            icon="mdi-domain"
-            :to="`/district/${districtID}`"
-            text="View District Details"
-          />
-          <PrimaryButton
             v-if="canEditDistrictContact"
             icon-left
             width="11em"
@@ -85,7 +45,7 @@
         </v-col>
       </v-row>
       <v-row
-        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']"
+        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2', 'mb-3']"
         @keydown.enter="searchButtonClicked"
       >
         <v-col>
@@ -107,7 +67,7 @@
             v-model="searchFilter.firstName"
             variant="underlined"
             label="Contact First Name"
-            clearable="true"
+            clearable
           />
         </v-col>
         <v-col>
@@ -116,7 +76,7 @@
             v-model="searchFilter.lastName"
             variant="underlined"
             label="Contact Last Name"
-            clearable="true"
+            clearable
           />
         </v-col>
         <v-col
@@ -139,14 +99,11 @@
       <div
         v-for="districtContactType in districtContactTypes"
         :key="districtContactType.code"
-        class="mt-5"
+        class="pb-4"
       >
         <div v-if="hasContactsWhenFiltered(districtContactType)">
-          <v-row
-            class="mb-1"
-            no-gutters
-          >
-            <v-col>
+          <v-row>
+            <v-col class="pb-0">
               <h2 style="color:#1A5A96">
                 {{
                   districtContactType.label
@@ -158,7 +115,10 @@
             v-if="!districtContactType.publiclyAvailable"
             cols="2"
           >
-            <v-col cols="12">
+            <v-col
+              class="pt-0"
+              cols="12"
+            >
               <v-alert
                 :id="`publiclyAvailableAlert${districtContactType.label}`"
                 color="#003366"
@@ -174,12 +134,12 @@
           </v-row>
           <v-row
             v-if="hasContactsForThisType(districtContactType)"
-            class="mt-0 mb-0"
             cols="2"
           >
             <v-col
               v-for="contact in filteredDistrictContacts.get(districtContactType.districtContactTypeCode)"
               :key="contact.schoolId"
+              class="pt-0"
               cols="5"
               lg="4"
             >
@@ -193,10 +153,9 @@
           </v-row>
           <v-row
             v-else
-            no-gutters
             cols="2"
           >
-            <v-col class="mt-2">
+            <v-col class="pt-0">
               <p>No contacts of this type have been listed.</p>
             </v-col>
           </v-row>
@@ -240,12 +199,12 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton.vue';
-import DistrictContact from '@/components/institute/DistrictContact.vue';
-import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage.vue';
-import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import DistrictContact from '@/components/institute/district/DistrictContact.vue';
+import NewDistrictContactPage from '@/components/institute/district/NewDistrictContactPage.vue';
+import EditDistrictContactPage from '@/components/institute/district/EditDistrictContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {mapState} from 'pinia';
@@ -255,7 +214,7 @@ import {authStore} from '@/store/modules/auth';
 import {setEmptyInputParams} from '@/utils/common';
 
 export default {
-  name: 'DistrictContactsPage',
+  name: 'DistrictContacts',
   components: {
     NewDistrictContactPage,
     EditDistrictContactPage,

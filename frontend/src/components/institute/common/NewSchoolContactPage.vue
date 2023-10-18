@@ -112,28 +112,22 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="newContactEffectiveDateTextField"
                   v-model="newContact.effectiveDate"
-                  :rules="[rules.required()]"
-                  class="pt-0 mt-0"
-                  variant="underlined"
                   label="Start Date"
-                  type="date"
-                  clearable
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
                 />
               </v-col>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="newContactExpiryDateTextField"
                   v-model="newContact.expiryDate"
-                  :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
-                  class="pt-0 mt-0"
-                  variant="underlined"
                   label="End Date"
-                  type="date"
-                  clearable
+                  :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -153,9 +147,9 @@
         id="newContactPostBtn"
         text="Save"
         width="7rem"
-        @click-action="addNewSchoolContact"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="addNewSchoolContact"
       />
     </v-card-actions>
   </v-card>
@@ -169,12 +163,14 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'NewSchoolContactPage',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -202,27 +198,19 @@ export default {
         phoneExtension: null,
         alternatePhoneNumber: null,
         alternatePhoneExtension: null,
-        effectiveDate: LocalDate.now().toString(),
+        effectiveDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString(),
         expiryDate: null
       },
-      rules: Rules,
-      newContactEffectiveDatePicker: null,
-      newContactExpiryDatePicker: null
+      rules: Rules
     };
-  },
-  mounted() {
-    this.validateForm();
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
   },
+  mounted() {
+    this.validateForm();
+  },
   methods: {
-    saveNewContactEffectiveDate(date) {
-      this.$refs.newContactEffectiveDateFilter.save(date);
-    },
-    saveNewContactExpiryDate(date) {
-      this.$refs.newContactExpiryDateFilter.save(date);
-    },
     closeNewContactPage() {
       this.resetForm();
       this.$emit('newSchoolContact:closeNewSchoolContactPage');
@@ -253,14 +241,6 @@ export default {
       this.isFormValid = isValid.valid;
     },
     isNumber,
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'newContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
   }
 };
 </script>

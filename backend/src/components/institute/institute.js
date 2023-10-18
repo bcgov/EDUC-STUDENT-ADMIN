@@ -58,7 +58,6 @@ async function getDistricts(req, res) {
 async function addDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
     if(!district || !hasDistrictAdminRole(req)){
@@ -85,8 +84,8 @@ async function addDistrictContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -166,7 +165,6 @@ async function updateDistrict(req, res) {
 async function updateDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district || !hasDistrictAdminRole(req)){
@@ -185,8 +183,6 @@ async function updateDistrictContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.params.contactId}` , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -199,7 +195,6 @@ async function updateDistrictContact(req, res) {
 async function deleteDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
     if(!district || !hasDistrictAdminRole(req)){
@@ -225,7 +220,7 @@ async function deleteDistrictContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.params.districtId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
@@ -347,8 +342,6 @@ async function addSchool(req, res) {
       });
     }
 
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
-
     const payload = {
       createUser: utils.getUser(req).idir_username,
       createDate: null,
@@ -366,7 +359,7 @@ async function addSchool(req, res) {
       schoolOrganizationCode: req.body.schoolOrganizationCode,
       schoolCategoryCode: req.body.schoolCategoryCode,
       facilityTypeCode: req.body.facilityTypeCode,
-      openedDate: req.body.openedDate ? LocalDate.parse(req.body.openedDate).atStartOfDay().format(formatter) : null,
+      openedDate: req.body.openedDate ? req.body.openedDate : null,
       closedDate: null,
       addresses: [],
       grades: [],
@@ -496,7 +489,6 @@ async function deleteSchoolNote(req, res) {
 async function addSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -523,8 +515,8 @@ async function addSchoolContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -539,7 +531,6 @@ async function addSchoolContact(req, res) {
 async function updateSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -558,8 +549,9 @@ async function updateSchoolContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+    params.effectiveDate = params.effectiveDate ? req.body.effectiveDate : null;
+    params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
+    params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
 
     const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -572,7 +564,6 @@ async function updateSchoolContact(req, res) {
 async function deleteSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -598,7 +589,7 @@ async function deleteSchoolContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
@@ -612,7 +603,6 @@ async function deleteSchoolContact(req, res) {
 async function addAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -639,8 +629,8 @@ async function addAuthorityContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -655,7 +645,6 @@ async function addAuthorityContact(req, res) {
 async function updateAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -674,8 +663,6 @@ async function updateAuthorityContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -688,7 +675,6 @@ async function updateAuthorityContact(req, res) {
 async function deleteAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -714,7 +700,7 @@ async function deleteAuthorityContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.independentAuthorityId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
@@ -728,7 +714,6 @@ async function deleteAuthorityContact(req, res) {
 async function addAuthority(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     if(!hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -742,7 +727,7 @@ async function addAuthority(req, res) {
 
       displayName: req.body.authorityName,
       authorityTypeCode: req.body.authorityTypeCode,
-      openedDate: req.body.openDate ? LocalDate.parse(req.body.openDate).atStartOfDay().format(formatter) : null,
+      openedDate: req.body.openDate ? req.body.openDate : null,
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       faxNumber: req.body.faxNumber,
@@ -991,7 +976,6 @@ async function getSchoolsPaginated(req, res){
 async function moveSchool(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     if(!hasSchoolAdminRole(req, req.body.toSchool)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -1000,7 +984,7 @@ async function moveSchool(req, res) {
     }
 
     const incomingPayload = req.body;
-    incomingPayload.toSchool.openedDate = LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter);
+    incomingPayload.toSchool.openedDate = incomingPayload.toSchool.moveDate;
     incomingPayload.toSchool.createDate = null;
     incomingPayload.toSchool.updateDate = null;
     incomingPayload.toSchool.createUser = utils.getUser(req).idir_username;
@@ -1055,7 +1039,7 @@ async function moveSchool(req, res) {
 
     const payload = {
       toSchool: incomingPayload.toSchool,
-      moveDate: LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter),
+      moveDate: incomingPayload.toSchool.moveDate,
       fromSchoolId: req.body.fromSchoolId
     };
 

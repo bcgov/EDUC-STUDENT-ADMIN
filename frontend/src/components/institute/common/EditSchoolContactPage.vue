@@ -112,28 +112,25 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editSchoolContactEffectiveDateTextField"
                   v-model="editContact.effectiveDate"
-                  :rules="[rules.required()]"
                   label="Start Date"
-                  clearable
-                  type="date"
-                  variant="underlined"
+                  :rules="[rules.required()]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearEffectiveDate"
                 />
               </v-col>
               <v-col cols="6">
-                <v-text-field
+                <DatePicker
                   id="editSchoolContactExpiryDateTextField"
                   v-model="editContact.expiryDate"
-                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                  class="pt-0 mt-0"
                   label="End Date"
-                  type="date"
-                  clearable
-                  variant="underlined"
+                  :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                  model-type="yyyy-MM-dd'T'00:00:00"
                   @update:model-value="validateForm"
+                  @clear-date="clearExpiryDate"
                 />
               </v-col>
             </v-row>
@@ -152,9 +149,9 @@
         id="saveChangesToSchoolContactButton"
         text="Save"
         width="7rem"
-        @click-action="saveChangesToSchoolContact"
         :disabled="!isFormValid"
         :loading="processing"
+        @click-action="saveChangesToSchoolContact"
       />
     </v-card-actions>
   </v-card>
@@ -168,14 +165,14 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {formatDate, formatDisplayDate} from '@/utils/format';
-import {parseDate} from '@/utils/dateHelpers';
 import {authStore} from '@/store/modules/auth';
 import _ from 'lodash';
+import DatePicker from '@/components/util/DatePicker.vue';
 
 export default {
   name: 'EditSchoolContactPage',
   components: {
+    DatePicker,
     PrimaryButton,
   },
   mixins: [alertMixin],
@@ -193,42 +190,32 @@ export default {
       required: true
     }
   },
+  emits: ['editSchoolContact:editSchoolContactSuccess', 'editSchoolContact:cancelEditSchoolContactPage'],
   data() {
     let clonedContact = _.cloneDeep(this.contact);
-    clonedContact.effectiveDate = this.parseDate(formatDate(clonedContact.effectiveDate));
-    clonedContact.expiryDate = this.parseDate(formatDate(clonedContact.expiryDate));
     return {
       isFormValid: false,
       processing: false,
       editContact: clonedContact,
-      rules: Rules,
-      editSchoolContactEffectiveDatePicker: null,
-      editSchoolContactExpiryDatePicker: null
+      rules: Rules
     };
-  },
-  mounted() {
-    this.validateForm();
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    schoolContactEffectiveDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.effectiveDate);
-      },
-      set(newValue) {
-        this.editContact.effectiveDate = this.parseDate(newValue);
-      }
-    },
-    schoolContactExpiryDateFormatted: {
-      get() {
-        return this.formatDisplayDate(this.editContact.expiryDate);
-      },
-      set(newValue) {
-        this.editContact.expiryDate = this.parseDate(newValue);
-      }
-    }
+  },
+
+  mounted() {
+    this.validateForm();
   },
   methods: {
+    clearEffectiveDate() {
+      this.editContact.effectiveDate = null;
+      this.validateForm();
+    },
+    clearExpiryDate() {
+      this.editContact.expiryDate = null;
+      this.validateForm();
+    },
     cancelEditSchoolContactPage() {
       this.resetForm();
       this.$emit('editSchoolContact:cancelEditSchoolContactPage');
@@ -253,9 +240,6 @@ export default {
           this.processing = false;
         });
     },
-    saveEditSchoolContactExpiryDate(date) {
-      this.$refs.editSchoolContactExpiryDateFilter.save(date);
-    },
     resetForm() {
       this.$refs.editSchoolContactForm.reset();
     },
@@ -265,18 +249,7 @@ export default {
         this.isFormValid = isValid.valid;
       }
     },
-    isNumber,
-    formatDate,
-    formatDisplayDate,
-    parseDate
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'editContact.effectiveDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
+    isNumber
   }
 };
 </script>

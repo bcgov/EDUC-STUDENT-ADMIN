@@ -148,7 +148,7 @@
             v-model:items="authorities"
             v-model:items-length="totalAuthorities"
             :loading="loadingTable"
-            class="elevation-1"
+            class="elevation-1 rounded"
             hide-default-header
             mobile-breakpoint="0"
           >
@@ -210,31 +210,8 @@
                     formatPhoneNumber(item.raw.phoneNumber)
                   }}</span>
                 </v-col>
-                <v-col class="d-flex justify-end">
-                  <v-tooltip bottom>
-                    <template #activator="{ on, props }">
-                      <v-btn
-                        id="authorityContacts"
-                        color="#003366"
-                        outlined
-                        v-bind="props"
-                        class="mt-0 pt-0 filterButton ml-2"
-                        style="text-transform: initial"
-                        @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
-                      >
-                        <v-icon
-                          color="white"
-                          style="margin-top: 0.07em"
-                          dark
-                        >
-                          mdi-account-multiple-outline
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>View Contacts</span>
-                  </v-tooltip>
-                </v-col>
               </v-row>
+              <v-divider />
             </template>
 
             <template #no-data>
@@ -531,17 +508,6 @@ export default {
 
 .v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
     display: none;
-}
-
-.hoverTable {
-    border-bottom-style: groove;
-    border-left-style: groove;
-    border-right-style: groove;
-    border-color: rgb(255 255 255 / 45%);
-}
-
-.hoverTable:nth-child(1) {
-    border-top-style: groove;
 }
 
 .hoverTable:hover {

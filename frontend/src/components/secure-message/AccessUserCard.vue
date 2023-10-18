@@ -92,51 +92,74 @@
           class="pt-2"
           :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
         >
-          <v-chip-group v-if="!editState">
-            <v-chip
-              v-for="role in userRoles"
-              :key="role.edxRoleCode"
-              disabled
+          <div v-if="!editState">
+            <v-chip-group>
+              <v-chip
+                v-for="role in userRoles"
+                :key="role.edxRoleCode"
+                disabled
+              >
+                {{ getRoleLabel(role) }}
+              </v-chip>
+            </v-chip-group>
+            <p 
+              v-if="getExpiryDate(user)"
+              class="expiry-date"
             >
-              {{ getRoleLabel(role) }}
-            </v-chip>
-          </v-chip-group>
-          <v-list
-            v-else
-            v-model:selected="selectedRoles"
-            lines="two"
-            return-object
-            select-strategy="classic"
-            style="background-color: #e7ebf0"
-            @update:selected="selectedRolesChanged"
-          >
-            <div
-              v-for="newrole in instituteRoles"
-              :key="newrole.edxRoleCode"
-              :value="newrole.edxRoleCode"
+              <v-icon size="large">
+                mdi-delete-clock-outline
+              </v-icon>
+              {{ formatExpiryDate(getExpiryDate(user)) }}
+            </p>
+          </div>
+          
+          <div v-else>
+            <v-list
+              v-model:selected="selectedRoles"
+              lines="two"
+              return-object
+              select-strategy="classic"
+              style="background-color: #e7ebf0"
+              @update:selected="selectedRolesChanged"
             >
-              <v-list-item
-                :disabled="roleDisabled(newrole)"
+              <div
+                v-for="newrole in instituteRoles"
+                :key="newrole.edxRoleCode"
                 :value="newrole.edxRoleCode"
               >
-                <template #prepend="{ isActive }">
-                  <v-list-item-action>
-                    <v-checkbox-btn :model-value="isActive" />
-                  </v-list-item-action>
-                </template>
+                <v-list-item
+                  :disabled="roleDisabled(newrole)"
+                  :value="newrole.edxRoleCode"
+                >
+                  <template #prepend="{ isActive }">
+                    <v-list-item-action>
+                      <v-checkbox-btn :model-value="isActive" />
+                    </v-list-item-action>
+                  </template>
 
-                <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+                  <v-list-item-title>{{ newrole.label }}</v-list-item-title>
 
-                <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
-                  EDX {{ instituteTypeLabel }} Admin users will be set up with all
-                  {{ instituteTypeLabel.toLowerCase() }} roles.
-                </v-list-item-subtitle>
-                <v-list-item-subtitle v-else>
-                  {{ newrole.roleDescription }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </div>
-          </v-list>
+                  <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
+                    EDX {{ instituteTypeLabel }} Admin users will be set up with all
+                    {{ instituteTypeLabel.toLowerCase() }} roles.
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else>
+                    {{ newrole.roleDescription }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </div>
+            </v-list>
+
+            <DatePicker
+              id="accessExpiryDate"
+              v-model="accessExpiryDate"
+              class="pl-7"
+              label="Access Expiry Date"
+              model-type="yyyy-MM-dd'T'00:00:00"
+              :min-date="minExpiryDate"
+              @clear-date="clearExpiryDate"
+            />
+          </div>
         </v-card-text>
         <Transition name="bounce">
           <v-card-text
@@ -192,15 +215,15 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  @click-action="clickRelinkButton"
                   :disabled="isRelinking"
+                  @click-action="clickRelinkButton"
                 />
                 <PrimaryButton
                   :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
                   text="Re-Link"
-                  @click-action="clickActionRelinkButton"
                   :disabled="isRelinking"
                   :loading="isRelinking"
+                  @click-action="clickActionRelinkButton"
                 />
               </v-col>
             </v-row>
@@ -252,10 +275,13 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import {formatDate} from '@/utils/format';
+import DatePicker from '../util/DatePicker.vue';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'AccessUserCard',
-  components: {PrimaryButton},
+  components: {PrimaryButton, DatePicker},
   mixins: [alertMixin],
   props: {
     user: {
@@ -289,7 +315,11 @@ export default {
       deleteState: false,
       relinkState: false,
       isRelinking: false,
-      selectedRoles: []
+      selectedRoles: [],
+      accessExpiryDate: null,
+      from: 'uuuu-MM-dd\'T\'HH:mm:ss',
+      pickerFormat: 'uuuu-MM-dd',
+      minExpiryDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString()
     };
   },
   computed: {
@@ -322,6 +352,15 @@ export default {
     getButtonWidth() {
       return '7em';
     },
+    isDistrictUser(){
+      return this.instituteTypeCode === 'DISTRICT';
+    },
+    getExpiryDate(user){
+      if(!this.isDistrictUser()){
+        return user.edxUserSchools[0].expiryDate;
+      }
+      return user.edxUserDistricts[0].expiryDate;
+    },
     getRoleLabel(curRole) {
       if (this.instituteRoles.length > 0) {
         return this.instituteRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
@@ -344,11 +383,15 @@ export default {
       this.deleteState = false;
       this.relinkState = !this.relinkState;
     },
+    formatExpiryDate(date) {
+      return formatDate(date, this.from, this.pickerFormat);
+    },
     clickActionRelinkButton() {
       this.isRelinking = true;
       const payload = {
         params: {
           userToRelink: this.user.edxUserID,
+          edxUserExpiryDate: this.getExpiryDate(this.user)
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
@@ -360,6 +403,7 @@ export default {
         payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
+
       ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
@@ -405,7 +449,8 @@ export default {
       const payload = {
         params: {
           edxUserID: this.user.edxUserID,
-          selectedRoles: this.selectedRoles
+          selectedRoles: this.selectedRoles,
+          expiryDate: this.accessExpiryDate
         }
       };
       let url = Routes.edx.EXCHANGE_ACCESS_ROLES_URL;
@@ -418,9 +463,9 @@ export default {
       }
       ApiService.apiAxios.post(url, payload)
         .then(() => {
-          this.setSuccessAlert('User roles have been updated.');
+          this.setSuccessAlert('User has been updated.');
         }).catch(error => {
-          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+          this.setFailureAlert('An error occurred while updating the user. Please try again later.');
           console.log(error);
         }).finally(() => {
           this.$emit('refresh');
@@ -440,7 +485,11 @@ export default {
       });
 
       this.selectedRoles = [...mySelection];
-    }
+      this.accessExpiryDate = this.getExpiryDate(this.user);
+    },
+    clearExpiryDate(){
+      this.accessExpiryDate = null;
+    },
   }
 };
 </script>
@@ -469,6 +518,11 @@ export default {
     100% {
         transform: scale(1);
     }
+}
+
+.expiry-date {
+  color: grey;
+  text-align: right;
 }
 </style>
 

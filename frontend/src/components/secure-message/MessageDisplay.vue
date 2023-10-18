@@ -44,7 +44,7 @@
                       class="createDate"
                       style="color: black"
                     >
-                      {{ secureExchange.createDate }}
+                      {{ formatDate(secureExchange.createDate) }}
                     </div>
                   </v-col>
                 </v-row>
@@ -819,7 +819,7 @@ import router from '@/router';
 import {mapActions, mapState} from 'pinia';
 import {isPdf, isImage} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
-import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {ChronoUnit, LocalDateTime} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
@@ -830,6 +830,7 @@ import MacroMenu from '../common/MacroMenu.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {authStore} from '@/store/modules/auth';
+import {formatDate} from '@/utils/format';
 
 
 export default {
@@ -897,6 +898,7 @@ export default {
     });
   },
   methods: {
+    formatDate,
     ...mapActions(edxStore, ['getMacros']),
     async upload(document) {
       try {
@@ -1011,8 +1013,8 @@ export default {
       }
     },
     getNumberOfDays(start) {
-      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('uuuu/MM/dd'));
-      const end_date = LocalDate.now();
+      const start_date = new LocalDateTime.parse(start);
+      const end_date = LocalDateTime.now();
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
