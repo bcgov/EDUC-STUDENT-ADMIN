@@ -485,7 +485,7 @@ export default {
       });
 
       this.selectedRoles = [...mySelection];
-      this.accessExpiryDate = this.user.edxUserSchools[0].expiryDate;
+      this.accessExpiryDate = this.getExpiryDate(this.user);
     },
     clearExpiryDate(){
       this.accessExpiryDate = null;
