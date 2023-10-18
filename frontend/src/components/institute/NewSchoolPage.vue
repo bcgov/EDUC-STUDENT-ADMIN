@@ -754,9 +754,9 @@ export default {
     addNewSchool() {
       this.processing = true;
 
-      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
+      ApiService.apiAxios.post(`${Routes.edx.CREATE_SCHOOL}`, {school: this.newSchool, user: this.initialUser})
         .then((response) => {
-          this.setSuccessAlert('Success! The school has been created.');
+          this.setSuccessAlert('Success! The school is being created.');
           this.resetForm();
           this.openSchoolDetailsPage(response.data.schoolId);
         })
