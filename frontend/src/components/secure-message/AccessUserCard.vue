@@ -391,6 +391,7 @@ export default {
       const payload = {
         params: {
           userToRelink: this.user.edxUserID,
+          edxUserExpiryDate: this.getExpiryDate(this.user)
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
@@ -402,6 +403,7 @@ export default {
         payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
+
       ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
