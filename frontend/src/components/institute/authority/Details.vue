@@ -520,7 +520,7 @@
                     </v-row>
                   </v-col>
                 </v-row>
-              </v-col>
+              </v-col> 
               <v-col
                 v-if="showPhysicalAddress"
                 cols="3"
@@ -699,7 +699,7 @@
               </v-col>
             </v-row>
 
-            <v-row>
+            <v-row v-if="showPhysicalAddress">
               <v-col>
                 <v-row
                   no-gutters
@@ -808,7 +808,7 @@
               </v-col>
             </v-row>
 
-            <v-row no-gutters>
+            <v-row v-if="showPhysicalAddress" no-gutters>
               <v-col>
                 <v-checkbox
                   id="sameAsMailingCheckbox"
@@ -913,7 +913,7 @@ export default {
     },
     showPhysicalAddress() {
       if (this.editing) {
-        return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy.authorityTypeCode);
+        return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy?.authorityTypeCode);
       }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     }
