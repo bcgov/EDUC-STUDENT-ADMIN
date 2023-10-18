@@ -29,7 +29,6 @@
               v-model="newContact.firstName"
               variant="underlined"
               class="pt-0"
-              :rules="[rules.noSpecialCharactersContactName()]"
               :maxlength="255"
               label="First Name"
             />
@@ -37,7 +36,7 @@
               id="newContactLastNameInput"
               v-model="newContact.lastName"
               variant="underlined"
-              :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
+              :rules="[rules.required()]"
               class="pt-0"
               :maxlength="255"
               label="Last Name"
@@ -47,7 +46,6 @@
               v-model="newContact.jobTitle"
               class="pt-0"
               variant="underlined"
-              :rules="[rules.noSpecialCharactersContactTitle()]"
               :maxlength="255"
               label="Position Title"
             />
