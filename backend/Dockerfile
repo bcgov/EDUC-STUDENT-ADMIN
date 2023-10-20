@@ -1,11 +1,12 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:14.20.1-alpine3.16
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:18.16.0-alpine3.18
 
+ENV npm_config_cache /tmp/npm
 RUN mkdir -p /logs
 RUN chmod 755 /logs
 
 WORKDIR /opt/app-root/src
-
 RUN ln -s /logs .
+
 COPY package*.json ./
 RUN npm ci
 
