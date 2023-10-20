@@ -863,6 +863,105 @@ async function getSchoolByID(req, res) {
   }
 }
 
+async function getSchoolByMincode(req, res) {
+  const token = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    const url = `${config.get('server:institute:rootURL')}/school/${school.schoolID}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchoolByMincode', 'Error occurred while attempting to GET school entity by mincode.');
+    return errorResponse(res);
+  }
+}
+
+
+async function getStudentRegistrationContacts(req, res) {
+  const token = getBackendToken(req);
+  let contactsList = [];
+  try {
+    const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    Promise.all([
+      getData(token, schoolContactURL),
+      getData(token, districtContactURL),
+    ])
+      .then(async ([schoolContactResponse, districtContactResponse]) => {
+        if (schoolContactResponse && districtContactResponse) {
+          schoolContactResponse.content.forEach((element) => {
+            let school = cacheService.getSchoolBySchoolID(element.schoolId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = school.schoolName;
+            schoolRegistrationContact.instituteIdentifier = school.mincode;
+            schoolRegistrationContact.instituteGUID = school.schoolID;
+            schoolRegistrationContact.instituteType = 'SCHOOL';
+            contactsList.push(schoolRegistrationContact);
+          });
+          districtContactResponse.content.forEach((element) => {
+            let district = cacheService.getDistrictJSONByDistrictId(element.districtId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = district.name;
+            schoolRegistrationContact.instituteGUID = district.districtId;
+            schoolRegistrationContact.instituteIdentifier = district.districtNumber;
+            schoolRegistrationContact.instituteType = 'DISTRICT';
+            contactsList.push(schoolRegistrationContact);
+          });
+          return res.status(200).json(contactsList);
+        }
+      });
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContacts', 'Error occurred while attempting to GET student registration contacts.');
+    return errorResponse(res);
+  }
+}
+
+async function getStudentRegistrationContactByMincode(req, res) {
+  const accessToken = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    let searchCriteriaList = [];
+    searchCriteriaList.push({key: 'schoolContactTypeCode', operation: FILTER_OPERATION.EQUAL, value: 'STUDREGIS', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    searchCriteriaList.push({key: 'schoolID', operation: FILTER_OPERATION.EQUAL, value: school.schoolID, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+
+    const schoolSearchCriteria = [{
+      condition: null,
+      searchCriteriaList: searchCriteriaList,
+    }];
+
+    const schoolSearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+      }
+    };
+
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
+    let schoolRegistrationContact = {};
+    if(response?.content && response.content[0]){
+      let firstStudRegContact = response.content[0];
+      schoolRegistrationContact.name = (firstStudRegContact.firstName ? firstStudRegContact.firstName + ' ' + firstStudRegContact.lastName : firstStudRegContact.lastName).trim();
+      schoolRegistrationContact.email = firstStudRegContact.email;
+      schoolRegistrationContact.instituteName = school.schoolName;
+      schoolRegistrationContact.instituteIdentifier = school.mincode;
+      schoolRegistrationContact.instituteGUID = school.schoolID;
+      schoolRegistrationContact.instituteType = 'SCHOOL';
+    }
+
+    return res.status(200).json(schoolRegistrationContact);
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContactByMincode', 'Error occurred while attempting to GET student registration contact entity.');
+    return errorResponse(res);
+  }
+}
+
+
 async function updateSchool(req, res) {
   try {
     const token = getBackendToken(req);
@@ -1356,5 +1455,8 @@ module.exports = {
   addDistrictContact,
   deleteDistrictContact,
   getSchoolHistoryPaginated,
-  moveSchool
+  moveSchool,
+  getStudentRegistrationContacts,
+  getStudentRegistrationContactByMincode,
+  getSchoolByMincode
 };

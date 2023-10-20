@@ -13,8 +13,6 @@ export const appStore = defineStore('app', {
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
     pageTitle: null,
     stickyInfoPanelHeight: null,
-    schoolApiMincodeSchoolNames: new Map(),
-    schoolApiDistrictCodes: new Set(),
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
     notClosedSchools: [],
@@ -31,7 +29,9 @@ export const appStore = defineStore('app', {
     fundingGroups: []
   }),
   getters: {
-    activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString())
+    activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString()),
+    districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
+    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
   },
   actions: {
     async setConfig(config){
@@ -105,13 +105,6 @@ export const appStore = defineStore('app', {
         this.alertNotification = true;
       }
     },
-    async setSchoolApiMincodeSchoolNameAndDistrictCodes(schoolApiMincodeSchoolNameList) {
-      this.schoolApiMincodeSchoolNames = new Map();
-      schoolApiMincodeSchoolNameList.forEach(element => {
-        this.schoolApiMincodeSchoolNames.set(element.mincode, element.schoolName);
-        this.schoolApiDistrictCodes.add(element.mincode?.substring(0, 3));
-      });
-    },
     async setFundingGroups(fundingGroups) {
       this.fundingGroups = fundingGroups;
       this.fundingGroupsMap = new Map();
@@ -122,7 +115,7 @@ export const appStore = defineStore('app', {
     async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(this.mincodeSchoolNames.size === 0) {
-          const response = await ApiService.getMincodeSchoolNames();
+          const response = await ApiService.getAllSchools();
           await this.setMincodeSchoolNameAndDistrictCodes(response.data);
         }
         if (this.activeSchools.length === 0) {
@@ -141,10 +134,6 @@ export const appStore = defineStore('app', {
           const response = await ApiService.getAuthorities();
           await this.setIndependentAuthorities(response.data);
         }
-        if(this.schoolApiMincodeSchoolNames.size === 0) {
-          const response = await ApiService.getSchoolApiMincodeSchoolNames();
-          await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(response.data);
-        }
         if(this.fundingGroupsMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
           const response = await ApiService.getAllFundingGroups();
           await this.setFundingGroups(response.data);
@@ -157,7 +146,7 @@ export const appStore = defineStore('app', {
     },
     async refreshEntities() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        const responseMinSchool = await ApiService.getMincodeSchoolNames();
+        const responseMinSchool = await ApiService.getAllSchools();
         await this.setMincodeSchoolNameAndDistrictCodes(responseMinSchool.data);
 
         const responseActiveSchools = await ApiService.getActiveSchools();
@@ -171,9 +160,6 @@ export const appStore = defineStore('app', {
 
         const response = await ApiService.getAuthorities();
         await this.setIndependentAuthorities(response.data);
-
-        const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
-        await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(responseSchoolApiMin.data);
 
         if(!this.config.DISABLE_SDC_FUNCTIONALITY) {
           const responseFunding = await ApiService.getAllFundingGroups();
