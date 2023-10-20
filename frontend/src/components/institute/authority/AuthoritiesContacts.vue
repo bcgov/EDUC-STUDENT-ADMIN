@@ -175,7 +175,7 @@ export default {
       return this.loadingCount !== 0;
     },
     canEditAuthorityContact() {
-      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
+      if(this.authority?.authorityTypeCode === 'OFFSHORE') {
         return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
       }
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
