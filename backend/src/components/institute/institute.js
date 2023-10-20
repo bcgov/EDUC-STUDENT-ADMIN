@@ -1082,6 +1082,15 @@ async function moveSchool(req, res) {
       });
     }
 
+    let school = cacheService.getSchoolBySchoolID(req.body.fromSchoolId);
+
+    if(!school || school.schoolCategoryCode === 'OFFSHORE') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to move an offshore school'
+      });
+    }
+
+
     const incomingPayload = req.body;
     incomingPayload.toSchool.openedDate = incomingPayload.toSchool.moveDate;
     incomingPayload.toSchool.createDate = null;
