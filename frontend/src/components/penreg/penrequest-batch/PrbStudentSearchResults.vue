@@ -306,7 +306,7 @@ export default {
     ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     ...mapActions(navigationStore, ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
-      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

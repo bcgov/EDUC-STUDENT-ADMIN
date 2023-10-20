@@ -6,7 +6,7 @@ const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   addNewAuthorityNote, updateAuthorityNote, deleteAuthorityNote, updateSchool, addSchool, addSchoolContact, deleteSchoolContact, updateDistrict, updateDistrictContact, deleteDistrictContact, addAuthority,
   addDistrictContact, addNewDistrictNote, updateDistrictNote, deleteDistrictNote, moveSchool, getSchoolHistoryPaginated,
   getStudentRegistrationContacts,
-  getStudentRegistrationContactByMincode
+  getStudentRegistrationContactByMincode, getSchoolByMincode
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -63,7 +63,7 @@ router.post('/school/contact', passport.authenticate('jwt', {session: false}, un
 
 router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
 
-router.get('/school/mincode/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
+router.get('/school/mincode/:mincode', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByMincode);
 
 router.put('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateSchool);
 
