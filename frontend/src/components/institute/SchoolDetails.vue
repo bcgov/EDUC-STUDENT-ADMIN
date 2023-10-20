@@ -162,7 +162,7 @@
                 </v-window-item>
                 <v-window-item value="notes">
                   <InstituteNotes
-                    :notes="school.notes"
+                    :notes="notes"
                     :has-access="canEditSchoolDetails()"
                     :loading="notesLoading"
                     @add-institute-note="saveNewSchoolNote"
@@ -236,6 +236,7 @@ export default {
       authority: '',
       cleanWebsiteUrl: '',
       loading: true,
+      notes: [],
       noteRequestCount: 0,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       offshoreArray: ['OFFSHORE'],
@@ -259,6 +260,7 @@ export default {
   watch: {},
   created() {
     this.getThisSchoolsDetails();
+    this.getSchoolNotes();
   },
   methods: {
     shouldDisableTab(tabName) {
@@ -282,6 +284,15 @@ export default {
           this.setFailureAlert(error.response?.data?.message || error.message);
         }).finally(() => {
           this.loading = false;
+        });
+    },
+    getSchoolNotes() {
+      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolID}/notes`)
+        .then(response => {
+          this.notes = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
         });
     },
     getDistrictDetails(districtId) {
@@ -358,6 +369,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been added to the school.');
           this.getThisSchoolsDetails();
+          this.getSchoolNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the school note. Please try again later.');
@@ -377,6 +389,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been saved.');
           this.getThisSchoolsDetails();
+          this.getSchoolNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the school note. Please try again later.');
@@ -390,6 +403,7 @@ export default {
       ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_NOTE_URL}/${this.schoolID}/${schoolNote.noteId}`).then(() => {
         this.setSuccessAlert('The school note has been removed successfully!');
         this.getThisSchoolsDetails();
+        this.getSchoolNotes();
       }).catch(error => {
         this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the school note. Please try again later.');
       }).finally(() => {

@@ -128,7 +128,7 @@
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
-                      :notes="authority?.notes ? authority?.notes : []"
+                      :notes="notes ? notes : []"
                       :has-access="canEditAuthorities()"
                       :loading="notesLoading"
                       @add-institute-note="saveNewAuthorityNote"
@@ -190,6 +190,7 @@ export default {
       authorityHasOpenSchools: false,
       closedDateOfLastClosingSchool: null,
       rules: Rules,
+      notes: [],
       authorityTypes: [],
       provinceCodeValues: [],
       countryCodeValues: [],
@@ -230,6 +231,7 @@ export default {
       this.authorityTypes = this.authorityTypeCodes;
     });
     this.getAuthority();
+    this.getAuthorityNotes();
   },
   methods: {
     formatPhoneNumber,
@@ -250,6 +252,15 @@ export default {
         this.setHasSamePhysicalFlag();
         this.loading = false;
       });
+    },
+    getAuthorityNotes() {
+      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_DATA_URL}/${this.authorityID}/notes`)
+        .then(response => {
+          this.notes = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        });
     },
     backButtonClick() {
       router.push({name: 'instituteAuthoritiesList'});
@@ -302,6 +313,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been added to the authority.');
           this.getAuthority();
+          this.getAuthorityNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the authority note. Please try again later.');
@@ -321,6 +333,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been saved.');
           this.getAuthority();
+          this.getAuthorityNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the authority note. Please try again later.');
@@ -334,6 +347,7 @@ export default {
       ApiService.apiAxios.delete(`${Routes.institute.AUTHORITY_NOTE_URL}/${this.authorityID}/${authorityNote.noteId}`).then(() => {
         this.setSuccessAlert('The authority note has been removed successfully!');
         this.getAuthority();
+        this.getAuthorityNotes();
       }).catch(error => {
         this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the authority note. Please try again later.');
       }).finally(() => {
