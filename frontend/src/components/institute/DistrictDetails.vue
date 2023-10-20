@@ -142,7 +142,7 @@
                 </v-window-item>
                 <v-window-item value="notes">
                   <InstituteNotes
-                    :notes="district?.notes ? district?.notes : []"
+                    :notes="notes ? notes : []"
                     :has-access="canEditDistrictDetails()"
                     :loading="notesLoading"
                     @add-institute-note="saveNewDistrictNote"
@@ -198,6 +198,7 @@ export default {
     return {
       district: null,
       rules: Rules,
+      notes: [],
       loading: false,
       noteRequestCount: 0,
       cleanWebsiteUrl: '',
@@ -222,6 +223,7 @@ export default {
   },
   created() {
     this.getDistrict();
+    this.getDistrictNotes();
 
     instituteStore().getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province => province.provinceCode === 'BC' || province.provinceCode === 'YT');
@@ -248,6 +250,15 @@ export default {
           this.setFailureAlert(error.response?.data?.message || error.message);
         }).finally(() => {
           this.loading = false;
+        });
+    },
+    getDistrictNotes() {
+      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${this.districtID}/notes`)
+        .then(response => {
+          this.notes = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
         });
     },
     setHasSamePhysicalFlag() {
@@ -314,6 +325,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been added to the district.');
           this.getDistrict();
+          this.getDistrictNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the district note. Please try again later.');
@@ -333,6 +345,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The note has been saved.');
           this.getDistrict();
+          this.getDistrictNotes();
         })
         .catch(error => {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the changes to the district note. Please try again later.');
@@ -346,6 +359,7 @@ export default {
       ApiService.apiAxios.delete(`${Routes.institute.DISTRICT_NOTE_URL}/${this.districtID}/${districtNote.noteId}`).then(() => {
         this.setSuccessAlert('The district note has been removed successfully!');
         this.getDistrict();
+        this.getDistrictNotes();
       }).catch(error => {
         this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while removing the district note. Please try again later.');
       }).finally(() => {
