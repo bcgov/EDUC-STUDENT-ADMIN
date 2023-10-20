@@ -944,7 +944,7 @@ async function getStudentRegistrationContactByMincode(req, res) {
 
     let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
     let schoolRegistrationContact = {};
-    if(response && response.content && response.content[0]){
+    if(response?.content && response.content[0]){
       let firstStudRegContact = response.content[0];
       schoolRegistrationContact.name = (firstStudRegContact.firstName ? firstStudRegContact.firstName + ' ' + firstStudRegContact.lastName : firstStudRegContact.lastName).trim();
       schoolRegistrationContact.email = firstStudRegContact.email;
