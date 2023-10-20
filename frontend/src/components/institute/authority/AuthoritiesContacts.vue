@@ -169,15 +169,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['authorityContactTypeCodes', 'independentAuthorityAuthorityContacts', 'offshoreAuthorityContacts', 'regularAuthorityContactTypes']),
     loading() {
       return this.loadingCount !== 0;
     },
     canEditAuthorityContact() {
-      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return (this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
-      } else if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
+      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
         return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
       }
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
