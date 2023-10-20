@@ -140,6 +140,7 @@ nconf.defaults({
         '/reporting-requirement-codes',
       schoolContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/school-contact-type-codes',
       authorityContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/authority-contact-type-codes',
+      rolesAllowed: process.env.INSTITUTE_ROLES ? process.env.INSTITUTE_ROLES.split(',') : '',
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,

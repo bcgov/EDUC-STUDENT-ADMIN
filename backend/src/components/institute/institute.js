@@ -142,11 +142,7 @@ async function updateDistrict(req, res) {
       note.createDate = null;
     });
 
-    districtPayload.contacts.forEach(function(contact) {
-      contact.updateDate = null;
-      contact.createDate = null;
-    });
-
+    districtPayload.contacts = null;
     districtPayload.createDate = null;
     districtPayload.updateDate = null;
     districtPayload.updateUser = utils.getUser(req).idir_username;
@@ -802,17 +798,17 @@ async function updateAuthority(req, res) {
       authorityPayload.addresses = authorityPayload.addresses.filter(address => address.addressTypeCode !== 'PHYSICAL');
     }
 
-    authorityPayload.addresses.forEach(function(addy) {
+    authorityPayload?.addresses?.forEach(function(addy) {
       addy.updateDate = null;
       addy.createDate = null;
     });
 
-    authorityPayload.notes.forEach(function(note) {
+    authorityPayload?.notes?.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    authorityPayload.contacts.forEach(function(contact) {
+    authorityPayload?.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
@@ -843,9 +839,7 @@ function hasSchoolAdminRole(req, school){
 }
 
 function hasAuthorityAdminRole(req, authority){
-  if(authority && authority.authorityTypeCode === 'INDEPENDNT') {
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(authority && authority.authorityTypeCode === 'OFFSHORE'){
+  if(authority?.authorityTypeCode === 'OFFSHORE'){
     return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
   }
   return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');

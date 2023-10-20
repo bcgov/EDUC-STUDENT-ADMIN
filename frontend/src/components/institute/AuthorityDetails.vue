@@ -204,7 +204,7 @@ export default {
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -256,9 +256,7 @@ export default {
     },
     deepCloneObject,
     canEditAuthorities() {
-      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
-      } else if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
+      if(this.authority?.authorityTypeCode === 'OFFSHORE') {
         return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
       }
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
