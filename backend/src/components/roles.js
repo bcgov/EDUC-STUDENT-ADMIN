@@ -25,7 +25,8 @@ const roles = {
     //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
     PenTeamRole: config.get('server:edx:teamRoles:pen'),
     //Help functions created in auth module: isValidSchoolMoveUserToken, isValidSchoolMoveUser
-    School: ['SCHOOL_ADMIN']
+    School: ['SCHOOL_ADMIN'],
+    EDX: [config.get('server:edx:roleAdmin')]
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin

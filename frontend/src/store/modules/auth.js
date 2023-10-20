@@ -69,7 +69,8 @@ export const authStore = defineStore('auth', {
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
     INDEPENDENT_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
     OFFSHORE_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolOffshoreAdmin,
-    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
+    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin,
+    INSTITUTIONS_ADMINISTRATION_ADMIN: state => state.isValidSchoolAdmin || state.isValidDistrictAdmin || state.isValidSchoolIndependentAdmin || state.isValidSchoolOffshoreAdmin || state.isValidIndependentAuthorityAdmin,
   },
   actions: {
     //sets Json web token and determines whether user is authenticated
