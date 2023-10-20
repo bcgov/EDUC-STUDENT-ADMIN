@@ -170,7 +170,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['config']),
-    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE']),
+    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE', 'INSTITUTIONS_ADMINISTRATION_ADMIN']),
     items() {
       return [
         {
@@ -254,22 +254,22 @@ export default {
         },
         {
           title: 'Institutions',
-          authorized: this.isAuthorizedUser,
+          authorized: this.INSTITUTIONS_ADMINISTRATION_ADMIN,
           items: [
             {
               title: 'Schools',
               link: 'instituteSchoolList',
-              authorized: this.isAuthorizedUser
+              authorized: this.INSTITUTIONS_ADMINISTRATION_ADMIN
             },
             {
               title: 'Districts',
               link: 'instituteDistrict',
-              authorized: this.isAuthorizedUser
+              authorized: this.INSTITUTIONS_ADMINISTRATION_ADMIN
             },
             {
               title: 'Authorities',
               link: 'instituteAuthoritiesList',
-              authorized: this.isAuthorizedUser
+              authorized: this.INSTITUTIONS_ADMINISTRATION_ADMIN
             }
           ],
         },

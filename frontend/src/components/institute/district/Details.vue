@@ -301,7 +301,7 @@
           </v-row>
           <div v-if="!editing">
             <v-row
-              v-if="!hasMailingAddress() && !editing"
+              v-if="canEditDistrictDetails() && !hasMailingAddress() && !editing"
               no-gutters
               class="mt-2 d-flex justify-start"
             >
