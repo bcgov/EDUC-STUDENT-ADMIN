@@ -97,6 +97,7 @@ let object = {
   institute: {
     ROOT_ENDPOINT: instituteRoot,
     SCHOOL_DATA_URL: instituteRoot + '/school',
+    STUDENT_REGISTRATION_CONTACTS: instituteRoot + '/studentRegistrationContacts',
     SCHOOL_NOTE_URL: instituteRoot + '/school/note',
     SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
@@ -424,7 +425,7 @@ export const PAGE_TITLES = Object.freeze(
     PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
     CREATE_NEW_PEN: 'Create New PEN',
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
-    PEN_COORDINATORS: 'PEN Contacts',
+    PEN_COORDINATORS: 'Student Registration Contacts',
     NEW_PENS: 'New PENs',
     MACRO_MANAGEMENT: 'Macro Management',
     NOMINAL_ROLL: 'Nominal Roll',

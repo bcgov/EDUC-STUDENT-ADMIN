@@ -63,32 +63,6 @@ async function updatePenCoordinatorByMincode(req, res) {
 
 }
 
-async function getPenCoordinators(req, res) {
-  const token = getBackendToken(req);
-  try {
-    const url = `${config.get('server:schoolAPIURL')}/schools/pen-coordinator`;
-    const data = await getData(token, url);
-    const coords = lodash.sortBy(data, ['mincode', 'penCoordinatorName']);
-    const filteredCords = coords.filter(coord=> {
-      const school = schoolApiCacheService.getSchoolNameJSONByMincode(coord.mincode);
-      if(!school){
-        return true;
-      }
-      return isSchoolExpired(school);
-    }).map(coord=> {
-      coord.schoolName = schoolApiCacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
-      if(!coord.schoolName){
-        coord.schoolName = 'District';
-      }
-      return coord;
-    });
-    return res.status(200).json(filteredCords);
-  } catch (e) {
-    logApiError(e, 'getPenCoordinators', 'Error occurred while attempting to GET pen coordinator entities.');
-    return errorResponse(res);
-  }
-}
-
 function isSchoolExpired(school) {
   if(school === null){
     return false;
@@ -102,6 +76,5 @@ function isSchoolExpired(school) {
 module.exports = {
   getSchoolByMincode,
   getPenCoordinatorByMincode,
-  updatePenCoordinatorByMincode,
-  getPenCoordinators,
+  updatePenCoordinatorByMincode
 };

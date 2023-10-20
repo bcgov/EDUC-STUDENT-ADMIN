@@ -70,7 +70,7 @@
                 class="pt-1"
               >
                 <p class="missing-highlight"><v-icon
-                  size="x-large"
+                  size="small"
                   color="#ff5252"
                   dark
                 >mdi-alert</v-icon> Missing contact details</p>

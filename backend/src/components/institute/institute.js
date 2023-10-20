@@ -1,13 +1,15 @@
 'use strict';
-const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('../utils');
+const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken, getCodeTable} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
-const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION, CACHE_KEYS} = require('../../util/constants');
 const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
 const {isDistrictActive, isSchoolOrAuthorityClosedOrNeverOpened} = require('./instituteUtils');
+const lodash = require("lodash");
+const schoolApiCacheService = require("../school-api-cache-service");
 
 async function getCachedDistricts(req, res) {
   try {
@@ -863,6 +865,49 @@ async function getSchoolByID(req, res) {
   }
 }
 
+async function getStudentRegistrationContacts(req, res) {
+  const token = getBackendToken(req);
+  let contactsList = [];
+  try {
+    const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    Promise.all([
+      getData(token, schoolContactURL),
+      getData(token, districtContactURL),
+    ])
+      .then(async ([schoolContactResponse, districtContactResponse]) => {
+        if (schoolContactResponse && districtContactResponse) {
+          schoolContactResponse.content.forEach((element) => {
+            let school = cacheService.getSchoolBySchoolID(element.schoolId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = school.schoolName;
+            schoolRegistrationContact.instituteIdentifier = school.mincode;
+            schoolRegistrationContact.instituteGUID = school.schoolID;
+            schoolRegistrationContact.instituteType = 'SCHOOL';
+            contactsList.push(schoolRegistrationContact);
+          });
+          districtContactResponse.content.forEach((element) => {
+            let district = cacheService.getDistrictJSONByDistrictId(element.districtId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = district.name;
+            schoolRegistrationContact.instituteGUID = district.districtId;
+            schoolRegistrationContact.instituteIdentifier = district.districtNumber;
+            schoolRegistrationContact.instituteType = 'DISTRICT';
+            contactsList.push(schoolRegistrationContact);
+          });
+          return res.status(200).json(contactsList);
+        }
+      });
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContacts', 'Error occurred while attempting to GET student registration contacts.');
+    return errorResponse(res);
+  }
+}
+
 async function updateSchool(req, res) {
   try {
     const token = getBackendToken(req);
@@ -1347,5 +1392,6 @@ module.exports = {
   addDistrictContact,
   deleteDistrictContact,
   getSchoolHistoryPaginated,
-  moveSchool
+  moveSchool,
+  getStudentRegistrationContacts
 };

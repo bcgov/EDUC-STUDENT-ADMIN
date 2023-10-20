@@ -27,7 +27,7 @@ import RouterView from '@/components/RouterView.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import UnAuthorizedPage from '@/components/UnAuthorizedPage.vue';
 import CompareStudents from '@/components/CompareStudents.vue';
-import PenCoordinatorsDisplay from '@/components/penreg/coordinator/PenCoordinatorsDisplay.vue';
+import StudentRegistrationContactsDisplay from '@/components/penreg/student-registration/StudentRegistrationContactsDisplay.vue';
 import MacrosDisplay from '@/components/admin/MacrosDisplay.vue';
 import NominalRoll from '@/components/nominal-roll/NominalRoll.vue';
 import NomRollStudentListDisplay from '@/components/nominal-roll/NomRollStudentListDisplay.vue';
@@ -261,9 +261,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/penCoordinators',
-      name: 'penCoordinators',
-      component: PenCoordinatorsDisplay,
+      path: '/studentRegistrationContacts',
+      name: 'studentRegistrationContacts',
+      component: StudentRegistrationContactsDisplay,
       meta: {
         pageTitle: PAGE_TITLES.PEN_COORDINATORS,
         requiresAuth: true,
