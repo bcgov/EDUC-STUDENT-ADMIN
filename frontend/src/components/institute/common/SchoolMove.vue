@@ -198,7 +198,7 @@ export default {
       return this.SCHOOL_ADMIN_ROLE;
     },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.canEditSchoolDetails();
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.school.schoolCategoryCode !== 'OFFSHORE' && this.canEditSchoolDetails();
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;
