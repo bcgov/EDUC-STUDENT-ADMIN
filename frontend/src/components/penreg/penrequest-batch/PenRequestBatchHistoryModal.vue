@@ -16,6 +16,7 @@
             v-for="(item, i) in fileItems"
             :key="item.name + i"
             :name="item.name"
+            label-span="2"
             :label="item.label"
             :value="item.value"
             :loading="loadingPenCoord && item.type === 'coord'"
@@ -154,7 +155,7 @@ export default {
         },
         {title: '', text: '', value: '', sortable: false},
       ],
-      penCoordinator: {},
+      studentRegistrationContact: {},
     };
   },
   computed: {
@@ -163,8 +164,8 @@ export default {
       return [
         {name: 'district', label: this.districtFieldLabel, value: this.districtName},
         {name: 'school', label: this.schoolFieldLabel, value: this.batchFile.schoolName},
-        {name: 'coord', label: 'PEN Coord:', value: this.penCoordinator.penCoordinatorName, type: 'coord'},
-        {name: 'email', label: 'Email:', value: this.penCoordinator.penCoordinatorEmail, type: 'coord'},
+        {name: 'coord', label: 'Student Registration Contact:', value: this.studentRegistrationContact.name, type: 'coord'},
+        {name: 'email', label: 'Email:', value: this.studentRegistrationContact.email, type: 'coord'},
         {name: 'breakLine', label: '', value: ''},
         {name: 'fileName', label: 'File Name:', value: this.batchFile.fileName},
         {name: 'submission', label: 'Submission #:', value: this.batchFile.submissionNumber},
@@ -220,7 +221,7 @@ export default {
   },
   created() {
     this.modalOpen = this.value;
-    this.loadPenCoord();
+    this.loadStudentRegistrationContact();
     this.loadPenWebBlobs();
   },
   methods: {
@@ -245,13 +246,13 @@ export default {
         })
         .finally(() => (this.loadingTable = false));
     },
-    loadPenCoord() {
+    loadStudentRegistrationContact() {
       this.loadingPenCoord = true;
       ApiService.apiAxios
-        .get(`${Routes.SCHOOL_DATA_URL}/${this.batchFile.mincode}/penCoordinator`)
+        .get(`${Routes.institute.STUDENT_REGISTRATION_CONTACT}/${this.batchFile.mincode}`)
         .then(response => {
           if (response.data) {
-            this.penCoordinator = response.data;
+            this.studentRegistrationContact = response.data;
           }
         })
         .catch(error => {

@@ -1,15 +1,13 @@
 'use strict';
-const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken, getCodeTable} = require('../utils');
+const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
-const {FILTER_OPERATION, VALUE_TYPE, CONDITION, CACHE_KEYS} = require('../../util/constants');
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 const _ = require('lodash');
 const {isDistrictActive, isSchoolOrAuthorityClosedOrNeverOpened} = require('./instituteUtils');
-const lodash = require("lodash");
-const schoolApiCacheService = require("../school-api-cache-service");
 
 async function getCachedDistricts(req, res) {
   try {
@@ -865,6 +863,20 @@ async function getSchoolByID(req, res) {
   }
 }
 
+async function getSchoolByMincode(req, res) {
+  const token = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    const url = `${config.get('server:institute:rootURL')}/school/${school.schoolID}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchoolByMincode', 'Error occurred while attempting to GET school entity by mincode.');
+    return errorResponse(res);
+  }
+}
+
+
 async function getStudentRegistrationContacts(req, res) {
   const token = getBackendToken(req);
   let contactsList = [];
@@ -907,6 +919,48 @@ async function getStudentRegistrationContacts(req, res) {
     return errorResponse(res);
   }
 }
+
+async function getStudentRegistrationContactByMincode(req, res) {
+  const accessToken = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    let searchCriteriaList = [];
+    searchCriteriaList.push({key: 'schoolContactTypeCode', operation: FILTER_OPERATION.EQUAL, value: 'STUDREGIS', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    searchCriteriaList.push({key: 'schoolID', operation: FILTER_OPERATION.EQUAL, value: school.schoolID, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+
+    const schoolSearchCriteria = [{
+      condition: null,
+      searchCriteriaList: searchCriteriaList,
+    }];
+
+    const schoolSearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+      }
+    };
+
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
+    let schoolRegistrationContact = {};
+    if(response && response.content && response.content[0]){
+      let firstStudRegContact = response.content[0];
+      schoolRegistrationContact.name = (firstStudRegContact.firstName ? firstStudRegContact.firstName + ' ' + firstStudRegContact.lastName : firstStudRegContact.lastName).trim();
+      schoolRegistrationContact.email = firstStudRegContact.email;
+      schoolRegistrationContact.instituteName = school.schoolName;
+      schoolRegistrationContact.instituteIdentifier = school.mincode;
+      schoolRegistrationContact.instituteGUID = school.schoolID;
+      schoolRegistrationContact.instituteType = 'SCHOOL';
+    }
+
+    return res.status(200).json(schoolRegistrationContact);
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContactByMincode', 'Error occurred while attempting to GET student registration contact entity.');
+    return errorResponse(res);
+  }
+}
+
 
 async function updateSchool(req, res) {
   try {
@@ -1393,5 +1447,7 @@ module.exports = {
   deleteDistrictContact,
   getSchoolHistoryPaginated,
   moveSchool,
-  getStudentRegistrationContacts
+  getStudentRegistrationContacts,
+  getStudentRegistrationContactByMincode,
+  getSchoolByMincode
 };
