@@ -137,11 +137,6 @@ async function updateDistrict(req, res) {
       addy.createDate = null;
     });
 
-    districtPayload.notes.forEach(function(note) {
-      note.updateDate = null;
-      note.createDate = null;
-    });
-
     districtPayload.contacts = null;
     districtPayload.createDate = null;
     districtPayload.updateDate = null;
@@ -839,11 +834,6 @@ async function updateAuthority(req, res) {
       addy.createDate = null;
     });
 
-    authorityPayload?.notes?.forEach(function(note) {
-      note.updateDate = null;
-      note.createDate = null;
-    });
-
     authorityPayload?.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
@@ -1010,11 +1000,6 @@ async function updateSchool(req, res) {
       addy.createDate = null;
     });
 
-    payload.notes?.forEach(function(note) {
-      note.updateDate = null;
-      note.createDate = null;
-    });
-
     payload.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
@@ -1128,11 +1113,6 @@ async function moveSchool(req, res) {
     incomingPayload.toSchool.createUser = utils.getUser(req).idir_username;
     incomingPayload.toSchool.updateUser = utils.getUser(req).idir_username;
     incomingPayload.toSchool.addresses = [];
-
-    incomingPayload.toSchool.notes.forEach(function(note) {
-      note.updateDate = null;
-      note.createDate = null;
-    });
 
     incomingPayload.toSchool.contacts.forEach(function(contact) {
       contact.updateDate = null;
