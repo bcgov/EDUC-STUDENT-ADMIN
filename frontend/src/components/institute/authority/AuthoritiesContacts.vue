@@ -186,13 +186,20 @@ export default {
       if (!this.authorityContactTypeCodes) {
         await this.loadAuthorityContactTypeCodes();
       }
+      let contactTypes = [];
       if (value?.authorityTypeCode === 'OFFSHORE') {
-        this.authorityContactTypes = this.offshoreAuthorityContacts;
+        contactTypes = [...this.offshoreAuthorityContacts];
       } else if (value?.authorityTypeCode === 'INDEPENDNT') {
-        this.authorityContactTypes = this.independentAuthorityAuthorityContacts;
+        contactTypes = [...this.independentAuthorityAuthorityContacts];
       } else {
-        this.authorityContactTypes = this.regularAuthorityContactTypes;
+        contactTypes = [...this.regularAuthorityContactTypes];
       }
+
+      this.authorityContactTypes = contactTypes.sort((a, b) => {
+        if (a.authorityContactTypeCode == 'INDAUTHREP') return -1;
+        if (b.authorityContactTypeCode == 'INDAUTHREP') return 1;
+        return 0;
+      });
     }
   },
   created() {
