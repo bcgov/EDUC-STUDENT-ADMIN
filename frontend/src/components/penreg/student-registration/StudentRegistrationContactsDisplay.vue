@@ -110,9 +110,9 @@ export default {
       let curSchool = school.item.raw;
       let route;
       if(curSchool.instituteType === 'SCHOOL'){
-        route = this.$router.resolve({name: 'schoolDetails', params: {schoolID: curSchool.instituteGUID}});
+        route = this.$router.resolve({name: 'schoolDetails', params: {schoolID: curSchool.instituteGUID}, query: {contact: true}});
       }else{
-        route = this.$router.resolve({name: 'districtDetails', params: {districtID: curSchool.instituteGUID}});
+        route = this.$router.resolve({name: 'districtDetails', params: {districtID: curSchool.instituteGUID}, query: {contact: true}});
       }
       window.open(route.href, '_blank');
     },

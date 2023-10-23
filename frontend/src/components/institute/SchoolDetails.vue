@@ -261,10 +261,13 @@ export default {
   created() {
     this.getThisSchoolsDetails();
     this.getSchoolNotes();
+    this.setTab();
   },
   methods: {
-    shouldDisableTab(tabName) {
-      return tabName === 'Moves' && this.school.schoolMove.length === 0;
+    setTab(){
+      if(this.$route.query?.contact){
+        this.tab = 'contacts';
+      }
     },
     getThisSchoolsDetails() {
       this.loading = true;
