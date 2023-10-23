@@ -162,10 +162,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
+    ...mapState(appStore, ['mincodeSchoolNames']),
     ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     schools() {
-      return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({
+      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({
         text: `${school[0]} - ${school[1]}`,
         value: school[0]
       })), ['value']);

@@ -205,7 +205,7 @@
                     density="compact"
                     name="1"
                     label="School District"
-                    :items="schoolApiDistrictCodesObjectSorted"
+                    :items="districtCodesObjectSorted"
                     :rules="[!validationErrors['School District'] || validationErrors['School District']]"
                   />
                 </v-col>
@@ -252,7 +252,7 @@
                     density="compact"
                     name="3"
                     label="School Name"
-                    :items="schoolApiMincodeSchoolNamesObjectSorted"
+                    :items="mincodeSchoolNamesObjectSorted"
                     :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
                   />
                 </v-col>
@@ -500,7 +500,7 @@ export default {
   computed: {
     ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
     ...mapState(studentStore, ['genders', 'gradeCodeObjects']),
-    ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes', 'schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
+    ...mapState(appStore, ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
     ...mapState(authStore, ['EDIT_NOMINAL_ROLL_ROLE', 'NOMINAL_ROLL_READ_ONLY_ROLE']),
     ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     ...mapState(notificationsStore, ['notification']),
@@ -563,7 +563,7 @@ export default {
       return (format && column) ? format(column) : (column || ' ');
     },
     getSchoolName(request) {
-      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ', ''));
+      return appStore().mincodeSchoolNames.get(request?.mincode?.replace(' ', ''));
     },
     hasNoEditRoleAccess() {
       return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();

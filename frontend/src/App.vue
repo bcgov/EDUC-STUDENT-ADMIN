@@ -193,4 +193,7 @@ export default {
     background-color: rgba(0,0,0,.12)!important;
   }
 
+  .viewer-open {
+    padding-right: 0 !important;
+  }
 </style>

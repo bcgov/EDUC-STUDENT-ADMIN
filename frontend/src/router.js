@@ -27,7 +27,7 @@ import RouterView from '@/components/RouterView.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import UnAuthorizedPage from '@/components/UnAuthorizedPage.vue';
 import CompareStudents from '@/components/CompareStudents.vue';
-import PenCoordinatorsDisplay from '@/components/penreg/coordinator/PenCoordinatorsDisplay.vue';
+import StudentRegistrationContactsDisplay from '@/components/penreg/student-registration/StudentRegistrationContactsDisplay.vue';
 import MacrosDisplay from '@/components/admin/MacrosDisplay.vue';
 import NominalRoll from '@/components/nominal-roll/NominalRoll.vue';
 import NomRollStudentListDisplay from '@/components/nominal-roll/NomRollStudentListDisplay.vue';
@@ -43,12 +43,10 @@ import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictU
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage.vue';
 import DistrictList from '@/components/institute/DistrictList.vue';
 import DistrictDetailsPage from '@/components/institute/DistrictDetails.vue';
-import DistrictContactsPage from '@/components/institute/DistrictContacts.vue';
 import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
-import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -263,9 +261,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/penCoordinators',
-      name: 'penCoordinators',
-      component: PenCoordinatorsDisplay,
+      path: '/studentRegistrationContacts',
+      name: 'studentRegistrationContacts',
+      component: StudentRegistrationContactsDisplay,
       meta: {
         pageTitle: PAGE_TITLES.PEN_COORDINATORS,
         requiresAuth: true,
@@ -447,17 +445,6 @@ const router = createRouter({
           }
         },
         {
-          path: 'districtContacts/:districtID',
-          name: 'districtContacts',
-          component: DistrictContactsPage,
-          props: true,
-          meta: {
-            pageTitle: PAGE_TITLES.DISTRICT_CONTACTS,
-            requiresAuth: true,
-            permission: 'SECURE_EXCHANGE'
-          }
-        },
-        {
           path: 'school',
           name: 'instituteSchoolList',
           component: SchoolListPage,
@@ -495,16 +482,6 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
         requiresAuth: true
-      }
-    },
-    {
-      path: '/authorityContacts/:authorityID',
-      name: 'authorityContacts',
-      props: true,
-      component: AuthorityContactsPage,
-      meta: {
-        pageTitle: PAGE_TITLES.AUTHORITY_CONTACTS,
-        requiresAuth: true,
       }
     },
     {

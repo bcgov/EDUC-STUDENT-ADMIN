@@ -29,7 +29,6 @@ const server = http.createServer(app);
 const WS = require('./socket/web-socket');
 const NATS = require('./messaging/message-pub-sub');
 const cacheService = require('./components/cache-service');
-const schoolApiCacheServicce = require('./components/school-api-cache-service');
 const constants = require('./util/constants');
 
 cacheService.loadAllSchoolsToMap().then(() => {
@@ -107,11 +106,13 @@ cacheService.loadDataToCache( constants.CACHE_KEYS.AUTHORITY_CONTACT_TYPES, 'ser
 }).catch((e) => {
   log.error('Error loading AUTHORITY_CONTACT_TYPES data during boot .', e);
 });
-cacheService.loadDataToCache( constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL').then(() => {
-  log.info('Loaded FUNDING_GROUPS data to memory');
-}).catch((e) => {
-  log.error('Error loading FUNDING_GROUPS data during boot .', e);
-});
+if(!config.get('frontendConfig').disableSdcFunctionality) {
+  cacheService.loadDataToCache( constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL').then(() => {
+    log.info('Loaded FUNDING_GROUPS data to memory');
+  }).catch((e) => {
+    log.error('Error loading FUNDING_GROUPS data during boot .', e);
+  });
+}
 
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');
@@ -122,11 +123,6 @@ cacheService.loadAllDocumentTypeCodesToMap().then(() => {
   log.info('Loaded document type codes to memory');
 }).catch((e) => {
   log.error('Error loading document type codes during boot .', e);
-});
-schoolApiCacheServicce.loadAllSchoolsToMap().then(() => {
-  log.info('Loaded school data to memory school-api-cache');
-}).catch((e) => {
-  log.error('Error loading schools during boot school-api-cache .', e);
 });
 WS.init(app, server);
 

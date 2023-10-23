@@ -198,15 +198,10 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
 }
 
 export function getSchoolData(mincode) {
-  const params = {
-    params: {
-      mincode: mincode,
-    }
-  };
   if (mincode) {
     return new Promise((resolve, reject) => {
       ApiService.apiAxios
-        .get(Routes.SCHOOL_DATA_URL, params)
+        .get(Routes.institute.SCHOOL_DATA_URL + '/mincode/' + mincode)
         .then(response => {
           resolve(response.data);
         })

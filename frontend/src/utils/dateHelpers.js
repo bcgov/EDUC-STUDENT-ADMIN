@@ -1,11 +1,11 @@
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import moment from 'moment';
 
 export function findUpcomingDate(month, day) {
   let currentDate = LocalDate.now();
   let defaultUpcomingDate = new LocalDate(currentDate.year(), month, day);
   defaultUpcomingDate = defaultUpcomingDate.isBefore(currentDate) ? defaultUpcomingDate.plusYears(1) : defaultUpcomingDate;
-  return defaultUpcomingDate;
+  return defaultUpcomingDate.atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 }
 
 export function parseDate(date) {

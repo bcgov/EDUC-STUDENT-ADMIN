@@ -5,9 +5,12 @@
         <v-row no-gutters>
           <v-col>
             <v-row no-gutters>
-              <v-col cols="10">
+              <v-col
+                cols="8"
+                class="justify-start"
+              >
                 <v-icon
-                  class="pb-1"
+                  class="pb-1 pr-1"
                   size="x-small"
                   :color="getStatusColor(contact)"
                   left
@@ -15,27 +18,25 @@
                 >
                   mdi-circle
                 </v-icon>
-                <strong
-                  id="authorityContactName"
-                >{{
+                <strong>{{
                   formatContactName(contact)
                 }}</strong>
               </v-col>
               <v-col
-                cols="2"
+                cols="4"
                 class="d-flex justify-end"
               >
                 <v-btn
-                  v-if="canEditAuthorityContact"
+                  v-if="canEditDistrictContact"
                   id="editContactButton"
                   title="Edit"
                   color="white"
                   width="0.5em"
-                  variant="flat"
                   min-width="0.5em"
+                  variant="flat"
                   small
                   class="mr-2"
-                  @click="callDoShowEditAuthorityContactForm()"
+                  @click="callDoShowEditDistrictContactForm()"
                 >
                   <v-icon
                     size="x-large"
@@ -44,13 +45,13 @@
                   >mdi-pencil</v-icon>
                 </v-btn>
                 <v-btn
-                  v-if="canEditAuthorityContact"
+                  v-if="canEditDistrictContact"
                   id="removeContactButton"
                   title="Remove"
                   color="white"
                   width="0.5em"
-                  variant="flat"
                   min-width="0.5em"
+                  variant="flat"
                   small
                   class="mr-2"
                   @click="callShowRemoveContactConfirmation"
@@ -65,19 +66,27 @@
             </v-row>
             <v-row no-gutters>
               <v-col
+                cols="12"
+                class="pt-1"
+              >
+                <strong style="word-break: break-word;">{{
+                  contact.jobTitle
+                }}</strong>
+              </v-col>
+              <v-col
                 v-if="!contact.email && !contact.phoneNumber"
                 cols="12"
                 class="pt-1"
               >
                 <p class="missing-highlight"><v-icon
-                  size="x-large"
+                  size="small"
                   color="#ff5252"
                   dark
                 >mdi-alert</v-icon> Missing contact details</p>
                 <a
-                  v-if="canEditAuthorityContact"
+                  v-if="canEditDistrictContact"
                   class="editField"
-                  @click="callDoShowEditAuthorityContactForm()"
+                  @click="callDoShowEditDistrictContactForm()"
                 >+ email or phone</a>
               </v-col>
               <v-col
@@ -155,29 +164,30 @@ import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
 
 export default {
-  name: 'AuthorityContact',
+  name: 'DistrictContact',
   props: {
     contact: {
       type: Object,
       required: true
     },
-    canEditAuthorityContact: {
+    canEditDistrictContact: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['edit-district-contact:do-show-edit-district-contact-form', 'remove-school-contact:show-confirmation-prompt'],
   methods: {
-    callDoShowEditAuthorityContactForm() {
-      this.$emit('editAuthorityContact:doShowEditAuthorityContactForm');
+    callDoShowEditDistrictContactForm() {
+      this.$emit('edit-district-contact:do-show-edit-district-contact-form');
     },
     callShowRemoveContactConfirmation() {
-      this.$emit('removeAuthorityContact:showConfirmationPrompt', this.contact.independentAuthorityId, this.contact.authorityContactId);
+      this.$emit('remove-school-contact:show-confirmation-prompt', this.contact.districtId, this.contact.districtContactId);
     },
     formatDate,
     formatPhoneNumber,
     getStatusColor,
     formatContactName
-  },
+  }
 };
 </script>
 <style scoped>

@@ -1,6 +1,5 @@
 <template>
   <v-container
-    class="containerSetup"
     fluid
   >
     <v-row v-if="loading">
@@ -16,43 +15,6 @@
       </v-col>
     </v-row>
     <template v-if="!loading">
-      <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon
-            class="mt-1"
-            small
-            color="#1976d2"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1 mt-1"
-            @click="backButtonClick"
-          >Return to Authority List</a>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          cols="12"
-          class="d-flex justify-start"
-        >
-          <v-row no-gutters>
-            <v-col cols="12">
-              <h2
-                id="authorityNameAndNumber"
-                class="subjectHeading"
-              >
-                {{
-                  authority.authorityNumber
-                }} -
-                {{
-                  authority.displayName
-                }}
-              </h2>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
       <v-row cols="2">
         <v-col class="d-flex justify-start">
           <v-chip
@@ -73,15 +35,6 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            id="viewAuthorityDetailsButton"
-            class="mr-2"
-            secondary
-            icon-left
-            icon="mdi-domain"
-            :to="`/authority/${authorityID}`"
-            text="View Authority Details"
-          />
-          <PrimaryButton
             v-if="canEditAuthorityContact"
             icon-left
             width="11em"
@@ -94,9 +47,10 @@
       <div
         v-for="authorityContactType in authorityContactTypes"
         :key="authorityContactType.code"
+        class="pb-4"
       >
         <v-row>
-          <v-col>
+          <v-col class="pb-0">
             <h2
               id="authorityTypeLabel"
               style="color:#1A5A96"
@@ -114,6 +68,7 @@
           <v-col
             v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)"
             :key="contact.independentAuthorityId"
+            class="pt-0"
             cols="5"
             lg="4"
           >
@@ -129,7 +84,7 @@
           v-else
           cols="2"
         >
-          <v-col>
+          <v-col class="pt-0">
             <p>No contacts of this type have been listed.</p>
           </v-col>
         </v-row>
@@ -173,22 +128,22 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {mapState} from 'pinia';
-import AuthorityContact from '@/components/institute/AuthorityContact.vue';
-import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage.vue';
+import AuthorityContact from '@/components/institute/authority/AuthorityContact.vue';
+import NewAuthorityContactPage from '@/components/institute/authority/NewAuthorityContactPage.vue';
 import {sortBy} from 'lodash';
-import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
+import EditAuthorityContactPage from '@/components/institute/authority/EditAuthorityContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 
 export default {
-  name: 'AuthorityContactPage',
+  name: 'AuthorityContacts',
   components: {
     EditAuthorityContactPage,
     PrimaryButton,
@@ -214,15 +169,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['authorityContactTypeCodes', 'independentAuthorityAuthorityContacts', 'offshoreAuthorityContacts', 'regularAuthorityContactTypes']),
     loading() {
       return this.loadingCount !== 0;
     },
     canEditAuthorityContact() {
-      if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return (this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
-      } else if(this.authority?.authorityTypeCode && this.authority?.authorityTypeCode === 'OFFSHORE') {
+      if(this.authority?.authorityTypeCode === 'OFFSHORE') {
         return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
       }
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();

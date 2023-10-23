@@ -216,7 +216,7 @@ export default {
         },
         {
           title: PAGE_TITLES.PEN_COORDINATORS,
-          link: 'penCoordinators',
+          link: 'studentRegistrationContacts',
           newTab: true,
           authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
         },

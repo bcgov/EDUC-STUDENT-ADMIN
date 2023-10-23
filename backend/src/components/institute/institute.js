@@ -58,7 +58,6 @@ async function getDistricts(req, res) {
 async function addDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
     if(!district || !hasDistrictAdminRole(req)){
@@ -85,8 +84,8 @@ async function addDistrictContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -143,11 +142,7 @@ async function updateDistrict(req, res) {
       note.createDate = null;
     });
 
-    districtPayload.contacts.forEach(function(contact) {
-      contact.updateDate = null;
-      contact.createDate = null;
-    });
-
+    districtPayload.contacts = null;
     districtPayload.createDate = null;
     districtPayload.updateDate = null;
     districtPayload.updateUser = utils.getUser(req).idir_username;
@@ -166,7 +161,6 @@ async function updateDistrict(req, res) {
 async function updateDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district || !hasDistrictAdminRole(req)){
@@ -185,8 +179,6 @@ async function updateDistrictContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.params.contactId}` , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -199,7 +191,6 @@ async function updateDistrictContact(req, res) {
 async function deleteDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
     if(!district || !hasDistrictAdminRole(req)){
@@ -225,13 +216,31 @@ async function deleteDistrictContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.params.districtId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
     await logApiError(e, 'deleteDistrictContact', 'Error occurred while attempting to remove a district contact.');
+    return errorResponse(res);
+  }
+}
+
+async function getDistrictNotes(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const result = await getData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'getDistrictNotes', 'Error occurred while attempting to add a retrieve district notes.');
     return errorResponse(res);
   }
 }
@@ -347,8 +356,6 @@ async function addSchool(req, res) {
       });
     }
 
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
-
     const payload = {
       createUser: utils.getUser(req).idir_username,
       createDate: null,
@@ -366,7 +373,7 @@ async function addSchool(req, res) {
       schoolOrganizationCode: req.body.schoolOrganizationCode,
       schoolCategoryCode: req.body.schoolCategoryCode,
       facilityTypeCode: req.body.facilityTypeCode,
-      openedDate: req.body.openedDate ? LocalDate.parse(req.body.openedDate).atStartOfDay().format(formatter) : null,
+      openedDate: req.body.openedDate ? req.body.openedDate : null,
       closedDate: null,
       addresses: [],
       grades: [],
@@ -449,6 +456,24 @@ async function addNewSchoolNote(req, res) {
   }
 }
 
+async function getSchoolNotes(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const result = await getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'getSchoolNotes', 'Error occurred while attempting to get school notes.');
+    return errorResponse(res);
+  }
+}
+
 async function updateSchoolNote(req, res) {
   if (req.params.noteId !== req.body.noteId) {
     return res.status(HttpStatus.BAD_REQUEST).json({
@@ -496,7 +521,6 @@ async function deleteSchoolNote(req, res) {
 async function addSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -523,8 +547,8 @@ async function addSchoolContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -539,7 +563,6 @@ async function addSchoolContact(req, res) {
 async function updateSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -558,8 +581,9 @@ async function updateSchoolContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+    params.effectiveDate = params.effectiveDate ? req.body.effectiveDate : null;
+    params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
+    params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
 
     const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -572,7 +596,6 @@ async function updateSchoolContact(req, res) {
 async function deleteSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
     if(!school || !hasSchoolAdminRole(req, school)){
@@ -598,7 +621,7 @@ async function deleteSchoolContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
@@ -612,7 +635,6 @@ async function deleteSchoolContact(req, res) {
 async function addAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -639,8 +661,8 @@ async function addAuthorityContact(req, res) {
       phoneExtension: req.body.phoneExtension,
       alternatePhoneNumber: req.body.alternatePhoneNumber,
       alternatePhoneExtension: req.body.alternatePhoneExtension,
-      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
-      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+      effectiveDate: req.body.effectiveDate ? req.body.effectiveDate : null,
+      expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
@@ -655,7 +677,6 @@ async function addAuthorityContact(req, res) {
 async function updateAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -674,8 +695,6 @@ async function updateAuthorityContact(req, res) {
     params.updateDate = null;
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
-    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
-    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
     const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -688,7 +707,6 @@ async function updateAuthorityContact(req, res) {
 async function deleteAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
     if(!authority || !hasAuthorityAdminRole(req, authority)){
@@ -714,7 +732,7 @@ async function deleteAuthorityContact(req, res) {
     contact.createDate = null;
     contact.updateDate = null;
     contact.updateUser = utils.getUser(req).idir_username;
-    contact.expiryDate = LocalDateTime.now().format(formatter);
+    contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
     await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.independentAuthorityId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
@@ -728,7 +746,6 @@ async function deleteAuthorityContact(req, res) {
 async function addAuthority(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     if(!hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -742,7 +759,7 @@ async function addAuthority(req, res) {
 
       displayName: req.body.authorityName,
       authorityTypeCode: req.body.authorityTypeCode,
-      openedDate: req.body.openDate ? LocalDate.parse(req.body.openDate).atStartOfDay().format(formatter) : null,
+      openedDate: req.body.openDate ? req.body.openDate : null,
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       faxNumber: req.body.faxNumber,
@@ -817,17 +834,17 @@ async function updateAuthority(req, res) {
       authorityPayload.addresses = authorityPayload.addresses.filter(address => address.addressTypeCode !== 'PHYSICAL');
     }
 
-    authorityPayload.addresses.forEach(function(addy) {
+    authorityPayload?.addresses?.forEach(function(addy) {
       addy.updateDate = null;
       addy.createDate = null;
     });
 
-    authorityPayload.notes.forEach(function(note) {
+    authorityPayload?.notes?.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    authorityPayload.contacts.forEach(function(contact) {
+    authorityPayload?.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
@@ -858,9 +875,7 @@ function hasSchoolAdminRole(req, school){
 }
 
 function hasAuthorityAdminRole(req, authority){
-  if(authority && authority.authorityTypeCode === 'INDEPENDNT') {
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(authority && authority.authorityTypeCode === 'OFFSHORE'){
+  if(authority?.authorityTypeCode === 'OFFSHORE'){
     return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
   }
   return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');
@@ -877,6 +892,105 @@ async function getSchoolByID(req, res) {
     return errorResponse(res);
   }
 }
+
+async function getSchoolByMincode(req, res) {
+  const token = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    const url = `${config.get('server:institute:rootURL')}/school/${school.schoolID}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchoolByMincode', 'Error occurred while attempting to GET school entity by mincode.');
+    return errorResponse(res);
+  }
+}
+
+
+async function getStudentRegistrationContacts(req, res) {
+  const token = getBackendToken(req);
+  let contactsList = [];
+  try {
+    const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    Promise.all([
+      getData(token, schoolContactURL),
+      getData(token, districtContactURL),
+    ])
+      .then(async ([schoolContactResponse, districtContactResponse]) => {
+        if (schoolContactResponse && districtContactResponse) {
+          schoolContactResponse.content.forEach((element) => {
+            let school = cacheService.getSchoolBySchoolID(element.schoolId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = school.schoolName;
+            schoolRegistrationContact.instituteIdentifier = school.mincode;
+            schoolRegistrationContact.instituteGUID = school.schoolID;
+            schoolRegistrationContact.instituteType = 'SCHOOL';
+            contactsList.push(schoolRegistrationContact);
+          });
+          districtContactResponse.content.forEach((element) => {
+            let district = cacheService.getDistrictJSONByDistrictId(element.districtId);
+            let schoolRegistrationContact = {};
+            schoolRegistrationContact.name = (element.firstName ? element.firstName + ' ' + element.lastName : element.lastName).trim();
+            schoolRegistrationContact.email = element.email;
+            schoolRegistrationContact.instituteName = district.name;
+            schoolRegistrationContact.instituteGUID = district.districtId;
+            schoolRegistrationContact.instituteIdentifier = district.districtNumber;
+            schoolRegistrationContact.instituteType = 'DISTRICT';
+            contactsList.push(schoolRegistrationContact);
+          });
+          return res.status(200).json(contactsList);
+        }
+      });
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContacts', 'Error occurred while attempting to GET student registration contacts.');
+    return errorResponse(res);
+  }
+}
+
+async function getStudentRegistrationContactByMincode(req, res) {
+  const accessToken = getBackendToken(req);
+  try {
+    let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
+    let searchCriteriaList = [];
+    searchCriteriaList.push({key: 'schoolContactTypeCode', operation: FILTER_OPERATION.EQUAL, value: 'STUDREGIS', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    searchCriteriaList.push({key: 'schoolID', operation: FILTER_OPERATION.EQUAL, value: school.schoolID, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+
+    const schoolSearchCriteria = [{
+      condition: null,
+      searchCriteriaList: searchCriteriaList,
+    }];
+
+    const schoolSearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+      }
+    };
+
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
+    let schoolRegistrationContact = {};
+    if(response?.content && response.content[0]){
+      let firstStudRegContact = response.content[0];
+      schoolRegistrationContact.name = (firstStudRegContact.firstName ? firstStudRegContact.firstName + ' ' + firstStudRegContact.lastName : firstStudRegContact.lastName).trim();
+      schoolRegistrationContact.email = firstStudRegContact.email;
+      schoolRegistrationContact.instituteName = school.schoolName;
+      schoolRegistrationContact.instituteIdentifier = school.mincode;
+      schoolRegistrationContact.instituteGUID = school.schoolID;
+      schoolRegistrationContact.instituteType = 'SCHOOL';
+    }
+
+    return res.status(200).json(schoolRegistrationContact);
+  } catch (e) {
+    logApiError(e, 'getStudentRegistrationContactByMincode', 'Error occurred while attempting to GET student registration contact entity.');
+    return errorResponse(res);
+  }
+}
+
 
 async function updateSchool(req, res) {
   try {
@@ -991,7 +1105,6 @@ async function getSchoolsPaginated(req, res){
 async function moveSchool(req, res) {
   try {
     const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     if(!hasSchoolAdminRole(req, req.body.toSchool)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -999,8 +1112,17 @@ async function moveSchool(req, res) {
       });
     }
 
+    let school = cacheService.getSchoolBySchoolID(req.body.fromSchoolId);
+
+    if(!school || school.schoolCategoryCode === 'OFFSHORE') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to move an offshore school'
+      });
+    }
+
+
     const incomingPayload = req.body;
-    incomingPayload.toSchool.openedDate = LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter);
+    incomingPayload.toSchool.openedDate = incomingPayload.toSchool.moveDate;
     incomingPayload.toSchool.createDate = null;
     incomingPayload.toSchool.updateDate = null;
     incomingPayload.toSchool.createUser = utils.getUser(req).idir_username;
@@ -1055,7 +1177,7 @@ async function moveSchool(req, res) {
 
     const payload = {
       toSchool: incomingPayload.toSchool,
-      moveDate: LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter),
+      moveDate: incomingPayload.toSchool.moveDate,
       fromSchoolId: req.body.fromSchoolId
     };
 
@@ -1214,6 +1336,26 @@ async function addNewAuthorityNote(req, res) {
   }
 }
 
+async function getAuthorityNotes(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
+
+    if(!authority || !hasAuthorityAdminRole(req, authority)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const result = await getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'addNewAuthorityNote', 'Error occurred while attempting to add a new authority note.');
+    return errorResponse(res);
+  }
+}
+
 async function updateAuthorityNote(req, res) {
   if (req.params.noteId !== req.body.noteId) {
     return res.status(HttpStatus.BAD_REQUEST).json({
@@ -1363,5 +1505,11 @@ module.exports = {
   addDistrictContact,
   deleteDistrictContact,
   getSchoolHistoryPaginated,
-  moveSchool
+  moveSchool,
+  getStudentRegistrationContacts,
+  getStudentRegistrationContactByMincode,
+  getSchoolByMincode,
+  getDistrictNotes,
+  getAuthorityNotes,
+  getSchoolNotes
 };

@@ -762,7 +762,7 @@
                     >
                       mdi-email-outline
                     </v-icon>
-                    <span>Mailing Address</span>
+                    <span style="color: grey">Mailing Address</span>
                   </v-col>
                 </v-row>
                 <v-row
@@ -771,7 +771,7 @@
                 >
                   <v-col>
                     <v-row
-                      class="ml-9"
+                      class="ml-6"
                       no-gutters
                     >
                       <v-col>
@@ -781,21 +781,21 @@
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getMailingAddressItem('addressLine2')
                         }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode') + ', ' + getMailingAddressItem('countryCode')
                         }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getMailingAddressItem('postal')
                         }}</span>
@@ -816,7 +816,7 @@
                     >
                       mdi-home-outline
                     </v-icon>
-                    <span>Physical Address</span>
+                    <span style="color: grey">Physical Address</span>
                   </v-col>
                 </v-row>
                 <v-row
@@ -825,28 +825,28 @@
                 >
                   <v-col>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getPhysicalAddressItem('addressLine1')
                         }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getPhysicalAddressItem('addressLine2')
                         }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode') + ', ' + getPhysicalAddressItem('countryCode')
                         }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
-                      <v-col class="ml-9">
+                      <v-col class="ml-6">
                         <span style="word-break: break-all;">{{
                           getPhysicalAddressItem('postal')
                         }}</span>
@@ -1589,12 +1589,12 @@ export default {
     async handleUpdatesToSchoolStatus(updatedDatesForSchool) {
       await this.$nextTick();
       if (updatedDatesForSchool.openedDate) {
-        this.schoolDetailsCopy.openedDate = updatedDatesForSchool.openedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.schoolDetailsCopy.openedDate = updatedDatesForSchool.openedDate;
       } else {
         this.schoolDetailsCopy.openedDate = null;
       }
       if (updatedDatesForSchool.closedDate) {
-        this.schoolDetailsCopy.closedDate = updatedDatesForSchool.closedDate?.replaceAll('/', '-').concat('T00:00:00');
+        this.schoolDetailsCopy.closedDate = updatedDatesForSchool.closedDate;
       } else {
         this.schoolDetailsCopy.closedDate = null;
       }

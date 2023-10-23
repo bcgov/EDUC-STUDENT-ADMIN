@@ -89,9 +89,6 @@ async function getExchanges(req, res) {
               element['contactIdentifierName'] = tempMinTeam.teamName;
             }
           }
-          if (element['createDate']) {
-            element['createDate'] = LocalDateTime.parse(element['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
-          }
         });
       }
       return res.status(200).json(dataResponse);
@@ -189,10 +186,6 @@ async function getExchange(req, res) {
       if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
         dataResponse['contactName'] = district.name + '(' + district.districtNumber+ ')';
         dataResponse['districtName'] = district.name;
-      }
-
-      if (dataResponse['createDate']) {
-        dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       }
 
       //creating activities list for timeline display on the frontend
@@ -511,7 +504,8 @@ async function districtUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -537,7 +531,8 @@ async function schoolUserActivationInvite(req, res) {
   }
 
   const payload = {
-    ...req.body
+    ...req.body,
+    edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
     const response = await utils.postData(token, config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
@@ -581,6 +576,7 @@ async function updateEdxUserSchoolRoles(req, res) {
 
     selectedUserSchool.updateDate = null;
     selectedUserSchool.createDate = null;
+    selectedUserSchool.expiryDate = req.body.params.expiryDate;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -622,6 +618,7 @@ async function updateEdxUserDistrictRoles(req, res) {
 
     selectedUserDistrict.updateDate = null;
     selectedUserDistrict.createDate = null;
+    selectedUserDistrict.expiryDate = req.body.params.expiryDate;
 
     const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -710,7 +707,7 @@ const createSearchParamObject = (key, value) => {
     valueType = VALUE_TYPE.UUID;
   } else if (key === 'createDate') {
     value.forEach((date, index) => {
-      value[index] = date + 'T00:00:00';
+      value[index] = date;
     });
     if (value.length === 1) {
       value.push(LocalDateTime.parse(value[0]).plusHours(23).plusMinutes(59).plusSeconds(59));
@@ -857,6 +854,7 @@ async function relinkUserSchoolOrDistrictAccess(req, res) {
         email: edxUserDetails.email,
         edxUserId: req.body.params.userToRelink,
         edxUserSchoolID: req.body.params.userSchoolID,
+        edxUserExpiryDate: req.body.params.edxUserExpiryDate
       };
       await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
     } else {
@@ -871,6 +869,7 @@ async function relinkUserSchoolOrDistrictAccess(req, res) {
         email: edxUserDetails.email,
         edxUserId: req.body.params.userToRelink,
         edxUserDistrictID: req.body.params.edxUserDistrictID,
+        edxUserExpiryDate: req.body.params.edxUserExpiryDate
       };
       await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
     }
