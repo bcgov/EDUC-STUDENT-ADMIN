@@ -1093,7 +1093,7 @@ async function createSchool(req, res) {
 
     const {school, user} = req.body;
     const userHasEmptyVals = Object.values(user)
-      .reduce((result, currentValue) => result ? result : isEmptyString(currentValue), false);
+      .reduce((result, currentValue) => result || isEmptyString(currentValue), false);
 
     const payload = {
       school: set('districtId')(school.districtID)(

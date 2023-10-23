@@ -88,9 +88,9 @@ const requiredWithOtherFieldValues = (
   fieldValues = [],
   message = 'Please fulfill all related fields.'
 ) => {
-  const toAnyFieldHasValue = (result, currentValue) => result ? result : !!(currentValue && currentValue.trim());
+  const toAnyFieldHasValue = (result, currentValue) => result || !!(currentValue?.trim());
   return v => {
-    const thisFieldIsEmpty = !(v && v.trim());
+    const thisFieldIsEmpty = !(v?.trim());
     const fieldsContainValues = fieldValues.reduce(toAnyFieldHasValue, false);
     return thisFieldIsEmpty && fieldsContainValues ? message : true;
   };
