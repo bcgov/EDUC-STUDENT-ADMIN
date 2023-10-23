@@ -224,6 +224,7 @@ export default {
   created() {
     this.getDistrict();
     this.getDistrictNotes();
+    this.setTab();
 
     instituteStore().getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province => province.provinceCode === 'BC' || province.provinceCode === 'YT');
@@ -237,6 +238,11 @@ export default {
     formatPhoneNumber,
     isOffshoreUser() {
       return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
+    },
+    setTab(){
+      if(this.$route.query?.contact){
+        this.tab = 'contacts';
+      }
     },
     getDistrict() {
       this.loading = true;
