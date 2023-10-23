@@ -195,7 +195,7 @@ export default {
         contactTypes = [...this.regularAuthorityContactTypes];
       }
 
-      this.authorityContactTypes = contactTypes.sort((a, b) => {
+      this.authorityContactTypes = contactTypes.toSorted((a, b) => {
         if (a.authorityContactTypeCode == 'INDAUTHREP') return -1;
         if (b.authorityContactTypeCode == 'INDAUTHREP') return 1;
         return 0;
