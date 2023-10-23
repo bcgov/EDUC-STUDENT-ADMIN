@@ -52,7 +52,6 @@
             </v-row>
             <v-row class="pt-4 px-8">
               <v-col
-                cols="5"
                 class="pa-0"
               >
                 <v-text-field
@@ -68,7 +67,7 @@
                 />
               </v-col>
               <v-col
-                cols="2"
+                cols="3"
                 class="py-0 px-2"
               >
                 <PrimaryButton
@@ -80,17 +79,12 @@
                   minheight="40px"
                 />
               </v-col>
-              <v-col
-                class="py-0 px-2"
-                cols="5"
-              >
-                <PrimaryButton
-                  id="advanceSearchBtn"
-                  class="advanceSearchButtonStyle"
-                  text="Advanced Archive Search"
-                  @click-action="archiveSearch"
-                  minheight="40px"
-                />
+            </v-row>
+            <v-row no-gutters>
+              <v-col class="d-flex justify-end pr-8">
+                <router-link :to="REQUEST_TYPES.archivedPENRequestBatch.path">
+                  <strong>Archived PEN Requests</strong>
+                </router-link>
               </v-col>
             </v-row>
           </template>
@@ -102,7 +96,6 @@
             </v-row>
             <v-row class="pt-4 px-8">
               <v-col
-                cols="5"
                 class="pa-0"
               >
                 <v-text-field
@@ -118,7 +111,7 @@
                 />
               </v-col>
               <v-col
-                cols="2"
+                cols="3"
                 class="py-0 px-2"
               >
                 <PrimaryButton
@@ -130,16 +123,12 @@
                   @click-action="quickSearch"
                 />
               </v-col>
-              <v-col
-                class="py-0 px-2"
-                cols="5"
-              >
-                <PrimaryButton
-                  id="advanceSearchBtn"
-                  text="Advanced Student Search"
-                  @click-action="advanceSearch"
-                  minheight="40px"
-                />
+            </v-row>
+            <v-row no-gutters>
+              <v-col class="d-flex justify-end pr-8">
+                <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
+                  <strong>Advanced Student Search</strong>
+                </router-link>
               </v-col>
             </v-row>
           </template>
@@ -442,12 +431,6 @@ export default {
           this.setFailureAlert(this.searchErrorMessage);
         });
     },
-    advanceSearch() {
-      router.push(REQUEST_TYPES.studentSearch.path.basic);
-    },
-    archiveSearch() {
-      router.push(REQUEST_TYPES.archivedPENRequestBatch.path);
-    },
     enterPushed() {
       if (this.pen && this.isValidPEN) {
         this.quickSearch();
@@ -475,13 +458,8 @@ export default {
 };
 </script>
 <style scoped>
-#requestsSearchBtn, #quickSearchBtn, #advanceSearchBtn {
+#requestsSearchBtn, #quickSearchBtn {
     height: 2.858em;
-}
-
-.advanceSearchButtonStyle {
-    padding-left: 0.9em !important;
-    padding-right: 0.9em !important;
 }
 
 .full-height {
