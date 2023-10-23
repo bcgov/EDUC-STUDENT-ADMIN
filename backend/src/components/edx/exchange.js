@@ -6,9 +6,10 @@ const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
-const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
+const {LocalDateTime, LocalDate, DateTimeFormatter, LocalTime, ChronoUnit} = require('@js-joda/core');
 const cacheService = require('../cache-service');
 const log = require('../logger');
+const {omit, set} = require('lodash/fp');
 
 async function claimAllExchanges(req, res) {
   try {
@@ -1075,6 +1076,47 @@ async function getExchangeStats(req, res) {
   }
 }
 
+async function createSchool(req, res) {
+  try {
+    if (!req.session.roles.includes('SCHOOL_ADMIN')) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to add or edit schools'
+      });
+    }
+
+    const isEmptyString = str => typeof str === 'string' && str.trim() === '';
+    const javaISOOpenedDateFrom = date =>
+      LocalDateTime.of(LocalDate.parse(date), LocalTime.of(0,0,0,0).truncatedTo(ChronoUnit.SECONDS))
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+
+    const {school, user} = req.body;
+    const userHasEmptyVals = Object.values(user)
+      .reduce((result, currentValue) => result ? result : isEmptyString(currentValue), false);
+
+    const payload = {
+      school: set('districtId')(school.districtID)(
+        set('openedDate')(javaISOOpenedDateFrom(school.openedDate))(
+          omit('districtID')(school)
+        )
+      ),
+      initialEdxUser: userHasEmptyVals ? null : user
+    };
+
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+
+    const result = await utils
+      .postData(token, `${config.get('server:edx:createSchoolSagaURL')}`, payload, null, userInfo.idir_username);
+
+    return res.status(HttpStatus.ACCEPTED).json(result);
+  } catch (e) {
+    await logApiError(e, 'createSchool', 'Error ocurred while starting a create school saga.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -1100,5 +1142,6 @@ module.exports = {
   createSecureExchangeNote,
   getExchangeStats,
   removeSecureExchangeNote,
-  districtUserActivationInvite
+  districtUserActivationInvite,
+  createSchool
 };
