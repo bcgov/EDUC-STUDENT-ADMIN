@@ -75,8 +75,8 @@
             <AuthorityContact
               :contact="contact"
               :can-edit-authority-contact="canEditAuthorityContact"
-              @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)"
-              @removeAuthorityContact:showConfirmationPrompt="removeContact"
+              @edit-authority-contact:show-edit-authority-contact-form="showContactEditForm(contact)"
+              @remove-authority-contact:show-confirmation-prompt="removeContact"
             />
           </v-col>
         </v-row>
@@ -102,8 +102,8 @@
         v-if="newContactSheet"
         :authority-contact-types="authorityContactTypes"
         :authority-i-d="$route.params.authorityID"
-        @newAuthorityContact:closeNewAuthorityContactPage="newContactSheet = !newContactSheet"
-        @newAuthorityContact:addNewAuthorityContact="newAuthorityContactAdded"
+        @new-authority-contact:close-new-authority-contact-page="newContactSheet = !newContactSheet"
+        @new-authority-contact:add-new-authority-contact="newAuthorityContactAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
@@ -118,8 +118,8 @@
         :contact="editContact"
         :authority-contact-types="authorityContactTypes"
         :authority-i-d="$route.params.authorityID"
-        @editAuthorityContact:cancelEditAuthorityContactPage="editContactSheet = !editContactSheet"
-        @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess"
+        @edit-authority-contact:cancel-edit-authority-contact-page="editContactSheet = !editContactSheet"
+        @edit-authority-contact:edit-authority-contact-success="contactEditSuccess"
       />
     </v-bottom-sheet>
     <ConfirmationDialog ref="confirmationDialog" />

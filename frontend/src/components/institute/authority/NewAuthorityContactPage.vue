@@ -176,6 +176,7 @@ export default {
       required: true
     }
   },
+  emits: ['new-authority-contact:close-new-authority-contact-page', 'new-authority-contact:add-new-authority-contact'],
   data() {
     return {
       isFormValid: false,
@@ -204,7 +205,7 @@ export default {
   methods: {
     closeNewContactPage() {
       this.resetForm();
-      this.$emit('newAuthorityContact:closeNewAuthorityContactPage');
+      this.$emit('new-authority-contact:close-new-authority-contact-page');
     },
     addNewAuthorityContact() {
       this.processing = true;
@@ -214,7 +215,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Success! The authority contact has been created.');
           this.resetForm();
-          this.$emit('newAuthorityContact:addNewAuthorityContact');
+          this.$emit('new-authority-contact:add-new-authority-contact');
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while adding the new authority contact. Please try again later.');

@@ -166,12 +166,16 @@ export default {
       required: true
     }
   },
+  emits: [
+    'edit-authority-contact:show-edit-authority-contact-form',
+    'remove-authority-contact:show-confirmation-prompt'
+  ],
   methods: {
     callDoShowEditAuthorityContactForm() {
-      this.$emit('editAuthorityContact:doShowEditAuthorityContactForm');
+      this.$emit('edit-authority-contact:show-edit-authority-contact-form');
     },
     callShowRemoveContactConfirmation() {
-      this.$emit('removeAuthorityContact:showConfirmationPrompt', this.contact.independentAuthorityId, this.contact.authorityContactId);
+      this.$emit('remove-authority-contact:show-confirmation-prompt', this.contact.independentAuthorityId, this.contact.authorityContactId);
     },
     formatDate,
     formatPhoneNumber,
