@@ -186,6 +186,7 @@ export default {
       if (!this.authorityContactTypeCodes) {
         await this.loadAuthorityContactTypeCodes();
       }
+
       let contactTypes = [];
       if (value?.authorityTypeCode === 'OFFSHORE') {
         contactTypes = [...this.offshoreAuthorityContacts];
@@ -195,11 +196,7 @@ export default {
         contactTypes = [...this.regularAuthorityContactTypes];
       }
 
-      this.authorityContactTypes = contactTypes.toSorted((a, b) => {
-        if (a.authorityContactTypeCode == 'INDAUTHREP') return -1;
-        if (b.authorityContactTypeCode == 'INDAUTHREP') return 1;
-        return 0;
-      });
+      this.authorityContactTypes = contactTypes.toSorted((a, b) => a.displayOrder - b.displayOrder);
     }
   },
   created() {
