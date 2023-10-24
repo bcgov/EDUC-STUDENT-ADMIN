@@ -1,6 +1,19 @@
 <template>
   <div>
-    <v-row class="pb-6">
+    <v-row
+      v-if="hasNoRole"
+    >
+      <v-col
+        class="pt-6"
+      >
+        <h3>Welcome to Education Administration!</h3>
+        <p>Please find your available features in the menu.</p>
+      </v-col>
+    </v-row>
+    <v-row
+      v-else
+      class="pb-6"
+    >
       <v-col
         v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE"
         cols="8"
@@ -186,7 +199,10 @@
               </router-link>
             </v-col>
           </v-row>
-          <v-row no-gutters class="mt-2">
+          <v-row
+            no-gutters
+            class="mt-2"
+          >
             <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
@@ -315,6 +331,51 @@ export default {
       loadDateRules: [v => (!v || isPresentDateAndAfter1900(v)) || 'Invalid date'],
     };
   },
+  computed: {
+    ...mapState(appStore, ['mincodeSchoolNames', 'districtCodes']),
+    ...mapState(authStore, [
+      'VIEW_GMP_REQUESTS_ROLE',
+      'VIEW_UMP_REQUESTS_ROLE',
+      'ADVANCED_SEARCH_ROLE',
+      'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE',
+      'HAS_STATS_ROLE',
+      'STUDENT_ANALYTICS_STUDENT_PROFILE',
+      'STUDENT_ANALYTICS_BATCH',
+      'EXCHANGE_ROLE',
+      'PEN_TEAM_ROLE'
+    ]),
+    hasNoRole() {
+      const roles = [
+        this.HAS_STATS_ROLE,
+        this.EXCHANGE_ROLE,
+        this.ADVANCED_SEARCH_ROLE,
+        this.VIEW_GMP_REQUESTS_ROLE,
+        this.VIEW_UMP_REQUESTS_ROLE,
+        this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE,
+      ];
+
+      return roles.find(r => r === true) === undefined;
+    },
+    requestTypes() {
+      return REQUEST_TYPES;
+    },
+    isValidPEN() {
+      return isValidPEN(this.pen);
+    },
+    isValidRequestsSearchInput() {
+      if (!this.mincode && !this.loadDate) {
+        return false;
+      }
+      return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
+        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
+    },
+    authorizedExchangeData() {
+      return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
+    },
+    hasAuthorizedExchangeData() {
+      return this.authorizedExchangeData.length > 0;
+    }
+  },
   async beforeMount() {
     await appStore().getCodes();
   },
@@ -394,29 +455,6 @@ export default {
       }).finally(() => {
         this.isLoadingExchange = false;
       });
-    }
-  },
-  computed: {
-    ...mapState(appStore, ['mincodeSchoolNames', 'districtCodes']),
-    ...mapState(authStore, ['VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
-    requestTypes() {
-      return REQUEST_TYPES;
-    },
-    isValidPEN() {
-      return isValidPEN(this.pen);
-    },
-    isValidRequestsSearchInput() {
-      if (!this.mincode && !this.loadDate) {
-        return false;
-      }
-      return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
-        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
-    },
-    authorizedExchangeData() {
-      return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
-    },
-    hasAuthorizedExchangeData() {
-      return this.authorizedExchangeData.length > 0;
     }
   },
   methods: {
