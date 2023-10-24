@@ -165,6 +165,7 @@ let object = {
     EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
     EXCHANGE_REMOVE_USER: edxRoot + '/users/remove',
     EXCHANGE_RELINK_USER: edxRoot + '/users/relink',
+    CREATE_SCHOOL: edxRoot + '/create-school',
     PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
     NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
     NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite'

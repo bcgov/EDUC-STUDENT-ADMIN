@@ -4,9 +4,33 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserSchoolRoles, updateEdxUserDistrictRoles,
-  schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markExchangeStatusAs, claimExchange, removeDocumentFromExchange,
-  removeUserSchoolOrDistrictAccess, relinkUserSchoolOrDistrictAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats,districtUserActivationInvite
+const {
+  getExchanges,
+  createExchange,
+  getExchange,
+  claimAllExchanges,
+  markAs,
+  getEdxUsers,
+  findPrimaryEdxActivationCode,
+  generateOrRegeneratePrimaryEdxActivationCode,
+  updateEdxUserSchoolRoles,
+  updateEdxUserDistrictRoles,
+  schoolUserActivationInvite,
+  createSecureExchangeComment,
+  uploadDocumentToExchange,
+  getExchangeDocumentById,
+  markExchangeStatusAs,
+  claimExchange,
+  removeDocumentFromExchange,
+  removeUserSchoolOrDistrictAccess,
+  relinkUserSchoolOrDistrictAccess,
+  createSecureExchangeStudent,
+  removeSecureExchangeStudent,
+  createSecureExchangeNote,
+  removeSecureExchangeNote,
+  getExchangeStats,
+  districtUserActivationInvite,
+  createSchool
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -47,4 +71,8 @@ router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt'
 router.get('/exchange/:secureExchangeID/documents/:documentId', auth.isValidExchangeUserToken, getExchangeDocumentById());
 router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, schoolUserActivationInvite);
 router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, districtUserActivationInvite);
+
+// Create School Saga
+router.post('/create-school', passport.authenticate('jwt', {session: false}, undefined), auth.isValidSchoolAdmin, createSchool);
+
 module.exports = router;

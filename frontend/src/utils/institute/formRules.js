@@ -78,6 +78,26 @@ const required = (message = 'Required') => {
 };
 
 /**
+ * Field is required when other field values are filled out.
+ *
+ * @param {string[]} fieldValues - an array of field values
+ * @param {string} message - error message to display
+ * @returns {(v: string) => bool|string} validation test
+ */
+const requiredWithOtherFieldValues = (
+  fieldValues = [],
+  message = 'Please fulfill all related fields.'
+) => {
+  const toAnyFieldHasValue = (result, currentValue) => result || !!(currentValue?.trim());
+  return v => {
+    const thisFieldIsEmpty = !(v?.trim());
+    const fieldsContainValues = fieldValues.reduce(toAnyFieldHasValue, false);
+    return thisFieldIsEmpty && fieldsContainValues ? message : true;
+  };
+};
+
+
+/**
  * Custom endDate Rule! Checks that we have start date and that end date
  * happens after start date. Date format should be 2022-12-10 YYYY-MM-DD.
  * @param {String} effectiveDate
@@ -148,5 +168,6 @@ export {
   phoneNumber,
   postalCode,
   required,
-  website
+  requiredWithOtherFieldValues,
+  website,
 };
