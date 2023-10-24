@@ -471,7 +471,6 @@
                 <v-text-field
                   v-model="initialUser.firstName"
                   class="pt-0 pb-5"
-                  :rules="[userFieldRules().firstName]"
                   variant="underlined"
                   :maxlength="255"
                   label="First name"
@@ -695,8 +694,6 @@ export default {
     userFieldRules() {
       const message = 'Please fulfill all initial user fields.';
       return {
-        firstName:  this.rules
-          .requiredWithOtherFieldValues([this.initialUser?.lastName, this.initialUser?.email], message),
         lastName: this.rules
           .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.email], message),
         email: v => {
