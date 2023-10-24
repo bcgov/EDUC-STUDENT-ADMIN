@@ -186,7 +186,10 @@
               </router-link>
             </v-col>
           </v-row>
-          <v-row no-gutters class="mt-2">
+          <v-row
+            no-gutters
+            class="mt-2"
+          >
             <v-col>
               <router-link
                 v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
@@ -315,6 +318,39 @@ export default {
       loadDateRules: [v => (!v || isPresentDateAndAfter1900(v)) || 'Invalid date'],
     };
   },
+  computed: {
+    ...mapState(appStore, ['mincodeSchoolNames', 'districtCodes']),
+    ...mapState(authStore, [
+      'VIEW_GMP_REQUESTS_ROLE',
+      'VIEW_UMP_REQUESTS_ROLE',
+      'ADVANCED_SEARCH_ROLE',
+      'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE',
+      'HAS_STATS_ROLE',
+      'STUDENT_ANALYTICS_STUDENT_PROFILE',
+      'STUDENT_ANALYTICS_BATCH',
+      'EXCHANGE_ROLE',
+      'PEN_TEAM_ROLE'
+    ]),
+    requestTypes() {
+      return REQUEST_TYPES;
+    },
+    isValidPEN() {
+      return isValidPEN(this.pen);
+    },
+    isValidRequestsSearchInput() {
+      if (!this.mincode && !this.loadDate) {
+        return false;
+      }
+      return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
+        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
+    },
+    authorizedExchangeData() {
+      return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
+    },
+    hasAuthorizedExchangeData() {
+      return this.authorizedExchangeData.length > 0;
+    }
+  },
   async beforeMount() {
     await appStore().getCodes();
   },
@@ -394,29 +430,6 @@ export default {
       }).finally(() => {
         this.isLoadingExchange = false;
       });
-    }
-  },
-  computed: {
-    ...mapState(appStore, ['mincodeSchoolNames', 'districtCodes']),
-    ...mapState(authStore, ['VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
-    requestTypes() {
-      return REQUEST_TYPES;
-    },
-    isValidPEN() {
-      return isValidPEN(this.pen);
-    },
-    isValidRequestsSearchInput() {
-      if (!this.mincode && !this.loadDate) {
-        return false;
-      }
-      return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
-        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
-    },
-    authorizedExchangeData() {
-      return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
-    },
-    hasAuthorizedExchangeData() {
-      return this.authorizedExchangeData.length > 0;
     }
   },
   methods: {
