@@ -1,5 +1,5 @@
 <template>
-  <v-row style="height: 100%">
+  <v-row style="height: 100%; margin-bottom: 1.5em">
     <v-col>
       <v-card height="100%">
         <v-card-title class="pb-0">
