@@ -29,7 +29,7 @@
                   item-value="authorityTypeCode"
                   item-title="label"
                   variant="underlined"
-                  :items="authorityTypes"
+                  :items="filteredAuthorityTypeCodes"
                   :rules="[rules.required()]"
                   :clearable="true"
                 />
@@ -306,11 +306,6 @@ export default {
         physicalAddrPostal: null,
       },
       rules: Rules,
-      schoolFacilityTypes: [],
-      schoolCategoryTypes: [],
-      schoolOrganizationTypes: [],
-      schoolNeighborhoodLearningTypes: [],
-      schoolGradeTypes: [],
       sameAsMailingCheckbox: true,
       provinceCodeValues: [],
       countryCodeValues: [],
@@ -318,23 +313,28 @@ export default {
       excludeShowingPhysicalAddressesForAuthoritiesOfType: [
         'OFFSHORE',
       ],
+      offshoreArray: ['OFFSHORE'],
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
     showPhysicalAddress() {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
-    }
+    },
+    filteredAuthorityTypeCodes() {
+     if(this.isOffshoreOnlyUser()) {
+        return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
+      }
+      return this.authorityTypeCodes;
+    },
   },
   mounted() {
     this.validateForm();
   },
   created() {
     const instStore = instituteStore();
-    instStore.getAllAuthorityTypeCodes().then(() => {
-      this.authorityTypes = this.authorityTypeCodes;
-    });
+    instStore.getAllAuthorityTypeCodes();
     instStore.getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province => province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
@@ -349,6 +349,9 @@ export default {
     closeNewAuthorityPage() {
       this.resetForm();
       this.$emit('newAuthority:closeNewAuthorityPage');
+    },
+    isOffshoreOnlyUser() {
+      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     addNewAuthority() {
       this.processing = true;
