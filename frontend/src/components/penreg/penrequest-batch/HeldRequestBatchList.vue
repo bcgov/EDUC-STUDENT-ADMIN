@@ -52,8 +52,8 @@
       </template>
       <template #item="item">
         <tr
-          :class="{'selected-file': item.item.raw.isSelected}"
-          @click="clickItem(item.item.raw)"
+          :class="{'selected-file': item.item.isSelected}"
+          @click="clickItem(item.item)"
         >
           <td
             v-for="header in item.columns"
@@ -62,17 +62,17 @@
           >
             <v-checkbox
               v-if="header.type"
-              v-model="item.item.raw.isSelected"
+              v-model="item.item.isSelected"
               class="file-checkbox"
               hide-details="auto"
               color="#606060"
-              @click.stop="selectFile(item.item.raw)"
+              @click.stop="selectFile(item.item)"
             />
             <div
               v-else
               :class="{'countable-column-div': header.countable}"
             >
-              <span :class="{'countable-column-data': header.countable}">{{ item.item.raw[header.value] || '' }}</span>
+              <span :class="{'countable-column-data': header.countable}">{{ item.item[header.value] || '' }}</span>
             </div>
           </td>
         </tr>

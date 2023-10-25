@@ -289,7 +289,7 @@
                 <v-row
                   no-gutters
                   class="hoverTable pt-1"
-                  @click="openSchool(item.raw.schoolId)"
+                  @click="openSchool(item.schoolId)"
                 >
                   <v-col class="pb-0 pt-0 ml-2 mt-1 mb-1">
                     <v-row
@@ -298,9 +298,9 @@
                     >
                       <v-col cols="6">
                         <span class="subjectHeading">{{
-                          item.raw.mincode
+                          item.mincode
                         }} - {{
-                          item.raw.displayName
+                          item.displayName
                         }}</span>
                       </v-col>
                       <v-col
@@ -308,14 +308,14 @@
                       >
                         <v-icon
                           class="ml-0 mb-1"
-                          :color="getStatusColorAuthorityOrSchool(item.raw.status)"
+                          :color="getStatusColorAuthorityOrSchool(item.status)"
                           right
                           dark
                         >
                           mdi-circle-medium
                         </v-icon>
                         <span class="statusCodeLabel">{{
-                          item.raw.status
+                          item.status
                         }}</span>
                       </v-col>
                       <v-col class="d-flex">
@@ -329,7 +329,7 @@
                           class="principalName statusCodeLabel"
                           style="color: black"
                         >{{
-                          item.raw.principalsName
+                          item.principalsName
                         }}</span>
                       </v-col>
                     </v-row>
@@ -339,9 +339,9 @@
                           class="ministryLine"
                           style="color: black"
                         >{{
-                          item.raw.schoolCategory
+                          item.schoolCategory
                         }} | {{
-                          item.raw.facilityType
+                          item.facilityType
                         }}</span>
                       </v-col>
                       <v-col
@@ -354,7 +354,7 @@
                           mdi-phone-outline
                         </v-icon>
                         <span class="statusCodeLabel">{{
-                          formatPhoneNumber(item.raw.phoneNumber)
+                          formatPhoneNumber(item.phoneNumber)
                         }}</span>
                       </v-col>
                       <v-col
@@ -368,7 +368,7 @@
                           mdi-at
                         </v-icon>
                         <span class="statusCodeLabel centerSpan">{{
-                          item.raw.email
+                          item.email
                         }}</span>
                       </v-col>
                     </v-row>
@@ -494,6 +494,14 @@ export default {
     getSheetWidth() {
       return 30;
     },
+  },
+  watch: {
+    pageSize() {
+      this.getSchoolList();
+    },
+    pageNumber() {
+      this.getSchoolList();
+    }
   },
   created() {
     const instStore = instituteStore();
@@ -817,14 +825,6 @@ export default {
       this.getSchoolList();
     },
     getStatusColorAuthorityOrSchool
-  },
-  watch: {
-    pageSize() {
-      this.getSchoolList();
-    },
-    pageNumber() {
-      this.getSchoolList();
-    }
   }
 };
 </script>

@@ -173,22 +173,22 @@
           <template #item="{ item }">
             <tr
               class="hoverTable"
-              :class="item.raw.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
-              @click="viewRequestDetails(item.raw)"
+              :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
+              @click="viewRequestDetails(item)"
             >
-              <td>{{ item.raw[`${requestType}StatusCode`].label }}</td>
-              <td>{{ getMomentDate(item.raw.initialSubmitDate) }}</td>
+              <td>{{ item[`${requestType}StatusCode`].label }}</td>
+              <td>{{ getMomentDate(item.initialSubmitDate) }}</td>
               <td>
-                {{ item.raw[`${penName}`] }}
+                {{ item[`${penName}`] }}
                 <ClipboardButton
-                  v-if="item.raw[`${penName}`]"
-                  :copy-text="item.raw[`${penName}`]"
+                  v-if="item[`${penName}`]"
+                  :copy-text="item[`${penName}`]"
                   icon="mdi-content-copy"
                 />
               </td>
-              <td>{{ item.raw.legalLastName }}</td>
-              <td>{{ item.raw.legalFirstName }}</td>
-              <td>{{ item.raw.reviewer }}</td>
+              <td>{{ item.legalLastName }}</td>
+              <td>{{ item.legalFirstName }}</td>
+              <td>{{ item.reviewer }}</td>
             </tr>
           </template>
         </v-data-table-server>

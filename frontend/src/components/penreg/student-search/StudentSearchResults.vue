@@ -90,39 +90,39 @@
           >
             <div v-if="header.key === 'checkbox'">
               <v-checkbox
-                v-model="selected[item.item.raw.studentID]"
+                v-model="selected[item.item.studentID]"
                 color="#606060"
-                @update:model-value="selectStudent(item.item.raw)"
+                @update:model-value="selectStudent(item.item)"
               />
             </div>
             <div
               v-else
               class="tableCell"
-              @click="viewStudentDetails(item.item.raw.studentID)"
+              @click="viewStudentDetails(item.item.studentID)"
             >
               <span
                 v-if="header.topValue === 'dob'"
                 class="top-column-item"
               >{{
-                  formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+                  formatDob(item.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
                 }}</span>
               <span
                 v-else-if="header.topValue === 'pen'"
                 class="top-column-item"
               >
-                {{ item.item.raw[header.topValue] }}
+                {{ item.item[header.topValue] }}
                 <ClipboardButton
-                  v-if="item.item.raw[header.topValue]"
+                  v-if="item.item[header.topValue]"
                   size="x-small"
-                  :copy-text="item.item.raw[header.topValue]"
+                  :copy-text="item.item[header.topValue]"
                   icon="mdi-content-copy"
                 />
               </span>
               <span
                 v-else
                 class="top-column-item"
-              >{{ item.item.raw[header.topValue] }}</span>
-              <span class="double-column-item">{{ item.item.raw[header.doubleValue] }}</span>
+              >{{ item.item[header.topValue] }}</span>
+              <span class="double-column-item">{{ item.item[header.doubleValue] }}</span>
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip
@@ -131,19 +131,19 @@
               >
                 <template #activator="{ on }">
                   <span class="bottom-column-item">{{
-                      firstMemoChars(item.item.raw[header.bottomValue])
+                      firstMemoChars(item.item[header.bottomValue])
                     }}</span>
                 </template>
-                <span>{{ item.item.raw[header.bottomValue] }}</span>
+                <span>{{ item.item[header.bottomValue] }}</span>
               </v-tooltip>
               <span
                 v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
                 class="bottom-column-item"
-              >{{ getUsualName(item.item.raw[header.bottomValue], item.item.raw[header.topValue]) }}</span>
+              >{{ getUsualName(item.item[header.bottomValue], item.item[header.topValue]) }}</span>
               <span
                 v-else
                 class="bottom-column-item"
-              >{{ item.item.raw[header.bottomValue] }}</span>
+              >{{ item.item[header.bottomValue] }}</span>
             </div>
           </td>
         </tr>

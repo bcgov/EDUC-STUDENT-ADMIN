@@ -121,7 +121,7 @@
       </template>
       <template #item="item">
         <tr
-          :class="{'selected-record' : item.item.raw.isSelected}"
+          :class="{'selected-record' : item.item.isSelected}"
         >
           <td
             v-for="header in item.columns"
@@ -130,10 +130,10 @@
           >
             <v-checkbox
               v-if="header.type && !hasReadOnlyRoleAccess()"
-              v-model="item.item.raw.isSelected"
+              v-model="item.item.isSelected"
               class="record-checkbox header-checkbox"
               color="#606060"
-              @click="handleRecordCheckBoxClicked(item.item.raw)"
+              @click="handleRecordCheckBoxClicked(item.item)"
             />
             <div
               v-else
@@ -148,24 +148,24 @@
                   right
                 >
                   <template #activator="{ on }">
-                    <span>{{ item.item.raw[header.value] }}</span>
+                    <span>{{ item.item[header.value] }}</span>
                   </template>
-                  <span>{{ getSchoolName(item.item.raw) }}</span>
+                  <span>{{ getSchoolName(item.item) }}</span>
                 </v-tooltip>
                 <span v-else-if="header.value === 'status'">
                   <NomRollStudentStatusChip
-                    :status-code="item.item.raw[header.value]"
+                    :status-code="item.item[header.value]"
                   />
                   <v-icon
-                    v-if="!isEmpty(item.item.raw.validationErrors) && item.item.raw.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
+                    v-if="!isEmpty(item.item.validationErrors) && item.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
                     @click="toggleRow(item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
                 <span
-                  v-else-if="item.item.raw.validationErrors[header.text] && item.item.raw.status !== 'IGNORED'"
+                  v-else-if="item.item.validationErrors[header.text] && item.item.status !== 'IGNORED'"
                   style="color: red"
                 >
-                  {{ formatTableColumn(header.format, item.item.raw[header.value]) }}
+                  {{ formatTableColumn(header.format, item.item[header.value]) }}
                   <v-tooltip bottom>
                     <template #activator="{ on, props }">
                       <v-icon
@@ -175,10 +175,10 @@
                         v-bind="props"
                       ></v-icon>
                     </template>
-                    {{ item.item.raw.validationErrors[header.text] }}
+                    {{ item.item.validationErrors[header.text] }}
                   </v-tooltip>
                 </span>
-                <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) || '' }}</span>
+                <span v-else>{{ formatTableColumn(header.format, item.item[header.value]) || '' }}</span>
               </span>
             </div>
           </td>
@@ -200,7 +200,7 @@
                 <v-col class="pb-0">
                   <v-autocomplete
                     v-model="editedRecord.schoolDistrictNumber"
-                    :disabled="!item.raw.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
+                    :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="1"
@@ -213,11 +213,11 @@
                   <v-row no-gutters>
                     <v-col
                       class="pa-0"
-                      :cols="item.raw.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12"
+                      :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12"
                     >
                       <v-text-field
                         v-model="editedRecord.schoolNumber"
-                        :disabled="!item.raw.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
+                        :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
                         variant="outlined"
                         density="compact"
                         name="2"
@@ -226,7 +226,7 @@
                       />
                     </v-col>
                     <v-col
-                      v-if="item.raw.validationErrors['School Number'] || validationErrors['School Number']"
+                      v-if="item.validationErrors['School Number'] || validationErrors['School Number']"
                       class="pa-0"
                     >
                       <v-row
@@ -247,7 +247,7 @@
                 <v-col class="pb-0">
                   <v-autocomplete
                     v-model="editedRecord.schoolName"
-                    :disabled="!item.raw.validationErrors['School Name'] && !validationErrors['School Name'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="3"
@@ -259,7 +259,7 @@
                 <v-col class="pb-0">
                   <v-autocomplete
                     v-model="editedRecord.leaProvincial"
-                    :disabled="!item.raw.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="4"
@@ -271,7 +271,7 @@
                 <v-col class="pb-0">
                   <v-text-field
                     v-model="editedRecord.recipientNumber"
-                    :disabled="!item.raw.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="5"
@@ -282,7 +282,7 @@
                 <v-col class="pb-0">
                   <v-text-field
                     v-model="editedRecord.fte"
-                    :disabled="!item.raw.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="51"
@@ -293,7 +293,7 @@
                 <v-col class="pb-0">
                   <v-text-field
                     v-model="editedRecord.surname"
-                    :disabled="!item.raw.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="52"
@@ -304,7 +304,7 @@
                 <v-col class="pb-0">
                   <v-autocomplete
                     v-model="editedRecord.gender"
-                    :disabled="!item.raw.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="53"
@@ -321,7 +321,7 @@
                     :value="editedRecord.birthDate"
                     variant="outlined"
                     density="compact"
-                    :disabled="!item.raw.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
                     :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
                     type="date"
                     clearable
@@ -331,7 +331,7 @@
                 <v-col class="pb-0">
                   <v-autocomplete
                     v-model="editedRecord.grade"
-                    :disabled="!item.raw.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
+                    :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
                     variant="outlined"
                     density="compact"
                     name="54"
@@ -348,7 +348,7 @@
                     text="Save"
                     :disabled="!validForm || validatingRecord"
                     :loading="updating"
-                    @click-action="updateRequest(item.raw)"
+                    @click-action="updateRequest(item)"
                   />
                 </v-col>
               </v-row>

@@ -63,7 +63,7 @@
             </span>
           </template>
           <template #item="item">
-            <tr @click="showFile(item.item.raw)">
+            <tr @click="showFile(item.item)">
               <td
                 v-for="header in item.columns"
                 :key="header.id"
@@ -71,11 +71,11 @@
               >
                 <v-checkbox
                   v-if="header.type"
-                  v-model="item.item.raw.isChecked"
+                  v-model="item.item.isChecked"
                   class="file-checkbox"
                   hide-details="auto"
                   color="#606060"
-                  @click.stop="handleFileCheckBoxClicked(item.item.raw)"
+                  @click.stop="handleFileCheckBoxClicked(item.item)"
                 />
                 <div
                   v-else
@@ -84,8 +84,8 @@
                   <span
                     v-if="header.countable"
                     class="countable-column-data"
-                  >{{ item.item.raw[header.value] || '' }}</span>
-                  <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
+                  >{{ item.item[header.value] || '' }}</span>
+                  <span v-else>{{ formatTableColumn(header.format, item.item[header.value]) }}</span>
                 </div>
               </td>
             </tr>

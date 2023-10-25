@@ -349,13 +349,13 @@
                   <v-col cols="auto">
                     <v-checkbox
                       v-model="selectedExchanges"
-                      :value="item.raw"
+                      :value="item"
                       hide-details="auto"
                     />
                   </v-col>
                   <v-col
                     cols="6"
-                    @click="openExchange(item.raw.secureExchangeID)"
+                    @click="openExchange(item.secureExchangeID)"
                   >
                     <v-row no-gutters>
                       <v-col
@@ -363,8 +363,8 @@
                       >
                         <span
                           class="subjectHeading"
-                          :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
-                        >{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                          :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}"
+                        >{{ getSubject(item.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item) }}</span>
                         <v-icon
                           v-if="item?.raw?.documentList?.length > 0"
                           size="x-small"
@@ -378,14 +378,14 @@
                       <v-col
                         cols="12"
                       >
-                        <span class="ministryLine">{{ getContactLineItem(item.raw) }}</span>
+                        <span class="ministryLine">{{ getContactLineItem(item) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
                   <v-col
                     style="text-align: end"
                     class="d-flex justify-end"
-                    @click="openExchange(item.raw.secureExchangeID)"
+                    @click="openExchange(item.secureExchangeID)"
                   >
                     <v-row
                       no-gutters
@@ -406,7 +406,7 @@
                             class="statusCodeLabel"
                             cols="6"
                           >
-                            <span>{{ item.raw.sequenceNumber }}</span>
+                            <span>{{ item.sequenceNumber }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -415,7 +415,7 @@
                           <v-col cols="6">
                             <v-icon
                               class="pb-1"
-                              :color="getStatusColor(item.raw.secureExchangeStatusCode)"
+                              :color="getStatusColor(item.secureExchangeStatusCode)"
                               right
                               dark
                             >
@@ -426,7 +426,7 @@
                             class="statusCodeLabel"
                             cols="6"
                           >
-                            <span>{{ item.raw.secureExchangeStatusCode }}</span>
+                            <span>{{ item.secureExchangeStatusCode }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -448,7 +448,7 @@
                             class="statusCodeLabel"
                             cols="6"
                           >
-                            <span>{{ getReviewer(item.raw.reviewer) }}</span>
+                            <span>{{ getReviewer(item.reviewer) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -471,7 +471,7 @@
                             class="statusCodeLabel"
                             cols="4"
                           >
-                            <span>{{ getNumberOfDays(item.raw.createDate) }}</span>
+                            <span>{{ getNumberOfDays(item.createDate) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
