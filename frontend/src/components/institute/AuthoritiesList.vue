@@ -199,14 +199,11 @@
                     item.status
                   }}</span>
                 </v-col>
-                <v-col
-                  cols="2"
-                  class="d-flex justify-start"
-                >
-                  <v-icon aria-hidden="false">
+                <v-col cols="3">
+                  <v-icon>
                     mdi-phone-outline
                   </v-icon>
-                  <span class="statusCodeLabel"> {{
+                  <span class="largeFont"> {{
                     formatPhoneNumber(item.phoneNumber)
                   }}</span>
                 </v-col>
@@ -513,6 +510,10 @@ export default {
 .hoverTable:hover {
     background-color: #e8e8e8;
     cursor: pointer;
+}
+
+.largeFont {
+  font-size: large;
 }
 
 .containerSetup {

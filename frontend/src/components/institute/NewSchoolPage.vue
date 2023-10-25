@@ -16,7 +16,7 @@
                 <v-text-field
                   id="newSchoolNameInput"
                   v-model="newSchool.displayName"
-                  :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+                  :rules="[rules.required()]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="255"
