@@ -45,7 +45,7 @@
     "vue-meta": "^3.0.0-alpha.10",
     "vue-quick-chat": "^1.2.8",
     "vue-router": "^4.2.2",
-    "vuetify": "npm:@vuetify/nightly@3.3.5-pr-17265.042d482"
+    "vuetify": "^3.3.23"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.5",
