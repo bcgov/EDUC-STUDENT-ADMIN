@@ -82,7 +82,7 @@ export default {
       required: true
     }
   },
-  emits: ['closeAddFunding', 'saveNewFundingData'],
+  emits: ['close-add-funding', 'save-new-funding-data'],
   data() {
     return {
       isFormValid: false,
@@ -96,11 +96,11 @@ export default {
   },
   methods: {
     closeAddFunding() {
-      this.$emit('closeAddFunding');
+      this.$emit('close-add-funding');
       this.resetForm();
     },
     saveNewFundingData() {
-      this.$emit('saveNewFundingData', { schoolGradeCode: this.selectedGradeCodeForFunding, schoolFundingGroupCode: this.selectedFundingGroup });
+      this.$emit('save-new-funding-data', { schoolGradeCode: this.selectedGradeCodeForFunding, schoolFundingGroupCode: this.selectedFundingGroup });
       this.resetForm();
     },
     resetForm() {

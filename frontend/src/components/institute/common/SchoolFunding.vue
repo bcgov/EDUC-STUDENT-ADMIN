@@ -132,13 +132,16 @@
         </v-form>
       </v-col>
 
-      <v-col class="pl-5 pr-1" >
+      <v-col class="pl-5 pr-1">
         <h3 class="subHeading pt-2 pb-2">
           Historic Funding Configurations
         </h3>
 
         <v-row>
-          <v-col class="mt-n1 mb-1" cols="7">
+          <v-col
+            class="mt-n1 mb-1"
+            cols="7"
+          >
             <v-select
               v-model="selectedCollectionDate"
               :items="pastCollections"
@@ -148,7 +151,7 @@
               class="mt-5"
               variant="underlined"
               label="Select Collection"
-              @update:modelValue="getSnapshotData($event)"
+              @update:model-value="getSnapshotData($event)"
             />
           </v-col>
         </v-row>
@@ -179,8 +182,8 @@
         :school-i-d="schoolID"
         :funding-groups="schoolFundingGroups"
         :filteredgrade-codes="sortedGrades"
-        @closeAddFunding="addFundingSheet = !addFundingSheet"
-        @saveNewFundingData="saveNewFundingData"
+        @close-add-funding="addFundingSheet = !addFundingSheet"
+        @save-new-funding-data="saveNewFundingData"
       />
     </v-bottom-sheet>
     <ConfirmationDialog ref="confirmationDialog" />

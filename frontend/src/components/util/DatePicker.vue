@@ -32,10 +32,10 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update:modelValue', 'clearDate'],
+  emits: ['update:model-value', 'clearDate'],
   methods: {
     saveDate(newDate) {
-      this.$emit('update:modelValue', newDate);
+      this.$emit('update:model-value', newDate);
     }
   }
 });

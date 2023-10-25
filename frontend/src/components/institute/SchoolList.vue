@@ -495,6 +495,14 @@ export default {
       return 30;
     },
   },
+  watch: {
+    pageSize() {
+      this.getSchoolList();
+    },
+    pageNumber() {
+      this.getSchoolList();
+    }
+  },
   created() {
     const instStore = instituteStore();
     edxStore().getMinistryTeams();
@@ -817,14 +825,6 @@ export default {
       this.getSchoolList();
     },
     getStatusColorAuthorityOrSchool
-  },
-  watch: {
-    pageSize() {
-      this.getSchoolList();
-    },
-    pageNumber() {
-      this.getSchoolList();
-    }
   }
 };
 </script>
