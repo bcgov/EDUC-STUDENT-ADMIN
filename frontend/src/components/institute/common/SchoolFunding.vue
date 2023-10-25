@@ -42,7 +42,7 @@
             />
           </v-col>
         </v-row>
-       
+
         <v-form
           v-model="isValidFundingForm"
           class="mt-6 pb-1 pl-1"
@@ -59,7 +59,7 @@
               <tr>
                 <td
                   v-for="header in headers"
-                  :key="header.id"              
+                  :key="header.id"
                 >
                   <v-row
                     v-if="header.editable && hoveredOveredRowID === item.item.raw.schoolGradeCode && isEditing"
@@ -84,7 +84,7 @@
                     <v-col>
                       <v-btn
                         variant="plain"
-                        class="icon-color  ml-n3"
+                        class="icon-color ml-n3"
                         icon="mdi-pencil-outline"
                         @click="editRow(item)"
                       />
@@ -104,17 +104,17 @@
                     class="flex-nowrap"
                   >
                     <v-col class="pa-2">
-                      <PrimaryButton         
+                      <PrimaryButton
                         id="cancel-action"
                         class="pr-4"
                         secondary
                         short
-                        text="Cancel"   
+                        text="Cancel"
                         @click-action="cancel"
                       />
                     </v-col>
                     <v-col class="pa-2">
-                      <PrimaryButton           
+                      <PrimaryButton
                         id="save-action"
                         short
                         text="Save"
@@ -186,7 +186,7 @@
     <ConfirmationDialog ref="confirmationDialog" />
   </div>
 </template>
-  
+
 <script>
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
@@ -199,7 +199,7 @@ import {instituteStore} from '@/store/modules/institute';
 import AddSchoolFunding from '@/components/institute/common/AddSchoolFunding.vue';
 import {sortBy, orderBy} from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
-  
+
 export default {
   name: 'SchoolFunding',
   components: {
@@ -268,7 +268,7 @@ export default {
           this.funding.forEach(elem => {
             if(elem) {
               this.mapFundingData(elem);
-            }  
+            }
           });
           this.sortedFunding = sortBy(this.funding, ['displayOrder']);
           let existingGrades = this.sortedFunding.map(grade => grade?.schoolGradeCode);
@@ -318,7 +318,7 @@ export default {
     save(item) {
       this.loading = true;
       const schoolFundingGroupID = item.item.raw.schoolFundingGroupID;
-        
+
       ApiService.apiAxios.put(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}/funding/${schoolFundingGroupID}`, item.item.raw)
         .then(() => {
           this.setSuccessAlert('Success! The funding data has been updated for the school.');
@@ -372,7 +372,7 @@ export default {
           this.snapshotData.forEach(elem => {
             if(elem) {
               this.mapFundingData(elem);
-            }  
+            }
           });
           this.snapshotData = sortBy(this.snapshotData, ['displayOrder']);
         }).catch(error => {
@@ -386,9 +386,9 @@ export default {
       this.addFundingSheet = !this.addFundingSheet;
     },
     saveNewFundingData(fundingData) {
-      this.addFundingSheet = !this.addFundingSheet;      
+      this.addFundingSheet = !this.addFundingSheet;
       this.loading = true;
-      
+
       ApiService.apiAxios.post(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}`, fundingData)
         .then(() => {
           this.setSuccessAlert('Success! The funding data has been added for the school.');
@@ -404,7 +404,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
   :deep(.v-data-table-footer) {
     display: none;
@@ -423,4 +423,5 @@ export default {
   }
 </style>
 
-  
+
+
