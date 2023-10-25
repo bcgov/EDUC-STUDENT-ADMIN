@@ -16,11 +16,11 @@
         />
       </v-col>
     </v-row>
-    <v-row
-      v-else
-      no-gutters
-    >
-      <v-col>
+    <v-row v-else>
+      <v-col
+        cols="12"
+        xl="6"
+      >
         <v-row>
           <v-col>
             <h3 class="subHeading pt-2 pb-8">
@@ -132,7 +132,10 @@
         </v-form>
       </v-col>
 
-      <v-col class="pl-5 pr-1">
+      <v-col
+        cols="12"
+        xl="6"
+      >
         <h3 class="subHeading pt-2 pb-2">
           Historic Funding Configurations
         </h3>
