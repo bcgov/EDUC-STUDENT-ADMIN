@@ -160,7 +160,7 @@
                 class="hoverTable px-2"
                 justify="center"
                 style="cursor: pointer;"
-                @click="openAuthority(item.raw.independentAuthorityId)"
+                @click="openAuthority(item.independentAuthorityId)"
               >
                 <v-col
                   cols="7"
@@ -169,9 +169,9 @@
                   <v-row no-gutters>
                     <v-col class="pt-2 pr-0">
                       <span class="subjectHeading">{{
-                        item.raw.authorityNumber
+                        item.authorityNumber
                       }} - {{
-                        item.raw.displayName
+                        item.displayName
                       }}</span>
                     </v-col>
                   </v-row>
@@ -181,7 +181,7 @@
                         class="ministryLine"
                         style="color: black"
                       >{{
-                        item.raw.type
+                        item.type
                       }}</span>
                     </v-col>
                   </v-row>
@@ -189,14 +189,14 @@
                 <v-col class="d-flex justify-start">
                   <v-icon
                     class="ml-0"
-                    :color="getStatusColorAuthorityOrSchool(item.raw.status)"
+                    :color="getStatusColorAuthorityOrSchool(item.status)"
                     right
                     dark
                   >
                     mdi-circle-medium
                   </v-icon>
                   <span class="ml-0 statusCodeLabel">{{
-                    item.raw.status
+                    item.status
                   }}</span>
                 </v-col>
                 <v-col
@@ -207,7 +207,7 @@
                     mdi-phone-outline
                   </v-icon>
                   <span class="statusCodeLabel"> {{
-                    formatPhoneNumber(item.raw.phoneNumber)
+                    formatPhoneNumber(item.phoneNumber)
                   }}</span>
                 </v-col>
               </v-row>

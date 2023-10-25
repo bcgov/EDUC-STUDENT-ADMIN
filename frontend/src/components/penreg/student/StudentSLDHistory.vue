@@ -51,65 +51,65 @@
               <td
                 v-for="header in item.columns"
                 :key="header.id"
-                :class="[header.id, existSldUsualName(item.item.raw)? 'two-rows-column' : 'one-row-column']"
+                :class="[header.id, existSldUsualName(item.item)? 'two-rows-column' : 'one-row-column']"
               >
                 <div
                   v-if="header.value === 'mincode'"
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ item.item.raw.distNo + item.item.raw.schlNo }}</span>
+                  <span class="top-field-item">{{ item.item.distNo + item.item.schlNo }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
                   />
                 </div>
                 <div
                   v-else-if="header.value === 'legalSurname'"
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
-                  >{{ item.item.raw['usualSurname'] }}</span>
+                  >{{ item.item['usualSurname'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'legalGivenName'"
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
-                  >{{ item.item.raw['usualGivenName'] }}</span>
+                  >{{ item.item['usualGivenName'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'legalMiddleName'"
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
-                  >{{ item.item.raw['usualMiddleName'] }}</span>
+                  >{{ item.item['usualMiddleName'] }}</span>
                 </div>
                 <div
                   v-else-if="header.value === 'birthDate'"
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ formatDob(item.item.raw[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
+                  <span class="top-field-item">{{ formatDob(item.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
                   />
                 </div>
                 <div
                   v-else
-                  :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
+                  :class="existSldUsualName(item.item)? 'flex-column-div' : 'flex-row-div'"
                 >
-                  <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
+                  <span class="top-field-item">{{ item.item[header.value] }}</span>
                   <span
-                    v-if="existSldUsualName(item.item.raw)"
+                    v-if="existSldUsualName(item.item)"
                     class="bottom-field-item"
                   />
                 </div>

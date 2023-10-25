@@ -348,7 +348,7 @@
               class="fill-height"
             >
               <template #item.createDate="{ item }">
-                <span>{{ item.raw.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
               <template #item.fileName="{item: document}">
                 <router-link
@@ -367,7 +367,7 @@
                 <span v-else>{{ document.raw.fileName }}</span>
               </template>
               <template #item.fileSize="{ item }">
-                <span v-if="item.raw.fileSize">{{ item.raw.fileSize }}</span>
+                <span v-if="item.fileSize">{{ item.fileSize }}</span>
               </template>
               <template
                 v-if="actionsEnabled"

@@ -27,15 +27,15 @@
           <tr
             no-gutters
             class="hoverTable"
-            :class="tableRowClass(item.raw)"
-            @click="selectHistoryItem(item.raw)"
+            :class="tableRowClass(item)"
+            @click="selectHistoryItem(item)"
           >
             <td
               v-for="header in getHeaders()"
               :key="header"
               :class="header"
             >
-              <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
+              <span :class="{ 'diff-value': item[`${header}_diff`] }">{{
                 formatTableColumn(header.format, item.columns[header.key])
               }}</span>
             </td>

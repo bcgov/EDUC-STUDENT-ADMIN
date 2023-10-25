@@ -76,34 +76,34 @@
               <tr
                 :key="item.index"
                 :class="['resultsTableRow',
-                         hoveredOveredRowStudentID === item.item.raw.studentID?'hovered-record-match-unmatch':'' ,
-                         item.item.raw.isSelected?'selected-record':'',
-                         isMatchedToStudent(item.item.raw)?'matchedStudentRow':'',
-                         grayoutPossibleMatches(item.item.raw) ? 'grayout':'']"
-                @mouseover="enableMatchOrUnMatch(item.item.raw)"
-                @mouseleave="disableMatchOrUnMatch(item.item.raw)"
+                         hoveredOveredRowStudentID === item.item.studentID?'hovered-record-match-unmatch':'' ,
+                         item.item.isSelected?'selected-record':'',
+                         isMatchedToStudent(item.item)?'matchedStudentRow':'',
+                         grayoutPossibleMatches(item.item) ? 'grayout':'']"
+                @mouseover="enableMatchOrUnMatch(item.item)"
+                @mouseleave="disableMatchOrUnMatch(item.item)"
               >
                 <td
                   v-for="header in item.columns"
                   :key="header.id"
                   :class="header.id"
                 >
-                  <div :class="[item.item.raw[header.doubleValue] ? 'value-half-width':'','tableCell']">
+                  <div :class="[item.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
                       <v-checkbox
                         :class="['checkbox', 'pl-3']"
                         color="#606060"
-                        :hide-details="isMatchedToStudent(item.item.raw) ? true : false"
-                        :input-value="item.item.raw.isSelected"
+                        :hide-details="isMatchedToStudent(item.item) ? true : false"
+                        :input-value="item.item.isSelected"
                         density="compact"
-                        @update:model-value="selectItem(item.item.raw)"
+                        @update:model-value="selectItem(item.item)"
                       />
                       <v-icon
-                        v-if="header.bottomValue==='icon' && item.item.raw['iconValue']"
+                        v-if="header.bottomValue==='icon' && item.item['iconValue']"
                         :class="['checkboxIcon', 'pl-6', 'mt-n3' ]"
                         color="#606060"
                       >
-                        {{ item.item.raw['iconValue'] }}
+                        {{ item.item['iconValue'] }}
                       </v-icon>
 
                     </span>
@@ -112,22 +112,22 @@
                         <a
                           v-if="isPenLink"
                           class="pen-link"
-                          @click="popStudentDialog(item.item.raw['studentID'])"
+                          @click="popStudentDialog(item.item['studentID'])"
                         >
                           <span
-                            :class="['top-column-item', 'pen-link', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
+                            :class="['top-column-item', 'pen-link', item.item[header.topValue] && demogValuesMatch(header.topValue, item.item[header.topValue])?'font-weight-bold':'']"
                           >
-                            {{ formatPen(item.item.raw[header.topValue]) }}
+                            {{ formatPen(item.item[header.topValue]) }}
                           </span>
                         </a>
                         <span
                           v-else
-                          :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
+                          :class="['top-column-item', item.item[header.topValue] && demogValuesMatch(header.topValue, item.item[header.topValue])?'font-weight-bold':'']"
                         >
-                          {{ formatPen(item.item.raw[header.topValue]) }}
+                          {{ formatPen(item.item[header.topValue]) }}
                         </span>
                         <v-tooltip
-                          v-if="item.item.raw['memo']"
+                          v-if="item.item['memo']"
                           top
                           max-width="40vw"
                         >
@@ -137,56 +137,56 @@
                             </v-icon>
                           </template>
                           <span>
-                            {{ item.item.raw['memo'] }}
+                            {{ item.item['memo'] }}
                           </span>
                         </v-tooltip>
                       </span>
                       <span
                         v-else-if="header.topValue==='mincode'"
-                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item[header.topValue] && demogValuesMatch(header.topValue, item.item[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ formatMincode(item.item.raw[header.topValue]) }}
+                        {{ formatMincode(item.item[header.topValue]) }}
                       </span>
                       <span
                         v-else-if="header.topValue==='dob'"
-                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item[header.topValue] && demogValuesMatch(header.topValue, item.item[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd') }}
+                        {{ formatDob(item.item[header.topValue], 'uuuu-MM-dd') }}
                       </span>
                       <span
                         v-else
-                        :class="['top-column-item', item.item.raw[header.topValue] && demogValuesMatch(header.topValue, item.item.raw[header.topValue])?'font-weight-bold':'']"
+                        :class="['top-column-item', item.item[header.topValue] && demogValuesMatch(header.topValue, item.item[header.topValue])?'font-weight-bold':'']"
                       >
-                        {{ item.item.raw[header.topValue] }}
+                        {{ item.item[header.topValue] }}
                       </span>
                       <span
-                        :class="['double-column-item', item.item.raw[header.doubleValue] && demogValuesMatch(header.doubleValue, item.item.raw[header.doubleValue])? 'font-weight-bold':'']"
+                        :class="['double-column-item', item.item[header.doubleValue] && demogValuesMatch(header.doubleValue, item.item[header.doubleValue])? 'font-weight-bold':'']"
                       >
-                        {{ item.item.raw[header.doubleValue] }}
+                        {{ item.item[header.doubleValue] }}
                       </span>
                       <br>
-                      <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === item.item.raw.studentID">
+                      <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === item.item.studentID">
                         <PrimaryButton
                           id="matchUnMatchButton"
                           :short="true"
                           :text="matchUnMatchButtonText"
                           :width="'6.5em'"
                           :disabled="disableMatchUnmatch"
-                          @click-action="$emit('match-unmatch-student', item.item.raw, matchUnMatchButtonText)"
+                          @click-action="$emit('match-unmatch-student', item.item, matchUnMatchButtonText)"
                         />
                       </span>
                       <span
                         v-else-if="header.bottomValue==='postalCode'"
-                        :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
+                        :class="['bottom-column-item', item.item[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item[header.bottomValue])? 'font-weight-bold':'']"
                       >
-                        {{ formatPostalCode(item.item.raw[header.bottomValue]) }}
+                        {{ formatPostalCode(item.item[header.bottomValue]) }}
                       </span>
 
                       <!-- if top and bottom value are the same, do not display the bottom value -->
                       <span
                         v-else
-                        :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
-                      >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue] : ''
+                        :class="['bottom-column-item', item.item[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item[header.bottomValue])? 'font-weight-bold':'']"
+                      >{{ item.item[header.bottomValue] !== item.item[header.topValue] ? item.item[header.bottomValue] : ''
                         }}</span>
                     </span>
                   </div>
