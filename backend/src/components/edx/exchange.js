@@ -1106,7 +1106,7 @@ async function createSchool(req, res) {
 
     return res.status(HttpStatus.ACCEPTED).json(result);
   } catch (e) {
-    await logApiError(e, 'createSchool', 'Error ocurred while starting a create school saga.');
+    await logApiError(e, 'createSchool', 'Error occurred while starting a create school saga.');
     return errorResponse(res);
   }
 }
