@@ -6,10 +6,9 @@ const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
-const {LocalDateTime, LocalDate, DateTimeFormatter, LocalTime, ChronoUnit} = require('@js-joda/core');
+const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
 const log = require('../logger');
-const {omit, set} = require('lodash/fp');
 
 async function claimAllExchanges(req, res) {
   try {
@@ -1084,24 +1083,20 @@ async function createSchool(req, res) {
       });
     }
 
-    const isEmptyString = str => typeof str === 'string' && str.trim() === '';
-    const javaISOOpenedDateFrom = date =>
-      LocalDateTime.of(LocalDate.parse(date), LocalTime.of(0,0,0,0).truncatedTo(ChronoUnit.SECONDS))
-        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-
     const {school, user} = req.body;
+
+    const isEmptyString = str => typeof str === 'string' && str.trim() === '';
     const userHasEmptyVals = Object.values(user)
       .reduce((result, currentValue) => result || isEmptyString(currentValue), false);
 
     const payload = {
-      school: set('districtId')(school.districtID)(
-        set('openedDate')(javaISOOpenedDateFrom(school.openedDate))(
-          omit('districtID')(school)
-        )
-      ),
+      school: {
+        ...school,
+        districtId: school.districtID
+      },
       initialEdxUser: userHasEmptyVals ? null : user
     };
+    delete payload.school.districtID;
 
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
