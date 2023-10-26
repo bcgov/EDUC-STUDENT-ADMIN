@@ -454,14 +454,8 @@ async function addNewSchoolNote(req, res) {
 async function getSchoolNotes(req, res) {
   try {
     const token = getBackendToken(req);
-
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
     const result = await getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note`);
+
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'getSchoolNotes', 'Error occurred while attempting to get school notes.');
