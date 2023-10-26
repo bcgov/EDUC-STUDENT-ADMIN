@@ -463,7 +463,7 @@
             </v-row>
             <v-row>
               <v-col>
-                <h3>Initial EDX User</h3>
+                <h3>Initial EDX Administrator</h3>
               </v-col>
             </v-row>
             <v-row>
