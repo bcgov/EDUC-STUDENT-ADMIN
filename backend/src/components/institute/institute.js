@@ -865,7 +865,9 @@ function hasSchoolAdminRole(req, school){
 }
 
 function hasAuthorityAdminRole(req, authority){
-  if(authority?.authorityTypeCode === 'OFFSHORE'){
+  if(authority?.authorityTypeCode === 'INDEPENDNT') {
+    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
+  } else if(authority?.authorityTypeCode === 'OFFSHORE'){
     return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
   }
   return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');

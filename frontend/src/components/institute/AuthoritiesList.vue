@@ -296,7 +296,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['authorityTypeCodes']),
 
     getSheetWidth() {
@@ -441,7 +441,7 @@ export default {
       this.getAuthorityList();
     },
     canAddAuthority() {
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     newAuthorityAdded() {
       this.newAuthoritySheet = !this.newAuthoritySheet;

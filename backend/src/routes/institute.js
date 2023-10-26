@@ -42,7 +42,7 @@ router.put('/authority/contact/:contactId', passport.authenticate('jwt', {sessio
 
 router.delete('/authority/contact/:independentAuthorityId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, deleteAuthorityContact);
 
-router.post('/authority', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, addAuthority);
+router.post('/authority', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addAuthority);
 
 router.post('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addAuthorityContact);
 
