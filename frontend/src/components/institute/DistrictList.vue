@@ -33,7 +33,7 @@
           <v-autocomplete
             id="district-text-field"
             v-model="searchFilter.districtId"
-            clearable
+            :clearable="true"
             :items="districtSearchNames"
             item-title="districtNumberName"
             variant="underlined"
@@ -42,6 +42,14 @@
             label="District Number & Name"
             @update:model-value="searchButtonClick"
           >
+            <template #prepend-inner>
+              <v-icon
+                v-if="searchFilter.districtId"
+                :color="getStatusColor(districtSearchNames.find(item=>item.districtId===searchFilter.districtId)?.status)"
+              >
+                mdi-circle-medium
+              </v-icon>
+            </template>
             <template #selection="{ item, index }">
               {{
                 item.raw.districtNumberName
@@ -69,7 +77,7 @@
           <v-select
             id="status-select-field"
             v-model="searchFilter.status"
-            clearable
+            :clearable="true"
             :items="status"
             item-title="label"
             variant="underlined"
@@ -77,6 +85,14 @@
             :menu-props="{closeOnContentClick:true}"
             label="Status"
           >
+            <template #prepend-inner>
+              <v-icon
+                v-if="searchFilter.status"
+                :color="getStatusColor(searchFilter.status)"
+              >
+                mdi-circle-medium
+              </v-icon>
+            </template>
             <template #selection="{ item, index }">
               {{
                 item.raw.label

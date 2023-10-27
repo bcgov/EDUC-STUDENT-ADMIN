@@ -2,8 +2,8 @@
   <v-footer
     color="#003366"
     dark
-    absolute
-    height="20px"
+    :absolute="true"
+    height="48px"
   >
     <v-row no-gutters>
       <v-col class="d-flex justify-center">
@@ -78,13 +78,6 @@ export default {};
   min-width: 100%;
   max-height: 3em;
 }
-/*
-.footer {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-}
-*/
 .v-btn--active.footer:before,
 .v-btn.footer:focus:before,
 .v-btn.footer:hover:before {

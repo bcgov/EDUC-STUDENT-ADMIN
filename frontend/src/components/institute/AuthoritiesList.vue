@@ -55,6 +55,14 @@
                 clearable
                 @update:model-value="searchButtonClick"
               >
+                <template #prepend-inner>
+                  <v-icon
+                    v-if="authorityCodeNameFilter"
+                    :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(item=>item.authorityID===authorityCodeNameFilter)?.status)"
+                  >
+                    mdi-circle-medium
+                  </v-icon>
+                </template>
                 <template #selection="{ item, index }">
                   {{
                     item.raw.authorityCodeName
@@ -88,6 +96,14 @@
                 :menu-props="{closeOnContentClick:true}"
                 label="Status"
               >
+                <template #prepend-inner>
+                  <v-icon
+                    v-if="authorityStatusFilter"
+                    :color="getStatusColorAuthorityOrSchool(authorityStatusFilter)"
+                  >
+                    mdi-circle-medium
+                  </v-icon>
+                </template>
                 <template #selection="{ item, index }">
                   {{
                     item.raw.name
