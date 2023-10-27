@@ -418,6 +418,7 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {instituteStore} from '@/store/modules/institute';
+import {notificationsStore} from "@/store/modules/notifications";
 
 export default {
   name: 'SchoolListPage',
@@ -483,6 +484,7 @@ export default {
     ...mapState(authStore, ['userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(appStore, ['schoolsMap']),
     ...mapState(edxStore, ['schoolSearchParams']),
+    ...mapState(notificationsStore, ['notification']),
     ...mapState(instituteStore, ['facilityTypeCodes', 'activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
     schoolFacilityTypes() {
       if (!this.activeFacilityTypeCodes || !this.schoolCategoryTypeFilter) {
@@ -496,6 +498,22 @@ export default {
     },
   },
   watch: {
+    notification(notificationData) {
+      if (notificationData) {
+        console.log('Here: ' + JSON.stringify(notificationData));
+        if (notificationData.eventType === 'CREATE_SCHOOL' && notificationData.eventOutcome === 'SCHOOL_CREATED' && notificationData.eventPayload) {
+          try {
+            const schoolData = JSON.parse(notificationData.eventPayload);
+            if (schoolData.schoolId) {
+              const message = `School created successfully. <a style="font-weight: bold" href="/institute/school/${schoolData.schoolId}/details">Click here to go to new school</a>.`;
+              this.setSuccessAlert(message);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    },
     pageSize() {
       this.getSchoolList();
     },

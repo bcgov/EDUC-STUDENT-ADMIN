@@ -14,10 +14,12 @@ const handleJetStreamMessage = async (err, msg) => {
   const data = JSON.parse(StringCodec().decode(msg.data)); // it would always be a JSON string. ii will always be choreographed event.
   logger.info(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
-    if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_SCHOOL || data.eventType === CONSTANTS.EVENT_TYPE.CREATE_SCHOOL
+    if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_SCHOOL
       || data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_AUTHORITY || data.eventType === CONSTANTS.EVENT_TYPE.CREATE_AUTHORITY
       || data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_DISTRICT || data.eventType === CONSTANTS.EVENT_TYPE.CREATE_DISTRICT) {
-      await handleInstituteEvent('NT');
+      await handleInstituteEvent('NT', CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC);
+    }else if (data.eventType === CONSTANTS.EVENT_TYPE.CREATE_SCHOOL){
+      await handleInstituteEvent(data, CONSTANTS.WS_CREATE_SCHOOL_TOPIC);
     }
     msg.ack(); // acknowledge to JetStream
   } catch (e) {
@@ -25,10 +27,10 @@ const handleJetStreamMessage = async (err, msg) => {
   }
 };
 
-async function handleInstituteEvent(data) {
-  logger.info('Received institute message: ' + JSON.stringify(data));
-  NATS.publishMessage(CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
-    logger.info(`Message published to ${CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC}`, data);
+async function handleInstituteEvent(data, topic) {
+  logger.debug('Received institute message: ' + JSON.stringify(data));
+  NATS.publishMessage(topic, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
+    logger.info(`Message published to ${topic}`, data);
   });
 }
 

@@ -6,7 +6,7 @@ const NATS = require('../message-pub-sub');
 const {StringCodec} = require('nats');
 const cacheService = require('../../components/cache-service');
 const sc = StringCodec();
-const TOPICS = [CONSTANTS.WS_MOVE_SCHOOL_TOPIC, CONSTANTS.WS_NEW_SECURE_MESSAGE_TOPIC];
+const TOPICS = [CONSTANTS.WS_MOVE_SCHOOL_TOPIC, CONSTANTS.WS_NEW_SECURE_MESSAGE_TOPIC, CONSTANTS.WS_CREATE_SCHOOL_TOPIC];
 
 
 function broadCastMessageToWebSocketClients(msg) {
