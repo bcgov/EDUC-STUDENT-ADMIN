@@ -47,10 +47,10 @@
       <div
         v-for="authorityContactType in authorityContactTypes"
         :key="authorityContactType.code"
-        class="pb-4"
+        class="pb-6"
       >
         <v-row>
-          <v-col class="pb-0">
+          <v-col class="pb-1">
             <h2
               id="authorityTypeLabel"
               style="color:#1A5A96"

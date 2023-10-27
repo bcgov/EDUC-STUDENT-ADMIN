@@ -320,8 +320,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 30em !important;
-    padding-left: 30em !important;
+    padding-right: 28em !important;
+    padding-left: 28em !important;
 }
 
 .hoverTable:hover {
