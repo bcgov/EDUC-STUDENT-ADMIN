@@ -8,14 +8,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.status, schoolHistory.status_diff) }">Status</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.status_diff }">{{
@@ -27,14 +25,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.districtNumber, schoolHistory.districtNumber_diff) }">District Number</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.districtNumber_diff }">{{
@@ -46,7 +42,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -54,8 +49,7 @@
         >Authority Number</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.authorityNumber_diff }">{{
@@ -67,14 +61,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.schoolNumber, schoolHistory.schoolNumber_diff) }">School Number</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.schoolNumber_diff }">{{
@@ -86,14 +78,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.displayName, schoolHistory.displayName_diff) }">Name</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.displayName_diff }">{{
@@ -105,7 +95,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -113,8 +102,7 @@
         >Legacy Safe School Name</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.displayNameNoSpecialChars_diff }">{{
@@ -126,14 +114,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.phoneNumber, schoolHistory.phoneNumber_diff) }">Phone</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.phoneNumber_diff }">{{
@@ -145,14 +131,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.email, schoolHistory.email_diff) }">Email</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.email_diff }">{{
@@ -164,14 +148,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.faxNumber, schoolHistory.faxNumber_diff) }">Fax</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.faxNumber_diff }">{{
@@ -183,14 +165,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.website, schoolHistory.website_diff) }">Website</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.website_diff }">{{
@@ -202,14 +182,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.openedDate, schoolHistory.openedDate_diff) }">Open Date</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.openedDate_diff }">{{
@@ -221,14 +199,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.closedDate, schoolHistory.closedDate_diff) }">Close Date</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.closedDate_diff }">{{
@@ -240,7 +216,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -248,8 +223,7 @@
         >Facility Type</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.facilityTypeValue_diff }">{{
@@ -261,7 +235,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -269,8 +242,7 @@
         >School Category</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.schoolCategoryValue_diff }">{{
@@ -282,14 +254,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.gradeValue, schoolHistory.gradeValue_diff) }">Grades Offered</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.gradeValue_diff }">{{
@@ -301,7 +271,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -309,8 +278,7 @@
         >School Organization</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.schoolOrganizationValue_diff }">{{
@@ -322,14 +290,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.nlcList, schoolHistory.nlcList_diff) }">NLC Activity</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.nlcList_diff }">{{
@@ -341,7 +307,6 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span
@@ -354,8 +319,7 @@
         </span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <span :class="{ 'diff-value': schoolHistory.schoolReportingRequirementCode_diff }">
@@ -369,14 +333,12 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
         class="pb-0 pt-0 key"
       >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.mailingAddress, schoolHistory.mailingAddress_diff) }">Mailing Address</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <FormattedAddress
@@ -390,7 +352,7 @@
     <v-row class="py-1">
       <v-col
         cols="4"
-        lg="3"
+
         class="pb-0 pt-0 key"
       >
         <span
@@ -398,8 +360,7 @@
         >Physical Address</span>
       </v-col>
       <v-col
-        cols="4"
-        lg="3"
+        cols="6"
         class="pb-0 pt-0"
       >
         <FormattedAddress

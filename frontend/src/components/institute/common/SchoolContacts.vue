@@ -18,16 +18,18 @@
           <v-chip
             class="mr-3"
             color="#A9D18E"
+            variant="elevated"
           >
             Active
           </v-chip>
           <v-chip
             class="mr-3"
             color="#9DC3E6"
+            variant="elevated"
           >
             Pending Start Date
           </v-chip>
-          <v-chip color="#F4B183">
+          <v-chip color="#F4B183" variant="elevated">
             Pending End Date
           </v-chip>
         </v-col>
