@@ -750,10 +750,9 @@ export default {
       this.processing = true;
 
       ApiService.apiAxios.post(`${Routes.edx.CREATE_SCHOOL}`, {school: this.newSchool, user: this.initialUser})
-        .then((response) => {
+        .then(() => {
           this.setSuccessAlert('Success! The school is being created.');
           this.resetForm();
-          this.openSchoolDetailsPage(response.data.schoolId);
         })
         .catch(error => {
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -761,10 +760,8 @@ export default {
         })
         .finally(() => {
           this.processing = false;
+          this.closeNewSchoolPage();
         });
-    },
-    openSchoolDetailsPage(schoolID) {
-      this.$router.push({name: 'schoolDetails', params: {schoolID: schoolID}});
     },
     schoolDistrictChanged() {
       this.schoolCategoryDisabled = false;

@@ -26,7 +26,7 @@ const handleJetStreamMessage = async (err, msg) => {
 };
 
 async function handleInstituteEvent(data) {
-  logger.info('Received institute message: ' + JSON.stringify(data.eventPayload));
+  logger.info('Received institute message: ' + JSON.stringify(data));
   NATS.publishMessage(CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
     logger.info(`Message published to ${CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC}`, data);
   });
