@@ -36,7 +36,7 @@
               :class="header"
             >
               <span :class="{ 'diff-value': item[`${header}_diff`] }">{{
-                formatTableColumn(header.format, item.columns[header.key])
+                formatTableColumn(header.format, item[header.key])
               }}</span>
             </td>
           </tr>
