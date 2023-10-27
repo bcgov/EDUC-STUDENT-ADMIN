@@ -14,11 +14,12 @@ const handleJetStreamMessage = async (err, msg) => {
   const data = JSON.parse(StringCodec().decode(msg.data)); // it would always be a JSON string. ii will always be choreographed event.
   logger.info(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
-    if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_SCHOOL
+    if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_SCHOOL || CONSTANTS.EVENT_TYPE.CREATE_SCHOOL
       || data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_AUTHORITY || data.eventType === CONSTANTS.EVENT_TYPE.CREATE_AUTHORITY
       || data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_DISTRICT || data.eventType === CONSTANTS.EVENT_TYPE.CREATE_DISTRICT) {
       await handleInstituteEvent('NT', CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC);
-    }else if (data.eventType === CONSTANTS.EVENT_TYPE.CREATE_SCHOOL){
+    }
+    if (data.eventType === CONSTANTS.EVENT_TYPE.CREATE_SCHOOL){
       await handleInstituteEvent(data, CONSTANTS.WS_CREATE_SCHOOL_TOPIC);
     }
     msg.ack(); // acknowledge to JetStream
