@@ -19,17 +19,19 @@
         <v-col class="d-flex justify-start">
           <v-chip
             class="mr-3"
+            variant="elevated"
             color="#A9D18E"
           >
             Active
           </v-chip>
           <v-chip
             class="mr-3"
+            variant="elevated"
             color="#9DC3E6"
           >
             Pending Start Date
           </v-chip>
-          <v-chip color="#F4B183">
+          <v-chip color="#F4B183" variant="elevated">
             Pending End Date
           </v-chip>
         </v-col>
@@ -99,10 +101,10 @@
       <div
         v-for="districtContactType in filteredDistrictContactTypes"
         :key="districtContactType.code"
-        class="pb-4"
+        class="pb-6"
       >
         <v-row>
-          <v-col class="pb-0">
+          <v-col class="pb-1">
             <h2 style="color:#1A5A96">
               {{
                 districtContactType.label

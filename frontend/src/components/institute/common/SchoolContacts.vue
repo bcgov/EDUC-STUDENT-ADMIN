@@ -48,10 +48,10 @@
       <div
         v-for="schoolContactType in schoolContactTypes"
         :key="schoolContactType.code"
-        class="pb-4"
+        class="pb-6"
       >
         <v-row>
-          <v-col class="pb-0">
+          <v-col class="pb-1">
             <h2 style="color:#1A5A96">
               {{
                 schoolContactType.label

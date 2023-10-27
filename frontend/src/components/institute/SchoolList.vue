@@ -450,7 +450,7 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {instituteStore} from '@/store/modules/institute';
-import {notificationsStore} from "@/store/modules/notifications";
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'SchoolListPage',
@@ -898,8 +898,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 24em !important;
-    padding-left: 24em !important;
+    padding-right: 20em !important;
+    padding-left: 20em !important;
 }
 
 .hoverTable:hover {

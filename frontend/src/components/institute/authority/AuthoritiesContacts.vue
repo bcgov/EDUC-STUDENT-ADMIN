@@ -20,16 +20,18 @@
           <v-chip
             class="mr-3"
             color="#A9D18E"
+            variant="elevated"
           >
             Active
           </v-chip>
           <v-chip
             class="mr-3"
+            variant="elevated"
             color="#9DC3E6"
           >
             Pending Start Date
           </v-chip>
-          <v-chip color="#F4B183">
+          <v-chip color="#F4B183" variant="elevated">
             Pending End Date
           </v-chip>
         </v-col>
@@ -47,10 +49,10 @@
       <div
         v-for="authorityContactType in authorityContactTypes"
         :key="authorityContactType.code"
-        class="pb-4"
+        class="pb-6"
       >
         <v-row>
-          <v-col class="pb-0">
+          <v-col class="pb-1">
             <h2
               id="authorityTypeLabel"
               style="color:#1A5A96"
