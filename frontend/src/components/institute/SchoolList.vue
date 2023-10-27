@@ -57,9 +57,17 @@
                   variant="underlined"
                   :items="schoolSearchNames"
                   :menu-props="{closeOnContentClick:true}"
-                  clearable
+                  :clearable="true"
                   @update:model-value="searchButtonClick"
                 >
+                  <template #prepend-inner>
+                    <v-icon
+                      v-if="schoolCodeNameFilter"
+                      :color="getStatusColorAuthorityOrSchool(schoolSearchNames.find(x=>x.schoolID===schoolCodeNameFilter)?.status)"
+                    >
+                      mdi-circle-medium
+                    </v-icon>
+                  </template>
                   <template #selection="{ item, index }">
                     {{
                       item.raw.schoolCodeName
@@ -89,7 +97,7 @@
                 <v-select
                   id="status-select-field"
                   v-model="schoolStatusFilter"
-                  clearable
+                  :clearable="true"
                   :items="schoolStatus"
                   item-title="name"
                   variant="underlined"
@@ -97,6 +105,14 @@
                   :menu-props="{closeOnContentClick:true}"
                   label="Status"
                 >
+                  <template #prepend-inner>
+                    <v-icon
+                      v-if="schoolStatusFilter"
+                      :color="getStatusColorAuthorityOrSchool(schoolStatusFilter)"
+                    >
+                      mdi-circle-medium
+                    </v-icon>
+                  </template>
                   <template #selection="{ item, index }">
                     {{
                       item.raw.name
@@ -126,7 +142,7 @@
                 <v-select
                   id="category-select-field"
                   v-model="schoolCategoryTypeFilter"
-                  clearable
+                  :clearable="true"
                   :items="activeSchoolCategoryTypes"
                   variant="underlined"
                   item-title="label"
@@ -143,7 +159,7 @@
                 <v-select
                   id="facility-select-field"
                   v-model="schoolFacilityTypeFilter"
-                  clearable
+                  :clearable="true"
                   :items="schoolFacilityTypes"
                   variant="underlined"
                   item-title="label"
@@ -161,7 +177,7 @@
                 <v-autocomplete
                   id="district-text-field"
                   v-model="districtCodeNameFilter"
-                  clearable
+                  :clearable="true"
                   :items="districtSearchNames"
                   item-title="districtNumberName"
                   variant="underlined"
@@ -170,6 +186,14 @@
                   label="District Number & Name"
                   @update:model-value="searchButtonClick"
                 >
+                  <template #prepend-inner>
+                    <v-icon
+                      v-if="districtCodeNameFilter"
+                      :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilter)?.status)"
+                    >
+                      mdi-circle-medium
+                    </v-icon>
+                  </template>
                   <template #selection="{ item, index }">
                     {{
                       item.raw.districtNumberName
@@ -205,9 +229,17 @@
                   variant="underlined"
                   :items="authoritySearchNames"
                   :menu-props="{closeOnContentClick:true}"
-                  clearable
+                  :clearable="true"
                   @update:model-value="searchButtonClick"
                 >
+                  <template #prepend-inner>
+                    <v-icon
+                      v-if="authorityCodeNameFilter"
+                      :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilter)?.status)"
+                    >
+                      mdi-circle-medium
+                    </v-icon>
+                  </template>
                   <template #selection="{ item, index }">
                     {{
                       item.raw.authorityCodeName
@@ -242,7 +274,7 @@
                   variant="underlined"
                   item-title="label"
                   :items="schoolReportingRequirementTypeCodes"
-                  clearable
+                  :clearable="true"
                   @update:model-value="searchButtonClick"
                 />
               </v-col>
