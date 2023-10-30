@@ -97,6 +97,7 @@
       "vue/no-unused-vars": 0,
       "vue/valid-v-slot": 0,
       "vue/no-reserved-component-names": 0,
+      "vue/v-on-event-hyphenation": 0,
       "no-console": "off",
       "eol-last": [
         "error",
