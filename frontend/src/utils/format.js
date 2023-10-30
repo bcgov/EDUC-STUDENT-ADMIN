@@ -100,3 +100,14 @@ export function formatDisplayDate(date) {
 export function formatContactName(contact) {
   return contact.firstName ? `${contact.firstName} ${contact.lastName}` : contact.lastName;
 }
+
+export function formatVSelectOption({ title, value }) {
+  return obj => {
+    if (obj[title] === undefined || obj[value] === undefined) {
+      console.warn('Undefined values in VSelectOption', obj);
+      console.warn(`Make sure the ${title} and ${value} accessors exist`);
+    }
+
+    return { title: obj[title], value: obj[value] };
+  };
+}

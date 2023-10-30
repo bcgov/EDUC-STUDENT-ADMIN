@@ -348,17 +348,14 @@
                   }}</span>
                   <v-select
                     v-else
-                    v-model="schoolDetailsCopy.grades"
+                    v-model="selectedGradeTypes"
                     :items="filteredGradeOptions"
-                    item-value="schoolGradeCode"
-                    item-title="label"
                     label="Grades Offered"
                     variant="underlined"
                     :disabled="isGradeOfferedUpdateAllowed"
                     class="mt-n5"
                     multiple
                     required
-                    @input="sortGrades"
                   />
                 </v-col>
               </v-row>
@@ -442,8 +439,6 @@
                     v-else
                     v-model="schoolDetailsCopy.schoolReportingRequirementCode"
                     :items="schoolReportingRequirementTypes"
-                    item-value="schoolReportingRequirementCode"
-                    item-title="label"
                     class="mt-n5"
                     variant="underlined"
                     label="Reporting Requirement"
@@ -484,15 +479,13 @@
                   }}</span>
                   <v-select
                     v-else
-                    v-model="schoolDetailsCopy.neighborhoodLearning"
-                    :items="schoolNeighborhoodLearningTypes"
-                    item-value="neighborhoodLearningTypeCode"
-                    item-title="label"
+                    v-model="selectedNLC"
+                    :items="schoolNeighborhoodLearningTypeOptions"
                     class="mt-n5"
                     variant="underlined"
                     label="NLC Activity"
                     multiple
-                    @input="sortNLC"
+                    @update:model-value="sortNLC"
                   />
                 </v-col>
               </v-row>
@@ -1146,7 +1139,7 @@ import {mapActions, mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {formatPhoneNumber, formatDate} from '@/utils/format';
+import {formatPhoneNumber, formatDate, formatVSelectOption} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
@@ -1173,6 +1166,7 @@ export default {
       required: true
     },
   },
+  emits: ['update-school'],
   data() {
     return {
       independentArray: ['INDEPEND', 'INDP_FNS'],
@@ -1189,6 +1183,8 @@ export default {
       schoolOrganizationTypes: [],
       schoolReportingRequirementTypes: [],
       schoolNeighborhoodLearningTypes: [],
+      selectedGradeTypes: [],
+      selectedNLC: [],
       schoolGradeTypes: [],
       loading: true,
       schoolDetailsFormValid: true,
@@ -1247,10 +1243,15 @@ export default {
       return this.school.schoolCategoryCode === 'POST_SEC' || this.school.schoolCategoryCode === 'EAR_LEARN';
     },
     filteredGradeOptions(){
-      if(!this.independentArray.includes(this.school.schoolCategoryCode)){
-        return this.gradeOptions.filter(gradeObj => gradeObj.schoolGradeCode !== 'KINDHALF');
+      const toSelectionObject = formatVSelectOption({ title: 'label', value: 'schoolGradeCode' });
+      if (!this.independentArray.includes(this.school.schoolCategoryCode)) {
+        return this.gradeOptions.filter(gradeObj => gradeObj.schoolGradeCode !== 'KINDHALF').map(toSelectionObject);
       }
-      return this.gradeOptions;
+      return this.gradeOptions.map(toSelectionObject);
+    },
+    schoolNeighborhoodLearningTypeOptions() {
+      const toNLCSelectOption = formatVSelectOption({ title: 'label', value: 'neighborhoodLearningTypeCode'});
+      return this.schoolNeighborhoodLearningCodes.map(toNLCSelectOption);
     },
     schoolReportingRequirementType() {
       const code = this.school.schoolReportingRequirementCode;
@@ -1343,18 +1344,29 @@ export default {
           this.loading = false;
         });
     },
-    sortGrades() {
-      const gradeList = [];
-      for (const grade of this.schoolGradeTypes) {
-        let schoolGradeType = this.schoolDetailsCopy.grades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
-        if (schoolGradeType) {
-          gradeList.push(schoolGradeType);
-        }
-      }
-      this.schoolDetailsCopy.grades = gradeList;
+    populateSelectedGrades(gradeCodes) {
+      this.selectedGradeTypes = this.schoolGradeTypes
+        .filter(gradeType => gradeCodes.find(gc => gc.schoolGradeCode === gradeType.schoolGradeCode) !== undefined)
+        .map(gradeType => gradeType.schoolGradeCode);
+    },
+    populateSelectedNLC(learningCodes) {
+      this.selectedNLC = this.schoolNeighborhoodLearningTypes
+        .filter(learningType => learningCodes
+          .find(lc => lc.neighborhoodLearningTypeCode === learningType.neighborhoodLearningTypeCode) !== undefined)
+        .map(learningType => learningType.neighborhoodLearningTypeCode);
+    },
+    applySelectedGrades() {
+      this.schoolDetailsCopy.grades = this.selectedGradeTypes
+        .map(selected => this.schoolGradeTypes
+          .find(gradeType => gradeType.schoolGradeCode === selected));
+    },
+    applySelectedNLC() {
+      this.schoolDetailsCopy.neighborhoodLearning = this.selectedNLC
+        .map(selected => this.schoolNeighborhoodLearningTypes
+          .find(nlt => nlt.neighborhoodLearningTypeCode === selected));
     },
     sortNLC() {
-      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
+      this.selectedNLC = this.selectedNLC.toSorted();
     },
     saveNewSchoolNote() {
       this.loading = true;
@@ -1474,9 +1486,10 @@ export default {
     async toggleEdit() {
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
-      this.showAddress = this.hasMailingAddress();
-      this.sortGrades();
       this.sortNLC();
+      this.populateSelectedGrades(this.school.grades);
+      this.populateSelectedNLC(this.school.neighborhoodLearning);
+      this.showAddress = this.hasMailingAddress();
       this.editing = !this.editing;
       await this.$nextTick();
       this.$refs.schoolDetailsForm.validate();
@@ -1485,7 +1498,6 @@ export default {
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
       this.showAddress = true;
-      this.sortGrades();
       this.sortNLC();
       this.editing = !this.editing;
       await this.$nextTick();
@@ -1511,7 +1523,10 @@ export default {
         this.schoolDetailsCopy.addresses = null;
       }
 
-      this.$emit('updateSchool', this.schoolDetailsCopy);
+      this.applySelectedGrades();
+      this.applySelectedNLC();
+
+      this.$emit('update-school', this.schoolDetailsCopy);
     },
     hasMailingAddress() {
       return this.school.addresses?.filter(address => address.addressTypeCode === 'MAILING').length > 0;

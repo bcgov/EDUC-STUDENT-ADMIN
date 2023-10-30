@@ -154,7 +154,7 @@
                 <v-window-item value="details">
                   <Details
                     :school-i-d="schoolID"
-                    @updateSchool="updateSchoolDetails"
+                    @update-school="updateSchoolDetails"
                   />
                 </v-window-item>
                 <v-window-item value="contacts">
