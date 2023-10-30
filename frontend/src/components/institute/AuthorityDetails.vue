@@ -377,8 +377,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 20em !important;
-    padding-left: 20em !important;
+    padding-right: 12em !important;
+    padding-left: 12em !important;
 }
 
 .editField {
