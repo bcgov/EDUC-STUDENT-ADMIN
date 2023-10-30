@@ -356,6 +356,7 @@
                     class="mt-n5"
                     multiple
                     required
+                    @update:model-value="sortSelectedGrades"
                   />
                 </v-col>
               </v-row>
@@ -485,7 +486,7 @@
                     variant="underlined"
                     label="NLC Activity"
                     multiple
-                    @update:model-value="sortNLC"
+                    @update:model-value="sortSelectedNLC"
                   />
                 </v-col>
               </v-row>
@@ -1365,8 +1366,15 @@ export default {
         .map(selected => this.schoolNeighborhoodLearningTypes
           .find(nlt => nlt.neighborhoodLearningTypeCode === selected));
     },
-    sortNLC() {
+    sortSelectedNLC() {
       this.selectedNLC = this.selectedNLC.toSorted();
+    },
+    sortSelectedGrades() {
+      this.selectedGradeTypes = this.selectedGradeTypes.toSorted((a, b) => {
+        const typeA = this.schoolGradeTypes.find(gt => gt.schoolGradeCode === a).displayOrder;
+        const typeB = this.schoolGradeTypes.find(gt => gt.schoolGradeCode === b).displayOrder;
+        return typeA - typeB;
+      });
     },
     saveNewSchoolNote() {
       this.loading = true;
@@ -1486,9 +1494,10 @@ export default {
     async toggleEdit() {
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
-      this.sortNLC();
       this.populateSelectedGrades(this.school.grades);
       this.populateSelectedNLC(this.school.neighborhoodLearning);
+      this.sortSelectedNLC();
+      this.sortSelectedGrades();
       this.showAddress = this.hasMailingAddress();
       this.editing = !this.editing;
       await this.$nextTick();
@@ -1498,7 +1507,8 @@ export default {
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
       this.showAddress = true;
-      this.sortNLC();
+      this.sortSelectedNLC();
+      this.sortSelectedGrades();
       this.editing = !this.editing;
       await this.$nextTick();
       this.$refs.schoolDetailsForm.validate();
