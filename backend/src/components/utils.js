@@ -180,6 +180,35 @@ async function logRequestData(operationType, url, data) {
   }
 }
 
+function checkUserHasPermission(permission) {
+  return function(req, res, next) {
+    try {
+      const jwtToken = getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'Unauthorized user'
+        });
+      }
+      let userToken;
+      try {
+        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      } catch (e) {
+        log.debug('error is from verify', e);
+        return res.status(HttpStatus.UNAUTHORIZED).json();
+      }
+      if (userToken['realm_access']?.roles && userToken['realm_access'].roles.includes(permission)) {
+        return next();
+      }
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'user is missing role'
+      });
+    } catch (e) {
+      log.error(e);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
+  }
+}
+
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
@@ -560,7 +589,8 @@ const utils = {
   validateAccessToken,
   forwardGet,
   isPdf,
-  isImage
+  isImage,
+  checkUserHasPermission
 };
 
 module.exports = utils;

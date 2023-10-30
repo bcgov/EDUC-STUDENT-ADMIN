@@ -357,9 +357,9 @@ export default {
     },
     getExpiryDate(user){
       if(!this.isDistrictUser()){
-        return user.edxUserSchools[0].expiryDate;
+        return user?.edxUserSchools[0]?.expiryDate;
       }
-      return user.edxUserDistricts[0].expiryDate;
+      return user?.edxUserDistricts[0]?.expiryDate;
     },
     getRoleLabel(curRole) {
       if (this.instituteRoles.length > 0) {

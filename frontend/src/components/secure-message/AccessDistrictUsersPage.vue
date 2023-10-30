@@ -189,7 +189,7 @@
             class="pb-0"
           >
             <AccessUserCard
-              :user-roles="user.edxUserDistricts[0].edxUserDistrictRoles"
+              :user-roles="user?.edxUserDistricts[0]?.edxUserDistrictRoles"
               :user="user"
               :institute-code="districtId"
               :institute-roles="districtRoles"
@@ -369,12 +369,16 @@ export default {
     },
     getUsersData() {
       this.loadingUsers = true;
-      const payload = {params: {districtID: this.districtId}};
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
+      ApiService.apiAxios.get(`${Routes.edx.EDX_DISTRICT_USERS_URL}/${this.districtId}`)
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
           this.users = this.filteredUsers;
-        }).finally(() => {
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        })
+        .finally(() => {
           this.loadingUsers = false;
         });
     },

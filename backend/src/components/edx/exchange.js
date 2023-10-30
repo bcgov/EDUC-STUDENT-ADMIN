@@ -406,39 +406,53 @@ async function markExchangeStatusAs(req, res) {
     });
 }
 
-async function getEdxUsers(req, res) {
+async function getEdxDistrictUsers(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
   try {
-    let response = await getData(token, config.get('server:edx:edxUsersURL'), {params: req.query});
-    let filteredResponse = [];
-    //if we search by school strip out other school and district information for the frontend
-    if (req.query.schoolID) {
-      filteredResponse = response.map(user => {
-        return {
-          ...user,
-          edxUserDistricts: [],
-          edxUserSchools: user.edxUserSchools.filter(school => school.schoolID === req.query.schoolID)
-        };
-      });
-    }else if(req.query.districtID){
-      // if we search by district strip out other schools and district information for the frontend
-      filteredResponse = response.map(user => {
-        return {
-          ...user,
-          edxUserSchools: [],
-          edxUserDistricts: user.edxUserDistricts.filter(district => district.districtID === req.query.districtID)
-        };
-      });
+    const districtParams = {
+      params: {
+        districtID: req.params.districtID
+      }  
     }
+    let response = await getData(token, config.get('server:edx:edxUsersURL'), districtParams);
+
+    let filteredResponse = [];
+    filteredResponse = response.map(user => {
+      return {
+        ...user,
+        edxUserSchools: [],
+        edxUserDistricts: user.edxUserDistricts.filter(district => district.districtID === req.params.districtID)
+      };
+    });  
     return res.status(HttpStatus.OK).json(filteredResponse);
   } catch (e) {
-    logApiError(e, 'getEdxUsers', 'Error getting EDX users');
+    logApiError(e, 'getEdxDistrictUsers', 'Error getting EDX District users');
+    return errorResponse(res);
+  }
+}
+
+async function getEdxSchoolUsers(req, res) {
+  const token = utils.getBackendToken(req);
+  try {
+    const schoolParams = {
+      params: {
+        schoolID: req.params.schoolID
+      }  
+    }
+
+    let response = await getData(token, config.get('server:edx:edxUsersURL'), schoolParams);
+    
+    let filteredResponse = [];
+    filteredResponse = response.map(user => {
+      return {
+        ...user,
+        edxUserDistricts: [],
+        edxUserSchools: user.edxUserSchools.filter(school => school.schoolID === req.params.schoolID)
+      };
+    });
+    return res.status(HttpStatus.OK).json(filteredResponse);
+  } catch (e) {
+    logApiError(e, 'getEdxSchoolUsers', 'Error getting EDX School users');
     return errorResponse(res);
   }
 }
@@ -1117,7 +1131,8 @@ module.exports = {
   getExchange,
   claimAllExchanges,
   markAs,
-  getEdxUsers,
+  getEdxSchoolUsers,
+  getEdxDistrictUsers,
   findPrimaryEdxActivationCode,
   generateOrRegeneratePrimaryEdxActivationCode,
   updateEdxUserSchoolRoles,

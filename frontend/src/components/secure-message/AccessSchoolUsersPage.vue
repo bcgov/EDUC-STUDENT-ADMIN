@@ -171,7 +171,7 @@
         class="pb-0"
       >
         <AccessUserCard
-          :user-roles="user.edxUserSchools[0].edxUserSchoolRoles"
+          :user-roles="user?.edxUserSchools[0]?.edxUserSchoolRoles"
           :user="user"
           :institute-code="schoolID"
           :institute-roles="filteredSchoolRoles"
@@ -353,12 +353,17 @@ export default {
     },
     getUsersData() {
       this.loadingUsers = true;
-      const payload = {params: {schoolID: this.schoolID}};
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
+      ApiService.apiAxios.get(`${Routes.edx.EDX_SCHOOL_USERS_URL}/${this.schoolID}`)
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
           this.users = this.filteredUsers;
-        }).finally(() => {
+          console.log(response)
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        })
+        .finally(() => {
           this.loadingUsers = false;
         });
     },
