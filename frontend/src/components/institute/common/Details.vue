@@ -74,7 +74,7 @@
                 :maxlength="255"
                 variant="underlined"
                 class="pr-13"
-                :rules="[rules.required(), rules.specialCharactersInSchDisName(schoolDetailsCopy.displayNameNoSpecialChars,schoolDetailsCopy.displayName)]"
+                :rules="[rules.required()]"
                 @update:model-value="validateForm"
                 required
               />
