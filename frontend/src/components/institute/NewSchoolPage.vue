@@ -28,7 +28,7 @@
                 <v-text-field
                   id="legacySafeSchoolNameInput"
                   v-model="newSchool.displayNameNoSpecialChars"
-                  :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(newSchool.displayNameNoSpecialChars, newSchool.displayName)]"
+                  :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(newSchool.displayName)]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="255"

@@ -50,9 +50,9 @@ const noSpecialCharactersContactTitle = (message = 'Remove or replace any specia
 const noSpecialCharactersContactName = (message = 'Remove or replace any special characters in this field.') =>
   v => !v || !/[^A-Za-z.'\s-]/.test(v) || message;
 
-const specialCharactersInSchDisName = (legacySafeName, displayName, message = 'Required. Enter a school name without special characters.') =>{
+const specialCharactersInSchDisName = (displayName, message = 'Required. Enter a school name without special characters.') =>{
   if(/[^A-Za-z.'\s-]/.test(displayName)) {
-    return legacySafeName => !!(legacySafeName && legacySafeName.trim()) || message;
+    return required(message);
   }
 }
 
