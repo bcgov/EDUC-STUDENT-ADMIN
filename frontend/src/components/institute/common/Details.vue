@@ -1000,14 +1000,15 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-checkbox
-                        id="sameAsMailingCheckbox"
-                        v-model="sameAsMailingCheckbox"
-                        dense
-                        label="Same as Mailing Address"
-                        class="mt-n3 pt-0"
-                        @update:model-value="clickSameAsAddressButton"
-                      />
+                      <v-col cols="3">
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          dense
+                          label="Same as Mailing Address"
+                          @update:model-value="clickSameAsAddressButton"
+                        />
+                      </v-col>
                     </v-row>
                     <v-row
                       v-else
@@ -1098,7 +1099,7 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-col>
+                      <v-col cols="3">
                         <v-checkbox
                           id="sameAsMailingCheckbox"
                           v-model="sameAsMailingCheckbox"
