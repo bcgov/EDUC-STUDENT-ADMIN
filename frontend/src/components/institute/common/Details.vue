@@ -74,7 +74,8 @@
                 :maxlength="255"
                 variant="underlined"
                 class="pr-13"
-                :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+                :rules="[rules.required(), rules.specialCharactersInSchDisName(schoolDetailsCopy.displayNameNoSpecialChars,schoolDetailsCopy.displayName)]"
+                @update:model-value="validateForm"
                 required
               />
             </v-col>
@@ -89,7 +90,8 @@
                 variant="underlined"
                 class="pr-13"
                 :maxlength="255"
-                :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+                :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(schoolDetailsCopy.displayNameNoSpecialChars,schoolDetailsCopy.displayName)]"
+                @update:model-value="validateForm"
               />
             </v-col>
           </v-row>
@@ -1601,6 +1603,12 @@ export default {
 
       this.schoolDetailsCopy.status = getStatusAuthorityOrSchool(this.schoolDetailsCopy);
       this.$refs.schoolDetailsForm.validate();
+    },
+    async validateForm() {
+      if(this.$refs.schoolDetailsForm){
+        const isValid = await this.$refs.schoolDetailsForm.validate();
+        this.schoolDetailsFormValid = isValid.valid;
+      }
     },
     openSchoolStatusEdit() {
       this.openSchoolStatusEditCard = true;
