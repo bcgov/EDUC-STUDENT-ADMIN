@@ -103,8 +103,8 @@
       </template>
       <template #item="item">
         <tr
-          :class="{'selected-record' : item.item.isSelected}"
-          @click="selectItem(item.item)"
+          :class="{'selected-record' : item.item.raw.isSelected}"
+          @click="selectItem(item.item.raw)"
         >
           <td
             v-for="header in item.columns"
@@ -113,12 +113,12 @@
           >
             <v-checkbox
               v-if="header.type"
-              v-model="item.item.isSelected"
+              v-model="item.item.raw.isSelected"
               class="record-checkbox header-checkbox"
               density="compact"
               hide-details="auto"
               color="#606060"
-              @click.stop="handleRecordCheckBoxClicked(item.item)"
+              @click.stop="handleRecordCheckBoxClicked(item.item.raw)"
             />
             <div
               v-else
@@ -128,39 +128,39 @@
                 <a
                   v-if="header.topValue === 'submissionNumber'"
                   class="submission"
-                  @click.stop="handleSubmissionNumberClicked(item.item[header.topValue])"
-                >{{ item.item[header.topValue] }}</a>
+                  @click.stop="handleSubmissionNumberClicked(item.item.raw[header.topValue])"
+                >{{ item.item.raw[header.topValue] }}</a>
                 <v-tooltip
                   v-else-if="header.topValue === 'mincode'"
                   right
                 >
                   <template #activator="{ on }">
-                    <span>{{ item.item[header.topValue] }}</span>
+                    <span>{{ item.item.raw[header.topValue] }}</span>
                   </template>
-                  <span>{{ getSchoolName(item.item) }}</span>
+                  <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>
                 <span
                   v-else
-                  :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, item.item)}]"
-                >{{ item.item[header.topValue] }}</span>
+                  :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, item.item.raw)}]"
+                >{{ item.item.raw[header.topValue] }}</span>
               </span>
-              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, item.item)}]">{{ item.item[header.doubleValue] }}</span>
+              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, item.item.raw)}]">{{ item.item.raw[header.doubleValue] }}</span>
               <br>
               <span class="bottom-column-item mt-1">
                 <PrbStudentStatusChip 
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
-                  :prb-student="item.item"
+                  :prb-student="item.item.raw"
                 />
                 <span
                   v-else-if="header.bottomValue === 'submittedPen'"
                   class="bottom-column-item"
                 >
-                  {{ item.item[header.bottomValue] }}
+                  {{ item.item.raw[header.bottomValue] }}
                 </span>
                 <span
                   v-else
-                  :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, item.item)}]"
-                >{{ item.item[header.bottomValue] !== item.item[header.topValue] ? item.item[header.bottomValue]: '' }}</span>
+                  :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, item.item.raw)}]"
+                >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue]: '' }}</span>
               </span>
             </div>
           </td>

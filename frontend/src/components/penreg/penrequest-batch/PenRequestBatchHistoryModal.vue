@@ -72,7 +72,7 @@
               v-for="header in item.columns"
               :key="header.id"
             >
-              <span>{{ formatTableColumn(header.format, item.item[header.value]) }}</span>
+              <span>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
             </td>
           </tr>
         </template>
