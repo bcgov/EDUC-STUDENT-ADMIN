@@ -58,10 +58,10 @@
       </template>
       <template #item="item">
         <tr
-          :class="tableRowClass(item.item)"
-          @click="selectItem(item.item)"
-          @mouseover="enableActions(item.item)"
-          @mouseleave="disableActions(item.item)"
+          :class="tableRowClass(item.item.raw)"
+          @click="selectItem(item.item.raw)"
+          @mouseover="enableActions(item.item.raw)"
+          @mouseleave="disableActions(item.item.raw)"
         >
           <td
             v-for="header in item.columns"
@@ -71,15 +71,15 @@
             <div v-if="header.type === 'select'">
               <v-row no-gutters>
                 <v-checkbox
-                  v-model="item.item.isSelected"
+                  v-model="item.item.raw.isSelected"
                   class="file-checkbox"
                   hide-details="auto"
                   color="#606060"
-                  :disabled="item.item.sagaInProgress"
-                  @click.stop="handleFileCheckBoxClicked(item.item)"
+                  :disabled="item.item.raw.sagaInProgress"
+                  @click.stop="handleFileCheckBoxClicked(item.item.raw)"
                 />
                 <v-tooltip
-                  v-if="item.item.sagaInProgress"
+                  v-if="item.item.raw.sagaInProgress"
                   bottom
                 >
                   <template #activator="{ props }">
@@ -103,30 +103,30 @@
               <span
                 v-if="header.countable"
                 class="countable-column-data"
-              >{{ item.item[header.value] || '' }}</span>
+              >{{ item.item.raw[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'">
                 <a
-                  v-if="!item.item.sagaInProgress"
+                  v-if="!item.item.raw.sagaInProgress"
                   class="submission"
-                  @click.stop="handleSubmissionNumberClicked(item.item[header.value])"
-                >{{ item.item[header.value] }}</a>
+                  @click.stop="handleSubmissionNumberClicked(item.item.raw[header.value])"
+                >{{ item.item.raw[header.value] }}</a>
                 <span
                   v-else
                   class="submission"
-                >{{ item.item[header.value] }}</span>
+                >{{ item.item.raw[header.value] }}</span>
               </span>
               <PrimaryButton
                 v-else-if="header.value === 'actions'"
-                :id="hoveredOveredRowBatchID === item.item.penRequestBatchID ? 'more-info-action': ''"
-                :class="{'file-action': hoveredOveredRowBatchID != item.item.penRequestBatchID}"
+                :id="hoveredOveredRowBatchID === item.item.raw.penRequestBatchID ? 'more-info-action': ''"
+                :class="{'file-action': hoveredOveredRowBatchID != item.item.raw.penRequestBatchID}"
                 short
                 text="More Info"
-                :disabled="item.item.sagaInProgress"
+                :disabled="item.item.raw.sagaInProgress"
                 @click-action="clickMoreInfo"
               />
-              <span v-else>{{ formatTableColumn(header.format, item.item[header.value]) }}</span>
+              <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
               <v-tooltip
-                v-if="header.value==='mincode' && isUnarchived(item.item)"
+                v-if="header.value==='mincode' && isUnarchived(item.item.raw)"
                 right
               >
                 <template #activator="{ on }">
@@ -135,13 +135,13 @@
                     color="#2E8540"
                     class="ml-1"
                   >
-                    {{ isUnarchivedBatchChanged(item.item) ? 'fa-sync-alt' : 'fa-unlock' }}
+                    {{ isUnarchivedBatchChanged(item.item.raw) ? 'fa-sync-alt' : 'fa-unlock' }}
                   </v-icon>
                 </template>
-                <span>{{ getUpdateUser(item.item) }}</span>
+                <span>{{ getUpdateUser(item.item.raw) }}</span>
               </v-tooltip>
               <v-tooltip
-                v-if="header.value==='mincode' && isRearchived(item.item)"
+                v-if="header.value==='mincode' && isRearchived(item.item.raw)"
                 right
               >
                 <template #activator="{ on }">
@@ -152,7 +152,7 @@
                     {{ 'preview' }}
                   </v-icon>
                 </template>
-                <span>{{ getUpdateUser(item.item) }}</span>
+                <span>{{ getUpdateUser(item.item.raw) }}</span>
               </v-tooltip>
             </div>
           </td>

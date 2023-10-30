@@ -176,7 +176,7 @@
                 class="hoverTable px-2"
                 justify="center"
                 style="cursor: pointer;"
-                @click="openAuthority(item.independentAuthorityId)"
+                @click="openAuthority(item.raw.independentAuthorityId)"
               >
                 <v-col
                   cols="7"
@@ -185,9 +185,9 @@
                   <v-row no-gutters>
                     <v-col class="pt-2 pr-0">
                       <span class="subjectHeading">{{
-                        item.authorityNumber
+                        item.raw.authorityNumber
                       }} - {{
-                        item.displayName
+                        item.raw.displayName
                       }}</span>
                     </v-col>
                   </v-row>
@@ -197,7 +197,7 @@
                         class="ministryLine"
                         style="color: black"
                       >{{
-                        item.type
+                        item.raw.type
                       }}</span>
                     </v-col>
                   </v-row>
@@ -205,22 +205,22 @@
                 <v-col class="d-flex justify-start">
                   <v-icon
                     class="ml-0"
-                    :color="getStatusColorAuthorityOrSchool(item.status)"
+                    :color="getStatusColorAuthorityOrSchool(item.raw.status)"
                     right
                     dark
                   >
                     mdi-circle-medium
                   </v-icon>
                   <span class="ml-0 statusCodeLabel">{{
-                    item.status
+                    item.raw.status
                   }}</span>
                 </v-col>
                 <v-col cols="3">
                   <v-icon>
                     mdi-phone-outline
                   </v-icon>
-                  <span class="largeFont"> {{
-                    formatPhoneNumber(item.phoneNumber)
+                  <span class="statusCodeLabel"> {{
+                    formatPhoneNumber(item.raw.phoneNumber)
                   }}</span>
                 </v-col>
               </v-row>

@@ -91,12 +91,12 @@
               >
                 <div
                   class="table-cell"
-                  :class="[item.item[header.doubleValue] ? 'value-half-width':'']"
+                  :class="[item.item.raw[header.doubleValue] ? 'value-half-width':'']"
                 >
                   <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
-                    <span><strong>{{ formatTableColumn(header.format, item.item[header.topValue]) }}</strong></span>
+                    <span><strong>{{ formatTableColumn(header.format, item.item.raw[header.topValue]) }}</strong></span>
                   </span>
-                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{ item.item[header.doubleValue] }}</strong></span>
+                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{ item.item.raw[header.doubleValue] }}</strong></span>
                 </div>
               </td>
             </tr>
@@ -133,7 +133,7 @@
               >
                 <div class="table-cell">
                   <span :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
-                    <span><strong>{{ formatTableColumn(header.format, item.item[header.value]) }}</strong></span>
+                    <span><strong>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</strong></span>
                   </span>
                 </div>
               </td>

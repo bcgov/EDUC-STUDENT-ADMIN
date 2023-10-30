@@ -146,22 +146,22 @@
             no-gutters
             class="pa-2 hoverTable"
             style="cursor: pointer;"
-            @click="openDistrict(item.districtId)"
+            @click="openDistrict(item.raw.districtId)"
           >
             <v-col
               cols="6"
               class="d-flex justify-start"
             >
               <strong class="largeFont">{{
-                `${item.districtNumber} - ${item.name}`
+                `${item.raw.districtNumber} - ${item.raw.name}`
               }}</strong>
             </v-col>
             <v-col class="d-flex">
-              <v-icon :color="getStatusColor(item.districtStatusCode)">
+              <v-icon :color="getStatusColor(item.raw.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
               <span class="largeFont">{{
-                getStatusText(item.districtStatusCode)
+                getStatusText(item.raw.districtStatusCode)
               }}</span>
             </v-col>
             <v-col cols="3">
@@ -169,7 +169,7 @@
                 mdi-phone-outline
               </v-icon>
               <span class="largeFont">{{
-                getPhoneNumber(item.phoneNumber)
+                getPhoneNumber(item.raw.phoneNumber)
               }}</span>
             </v-col>
           </v-row>
