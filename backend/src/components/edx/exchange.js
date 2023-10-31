@@ -457,38 +457,62 @@ async function getEdxSchoolUsers(req, res) {
   }
 }
 
-async function findPrimaryEdxActivationCode(req, res) {
+async function findSchoolPrimaryEdxActivationCode(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
+  
   try {
-    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${req.params.instituteType.toUpperCase()}/${req.params.instituteIdentifier}`);
+    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     if (e.status === 404) {
       return res.status(HttpStatus.NOT_FOUND).json();
     }
-    logApiError(e, 'findPrimaryEdxActivationCode', 'Error getting findPrimaryEdxActivationCode.');
+    logApiError(e, 'findSchoolPrimaryEdxActivationCode', 'Error getting findPrimaryEdxActivationCode for school.');
     return errorResponse(res);
   }
 }
 
-async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
+async function findDistrictPrimaryEdxActivationCode(req, res) {
+  const token = utils.getBackendToken(req);
+  
+  try {
+    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e.status === 404) {
+      return res.status(HttpStatus.NOT_FOUND).json();
+    }
+    logApiError(e, 'findDistrictPrimaryEdxActivationCode', 'Error getting findPrimaryEdxActivationCode for district.');
+    return errorResponse(res);
+  }
+}
+
+async function generateOrRegeneratePrimaryEdxActivationSchoolCode(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
-    const instituteType = req.params.instituteType.toUpperCase();
     const payload = {
-      schoolID: instituteType === 'SCHOOL' ? req.params.instituteIdentifier : null,
-      districtID: instituteType === 'DISTRICT' ? req.params.instituteIdentifier : null
+      schoolID: req.params.instituteIdentifier
     };
-    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationCode', 'Error occurred while attempting to generate a Primary Activation Code.');
+    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationSchoolCode', 'Error occurred while attempting to generate a Primary Activation Code for school.');
+    return errorResponse(res);
+  }
+}
+
+async function generateOrRegeneratePrimaryEdxActivationDistrictCode(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    const payload = {
+      districtID: req.params.instituteIdentifier
+    };
+    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationDistrictCode', 'Error occurred while attempting to generate a Primary Activation Code for district.');
     return errorResponse(res);
   }
 }
@@ -793,26 +817,24 @@ async function removeDocumentFromExchange(req, res){
   }
 }
 
-async function removeUserSchoolOrDistrictAccess(req, res) {
+async function removeUserSchoolAccess(req, res) {
   try {
     const token = utils.getBackendToken(req);
-
-    if(!req.session.roles.includes('EDX_ADMIN')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
-    if(req.body.params.userSchoolID){
-      await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
-    } else {
-      await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/district' + `/${req.body.params.edxUserDistrictID}`);
-    }
-
+    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
-    log.error(e, 'removeUserSchoolOrDistrictAccess', 'Error occurred while attempting to remove user school or district access.');
+    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove school user access.');
+    return errorResponse(res);
+  }
+}
+
+async function removeUserDistrictAccess(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/district' + `/${req.body.params.edxUserDistrictID}`);
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    log.error(e, 'removeUserDistrictAccess', 'Error occurred while attempting to remove district user access.');
     return errorResponse(res);
   }
 }
@@ -841,55 +863,60 @@ function getExchangeDocumentById() {
   };
 }
 
-async function relinkUserSchoolOrDistrictAccess(req, res) {
+async function relinkUserSchoolAccess(req, res) {
   try {
     const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
 
-    if(!req.session.roles.includes('EDX_ADMIN')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
+    let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
+    let payload = {};
+    let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
+    let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
+    payload = {
+      schoolID: req.body.params.schoolID,
+      schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).schoolName,
+      edxActivationRoleCodes: activationRoles,
+      firstName: edxUserDetails.firstName,
+      lastName: edxUserDetails.lastName,
+      email: edxUserDetails.email,
+      edxUserId: req.body.params.userToRelink,
+      edxUserSchoolID: req.body.params.userSchoolID,
+      edxUserExpiryDate: req.body.params.edxUserExpiryDate
+    };
+    await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    log.error(e, 'relinkUserSchoolAccess', 'Error occurred while attempting to relink user school access.');
+    return errorResponse(res);
+  }
+}
+
+async function relinkUserDistrictAccess(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const userName = utils.getUser(req).idir_username;
 
     let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
     let payload = {};
-    if(req.body.params.schoolID){
-      let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
-      let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
-      payload = {
-        schoolID: req.body.params.schoolID,
-        schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).schoolName,
-        edxActivationRoleCodes: activationRoles,
-        firstName: edxUserDetails.firstName,
-        lastName: edxUserDetails.lastName,
-        email: edxUserDetails.email,
-        edxUserId: req.body.params.userToRelink,
-        edxUserSchoolID: req.body.params.userSchoolID,
-        edxUserExpiryDate: req.body.params.edxUserExpiryDate
-      };
-      await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
-    } else {
-      let userDistrict = edxUserDetails.edxUserDistricts.find(district => district.districtID === req.body.params.districtID);
-      let activationRoles = userDistrict.edxUserDistrictRoles.map(role => role.edxRoleCode);
-      payload = {
-        districtID: req.body.params.districtID,
-        districtName: cacheService.getDistrictJSONByDistrictId(req.body.params.districtID).name,
-        edxActivationRoleCodes: activationRoles,
-        firstName: edxUserDetails.firstName,
-        lastName: edxUserDetails.lastName,
-        email: edxUserDetails.email,
-        edxUserId: req.body.params.userToRelink,
-        edxUserDistrictID: req.body.params.edxUserDistrictID,
-        edxUserExpiryDate: req.body.params.edxUserExpiryDate
-      };
-      await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
-    }
+
+    let userDistrict = edxUserDetails.edxUserDistricts.find(district => district.districtID === req.body.params.districtID);
+    let activationRoles = userDistrict.edxUserDistrictRoles.map(role => role.edxRoleCode);
+    payload = {
+      districtID: req.body.params.districtID,
+      districtName: cacheService.getDistrictJSONByDistrictId(req.body.params.districtID).name,
+      edxActivationRoleCodes: activationRoles,
+      firstName: edxUserDetails.firstName,
+      lastName: edxUserDetails.lastName,
+      email: edxUserDetails.email,
+      edxUserId: req.body.params.userToRelink,
+      edxUserDistrictID: req.body.params.edxUserDistrictID,
+      edxUserExpiryDate: req.body.params.edxUserExpiryDate
+    };
+    await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
 
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
-    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
+    log.error(e, 'relinkUserDistrictAccess', 'Error occurred while attempting to relink user school access.');
     return errorResponse(res);
   }
 }
@@ -1133,8 +1160,10 @@ module.exports = {
   markAs,
   getEdxSchoolUsers,
   getEdxDistrictUsers,
-  findPrimaryEdxActivationCode,
-  generateOrRegeneratePrimaryEdxActivationCode,
+  findSchoolPrimaryEdxActivationCode,
+  findDistrictPrimaryEdxActivationCode,
+  generateOrRegeneratePrimaryEdxActivationDistrictCode,
+  generateOrRegeneratePrimaryEdxActivationSchoolCode,
   updateEdxUserSchoolRoles,
   updateEdxUserDistrictRoles,
   schoolUserActivationInvite,
@@ -1144,8 +1173,10 @@ module.exports = {
   markExchangeStatusAs,
   claimExchange,
   removeDocumentFromExchange,
-  removeUserSchoolOrDistrictAccess,
-  relinkUserSchoolOrDistrictAccess,
+  removeUserSchoolAccess,
+  removeUserDistrictAccess,
+  relinkUserSchoolAccess,
+  relinkUserDistrictAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
   createSecureExchangeNote,

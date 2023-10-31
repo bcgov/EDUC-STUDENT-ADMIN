@@ -388,23 +388,23 @@ export default {
     },
     clickActionRelinkButton() {
       this.isRelinking = true;
+      if (this.instituteTypeCode === 'SCHOOL') {
+        this.relinkSchoolUser();
+      } else {
+        this.relinkDistrictUser();
+      }
+    },
+    relinkSchoolUser() {
       const payload = {
         params: {
           userToRelink: this.user.edxUserID,
           edxUserExpiryDate: this.getExpiryDate(this.user)
         }
       };
-      if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
+      const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.schoolID = this.instituteCode;
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
-      } else {
-        const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
-        payload.params.districtID = this.instituteCode;
-        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
-      }
-
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
+        ApiService.apiAxios.post(Routes.edx.EDX_RELINK_SCHOOL_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
         }).catch(error => {
@@ -416,29 +416,72 @@ export default {
           }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
+    relinkDistrictUser() {
+      const payload = {
+        params: {
+          userToRelink: this.user.edxUserID,
+          edxUserExpiryDate: this.getExpiryDate(this.user)
+        }
+      };
+      const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
+        payload.params.districtID = this.instituteCode;
+        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
+        ApiService.apiAxios.post(Routes.edx.EDX_RELINK_DISTRICT_USER, payload)
+        .then(() => {
+          this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          setTimeout(() => {
+            this.$emit('refresh');
+          }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
+        });
+
+    },
     clickRemoveButton() {
+      if (this.instituteTypeCode === 'SCHOOL') {
+        this.removeSchoolUser();
+      } else {
+        this.removeDistrictUser();
+      }
+    },
+    removeSchoolUser() {
       const payload = {
         params: {
           userToRemove: this.user.edxUserID,
         }
       };
-      if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
-        payload.params.userSchoolID = userSchool.edxUserSchoolID;
-      } else {
-        const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
-        payload.params.districtID = this.instituteCode;
-        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
-      }
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
+      const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
+      payload.params.userSchoolID = userSchool.edxUserSchoolID;
+      ApiService.apiAxios.post(Routes.edx.EDX_REMOVE_SCHOOL_USER, payload)
+      .then(() => {
+        this.setSuccessAlert('User has been removed.');
+      }).catch(error => {
+        this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+        console.log(error);
+      }).finally(() => {
+        this.$emit('refresh');
+      });
+    },
+    removeDistrictUser() {
+      const payload = {
+        params: {
+          userToRemove: this.user.edxUserID,
+        }
+      };
+      const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
+      payload.params.districtID = this.instituteCode;
+      payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
+      ApiService.apiAxios.post(Routes.edx.EDX_REMOVE_DISTRICT_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed.');
-        }).catch(error => {
-          this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-          console.log(error);
-        }).finally(() => {
-          this.$emit('refresh');
-        });
+      }).catch(error => {
+        this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+        console.log(error);
+      }).finally(() => {
+        this.$emit('refresh');
+      });
     },
     clickSaveButton() {
       if (!this.minimumRolesSelected) {

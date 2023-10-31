@@ -12,8 +12,10 @@ const {
   markAs,
   getEdxDistrictUsers,
   getEdxSchoolUsers,
-  findPrimaryEdxActivationCode,
-  generateOrRegeneratePrimaryEdxActivationCode,
+  findSchoolPrimaryEdxActivationCode,
+  findDistrictPrimaryEdxActivationCode,
+  generateOrRegeneratePrimaryEdxActivationDistrictCode,
+  generateOrRegeneratePrimaryEdxActivationSchoolCode,
   updateEdxUserSchoolRoles,
   updateEdxUserDistrictRoles,
   schoolUserActivationInvite,
@@ -23,8 +25,10 @@ const {
   markExchangeStatusAs,
   claimExchange,
   removeDocumentFromExchange,
-  removeUserSchoolOrDistrictAccess,
-  relinkUserSchoolOrDistrictAccess,
+  removeUserSchoolAccess,
+  removeUserDistrictAccess,
+  relinkUserSchoolAccess,
+  relinkUserDistrictAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
   createSecureExchangeNote,
@@ -43,14 +47,24 @@ router.get('/valid-districts-for-messaging', passport.authenticate('jwt', {sessi
 
 //school-district user access routes
 router.get('/users/roles', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.forwardGet('getUserRoles', 'server:edx:rootURL', '/users/roles'));
+
 router.get('/users/school/:schoolID', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, getEdxSchoolUsers);
 router.get('/users/district/:districtID', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, getEdxDistrictUsers);
-router.post('/users/roles/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateEdxUserSchoolRoles);
-router.post('/users/roles/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateEdxUserDistrictRoles);
-router.post('/users/remove', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, removeUserSchoolOrDistrictAccess);
-router.post('/users/relink', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, relinkUserSchoolOrDistrictAccess);
-router.get('/users/activation-code/primary/:instituteType/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, findPrimaryEdxActivationCode);
-router.post('/users/activation-code/primary/:instituteType/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, generateOrRegeneratePrimaryEdxActivationCode);
+
+router.post('/users/roles/school', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, updateEdxUserSchoolRoles);
+router.post('/users/roles/district', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, updateEdxUserDistrictRoles);
+
+router.post('/users/remove/school', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, removeUserSchoolAccess);
+router.post('/users/remove/district', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, removeUserDistrictAccess);
+
+router.post('/users/relink/school', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, relinkUserSchoolAccess);
+router.post('/users/relink/district', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, relinkUserDistrictAccess);
+
+router.get('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, findSchoolPrimaryEdxActivationCode);
+router.get('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, findDistrictPrimaryEdxActivationCode);
+
+router.post('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, generateOrRegeneratePrimaryEdxActivationSchoolCode);
+router.post('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, generateOrRegeneratePrimaryEdxActivationDistrictCode);
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
