@@ -698,7 +698,7 @@ export default {
   },
   methods: {
     userFieldRules() {
-      const message = 'Please fulfill all initial user fields.';
+      const message = 'Required';
       return {
         lastName: this.rules
           .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.email], message),
