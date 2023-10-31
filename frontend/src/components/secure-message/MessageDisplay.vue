@@ -125,6 +125,7 @@
                   id="markAsButton"
                   :disabled="!isEditable()"
                   color="#003366"
+                  variant="outlined"
                   :loading="loadingReadStatus"
                   @click="clickMarkAsButton"
                 >
@@ -134,12 +135,13 @@
                   <v-icon v-else>
                     mdi-email-open-outline
                   </v-icon>
-                  <span class="ml-1 markAsSpan">{{ `Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}`
+                  <span class="ml-1 markAsSpan">{{ `Mark as ${secureExchange.isReadByMinistry ? 'unread' : 'read'}`
                     }}</span>
                 </v-btn>
                 <v-btn
                   id="claimAsButton"
                   class="mx-2"
+                  variant="outlined"
                   color="#003366"
                   :disabled="!isEditable()"
                   :loading="loadingReadStatus"
@@ -150,11 +152,12 @@
                 </v-btn>
                 <v-btn
                   id="changeStatusButton"
+                  variant="outlined"
                   :loading="loadingReadStatus"
                   color="#003366"
                   @click="clickMarkAsStatus(secureExchange.secureExchangeStatusCode === 'Closed' ? 'open' : 'closed')"
                 >
-                  <span>{{ secureExchange.secureExchangeStatusCode === 'Closed' ? 'OPEN' : 'CLOSE' }}</span>
+                  <span>{{ secureExchange.secureExchangeStatusCode === 'Closed' ? 'Open' : 'Close' }}</span>
                 </v-btn>
               </v-col>
             </v-row>
