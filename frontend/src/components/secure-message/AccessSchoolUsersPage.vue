@@ -217,6 +217,12 @@
                     type="info"
                     class="pa-2"
                   >
+                    <template #prepend>
+                      <v-icon
+                        color="#003366"
+                        icon="mdi-information"
+                      />
+                    </template>
                     <span style="color: #003366">Before adding users, a Primary Activation Code must be generated.</span>
                   </v-alert>
                 </v-col>
