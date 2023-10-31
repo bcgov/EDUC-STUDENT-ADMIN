@@ -49,8 +49,8 @@
           <template #item="item">
             <tr
               class="hoverTable"
-              :class="tableRowClass(item.item)"
-              @click="selectItem(item.item)"
+              :class="tableRowClass(item.item.raw)"
+              @click="selectItem(item.item.raw)"
             >
               <td
                 v-for="header in item.columns"
@@ -58,17 +58,17 @@
                 :class="header.id"
               >
                 <div class="table-cell">
-                  <span :class="{'diff-value': item.item[`${header.value}_diff`]}">{{
-                    formatTableColumn(header.format, item.item[header.value])
+                  <span :class="{'diff-value': item.item.raw[`${header.value}_diff`]}">{{
+                    formatTableColumn(header.format, item.item.raw[header.value])
                   }}</span>
                   <v-btn
-                    v-if="header.value === 'createDate' && item.item.expandable"
+                    v-if="header.value === 'createDate' && item.item.raw.expandable"
                     class="ml-1"
                     color="#9cbceb42"
                     variant="flat"
                     size="x-small"
-                    @click.stop.prevent="expandRow(item.item)"
-                    :icon="item.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                    @click.stop.prevent="expandRow(item.item.raw)"
+                    :icon="item.item.raw.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
                   >
                   </v-btn>
                 </div>

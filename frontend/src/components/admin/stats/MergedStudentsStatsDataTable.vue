@@ -57,28 +57,28 @@
       <tr
         no-gutters
         class="hoverTable"
-        :class="itemRowBackground(item.item)"
+        :class="itemRowBackground(item.item.raw)"
       >
         <td
           v-for="header in headers"
           :key="header"
-          :class="isAPair(item.item)?'even-row':'odd-row'"
+          :class="isAPair(item.item.raw)?'even-row':'odd-row'"
         >
           <div
             class="tableCell"
-            @click="viewStudentDetails(item.item.studentID)"
+            @click="viewStudentDetails(item.item.raw.studentID)"
           >
             <span
               v-if="header.topValue === 'dob'"
               class="top-column-item"
             >{{
-                formatDob(item.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+                formatDob(item.item.raw[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
               }}</span>
             <span
               v-else
               class="top-column-item"
-            >{{ item.item[header.topValue] }}</span>
-            <span class="double-column-item">{{ item.item[header.doubleValue] }}</span>
+            >{{ item.item.raw[header.topValue] }}</span>
+            <span class="double-column-item">{{ item.item.raw[header.doubleValue] }}</span>
             <br>
             <!-- if top and bottom value are the same, do not display the bottom value -->
             <v-tooltip
@@ -87,21 +87,21 @@
             >
               <template #activator="{ on }">
                 <span class="bottom-column-item">{{
-                    firstMemoChars(item.item[header.bottomValue])
+                    firstMemoChars(item.item.raw[header.bottomValue])
                   }}</span>
               </template>
-              <span>{{ item.item[header.bottomValue] }}</span>
+              <span>{{ item.item.raw[header.bottomValue] }}</span>
             </v-tooltip>
             <span
               v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
               class="bottom-column-item"
             >{{
-                getUsualName(item.item[header.bottomValue], item.item[header.topValue])
+                getUsualName(item.item.raw[header.bottomValue], item.item.raw[header.topValue])
               }}</span>
             <span
               v-else
               class="bottom-column-item"
-            >{{ item.item[header.bottomValue] }}</span>
+            >{{ item.item.raw[header.bottomValue] }}</span>
           </div>
         </td>
       </tr>

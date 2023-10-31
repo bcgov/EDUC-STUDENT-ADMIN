@@ -50,6 +50,12 @@ const noSpecialCharactersContactTitle = (message = 'Remove or replace any specia
 const noSpecialCharactersContactName = (message = 'Remove or replace any special characters in this field.') =>
   v => !v || !/[^A-Za-z.'\s-]/.test(v) || message;
 
+const specialCharactersInSchDisName = (displayName, message = 'Required. Enter a school name without special characters.') =>{
+  if(/[^A-Za-z.'\s-]/.test(displayName)) {
+    return required(message);
+  }
+}
+
 /**
  * Rule for phone numbers also works for fax numbers too
  * @param {String} message
@@ -165,6 +171,7 @@ export {
   noSpecialCharactersContactName,
   noSpecialCharactersContactTitle,
   noSpecialCharactersAddress,
+  specialCharactersInSchDisName,
   phoneNumber,
   postalCode,
   required,

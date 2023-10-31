@@ -45,15 +45,11 @@
             <template #prepend-inner>
               <v-icon
                 v-if="searchFilter.districtId"
+                class="pt-1"
                 :color="getStatusColor(districtSearchNames.find(item=>item.districtId===searchFilter.districtId)?.status)"
               >
                 mdi-circle-medium
               </v-icon>
-            </template>
-            <template #selection="{ item, index }">
-              {{
-                item.raw.districtNumberName
-              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -88,15 +84,11 @@
             <template #prepend-inner>
               <v-icon
                 v-if="searchFilter.status"
+                class="pt-1"
                 :color="getStatusColor(searchFilter.status)"
               >
                 mdi-circle-medium
               </v-icon>
-            </template>
-            <template #selection="{ item, index }">
-              {{
-                item.raw.label
-              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -146,22 +138,22 @@
             no-gutters
             class="pa-2 hoverTable"
             style="cursor: pointer;"
-            @click="openDistrict(item.districtId)"
+            @click="openDistrict(item.raw.districtId)"
           >
             <v-col
               cols="6"
               class="d-flex justify-start"
             >
               <strong class="largeFont">{{
-                `${item.districtNumber} - ${item.name}`
+                `${item.raw.districtNumber} - ${item.raw.name}`
               }}</strong>
             </v-col>
             <v-col class="d-flex">
-              <v-icon :color="getStatusColor(item.districtStatusCode)">
+              <v-icon :color="getStatusColor(item.raw.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
               <span class="largeFont">{{
-                getStatusText(item.districtStatusCode)
+                getStatusText(item.raw.districtStatusCode)
               }}</span>
             </v-col>
             <v-col cols="3">
@@ -169,7 +161,7 @@
                 mdi-phone-outline
               </v-icon>
               <span class="largeFont">{{
-                getPhoneNumber(item.phoneNumber)
+                getPhoneNumber(item.raw.phoneNumber)
               }}</span>
             </v-col>
           </v-row>
@@ -320,8 +312,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 28em !important;
-    padding-left: 28em !important;
+    padding-right: 26em !important;
+    padding-left: 26em !important;
 }
 
 .hoverTable:hover {

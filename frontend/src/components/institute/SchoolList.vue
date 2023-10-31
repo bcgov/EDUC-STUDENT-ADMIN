@@ -63,15 +63,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="schoolCodeNameFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(schoolSearchNames.find(x=>x.schoolID===schoolCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.schoolCodeName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -108,15 +104,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="schoolStatusFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(schoolStatusFilter)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.name
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -189,15 +181,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="districtCodeNameFilter"
+                      class="pt-1"
                       :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.districtNumberName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -235,15 +223,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="authorityCodeNameFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.authorityCodeName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -321,7 +305,7 @@
                 <v-row
                   no-gutters
                   class="hoverTable pt-1"
-                  @click="openSchool(item.schoolId)"
+                  @click="openSchool(item.raw.schoolId)"
                 >
                   <v-col class="pb-0 pt-0 ml-2 mt-1 mb-1">
                     <v-row
@@ -330,9 +314,9 @@
                     >
                       <v-col cols="6">
                         <span class="subjectHeading">{{
-                          item.mincode
+                          item.raw.mincode
                         }} - {{
-                          item.displayName
+                          item.raw.displayName
                         }}</span>
                       </v-col>
                       <v-col
@@ -340,14 +324,14 @@
                       >
                         <v-icon
                           class="ml-0 mb-1"
-                          :color="getStatusColorAuthorityOrSchool(item.status)"
+                          :color="getStatusColorAuthorityOrSchool(item.raw.status)"
                           right
                           dark
                         >
                           mdi-circle-medium
                         </v-icon>
                         <span class="statusCodeLabel">{{
-                          item.status
+                          item.raw.status
                         }}</span>
                       </v-col>
                       <v-col class="d-flex">
@@ -361,7 +345,7 @@
                           class="principalName statusCodeLabel"
                           style="color: black"
                         >{{
-                          item.principalsName
+                          item.raw.principalsName
                         }}</span>
                       </v-col>
                     </v-row>
@@ -371,9 +355,9 @@
                           class="ministryLine"
                           style="color: black"
                         >{{
-                          item.schoolCategory
+                          item.raw.schoolCategory
                         }} | {{
-                          item.facilityType
+                          item.raw.facilityType
                         }}</span>
                       </v-col>
                       <v-col
@@ -386,7 +370,7 @@
                           mdi-phone-outline
                         </v-icon>
                         <span class="statusCodeLabel">{{
-                          formatPhoneNumber(item.phoneNumber)
+                          formatPhoneNumber(item.raw.phoneNumber)
                         }}</span>
                       </v-col>
                       <v-col
@@ -400,7 +384,7 @@
                           mdi-at
                         </v-icon>
                         <span class="statusCodeLabel centerSpan">{{
-                          item.email
+                          item.raw.email
                         }}</span>
                       </v-col>
                     </v-row>

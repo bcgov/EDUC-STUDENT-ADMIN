@@ -62,12 +62,12 @@
                   :key="header.id"
                 >
                   <v-row
-                    v-if="header.editable && hoveredOveredRowID === item.item.schoolGradeCode && isEditing"
+                    v-if="header.editable && hoveredOveredRowID === item.item.raw.schoolGradeCode && isEditing"
                     no-gutters
                   >
                     <v-col>
                       <v-select
-                        v-model="item.item[header.value]"
+                        v-model="item.item.raw[header.value]"
                         :items="schoolFundingGroups"
                         item-value="schoolFundingGroupCode"
                         item-title="label"
@@ -99,7 +99,7 @@
                     </v-col>
                   </v-row>
                   <v-row
-                    v-else-if="header.value === 'actions' && isEditing && hoveredOveredRowID === item.item.schoolGradeCode"
+                    v-else-if="header.value === 'actions' && isEditing && hoveredOveredRowID === item.item.raw.schoolGradeCode"
                     no-gutters
                     class="flex-nowrap"
                   >
@@ -123,8 +123,8 @@
                       />
                     </v-col>
                   </v-row>
-                  <span v-else-if="header.value === 'schoolFundingGroupCode'">{{ item.item['fundingGroupLabel'] }}</span>
-                  <span v-else>{{ item.item[header.value] ? item.item[header.value] : '' }}</span>
+                  <span v-else-if="header.value === 'schoolFundingGroupCode'">{{ item.item.raw['fundingGroupLabel'] }}</span>
+                  <span v-else>{{ item.item.raw[header.value] ? item.item.raw[header.value] : '' }}</span>
                 </td>
               </tr>
             </template>

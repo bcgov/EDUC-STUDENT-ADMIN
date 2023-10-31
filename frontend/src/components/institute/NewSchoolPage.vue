@@ -21,17 +21,19 @@
                   variant="underlined"
                   :maxlength="255"
                   label="School Name"
+                  @update:model-value="validateForm"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   id="legacySafeSchoolNameInput"
                   v-model="newSchool.displayNameNoSpecialChars"
-                  :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+                  :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(newSchool.displayName)]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="255"
                   label="Legacy Safe School Name"
+                  @update:model-value="validateForm"
                 />
               </v-col>
             </v-row>

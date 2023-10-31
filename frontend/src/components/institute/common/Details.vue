@@ -74,7 +74,8 @@
                 :maxlength="255"
                 variant="underlined"
                 class="pr-13"
-                :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+                :rules="[rules.required()]"
+                @update:model-value="validateForm"
                 required
               />
             </v-col>
@@ -89,7 +90,8 @@
                 variant="underlined"
                 class="pr-13"
                 :maxlength="255"
-                :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+                :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(schoolDetailsCopy.displayName)]"
+                @update:model-value="validateForm"
               />
             </v-col>
           </v-row>
@@ -1000,14 +1002,15 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-checkbox
-                        id="sameAsMailingCheckbox"
-                        v-model="sameAsMailingCheckbox"
-                        dense
-                        label="Same as Mailing Address"
-                        class="mt-n3 pt-0"
-                        @update:model-value="clickSameAsAddressButton"
-                      />
+                      <v-col cols="3">
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          dense
+                          label="Same as Mailing Address"
+                          @update:model-value="clickSameAsAddressButton"
+                        />
+                      </v-col>
                     </v-row>
                     <v-row
                       v-else
@@ -1098,7 +1101,7 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-col>
+                      <v-col cols="3">
                         <v-checkbox
                           id="sameAsMailingCheckbox"
                           v-model="sameAsMailingCheckbox"
@@ -1601,6 +1604,12 @@ export default {
 
       this.schoolDetailsCopy.status = getStatusAuthorityOrSchool(this.schoolDetailsCopy);
       this.$refs.schoolDetailsForm.validate();
+    },
+    async validateForm() {
+      if(this.$refs.schoolDetailsForm){
+        const isValid = await this.$refs.schoolDetailsForm.validate();
+        this.schoolDetailsFormValid = isValid.valid;
+      }
     },
     openSchoolStatusEdit() {
       this.openSchoolStatusEditCard = true;
