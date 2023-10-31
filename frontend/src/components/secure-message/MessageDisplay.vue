@@ -124,6 +124,7 @@
                 <v-btn
                   id="markAsButton"
                   :disabled="!isEditable()"
+                  color="#003366"
                   :loading="loadingReadStatus"
                   @click="clickMarkAsButton"
                 >
@@ -139,6 +140,7 @@
                 <v-btn
                   id="claimAsButton"
                   class="mx-2"
+                  color="#003366"
                   :disabled="!isEditable()"
                   :loading="loadingReadStatus"
                   @click="clickClaimMsgButton"
@@ -149,6 +151,7 @@
                 <v-btn
                   id="changeStatusButton"
                   :loading="loadingReadStatus"
+                  color="#003366"
                   @click="clickMarkAsStatus(secureExchange.secureExchangeStatusCode === 'Closed' ? 'open' : 'closed')"
                 >
                   <span>{{ secureExchange.secureExchangeStatusCode === 'Closed' ? 'OPEN' : 'CLOSE' }}</span>
@@ -393,40 +396,39 @@
                     width="100%"
                   >
                     <v-card v-if="activity.type === 'message'">
-                      <v-card-title>
-                        <v-row class="mb-2">
+                      <v-card-title class="pb-0">
+                        <v-row no-gutters>
                           <v-col class="d-flex justify-start">
                             <span>
                               {{ activity.title }}
                             </span>
                           </v-col>
-                          <v-col class="d-flex justify-end">
-                            <span class="activityDisplayDate">
-                              {{ activity.displayDate }}
-                            </span>
-                          </v-col>
                         </v-row>
                       </v-card-title>
+                      <v-card-subtitle>
+                        <span class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </span>
+                      </v-card-subtitle>
                       <v-card-text class="activityContent">
                         {{ activity.content }}
                       </v-card-text>
                     </v-card>
                     <v-card v-if="activity.type === 'student'">
-                      <v-card-title>
-                        <v-row class="mb-2">
+                      <v-card-title class="pb-0">
+                        <v-row no-gutters>
                           <v-col class="d-flex justify-start">
                             <span>
                               {{ activity.title }}
                             </span>
                           </v-col>
-                          <v-col class="d-flex justify-end">
-                            <span class="activityDisplayDate">
-                              {{ activity.displayDate }}
-                            </span>
-                          </v-col>
                         </v-row>
                       </v-card-title>
-
+                      <v-card-subtitle class="pb-2">
+                        <span class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </span>
+                      </v-card-subtitle>
                       <v-card-text class="">
                         <v-row v-if="activity.studentPEN !== null">
                           <v-col
@@ -533,8 +535,8 @@
                           >
                             <v-alert
                               id="studentNotFromMincode"
-                              dense
-                              outlined
+                              density="compact"
+                              variant="outlined"
                               class="mb-3 bootstrap-info"
                             >
                               Student's mincode does not match the school the student has on file. As such, the school
@@ -549,8 +551,8 @@
                           >
                             <v-alert
                               id="studentNotFromMincode"
-                              dense
-                              outlined
+                              density="compact"
+                              variant="outlined"
                               class="mb-3 bootstrap-info"
                             >
                               Student's mincode is not a part of the district. As such, the district cannot see the
@@ -559,24 +561,17 @@
                           </v-col>
                         </v-row>
                       </v-card-text>
-                      <v-row>
-                        <v-col class="d-flex justify-end">
-                          <v-btn
-                            v-show="isHideIndex === false || isHideIndex !== index"
-                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
-                            bottom
-                            right
-                            absolute
-                            elevation="0"
-                            :disabled="!isEditable()"
-                            @click="toggleRemoveStudent(index)"
-                          >
-                            <v-icon color="#003366">
-                              mdi-delete
-                            </v-icon>
-                          </v-btn>
-                        </v-col>
-                      </v-row>
+                      <v-card-actions>
+                        <v-btn
+                          v-show="isHideIndex === false || isHideIndex !== index"
+                          variant="text"
+                          color="red"
+                          :disabled="!isEditable()"
+                          @click="toggleRemoveStudent(index)"
+                        >
+                          Remove
+                        </v-btn>
+                      </v-card-actions>
                       <v-expand-transition>
                         <div
                           v-show="isOpenStudentIndex === index"
@@ -598,7 +593,7 @@
                               <v-col class="mt-3 d-flex justify-end">
                                 <v-btn
                                   class="mr-2"
-                                  outlined
+                                  variant="outlined"
                                   @click="closeStudentIndex()"
                                 >
                                   No
@@ -618,19 +613,19 @@
                     </v-card>
                     <v-card v-if="activity.type === 'document'">
                       <v-card-title class="pb-0">
-                        <v-row class="mb-2">
+                        <v-row no-gutters>
                           <v-col class="d-flex justify-start">
                             <span>
                               {{ activity.title }}
                             </span>
                           </v-col>
-                          <v-col class="d-flex justify-end">
-                            <span class="activityDisplayDate">
-                              {{ activity.displayDate }}
-                            </span>
-                          </v-col>
                         </v-row>
                       </v-card-title>
+                      <v-card-subtitle>
+                        <span class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </span>
+                      </v-card-subtitle>
                       <v-card-text class="activityContent">
                         <v-row no-gutters>
                           <v-col>
@@ -662,24 +657,17 @@
                           </v-col>
                         </v-row>
                       </v-card-text>
-                      <v-row no-gutters>
-                        <v-col class="d-flex justify-end">
-                          <v-btn
-                            v-show="isHideIndex === false || isHideIndex !== index"
-                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
-                            bottom
-                            right
-                            absolute
-                            elevation="0"
-                            :disabled="!isEditable()"
-                            @click="toggleRemoveDoc(index)"
-                          >
-                            <v-icon color="#003366">
-                              mdi-delete
-                            </v-icon>
-                          </v-btn>
-                        </v-col>
-                      </v-row>
+                      <v-card-actions>
+                        <v-btn
+                          v-show="isHideIndex === false || isHideIndex !== index"
+                          variant="text"
+                          color="red"
+                          :disabled="!isEditable()"
+                          @click="toggleRemoveDoc(index)"
+                        >
+                          Remove
+                        </v-btn>
+                      </v-card-actions>
                       <v-expand-transition>
                         <div
                           v-show="isOpenDocIndex === index"
@@ -701,7 +689,7 @@
                               <v-col class="mt-3 d-flex justify-end">
                                 <v-btn
                                   class="mr-2"
-                                  outlined
+                                  variant="outlined"
                                   @click="closeDocIndex()"
                                 >
                                   No
@@ -720,41 +708,34 @@
                       </v-expand-transition>
                     </v-card>
                     <v-card v-if="activity.type === 'note'">
-                      <v-card-title>
-                        <v-row class="mb-2">
+                      <v-card-title class="pb-0">
+                        <v-row no-gutters>
                           <v-col class="d-flex justify-start">
                             <span>
                               {{ activity.title }}
                             </span>
                           </v-col>
-                          <v-col class="d-flex justify-end">
-                            <span class="activityDisplayDate">
-                              {{ activity.displayDate }}
-                            </span>
-                          </v-col>
                         </v-row>
                       </v-card-title>
+                      <v-card-subtitle>
+                        <span class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </span>
+                      </v-card-subtitle>
                       <v-card-text class="activityContent">
                         {{ activity.content }}
                       </v-card-text>
-                      <v-row>
-                        <v-col class="d-flex justify-end">
-                          <v-btn
-                            v-show="isHideIndex === false || isHideIndex !== index"
-                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
-                            bottom
-                            right
-                            absolute
-                            elevation="0"
-                            :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)"
-                            @click="toggleRemoveNote(index)"
-                          >
-                            <v-icon color="#003366">
-                              mdi-delete
-                            </v-icon>
-                          </v-btn>
-                        </v-col>
-                      </v-row>
+                      <v-card-actions>
+                        <v-btn
+                          v-show="isHideIndex === false || isHideIndex !== index"
+                          variant="text"
+                          color="red"
+                          :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)"
+                          @click="toggleRemoveNote(index)"
+                        >
+                          Remove
+                        </v-btn>
+                      </v-card-actions>
                       <v-expand-transition>
                         <div
                           v-show="isOpenNoteIndex === index"
@@ -776,7 +757,7 @@
                               <v-col class="mt-3 d-flex justify-end">
                                 <v-btn
                                   class="mr-2"
-                                  outlined
+                                  variant="outlined"
                                   @click="closeNoteIndex()"
                                 >
                                   No
@@ -1363,7 +1344,7 @@ export default {
 }
 
 .activityDisplayDate {
-    font-size: medium;
+  font-style: italic;
 }
 
 .activityContent {
