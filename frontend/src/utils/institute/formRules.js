@@ -54,7 +54,7 @@ const specialCharactersInSchDisName = (displayName, message = 'Required. Enter a
   if(/[^A-Za-z.'\s-]/.test(displayName)) {
     return required(message);
   }
-}
+};
 
 /**
  * Rule for phone numbers also works for fax numbers too
@@ -102,6 +102,20 @@ const requiredWithOtherFieldValues = (
   };
 };
 
+/**
+ * Field is required when some boolean check is true
+ *
+ * @param {boolean} bool - some boolean check
+ * @param {string} message - error message to display
+ */
+const requiredIf = (bool = true, message = 'Required') => {
+  return v => {
+    if (bool) {
+      return required(message)(v);
+    }
+    return true;
+  };
+};
 
 /**
  * Custom endDate Rule! Checks that we have start date and that end date
@@ -176,5 +190,6 @@ export {
   postalCode,
   required,
   requiredWithOtherFieldValues,
+  requiredIf,
   website,
 };
