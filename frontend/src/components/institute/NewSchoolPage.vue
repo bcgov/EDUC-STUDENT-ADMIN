@@ -465,7 +465,11 @@
             </v-row>
             <v-row>
               <v-col>
-                <h3>Initial EDX Administrator</h3>
+                <h3 class="mb-2">Initial EDX Administrator</h3>
+                <p>
+                  This user will be set up as an administrator for the school. They will be sent the primary activation
+                  code for the new school and an activation email to set up their own account.
+                </p>
               </v-col>
             </v-row>
             <v-row>
