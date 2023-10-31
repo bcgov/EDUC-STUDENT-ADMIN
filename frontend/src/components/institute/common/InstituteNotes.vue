@@ -71,7 +71,7 @@
               >
                 <v-card width="40em">
                   <v-card-text class="activityContent">
-                    No notes have been recorded for this institute.
+                    No notes have been recorded.
                   </v-card-text>
                 </v-card>
               </v-timeline-item>

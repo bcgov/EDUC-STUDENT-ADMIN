@@ -58,15 +58,11 @@
                 <template #prepend-inner>
                   <v-icon
                     v-if="authorityCodeNameFilter"
+                    class="pt-1"
                     :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(item=>item.authorityID===authorityCodeNameFilter)?.status)"
                   >
                     mdi-circle-medium
                   </v-icon>
-                </template>
-                <template #selection="{ item, index }">
-                  {{
-                    item.raw.authorityCodeName
-                  }}
                 </template>
                 <template #item="{ props, item }">
                   <v-list-item
@@ -99,15 +95,11 @@
                 <template #prepend-inner>
                   <v-icon
                     v-if="authorityStatusFilter"
+                    class="pt-1"
                     :color="getStatusColorAuthorityOrSchool(authorityStatusFilter)"
                   >
                     mdi-circle-medium
                   </v-icon>
-                </template>
-                <template #selection="{ item, index }">
-                  {{
-                    item.raw.name
-                  }}
                 </template>
                 <template #item="{ props, item }">
                   <v-list-item
@@ -533,8 +525,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 30em !important;
-    padding-left: 30em !important;
+    padding-right: 24em !important;
+    padding-left: 24em !important;
 }
 
 :deep(.v-list-item__prepend){

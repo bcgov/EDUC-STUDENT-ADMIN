@@ -63,15 +63,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="schoolCodeNameFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(schoolSearchNames.find(x=>x.schoolID===schoolCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.schoolCodeName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -108,15 +104,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="schoolStatusFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(schoolStatusFilter)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.name
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -189,15 +181,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="districtCodeNameFilter"
+                      class="pt-1"
                       :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.districtNumberName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -235,15 +223,11 @@
                   <template #prepend-inner>
                     <v-icon
                       v-if="authorityCodeNameFilter"
+                      class="pt-1"
                       :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilter)?.status)"
                     >
                       mdi-circle-medium
                     </v-icon>
-                  </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.authorityCodeName
-                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item

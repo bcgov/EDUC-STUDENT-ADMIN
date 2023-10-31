@@ -45,15 +45,11 @@
             <template #prepend-inner>
               <v-icon
                 v-if="searchFilter.districtId"
+                class="pt-1"
                 :color="getStatusColor(districtSearchNames.find(item=>item.districtId===searchFilter.districtId)?.status)"
               >
                 mdi-circle-medium
               </v-icon>
-            </template>
-            <template #selection="{ item, index }">
-              {{
-                item.raw.districtNumberName
-              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -88,15 +84,11 @@
             <template #prepend-inner>
               <v-icon
                 v-if="searchFilter.status"
+                class="pt-1"
                 :color="getStatusColor(searchFilter.status)"
               >
                 mdi-circle-medium
               </v-icon>
-            </template>
-            <template #selection="{ item, index }">
-              {{
-                item.raw.label
-              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -320,8 +312,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 28em !important;
-    padding-left: 28em !important;
+    padding-right: 26em !important;
+    padding-left: 26em !important;
 }
 
 .hoverTable:hover {
