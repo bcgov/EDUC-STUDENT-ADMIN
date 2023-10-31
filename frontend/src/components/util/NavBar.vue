@@ -255,22 +255,22 @@ export default {
         },
         {
           title: 'Institutions',
-          authorized: this.isAuthorizedUser,
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_SCHOOL_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_DISTRICT_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_AUTHORITY_PERMISSION),
           items: [
             {
               title: 'Schools',
               link: 'instituteSchoolList',
-              authorized: this.isAuthorizedUser
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_SCHOOL_PERMISSION)
             },
             {
               title: 'Districts',
               link: 'instituteDistrict',
-              authorized: this.isAuthorizedUser
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_DISTRICT_PERMISSION)
             },
             {
               title: 'Authorities',
               link: 'instituteAuthoritiesList',
-              authorized: this.isAuthorizedUser
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_AUTHORITY_PERMISSION)
             }
           ],
         },

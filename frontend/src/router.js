@@ -432,6 +432,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_DISTRICT_PERMISSION
           },
         },
         {
@@ -442,7 +443,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
             requiresAuth: true,
-            permission: 'SECURE_EXCHANGE'
+            permission: PERMISSION.VIEW_DISTRICT_PERMISSION
           }
         },
         {
@@ -452,6 +453,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.SCHOOL_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_SCHOOL_PERMISSION
           },
         },
         {
@@ -462,6 +464,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.SCHOOL_DETAILS,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_SCHOOL_PERMISSION
           },
         },
         {
@@ -471,6 +474,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.AUTHORITIES_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_AUTHORITY_PERMISSION
           },
         }
       ]
@@ -482,7 +486,8 @@ const router = createRouter({
       component: AuthorityDetailsPage,
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
-        requiresAuth: true
+        requiresAuth: true,
+        permission: PERMISSION.VIEW_AUTHORITY_PERMISSION
       }
     },
     {
