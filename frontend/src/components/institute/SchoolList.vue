@@ -110,11 +110,6 @@
                       mdi-circle-medium
                     </v-icon>
                   </template>
-                  <template #selection="{ item, index }">
-                    {{
-                      item.raw.name
-                    }}
-                  </template>
                   <template #item="{ props, item }">
                     <v-list-item
                       v-bind="props"
