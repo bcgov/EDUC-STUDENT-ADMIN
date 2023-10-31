@@ -47,6 +47,7 @@ import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -358,7 +359,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -369,7 +370,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -383,7 +384,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION
           }
         },
         {
@@ -394,7 +395,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION
           }
         },
         {
@@ -626,7 +627,6 @@ router.beforeEach((to, _from, next) => {
     studSearchStore.clearStudentSearchParams();
     studSearchStore.clearStudentSearchResults();
   }
-
   const aStore = authStore();
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
   if (to.meta.requiresAuth && aStore.isAuthenticated) {
@@ -645,7 +645,7 @@ router.beforeEach((to, _from, next) => {
         next(nextRouteInError);
         return;
       }
-      if (!to.meta.role) {
+      if (!to.meta.role && !to.meta.permission) {
         next();
         return;
       }
@@ -655,7 +655,8 @@ router.beforeEach((to, _from, next) => {
           return;
         }
         const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
-        if (!hasRole) {
+        const hasPermission = hasRequiredPermission(aStore.userInfo, to.meta.permission);
+        if (!hasRole && !hasPermission) {
           next('unauthorized-page');
           return;
         }

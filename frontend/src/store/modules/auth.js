@@ -26,7 +26,6 @@ export const authStore = defineStore('auth', {
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
-    isValidEDXAdmin: localStorage.getItem('isValidEDXAdmin') !== null,
     isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
     isValidDistrictAdmin: localStorage.getItem('isValidDistrictAdmin') !== null,
     isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
@@ -58,12 +57,11 @@ export const authStore = defineStore('auth', {
     NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollReadOnly || state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
-    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin || state.isValidEDXAdmin, //gives access to admin section of navigation menu
+    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
-    EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
@@ -235,15 +233,6 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem(('isValidExchangeUser'));
       }
     },
-    async setEDXAdmin(isValidEDXAdmin) {
-      if (isValidEDXAdmin) {
-        this.isValidEDXAdmin = true;
-        localStorage.setItem('isValidEDXAdmin', 'true');
-      } else {
-        this.isValidEDXAdmin = false;
-        localStorage.removeItem(('isValidEDXAdmin'));
-      }
-    },
     async setIsValidPenTeamRoleUser(isValidPenTeamRoleUser) {
       if (isValidPenTeamRoleUser) {
         this.isValidPenTeamRoleUser = true;
@@ -370,7 +359,6 @@ export const authStore = defineStore('auth', {
       await this.setGUMPAnalytics(response.isValidGUMPAnalyticsUser);
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
       await this.setExchangeUser(response.isValidExchangeUser);
-      await this.setEDXAdmin(response.isValidEDXAdmin);
       await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
       await this.setIsValidDistrictAdmin(response.isValidDistrictAdmin);
       await this.setIsValidSchoolAdmin(response.isValidSchoolAdmin);

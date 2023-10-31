@@ -143,6 +143,7 @@ import {mapState} from 'pinia';
 import SetNavigation from './SetNavigation.vue';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'NavBar',
@@ -170,7 +171,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['config']),
-    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE']),
+    ...mapState(authStore, ['userInfo','isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
     items() {
       return [
         {
@@ -233,7 +234,7 @@ export default {
         },
         {
           title: PAGE_TITLES.ADMINISTRATION,
-          authorized: this.STAFF_ADMINISTRATION_ADMIN,
+          authorized: this.STAFF_ADMINISTRATION_ADMIN || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION),
           items: [
             {
               title: 'Macro Management',
@@ -243,12 +244,12 @@ export default {
             {
               title: 'EDX School Access',
               link: 'exchangeAccess',
-              authorized: this.EXCHANGE_ACCESS_ROLE
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION)
             },
             {
               title: 'EDX District Access',
               link: 'exchangeDistrictAccess',
-              authorized: this.EXCHANGE_ACCESS_ROLE
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION)
             }
           ],
         },
@@ -313,6 +314,7 @@ export default {
     }
   },
   methods: {
+    hasRequiredPermission,
     setActive(item) {
       let index = this.items.findIndex(obj => obj.title === item.title);
       if (item.active) {

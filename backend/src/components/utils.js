@@ -12,6 +12,7 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
+const perm = require('../util/Permission');
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
@@ -206,6 +207,22 @@ function checkUserHasPermission(permission) {
       log.error(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
     }
+  }
+}
+
+function isAuthorized(req) {
+  try {
+    const thisSession = req['session'];
+    if (thisSession['passport']?.user?.jwt) {
+      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      if (userToken?.realm_access?.roles.some(role => perm.PERMISSION.includes(role))) {
+        return true;
+      }
+    }
+    return false;
+  } catch (e) {
+    log.error(e);
+    return false;
   }
 }
 
@@ -590,7 +607,8 @@ const utils = {
   forwardGet,
   isPdf,
   isImage,
-  checkUserHasPermission
+  checkUserHasPermission,
+  isAuthorized
 };
 
 module.exports = utils;
