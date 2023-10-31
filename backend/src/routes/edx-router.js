@@ -66,6 +66,9 @@ router.get('/users/activation-code/primary/district/:instituteIdentifier', passp
 router.post('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), extendSession, generateOrRegeneratePrimaryEdxActivationSchoolCode);
 router.post('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), extendSession, generateOrRegeneratePrimaryEdxActivationDistrictCode);
 
+router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_SCHOOL_USERS_PERMISSION'), schoolUserActivationInvite);
+router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission('MANAGE_DISTRICT_USERS_PERMISSION'), districtUserActivationInvite);
+
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
 router.get('/exchange/stats/:teamRole', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchangeStats);
@@ -85,8 +88,6 @@ router.post('/exchange/:secureExchangeID/notes', passport.authenticate('jwt', {s
 router.post('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, createExchange);
 router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, uploadDocumentToExchange);
 router.get('/exchange/:secureExchangeID/documents/:documentId', auth.isValidExchangeUserToken, getExchangeDocumentById());
-router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, schoolUserActivationInvite);
-router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, districtUserActivationInvite);
 
 // Create School Saga
 router.post('/create-school', passport.authenticate('jwt', {session: false}, undefined), auth.isValidSchoolAdmin, createSchool);

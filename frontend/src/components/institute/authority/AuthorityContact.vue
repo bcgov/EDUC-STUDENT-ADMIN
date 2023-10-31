@@ -130,7 +130,7 @@
       </v-list>
     </v-card-text>
     <v-spacer></v-spacer>
-    <v-card-actions class="justify-start">
+    <v-card-actions v-if="canEditAuthorityContact" class="justify-start">
       <v-btn color="#003366" variant="text" @click="callDoShowEditAuthorityContactForm()">Edit</v-btn>
       <v-btn color="red" variant="text" @click="callShowRemoveContactConfirmation">Remove</v-btn>
     </v-card-actions>
