@@ -656,13 +656,13 @@ router.beforeEach((to, _from, next) => {
       }
       aStore.getUserInfo().then(() => {
         if (!aStore.isAuthorizedUser) {
-          next('unauthorized');
+          next('/unauthorized');
           return;
         }
         const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
         const hasPermission = hasRequiredPermission(aStore.userInfo, to.meta.permission);
         if (!hasRole && !hasPermission) {
-          next('unauthorized-page');
+          next('/unauthorized-page');
           return;
         }
         next();
