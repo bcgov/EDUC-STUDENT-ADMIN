@@ -16,6 +16,7 @@
           :headers="headers"
           :search="search"
           :loading="dataLoading"
+          :sort-by="sortBy"
           @click:row="openSchoolDetails"
         >
           <template #top>
@@ -75,6 +76,12 @@ export default {
           value: 'email',
           tooltip: 'Email',
           key: 'email'
+        }
+      ],
+      sortBy: [
+        {
+          'key': 'instituteIdentifier',
+          'order': 'asc'
         }
       ],
       studentRegistrationContacts: [],
