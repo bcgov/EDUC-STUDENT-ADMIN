@@ -359,7 +359,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
-            permission: PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION
+            permission: PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -370,7 +370,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
             requiresAuth: true,
-            permission: PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION
+            permission: PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -384,7 +384,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            permission: PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION
+            permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
           }
         },
         {
@@ -395,7 +395,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            permission: PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION
+            permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
           }
         },
         {

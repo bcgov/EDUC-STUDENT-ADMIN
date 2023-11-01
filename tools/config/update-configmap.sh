@@ -137,18 +137,18 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"PEN_TEAM_ROLE\",\"description\" : \"PEN team role for Secure Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating MANAGE_SCHOOL_USERS_PERMISSION permission
+echo Creating MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"MANAGE_SCHOOL_USERS_PERMISSION\",\"description\" : \"Permission to manage school users\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+  -d "{\"name\" : \"MANAGE_EDX_SCHOOL_USERS_PERMISSION\",\"description\" : \"Permission to manage edx school users\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating MANAGE_DISTRICT_USERS_PERMISSION permission
+echo Creating MANAGE_EDX_DISTRICT_USERS_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"MANAGE_DISTRICT_USERS_PERMISSION\",\"description\" : \"Permission to manage district users\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+  -d "{\"name\" : \"MANAGE_EDX_DISTRICT_USERS_PERMISSION\",\"description\" : \"Permission to manage edx district users\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
 echo Creating VIEW_SCHOOL_PERMISSION permission
@@ -172,14 +172,35 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"VIEW_AUTHORITY_PERMISSION\",\"description\" : \"Permission to view authority\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Retrieving MANAGE_SCHOOL_USERS_PERMISSION permission
-manageSchoolUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_SCHOOL_USERS_PERMISSION" \
+echo Creating EDIT_SCHOOL_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"EDIT_SCHOOL_PERMISSION\",\"description\" : \"Permission to edit school\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating EDIT_DISTRICT_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"EDIT_DISTRICT_PERMISSION\",\"description\" : \"Permission to edit district\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating EDIT_AUTHORITY_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"EDIT_AUTHORITY_PERMISSION\",\"description\" : \"Permission to edit authority\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
+manageSchoolUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EDX_SCHOOL_USERS_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
 echo
-echo Retrieving MANAGE_DISTRICT_USERS_PERMISSION permission
-manageDistrictUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_DISTRICT_USERS_PERMISSION" \
+echo Retrieving MANAGE_EDX_DISTRICT_USERS_PERMISSION permission
+manageDistrictUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EDX_DISTRICT_USERS_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
@@ -198,6 +219,24 @@ viewDistrictPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$S
 echo
 echo Retrieving VIEW_AUTHORITY_PERMISSION permission
 viewAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_AUTHORITY_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving EDIT_SCHOOL_PERMISSION permission
+editSchoolPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_SCHOOL_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving EDIT_DISTRICT_PERMISSION permission
+editDistrictPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_DISTRICT_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving EDIT_AUTHORITY_PERMISSION permission
+editAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_AUTHORITY_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
@@ -237,11 +276,39 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"DISTRICT_ADMIN\",\"description\" : \"Allows access to edit Districts\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Assigning permissions to DISTRICT_ADMIN role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/DISTRICT_ADMIN/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editDistrictPermissionJson]"
+
+echo
 echo Creating SCHOOL_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"SCHOOL_ADMIN\",\"description\" : \"Allows access to edit schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to SCHOOL_ADMIN role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SCHOOL_ADMIN/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson]"
+
+echo
+echo Creating INDEPENDENT_AUTHORITY_ADMIN role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"INDEPENDENT_AUTHORITY_ADMIN\",\"description\" : \"Allows access to edit Independent Authorities\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to INDEPENDENT_AUTHORITY_ADMIN role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/INDEPENDENT_AUTHORITY_ADMIN/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editAuthorityPermissionJson]"
 
 echo
 echo Creating INDEPENDENT_SCHOOLS_ADMIN role
@@ -256,14 +323,6 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"OFFSHORE_SCHOOLS_ADMIN\",\"description\" : \"Allows access to edit offshore schools\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-
-echo
-echo Creating INDEPENDENT_AUTHORITY_ADMIN role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"INDEPENDENT_AUTHORITY_ADMIN\",\"description\" : \"Allows access to edit Independent Authorities\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
 echo Creating STUDENT_DATA_COLLECTION role

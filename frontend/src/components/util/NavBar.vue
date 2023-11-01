@@ -234,7 +234,7 @@ export default {
         },
         {
           title: PAGE_TITLES.ADMINISTRATION,
-          authorized: this.STAFF_ADMINISTRATION_ADMIN || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION),
+          authorized: this.STAFF_ADMINISTRATION_ADMIN || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION),
           items: [
             {
               title: 'Macro Management',
@@ -244,12 +244,12 @@ export default {
             {
               title: 'EDX School Access',
               link: 'exchangeAccess',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_SCHOOL_USERS_PERMISSION)
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION)
             },
             {
               title: 'EDX District Access',
               link: 'exchangeDistrictAccess',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_DISTRICT_USERS_PERMISSION)
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION)
             }
           ],
         },
