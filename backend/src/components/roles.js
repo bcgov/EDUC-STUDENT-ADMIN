@@ -26,8 +26,6 @@ const roles = {
     PenTeamRole: config.get('server:edx:teamRoles:pen'),
     //Help functions created in auth module: isValidSchoolUserToken, isValidSchoolUser
     Institute: config.get('server:institute:rolesAllowed'),
-    //Help functions created in auth module: isValidEDXUserToken, isValidEDXUser
-    EDX: [config.get('server:edx:roleAdmin')],
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -41,7 +39,6 @@ const roles = {
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
     NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    EDX: config.get('server:edx:roleAdmin'),
     District: 'DISTRICT_ADMIN',
     School: 'SCHOOL_ADMIN',
     SchoolIndependent: 'INDEPENDENT_SCHOOLS_ADMIN',

@@ -1,6 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
+const perm = require('../util/Permission');
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolNote, deleteSchoolNote, updateSchoolContact, updateAuthority, addAuthorityContact, updateAuthorityContact, deleteAuthorityContact,
   addNewAuthorityNote, updateAuthorityNote, deleteAuthorityNote, updateSchool, addSchool, addSchoolContact, deleteSchoolContact, updateDistrict, updateDistrictContact, deleteDistrictContact, addAuthority,
@@ -12,11 +13,11 @@ const auth = require('../components/auth');
 const extendSession = utils.extendSession();
 const {getCodes} = require('../components/utils');
 const {CACHE_KEYS} = require('../util/constants');
+const PERMISSION = perm.PERMISSION;
 
+router.get('/district', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistricts);
 
-router.get('/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
-
-router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictByDistrictID);
+router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistrictByDistrictID);
 
 router.put('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, updateDistrict);
 
@@ -28,7 +29,7 @@ router.put('/district/contact/:contactId', passport.authenticate('jwt', {session
 
 router.delete('/district/contact/:districtId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, deleteDistrictContact);
 
-router.get('/district/:districtId/notes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictNotes);
+router.get('/district/:districtId/notes', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistrictNotes);
 
 router.post('/district/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewDistrictNote);
 
@@ -46,11 +47,11 @@ router.post('/authority', passport.authenticate('jwt', {session: false}, undefin
 
 router.post('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addAuthorityContact);
 
-router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchools);
+router.get('/school', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchools);
 
 router.post('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addSchool);
 
-router.get('/school/:schoolId/notes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolNotes);
+router.get('/school/:schoolId/notes', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolNotes);
 
 router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewSchoolNote);
 
@@ -64,21 +65,21 @@ router.put('/school/contact/:contactId', passport.authenticate('jwt', {session: 
 
 router.post('/school/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addSchoolContact);
 
-router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
+router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolByID);
 
-router.get('/school/mincode/:mincode', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByMincode);
+router.get('/school/mincode/:mincode', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolByMincode);
 
 router.put('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateSchool);
 
-router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolsPaginated);
+router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolsPaginated);
 
-router.get('/schoolHistoryPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolHistoryPaginated);
+router.get('/schoolHistoryPaginated', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolHistoryPaginated);
 
 router.post('/school/moveSchool', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, moveSchool);
 
-router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthoritiesPaginated);
+router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_AUTHORITY_PERMISSION), extendSession, getAuthoritiesPaginated);
 
-router.get('/authority/:independentAuthorityId/notes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityNotes);
+router.get('/authority/:independentAuthorityId/notes', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_AUTHORITY_PERMISSION), extendSession, getAuthorityNotes);
 
 router.post('/authority/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewAuthorityNote);
 
@@ -88,7 +89,7 @@ router.delete('/authority/note/:independentAuthorityId/:noteId', passport.authen
 
 router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthority);
 
-router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityByID);
+router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_AUTHORITY_PERMISSION), extendSession, getAuthorityByID);
 
 router.get(
   '/reporting-requirement-codes',

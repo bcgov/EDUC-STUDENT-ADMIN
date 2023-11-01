@@ -12,6 +12,7 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
+const perm = require('../util/Permission');
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
@@ -177,6 +178,52 @@ async function logRequestData(operationType, url, data) {
   log.info(`${operationType} Data Url`, url);
   if (data) {
     log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
+  }
+}
+
+function checkUserHasPermission(permission) {
+  return function(req, res, next) {
+    try {
+      const jwtToken = getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'Unauthorized user'
+        });
+      }
+      let userToken;
+      try {
+        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      } catch (e) {
+        log.debug('error is from verify', e);
+        return res.status(HttpStatus.UNAUTHORIZED).json();
+      }
+      if (userToken['realm_access']?.roles && userToken['realm_access'].roles.includes(permission)) {
+        return next();
+      }
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'user is missing role'
+      });
+    } catch (e) {
+      log.error(e);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
+  }
+}
+
+function isAuthorized(req) {
+  try {
+    const thisSession = req['session'];
+    if (thisSession['passport']?.user?.jwt) {
+      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      const allowedPermissions = Object.values(perm.PERMISSION);
+      if (userToken?.realm_access?.roles.some(role => allowedPermissions.includes(role))) {
+        return true;
+      }
+    }
+    return false;
+  } catch (e) {
+    log.error(e);
+    return false;
   }
 }
 
@@ -560,7 +607,9 @@ const utils = {
   validateAccessToken,
   forwardGet,
   isPdf,
-  isImage
+  isImage,
+  checkUserHasPermission,
+  isAuthorized
 };
 
 module.exports = utils;

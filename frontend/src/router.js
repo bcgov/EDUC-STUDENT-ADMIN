@@ -47,6 +47,7 @@ import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -358,7 +359,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -369,7 +370,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION
           }
         },
         {
@@ -383,7 +384,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
           }
         },
         {
@@ -394,7 +395,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ACCESS_ROLE'
+            permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
           }
         },
         {
@@ -431,6 +432,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_DISTRICT_PERMISSION
           },
         },
         {
@@ -441,7 +443,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
             requiresAuth: true,
-            permission: 'SECURE_EXCHANGE'
+            permission: PERMISSION.VIEW_DISTRICT_PERMISSION
           }
         },
         {
@@ -451,6 +453,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.SCHOOL_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_SCHOOL_PERMISSION
           },
         },
         {
@@ -461,6 +464,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.SCHOOL_DETAILS,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_SCHOOL_PERMISSION
           },
         },
         {
@@ -470,6 +474,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.AUTHORITIES_LIST,
             requiresAuth: true,
+            permission: PERMISSION.VIEW_AUTHORITY_PERMISSION
           },
         }
       ]
@@ -481,7 +486,8 @@ const router = createRouter({
       component: AuthorityDetailsPage,
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
-        requiresAuth: true
+        requiresAuth: true,
+        permission: PERMISSION.VIEW_AUTHORITY_PERMISSION
       }
     },
     {
@@ -626,7 +632,6 @@ router.beforeEach((to, _from, next) => {
     studSearchStore.clearStudentSearchParams();
     studSearchStore.clearStudentSearchResults();
   }
-
   const aStore = authStore();
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
   if (to.meta.requiresAuth && aStore.isAuthenticated) {
@@ -645,18 +650,19 @@ router.beforeEach((to, _from, next) => {
         next(nextRouteInError);
         return;
       }
-      if (!to.meta.role) {
+      if (!to.meta.role && !to.meta.permission) {
         next();
         return;
       }
       aStore.getUserInfo().then(() => {
         if (!aStore.isAuthorizedUser) {
-          next('unauthorized');
+          next('/unauthorized');
           return;
         }
         const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
-        if (!hasRole) {
-          next('unauthorized-page');
+        const hasPermission = hasRequiredPermission(aStore.userInfo, to.meta.permission);
+        if (!hasRole && !hasPermission) {
+          next('/unauthorized-page');
           return;
         }
         next();

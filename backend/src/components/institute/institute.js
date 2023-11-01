@@ -227,7 +227,7 @@ async function getDistrictNotes(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
+    if(!district){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
@@ -1317,13 +1317,12 @@ async function getAuthorityNotes(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
+    
+    if(!authority){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
     }
-
     const result = await getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
