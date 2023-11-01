@@ -916,7 +916,7 @@ async function relinkUserDistrictAccess(req, res) {
 
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
-    log.error(e, 'relinkUserDistrictAccess', 'Error occurred while attempting to relink user school access.');
+    log.error(e, 'relinkUserDistrictAccess', 'Error occurred while attempting to relink user district access.');
     return errorResponse(res);
   }
 }

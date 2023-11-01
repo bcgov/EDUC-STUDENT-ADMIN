@@ -363,7 +363,6 @@ export default {
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
           this.users = this.filteredUsers;
-          console.log(response)
         })
         .catch(error => {
           console.error(error);

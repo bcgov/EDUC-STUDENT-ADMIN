@@ -215,7 +215,8 @@ function isAuthorized(req) {
     const thisSession = req['session'];
     if (thisSession['passport']?.user?.jwt) {
       const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-      if (userToken?.realm_access?.roles.some(role => perm.PERMISSION.includes(role))) {
+      const allowedPermissions = Object.values(perm.PERMISSION);
+      if (userToken?.realm_access?.roles.some(role => allowedPermissions.includes(role))) {
         return true;
       }
     }
