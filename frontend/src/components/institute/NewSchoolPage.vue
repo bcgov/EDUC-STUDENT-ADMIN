@@ -465,7 +465,13 @@
             </v-row>
             <v-row>
               <v-col>
-                <h3>Initial EDX Administrator</h3>
+                <h3 class="mb-2">
+                  Initial EDX Administrator
+                </h3>
+                <p>
+                  This user will be set up as an administrator for the school. They will be sent the primary activation
+                  code for the new school and an activation email to set up their own account.
+                </p>
               </v-col>
             </v-row>
             <v-row>
@@ -484,7 +490,7 @@
                 <v-text-field
                   v-model="initialUser.lastName"
                   class="pt-0 pb-5"
-                  :rules="[userFieldRules().lastName]"
+                  :rules="[userFieldRules().lastName, requiredForOffshoreOrIndependentSchool]"
                   variant="underlined"
                   :maxlength="255"
                   label="Last Name"
@@ -496,7 +502,7 @@
                 <v-text-field
                   v-model="initialUser.email"
                   class="pt-0 pb-5"
-                  :rules="[userFieldRules().email]"
+                  :rules="[userFieldRules().email, requiredForOffshoreOrIndependentSchool]"
                   variant="underlined"
                   :maxlength="255"
                   label="Email Address"
@@ -694,7 +700,7 @@ export default {
   },
   methods: {
     userFieldRules() {
-      const message = 'Please fulfill all initial user fields.';
+      const message = 'Required';
       return {
         lastName: this.rules
           .requiredWithOtherFieldValues([this.initialUser?.firstName, this.initialUser?.email], message),
@@ -708,6 +714,10 @@ export default {
           return this.rules.email()(v);
         }
       };
+    },
+    requiredForOffshoreOrIndependentSchool(formValue) {
+      const categories = [...this.offshoreArray, ...this.independentArray];
+      return this.rules.requiredIf(categories.includes(this.newSchool.schoolCategoryCode))(formValue);
     },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
