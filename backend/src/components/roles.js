@@ -24,8 +24,6 @@ const roles = {
     Exchange: ['SECURE_EXCHANGE'],
     //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
     PenTeamRole: config.get('server:edx:teamRoles:pen'),
-    //Help functions created in auth module: isValidSchoolUserToken, isValidSchoolUser
-    Institute: config.get('server:institute:rolesAllowed'),
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -38,9 +36,7 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
-    NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    SchoolIndependent: 'INDEPENDENT_SCHOOLS_ADMIN',
-    SchoolOffshore: 'OFFSHORE_SCHOOLS_ADMIN'
+    NominalRoll: config.get('server:nominalRoll:roleAdmin')
   }
 };
 

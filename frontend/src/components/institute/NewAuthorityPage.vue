@@ -272,6 +272,7 @@ import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 import DatePicker from '@/components/util/DatePicker.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'NewAuthorityPage',
@@ -314,19 +315,28 @@ export default {
         'OFFSHORE',
       ],
       offshoreArray: ['OFFSHORE'],
+      independentArray: ['INDEPENDNT']
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
     showPhysicalAddress() {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     },
     filteredAuthorityTypeCodes() {
-     if(this.isOffshoreOnlyUser()) {
+     if(this.canOnlyAddOffshoreAuthority) {
         return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
+      } else if(this.canOnlyAddIndependentAuthority) {
+        return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
       }
       return this.authorityTypeCodes;
+    },
+    canOnlyAddIndependentAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 
+    },
+    canOnlyAddOffshoreAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
     },
   },
   mounted() {
@@ -343,15 +353,13 @@ export default {
     });
   },
   methods: {
+    hasRequiredPermission,
     calculateDefaultOpenDate() {
       return LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString();
     },
     closeNewAuthorityPage() {
       this.resetForm();
       this.$emit('newAuthority:closeNewAuthorityPage');
-    },
-    isOffshoreOnlyUser() {
-      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     addNewAuthority() {
       this.processing = true;

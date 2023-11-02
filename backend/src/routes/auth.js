@@ -15,8 +15,8 @@ const {
   validationResult
 } = require('express-validator');
 
-const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange & Institute', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange, ...roles.User.Institute]);
-const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & Exchange & Institute', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.Exchange, ...roles.User.Institute]);
+const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange]);
+const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.Exchange]);
 
 const router = express.Router();
 

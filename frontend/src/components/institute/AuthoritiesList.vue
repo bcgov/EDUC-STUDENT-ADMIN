@@ -23,7 +23,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canAddAuthority()"
+            v-if="canAddAuthority || canOnlyAddOffshoreAuthority || canOnlyAddIndependentAuthority"
             id="addAuthorityBtn"
             icon-left
             width="12em"
@@ -305,12 +305,21 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo']),
     ...mapState(instituteStore, ['authorityTypeCodes']),
 
     getSheetWidth() {
       return 30;
     },
+    canOnlyAddIndependentAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 
+    },
+    canOnlyAddOffshoreAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
+    },
+    canAddAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_AUTHORITY_PERMISSION);
+    }
   },
   watch: {
     pageSize() {
@@ -449,11 +458,6 @@ export default {
     searchButtonClick() {
       this.resetPageNumber();
       this.getAuthorityList();
-    },
-    canAddAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_AUTHORITY_PERMISSION) || 
-      this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) ||
-      this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
     },
     newAuthorityAdded() {
       this.newAuthoritySheet = !this.newAuthoritySheet;
