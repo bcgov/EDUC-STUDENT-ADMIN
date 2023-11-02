@@ -27,8 +27,6 @@ export const authStore = defineStore('auth', {
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
     isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
-    isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null,
-    isValidSchoolOffshoreAdmin: localStorage.getItem('isValidSchoolOffshoreAdmin') !== null,
     isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
   }),
   getters: {
@@ -59,9 +57,7 @@ export const authStore = defineStore('auth', {
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
-    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
-    INDEPENDENT_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
-    OFFSHORE_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolOffshoreAdmin,
+    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser
    },
   actions: {
     //sets Json web token and determines whether user is authenticated
@@ -236,24 +232,6 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem('isValidPenTeamRoleUser');
       }
     },
-    async setIsValidSchoolIndependentAdmin(isValidSchoolIndependentAdmin) {
-      if (isValidSchoolIndependentAdmin) {
-        this.isValidSchoolIndependentAdmin = true;
-        localStorage.setItem('isValidSchoolIndependentAdmin', 'true');
-      } else {
-        this.isValidSchoolIndependentAdmin = false;
-        localStorage.removeItem('isValidSchoolIndependentAdmin');
-      }
-    },
-    async setIsValidSchoolOffshoreAdmin(isValidSchoolOffshoreAdmin) {
-      if (isValidSchoolOffshoreAdmin) {
-        this.isValidSchoolOffshoreAdmin = true;
-        localStorage.setItem('isValidSchoolOffshoreAdmin', 'true');
-      } else {
-        this.isValidSchoolOffshoreAdmin = false;
-        localStorage.removeItem('isValidSchoolOffshoreAdmin');
-      }
-    },
     async setAuthorizedWebsocketUser(isAuthorizedWebsocketUser){
       if (isAuthorizedWebsocketUser) {
         this.isAuthorizedWebsocketUser = true;
@@ -327,8 +305,6 @@ export const authStore = defineStore('auth', {
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
       await this.setExchangeUser(response.isValidExchangeUser);
       await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
-      await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
-      await this.setIsValidSchoolOffshoreAdmin(response.isValidSchoolOffshoreAdmin);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
 
       ApiService.setAuthHeader(response.jwtFrontend);

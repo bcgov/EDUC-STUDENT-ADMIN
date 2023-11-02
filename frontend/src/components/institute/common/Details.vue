@@ -1215,7 +1215,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes', 'countryCodes', 'schoolCategoryFacilityTypesMap', 'gradeOptions']),
     ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
