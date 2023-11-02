@@ -16,7 +16,7 @@ router.delete('/funding-groups/:schoolID/funding/:schoolFundingGroupID', passpor
 router.put('/funding-groups/:schoolID/funding/:schoolFundingGroupID', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_SCHOOL_PERMISSION), extendSession, updateFundingDataForSchool);
 router.get('/funding-groups/snapshot/:schoolID/:collectionID', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_SCHOOL_PERMISSION), extendSession, getSnapshotFundingDataForSchool);
 
-router.get('/funding-groups', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_SCHOOL_PERMISSION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL'));
+router.get('/funding-groups', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL'));
 router.get('/sdcSchoolCollection/:schoolID', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_SCHOOL_PERMISSION), extendSession, getAllCollectionsForSchool);
 module.exports = router;
 
