@@ -1117,13 +1117,6 @@ async function getExchangeStats(req, res) {
 
 async function createSchool(req, res) {
   try {
-    if (!req.session.roles.includes('SCHOOL_ADMIN')) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to add or edit schools'
-      });
-    }
-
     const {school, user} = req.body;
 
     const isEmptyString = str => typeof str === 'string' && str.trim() === '';

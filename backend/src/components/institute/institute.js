@@ -60,9 +60,9 @@ async function addDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -125,9 +125,9 @@ async function updateDistrict(req, res) {
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
 
-    if (!district || !hasDistrictAdminRole(req)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!district) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const districtPayload = req.body;
@@ -158,9 +158,9 @@ async function updateDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -188,9 +188,9 @@ async function deleteDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -245,9 +245,9 @@ async function addNewDistrictNote(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const params = {
@@ -271,9 +271,9 @@ async function updateDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const payload = {
@@ -293,9 +293,9 @@ async function deleteDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     await utils.deleteData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note/${req.params.noteId}`);
@@ -344,12 +344,6 @@ async function getCachedSchoolBySchoolID(req, res) {
 async function addSchool(req, res) {
   try {
     const token = getBackendToken(req);
-
-    if(!hasSchoolAdminRole(req, req.body)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
 
     const payload = {
       createUser: utils.getUser(req).idir_username,
@@ -433,9 +427,9 @@ async function addNewSchoolNote(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -472,9 +466,9 @@ async function updateSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if (!school || !hasSchoolAdminRole(req, school)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!school) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     const payload = {
@@ -494,9 +488,9 @@ async function deleteSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
@@ -512,9 +506,9 @@ async function addSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -554,9 +548,9 @@ async function updateSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -587,9 +581,9 @@ async function deleteSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -844,20 +838,6 @@ async function updateAuthority(req, res) {
   }
 }
 
-function hasDistrictAdminRole(req){
-  return req.session.roles.includes('DISTRICT_ADMIN');
-}
-
-function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(school.schoolCategoryCode === 'OFFSHORE'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
-  }
-
-  return req.session.roles.includes('SCHOOL_ADMIN');
-}
-
 function hasAuthorityAdminRole(req, authority){
   if(authority?.authorityTypeCode === 'INDEPENDNT') {
     return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
@@ -984,9 +964,9 @@ async function updateSchool(req, res) {
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
 
-    if (!school || !hasSchoolAdminRole(req, school)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!school) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     const payload = req.body;
@@ -1086,13 +1066,6 @@ async function getSchoolsPaginated(req, res){
 async function moveSchool(req, res) {
   try {
     const token = getBackendToken(req);
-
-    if(!hasSchoolAdminRole(req, req.body.toSchool)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     let school = cacheService.getSchoolBySchoolID(req.body.fromSchoolId);
 
     if(!school || school.schoolCategoryCode === 'OFFSHORE') {

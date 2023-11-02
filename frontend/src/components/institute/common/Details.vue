@@ -27,7 +27,7 @@
               class="d-flex justify-end"
             >
               <PrimaryButton
-                v-if="canEditSchoolDetails()"
+                v-if="hasAccess"
                 id="schoolDetailsEditButton"
                 icon-left
                 width="6em"
@@ -741,7 +741,7 @@
             >
               <v-col class="mt-2">
                 <a
-                  v-if="canEditSchoolDetails()"
+                  v-if="hasAccess"
                   class="editField"
                   @click="toggleEditWithAddress"
                 >+Address</a>
@@ -1175,6 +1175,10 @@ export default {
       type: String,
       required: true
     },
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -1211,7 +1215,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes', 'countryCodes', 'schoolCategoryFacilityTypesMap', 'gradeOptions']),
     ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
@@ -1495,7 +1499,7 @@ export default {
       this.$refs.schoolDetailsForm.validate();
     },
     showEditLinks(fieldValue) {
-      return this.canEditSchoolDetails() && !fieldValue;
+      return this.hasAccess && !fieldValue;
     },
     cancelClicked() {
       this.editing = false;
@@ -1573,15 +1577,6 @@ export default {
         });
       }
     },
-    canEditSchoolDetails() {
-      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
-      } else if(this.school.schoolCategoryCode && this.offshoreArray.includes(this.school.schoolCategoryCode)) {
-        return this.OFFSHORE_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
-      }
-      return this.SCHOOL_ADMIN_ROLE;
-    },
-
     async clickSameAsAddressButton() {
       await this.$nextTick();
       await this.$refs.schoolDetailsForm.validate();

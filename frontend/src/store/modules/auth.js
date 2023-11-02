@@ -27,8 +27,6 @@ export const authStore = defineStore('auth', {
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
     isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
-    isValidDistrictAdmin: localStorage.getItem('isValidDistrictAdmin') !== null,
-    isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
     isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
     isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null,
     isValidSchoolOffshoreAdmin: localStorage.getItem('isValidSchoolOffshoreAdmin') !== null,
@@ -63,8 +61,6 @@ export const authStore = defineStore('auth', {
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
-    DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
-    SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
     INDEPENDENT_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
     OFFSHORE_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolOffshoreAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin,
@@ -242,24 +238,6 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem('isValidPenTeamRoleUser');
       }
     },
-    async setIsValidDistrictAdmin(isValidDistrictAdmin) {
-      if (isValidDistrictAdmin) {
-        this.isValidDistrictAdmin = true;
-        localStorage.setItem('isValidDistrictAdmin', 'true');
-      } else {
-        this.isValidDistrictAdmin = false;
-        localStorage.removeItem('isValidDistrictAdmin');
-      }
-    },
-    async setIsValidSchoolAdmin(isValidSchoolAdmin) {
-      if (isValidSchoolAdmin) {
-        this.isValidSchoolAdmin = true;
-        localStorage.setItem('isValidSchoolAdmin', 'true');
-      } else {
-        this.isValidSchoolAdmin = false;
-        localStorage.removeItem('isValidSchoolAdmin');
-      }
-    },
     async setIsValidSchoolIndependentAdmin(isValidSchoolIndependentAdmin) {
       if (isValidSchoolIndependentAdmin) {
         this.isValidSchoolIndependentAdmin = true;
@@ -360,8 +338,6 @@ export const authStore = defineStore('auth', {
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
       await this.setExchangeUser(response.isValidExchangeUser);
       await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
-      await this.setIsValidDistrictAdmin(response.isValidDistrictAdmin);
-      await this.setIsValidSchoolAdmin(response.isValidSchoolAdmin);
       await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
       await this.setIsValidSchoolOffshoreAdmin(response.isValidSchoolOffshoreAdmin);
       await this.setIsValidIndependentAuthorityAdmin(response.isValidIndependentAuthorityAdmin);

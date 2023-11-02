@@ -35,7 +35,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canAddEditSchoolContact"
+            v-if="hasAccess && isNotClosedAndNeverOpened()"
             id="addSchoolContactBtn"
             icon-left
             width="11em"
@@ -93,7 +93,7 @@
           >
             <SchoolContact
               :contact="contact"
-              :can-edit-school-contact="canAddEditSchoolContact"
+              :can-edit-school-contact="hasAccess && isNotClosedAndNeverOpened()"
               @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)"
               @removeSchoolContact:showConfirmationPrompt="removeContact"
             />
@@ -173,6 +173,10 @@ export default {
       type: String,
       required: true
     },
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -189,19 +193,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['schoolContactTypeCodes', 'independentAuthoritySchoolContacts', 'offshoreSchoolContacts', 'regularSchoolContactTypes']),
     loading() {
       return this.loadingCount !== 0;
-    },
-    canAddEditSchoolContact() {
-      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
-      } else if(this.school.schoolCategoryCode && this.offshoreArray.includes(this.school.schoolCategoryCode)) {
-        return (this.OFFSHORE_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
-      }
-      return this.SCHOOL_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
-    },
+    }
   },
   watch: {
     async school(value) {

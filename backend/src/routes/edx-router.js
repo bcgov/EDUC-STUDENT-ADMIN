@@ -92,6 +92,6 @@ router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt'
 router.get('/exchange/:secureExchangeID/documents/:documentId', auth.isValidExchangeUserToken, getExchangeDocumentById());
 
 // Create School Saga
-router.post('/create-school', passport.authenticate('jwt', {session: false}, undefined), auth.isValidSchoolAdmin, createSchool);
+router.post('/create-school', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_SCHOOL_PERMISSION), createSchool);
 
 module.exports = router;

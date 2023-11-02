@@ -37,7 +37,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canEditDistrictContact"
+            v-if="hasAccess && districtDetails.districtStatusCode === 'ACTIVE'"
             icon-left
             width="11em"
             icon="mdi-plus-thick"
@@ -146,7 +146,7 @@
           >
             <DistrictContact
               :contact="contact"
-              :can-edit-district-contact="canEditDistrictContact"
+              :can-edit-district-contact="hasAccess && districtDetails.districtStatusCode === 'ACTIVE'"
               @edit-district-contact:do-show-edit-district-contact-form="showDistrictEditForm(contact)"
               @remove-school-contact:show-confirmation-prompt="removeContact"
             />
@@ -229,6 +229,10 @@ export default {
       required: false,
       default: undefined
     },
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -249,12 +253,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'DISTRICT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     loading() {
       return this.loadingCount !== 0;
-    },
-    canEditDistrictContact() {
-      return this.DISTRICT_ADMIN_ROLE && this.districtDetails.districtStatusCode === 'ACTIVE';
     },
     filteredDistrictContactTypes() {
       if (!this.isFiltered) {

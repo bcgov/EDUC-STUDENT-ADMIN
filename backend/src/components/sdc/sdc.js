@@ -9,15 +9,7 @@ async function getFundingGroupDataForSchool(req, res) {
   try {
     const accessToken = getBackendToken(req);
     validateAccessToken(accessToken, res);
-    
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-   
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-    
+  
     const data = await getData(accessToken, `${config.get('sdc:fundingGroupDataURL')}/search/${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -29,16 +21,7 @@ async function getFundingGroupDataForSchool(req, res) {
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
     const accessToken = getBackendToken(req);
-    validateAccessToken(accessToken, res);
-    
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-   
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-    
+    validateAccessToken(accessToken, res);   
     const data = await getData(accessToken, `${config.get('sdc:fundingGroupDataURL')}/snapshot/${req.params.schoolID}/${req.params.collectionID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -53,10 +36,9 @@ async function deleteFundingDataForSchool(req, res) {
     validateAccessToken(accessToken, res);
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-   
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -75,9 +57,9 @@ async function updateFundingDataForSchool(req, res) {
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
    
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to update funding code for this school category'
       });
     }
 
@@ -100,10 +82,10 @@ async function addNewFundingForSchool(req, res) {
     validateAccessToken(accessToken, res);
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-   
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+
+    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add funding code for this school category'
       });
     }
 
@@ -122,16 +104,7 @@ async function addNewFundingForSchool(req, res) {
 async function getAllCollectionsForSchool(req, res) {
   try {
     const accessToken = getBackendToken(req);
-    validateAccessToken(accessToken, res);
-
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-   
-    if(!hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-        
+    validateAccessToken(accessToken, res);       
     const data = await getData(accessToken, `${config.get('sdc:schoolCollectionURL')}/searchAll/${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -139,15 +112,6 @@ async function getAllCollectionsForSchool(req, res) {
     return errorResponse(res);
   }
 }
-
-function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  }
-
-  return req.session.roles.includes('SCHOOL_ADMIN');
-}
-
 
 module.exports = {
   getFundingGroupDataForSchool,
