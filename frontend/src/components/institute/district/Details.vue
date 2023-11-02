@@ -27,7 +27,7 @@
               class="d-flex justify-end"
             >
               <PrimaryButton
-                v-if="canEditDistrictDetails()"
+                v-if="hasAccess"
                 id="districtDetailsEditButton"
                 icon-left
                 width="6em"
@@ -301,7 +301,7 @@
           </v-row>
           <div v-if="!editing">
             <v-row
-              v-if="canEditDistrictDetails() && !hasMailingAddress() && !editing"
+              v-if="hasAccess && !hasMailingAddress() && !editing"
               no-gutters
               class="mt-2 d-flex justify-start"
             >
@@ -704,7 +704,11 @@ export default {
     districtID: {
       type: String,
       required: true,
-    }
+    },   
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -722,7 +726,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['DISTRICT_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
     notesLoading() {
@@ -771,7 +775,7 @@ export default {
       this.setHasSamePhysicalFlag();
     },
     showEditLinks(fieldValue) {
-      return this.canEditDistrictDetails() && !fieldValue;
+      return this.hasAccess && !fieldValue;
     },
     setHasSamePhysicalFlag() {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
@@ -801,9 +805,6 @@ export default {
       } else {
         return 'red';
       }
-    },
-    canEditDistrictDetails() {
-      return this.DISTRICT_ADMIN_ROLE;
     },
     addAddressesIfRequired(district) {
       let addresses = district.addresses;

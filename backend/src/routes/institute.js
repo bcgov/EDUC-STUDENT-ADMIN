@@ -19,25 +19,25 @@ router.get('/district', passport.authenticate('jwt', {session: false}, undefined
 
 router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistrictByDistrictID);
 
-router.put('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, updateDistrict);
+router.put('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, updateDistrict);
 
 router.get('/studentRegistrationContacts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getStudentRegistrationContacts);
 
 router.get('/studentRegistrationContact/:mincode', passport.authenticate('jwt', {session: false}, undefined), extendSession, getStudentRegistrationContactByMincode);
 
-router.put('/district/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, updateDistrictContact);
+router.put('/district/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, updateDistrictContact);
 
-router.delete('/district/contact/:districtId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, deleteDistrictContact);
+router.delete('/district/contact/:districtId/:contactId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, deleteDistrictContact);
 
 router.get('/district/:districtId/notes', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistrictNotes);
 
-router.post('/district/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewDistrictNote);
+router.post('/district/note', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, addNewDistrictNote);
 
-router.put('/district/note/:noteId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateDistrictNote);
+router.put('/district/note/:noteId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, updateDistrictNote);
 
-router.delete('/district/note/:districtId/:noteId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, deleteDistrictNote);
+router.delete('/district/note/:districtId/:noteId', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, deleteDistrictNote);
 
-router.post('/district/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addDistrictContact);
+router.post('/district/contact', passport.authenticate('jwt', {session: false}, undefined), utils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, addDistrictContact);
 
 router.put('/authority/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthorityContact);
 

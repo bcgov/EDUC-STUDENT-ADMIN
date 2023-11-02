@@ -134,11 +134,15 @@
                 <v-window-item value="details">
                   <Details 
                     :district-i-d="districtID"
+                    :has-access="canEditDistrictDetails()"
                     @updateDistrict="updateDistrictDetails"
                   />
                 </v-window-item>
                 <v-window-item value="contacts">
-                  <DistrictContacts :district-i-d="districtID" />
+                  <DistrictContacts 
+                    :district-i-d="districtID" 
+                    :has-access="canEditDistrictDetails()"
+                  />
                 </v-window-item>
                 <v-window-item value="notes">
                   <InstituteNotes
@@ -178,6 +182,7 @@ import {edxStore} from '@/store/modules/edx';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import Details from './district/Details.vue';
 import DistrictContacts from './district/DistrictContacts.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'DistrictDetails',
@@ -211,7 +216,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['DISTRICT_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo','OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
     notesLoading() {
@@ -234,6 +239,7 @@ export default {
     });
   },
   methods: {
+    hasRequiredPermission,
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     formatPhoneNumber,
     isOffshoreUser() {
@@ -291,7 +297,7 @@ export default {
       }
     },
     canEditDistrictDetails() {
-      return this.DISTRICT_ADMIN_ROLE;
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_DISTRICT_PERMISSION);
     },     
     async updateDistrictDetails(districtDetailsCopy) {
       this.loading = true;

@@ -60,9 +60,9 @@ async function addDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -125,9 +125,9 @@ async function updateDistrict(req, res) {
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
 
-    if (!district || !hasDistrictAdminRole(req)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!district) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const districtPayload = req.body;
@@ -158,9 +158,9 @@ async function updateDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -188,9 +188,9 @@ async function deleteDistrictContact(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
 
@@ -245,9 +245,9 @@ async function addNewDistrictNote(req, res) {
     const token = getBackendToken(req);
 
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const params = {
@@ -271,9 +271,9 @@ async function updateDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     const payload = {
@@ -293,9 +293,9 @@ async function deleteDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
-    if(!district || !hasDistrictAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!district){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District not found'
       });
     }
     await utils.deleteData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note/${req.params.noteId}`);
@@ -836,10 +836,6 @@ async function updateAuthority(req, res) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
     return errorResponse(res);
   }
-}
-
-function hasDistrictAdminRole(req){
-  return req.session.roles.includes('DISTRICT_ADMIN');
 }
 
 function hasAuthorityAdminRole(req, authority){
