@@ -323,4 +323,8 @@ export default {
         padding-left: 4em !important;
     }
 }
+
+:deep(.v-alert){
+  display: inline-flex;
+}
 </style>

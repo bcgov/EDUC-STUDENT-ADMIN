@@ -318,5 +318,9 @@ export default {
     padding-left: 32em !important;
 }
 
+:deep(.v-alert){
+  display: inline-flex;
+}
+
 
 </style>

@@ -419,4 +419,8 @@ export default {
   background-color: #F2F2F2;
 }
 
+:deep(.v-alert){
+  display: inline-flex;
+}
+
 </style>
