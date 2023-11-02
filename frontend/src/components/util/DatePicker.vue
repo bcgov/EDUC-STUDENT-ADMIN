@@ -70,6 +70,7 @@ export default defineComponent({
         variant="underlined"
         placeholder="yyyy/mm/dd"
         :clearable="true"
+        hide-details="auto"
         @input="onInput"
         @keydown.enter.prevent="onEnter"
         @keydown.tab.prevent="onTab"

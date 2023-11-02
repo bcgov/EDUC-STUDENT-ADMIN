@@ -1,7 +1,10 @@
 <template>
   <v-row style="height: 100%; margin-bottom: 1.5em">
     <v-col>
-      <v-card style="min-height:17.5em" class="d-flex flex-column">
+      <v-card
+        style="min-height:17.5em"
+        class="d-flex flex-column"
+      >
         <v-card-title class="pb-0">
           <v-row no-gutters>
             <v-col>
@@ -21,8 +24,8 @@
         </v-card-title>
         <v-card-subtitle>
           <p
-              v-if="getExpiryDate(user)"
-              class="expiry-date"
+            v-if="getExpiryDate(user)"
+            class="expiry-date"
           >
             {{ formatExpiryDate(getExpiryDate(user)) }}
           </p>
@@ -30,13 +33,13 @@
         <v-card-text class="pb-0">
           <v-list class="pt-0">
             <v-list-item
-                v-if="user.email"
-                class="pl-0"
+              v-if="user.email"
+              class="pl-0"
             >
               <v-icon
-                  icon="mdi-email"
-                  style="margin-bottom: 3px;"
-                  start
+                icon="mdi-email"
+                style="margin-bottom: 3px;"
+                start
               />
               <span id="user-email"> {{ user.email }}</span>
             </v-list-item>
@@ -66,7 +69,6 @@
               return-object
               select-strategy="classic"
               style="background-color: #e7ebf0"
-              @update:selected="selectedRolesChanged"
             >
               <div
                 v-for="newrole in instituteRoles"
@@ -74,7 +76,6 @@
                 :value="newrole.edxRoleCode"
               >
                 <v-list-item
-                  :disabled="roleDisabled(newrole)"
                   :value="newrole.edxRoleCode"
                 >
                   <template #prepend="{ isActive }">
@@ -84,12 +85,7 @@
                   </template>
 
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-
-                  <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
-                    EDX {{ instituteTypeLabel }} Admin users will be set up with all
-                    {{ instituteTypeLabel.toLowerCase() }} roles.
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle v-else>
+                  <v-list-item-subtitle>
                     {{ newrole.roleDescription }}
                   </v-list-item-subtitle>
                 </v-list-item>
@@ -211,11 +207,32 @@
             </v-row>
           </v-card-text>
         </Transition>
-        <v-spacer></v-spacer>
-        <v-card-actions v-if="!editState && !relinkState && !deleteState" class="justify-start">
-          <v-btn color="#003366" variant="text" @click="clickEditButton">Edit</v-btn>
-          <v-btn color="red" variant="text" @click="clickDeleteButton">Remove</v-btn>
-          <v-btn color="#003366" variant="text" @click="clickRelinkButton">Re-link</v-btn>
+        <v-spacer />
+        <v-card-actions
+          v-if="!editState && !relinkState && !deleteState"
+          class="justify-start"
+        >
+          <v-btn
+            color="#003366"
+            variant="text"
+            @click="clickEditButton"
+          >
+            Edit
+          </v-btn>
+          <v-btn
+            color="red"
+            variant="text"
+            @click="clickDeleteButton"
+          >
+            Remove
+          </v-btn>
+          <v-btn
+            color="#003366"
+            variant="text"
+            @click="clickRelinkButton"
+          >
+            Re-link
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -275,32 +292,11 @@ export default {
     };
   },
   computed: {
-    isEDXInstituteAdminSelected() {
-      return this.selectedRoles.includes(this.edxInstituteAdminRole);
-    },
     minimumRolesSelected() {
       return this.selectedRoles.length > 0;
-    },
-    edxInstituteAdminRole() {
-      if (this.instituteTypeCode === 'SCHOOL') {
-        return 'EDX_SCHOOL_ADMIN';
-      }
-      return 'EDX_DISTRICT_ADMIN';
     }
   },
   methods: {
-    roleDisabled(role) {
-      if (role.edxRoleCode === this.edxInstituteAdminRole) {
-        return false;
-      }
-      return this.isEDXInstituteAdminSelected;
-    },
-    selectedRolesChanged() {
-      if (!this.isEDXInstituteAdminSelected) {
-        return;
-      }
-      this.selectedRoles = [this.edxInstituteAdminRole];
-    },
     isDistrictUser(){
       return this.instituteTypeCode === 'DISTRICT';
     },
@@ -351,9 +347,9 @@ export default {
         }
       };
       const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
-        payload.params.schoolID = this.instituteCode;
-        payload.params.userSchoolID = userSchool.edxUserSchoolID;
-        ApiService.apiAxios.post(Routes.edx.EDX_RELINK_SCHOOL_USER, payload)
+      payload.params.schoolID = this.instituteCode;
+      payload.params.userSchoolID = userSchool.edxUserSchoolID;
+      ApiService.apiAxios.post(Routes.edx.EDX_RELINK_SCHOOL_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
         }).catch(error => {
@@ -373,9 +369,9 @@ export default {
         }
       };
       const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
-        payload.params.districtID = this.instituteCode;
-        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
-        ApiService.apiAxios.post(Routes.edx.EDX_RELINK_DISTRICT_USER, payload)
+      payload.params.districtID = this.instituteCode;
+      payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
+      ApiService.apiAxios.post(Routes.edx.EDX_RELINK_DISTRICT_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
         }).catch(error => {
@@ -404,14 +400,14 @@ export default {
       const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
       payload.params.userSchoolID = userSchool.edxUserSchoolID;
       ApiService.apiAxios.post(Routes.edx.EDX_REMOVE_SCHOOL_USER, payload)
-      .then(() => {
-        this.setSuccessAlert('User has been removed.');
-      }).catch(error => {
-        this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-        console.log(error);
-      }).finally(() => {
-        this.$emit('refresh');
-      });
+        .then(() => {
+          this.setSuccessAlert('User has been removed.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     removeDistrictUser() {
       const payload = {
@@ -425,12 +421,12 @@ export default {
       ApiService.apiAxios.post(Routes.edx.EDX_REMOVE_DISTRICT_USER, payload)
         .then(() => {
           this.setSuccessAlert('User has been removed.');
-      }).catch(error => {
-        this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-        console.log(error);
-      }).finally(() => {
-        this.$emit('refresh');
-      });
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     clickSaveButton() {
       if (!this.minimumRolesSelected) {
