@@ -47,7 +47,6 @@
           >
             <v-icon
               icon="mdi-alert"
-              size="x-large"
               color="#ff5252"
               start
             />
@@ -83,7 +82,7 @@
               />
             </v-col>
             <v-col class="d-flex ml-1">
-              <span id="contactEmail"> {{ contact.email }}</span>
+              <span id="contactEmail" class="contactEmailBreak"> {{ contact.email }}</span>
             </v-col>
           </v-row>
         </v-list-item>
@@ -113,16 +112,16 @@
           <v-row>
             <v-col cols="1">
               <v-icon
-                icon="mdi-phone"
+                icon="mdi-phone-outline"
                 start
               />
             </v-col>
             <v-col class="d-flex ml-1">
               <span id="contactAlternatePhoneNumber">
-                {{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)
+                {{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)&nbsp;
               </span>
               <span v-if="contact.alternatePhoneExtension">
-                &nbsp;ext. {{ contact.alternatePhoneExtension }}
+                ext.&nbsp;{{ contact.alternatePhoneExtension }}
               </span>
             </v-col>
           </v-row>
@@ -184,4 +183,7 @@ export default {
     font-size: 16px;
 }
 
+.contactEmailBreak{
+  word-break: break-all;
+}
 </style>
