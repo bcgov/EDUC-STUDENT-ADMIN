@@ -40,7 +40,6 @@ const roles = {
     StaffAdministration: config.get('server:administration:roleAdmin'),
     NominalRoll: config.get('server:nominalRoll:roleAdmin'),
     District: 'DISTRICT_ADMIN',
-    School: 'SCHOOL_ADMIN',
     SchoolIndependent: 'INDEPENDENT_SCHOOLS_ADMIN',
     IndependentAuthority: 'INDEPENDENT_AUTHORITY_ADMIN',
     SchoolOffshore: 'OFFSHORE_SCHOOLS_ADMIN'
