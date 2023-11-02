@@ -111,7 +111,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
   },
   watch: {

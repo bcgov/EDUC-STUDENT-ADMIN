@@ -498,6 +498,7 @@ import {isOpenNotClosingAuthority} from '@/utils/common';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 import DatePicker from '@/components/util/DatePicker.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'MoveSchoolPage',
@@ -579,7 +580,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
@@ -598,7 +599,7 @@ export default {
       return this.formatDate(this.school.openedDate);
     },
     schoolCategoryTypeCodes() {
-      if (this.isIndependentOnlyUser()) {
+      if (this.canOnlyEditIndependentSchools) {
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
       }
       return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
@@ -624,7 +625,10 @@ export default {
     },
     countryCodes() {
       return this.activeCountryCodes ? this.activeCountryCodes : [];
-    }
+    },
+    canOnlyEditIndependentSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+    },
   },
   created() {
     const instStore = instituteStore();
@@ -648,6 +652,7 @@ export default {
     this.schoolCategoryChanged();
   },
   methods: {
+    hasRequiredPermission,
     copyNLCandGradesFromSchool() {
       //copies over the NLC and grades list from school without schoolId information.
       this.moveSchoolObject.neighborhoodLearning = this.school.neighborhoodLearning.map(nlc => this.activeSchoolNeighborhoodLearningCodes?.find(activeNLC => nlc.neighborhoodLearningTypeCode === activeNLC.neighborhoodLearningTypeCode));
@@ -712,9 +717,6 @@ export default {
       }
 
       this.fireFormValidate();
-    },
-    isIndependentOnlyUser() {
-      return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
     },
     authorityRule(value) {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode) && !value) {
