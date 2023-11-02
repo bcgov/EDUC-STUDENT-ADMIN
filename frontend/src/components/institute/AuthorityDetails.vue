@@ -121,10 +121,14 @@
                     <Details 
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
+                      :has-access="canEditAuthorities()"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
-                    <AuthorityContacts :authority-i-d="authorityID" />
+                    <AuthorityContacts 
+                      :authority-i-d="authorityID"
+                      :has-access="canEditAuthorities()"
+                    />
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
@@ -162,6 +166,7 @@ import {instituteStore} from '@/store/modules/institute';
 import Details from './authority/Details.vue';
 import AuthorityContacts from './authority/AuthoritiesContacts.vue';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'AuthorityDetailsPage',
@@ -205,7 +210,7 @@ export default {
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo','INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -234,6 +239,7 @@ export default {
     this.getAuthorityNotes();
   },
   methods: {
+    hasRequiredPermission,
     formatPhoneNumber,
     formatDate,
     getStatusColorAuthorityOrSchool,
@@ -267,12 +273,9 @@ export default {
     },
     deepCloneObject,
     canEditAuthorities() {
-      if(this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
-      } else if(this.authority?.authorityTypeCode === 'OFFSHORE') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-      }
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_AUTHORITY_PERMISSION) || 
+      (this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) ||
+      (this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION));
     },
     setHasSamePhysicalFlag() {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;

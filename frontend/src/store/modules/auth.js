@@ -27,7 +27,6 @@ export const authStore = defineStore('auth', {
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
     isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
-    isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
     isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null,
     isValidSchoolOffshoreAdmin: localStorage.getItem('isValidSchoolOffshoreAdmin') !== null,
     isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
@@ -63,7 +62,6 @@ export const authStore = defineStore('auth', {
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     INDEPENDENT_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
     OFFSHORE_SCHOOLS_ADMIN_ROLE: state => state.isValidSchoolOffshoreAdmin,
-    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin,
    },
   actions: {
     //sets Json web token and determines whether user is authenticated
@@ -256,15 +254,6 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem('isValidSchoolOffshoreAdmin');
       }
     },
-    async setIsValidIndependentAuthorityAdmin(isValidIndependentAuthorityAdmin) {
-      if (isValidIndependentAuthorityAdmin) {
-        this.isValidIndependentAuthorityAdmin = true;
-        localStorage.setItem('isValidIndependentAuthorityAdmin', 'true');
-      } else {
-        this.isValidIndependentAuthorityAdmin = false;
-        localStorage.removeItem('isValidIndependentAuthorityAdmin');
-      }
-    },
     async setAuthorizedWebsocketUser(isAuthorizedWebsocketUser){
       if (isAuthorizedWebsocketUser) {
         this.isAuthorizedWebsocketUser = true;
@@ -340,7 +329,6 @@ export const authStore = defineStore('auth', {
       await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
       await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
       await this.setIsValidSchoolOffshoreAdmin(response.isValidSchoolOffshoreAdmin);
-      await this.setIsValidIndependentAuthorityAdmin(response.isValidIndependentAuthorityAdmin);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
 
       ApiService.setAuthHeader(response.jwtFrontend);

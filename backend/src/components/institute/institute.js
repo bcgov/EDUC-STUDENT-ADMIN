@@ -620,9 +620,9 @@ async function addAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
 
@@ -662,9 +662,9 @@ async function updateAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
 
@@ -692,9 +692,9 @@ async function deleteAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
 
@@ -729,13 +729,6 @@ async function deleteAuthorityContact(req, res) {
 async function addAuthority(req, res) {
   try {
     const token = getBackendToken(req);
-
-    if(!hasAuthorityAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;
 
     const payload = {
@@ -805,9 +798,9 @@ async function updateAuthority(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.id);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
+    if(!authority){
       return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+        message: 'Authority not found'
       });
     }
 
@@ -836,15 +829,6 @@ async function updateAuthority(req, res) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
     return errorResponse(res);
   }
-}
-
-function hasAuthorityAdminRole(req, authority){
-  if(authority?.authorityTypeCode === 'INDEPENDNT') {
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(authority?.authorityTypeCode === 'OFFSHORE'){
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
-  }
-  return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');
 }
 
 async function getSchoolByID(req, res) {
@@ -1267,9 +1251,9 @@ async function addNewAuthorityNote(req, res) {
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
 
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
 
@@ -1313,9 +1297,9 @@ async function updateAuthorityNote(req, res) {
   try {
     const token = getBackendToken(req);
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
     const payload = {
@@ -1335,9 +1319,9 @@ async function deleteAuthorityNote(req, res) {
   try {
     const token = getBackendToken(req);
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!authority){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Authority not found'
       });
     }
     await utils.deleteData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note/${req.params.noteId}`);
