@@ -726,7 +726,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
     notesLoading() {
@@ -749,9 +748,6 @@ export default {
   methods: {
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     formatPhoneNumber,
-    isOffshoreUser() {
-      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-    },
     getDistrict() {
       this.loading = true;
       ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${this.districtID}`)

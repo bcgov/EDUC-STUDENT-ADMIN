@@ -175,7 +175,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated']),
     ...mapState(instituteStore, ['authorityContactTypeCodes', 'independentAuthorityAuthorityContacts', 'offshoreAuthorityContacts', 'regularAuthorityContactTypes']),
     loading() {
       return this.loadingCount !== 0;
