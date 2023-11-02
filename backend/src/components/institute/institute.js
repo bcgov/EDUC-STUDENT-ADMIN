@@ -842,16 +842,6 @@ function hasDistrictAdminRole(req){
   return req.session.roles.includes('DISTRICT_ADMIN');
 }
 
-function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(school.schoolCategoryCode === 'OFFSHORE'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
-  }
-
-  return req.session.roles.includes('SCHOOL_ADMIN');
-}
-
 function hasAuthorityAdminRole(req, authority){
   if(authority?.authorityTypeCode === 'INDEPENDNT') {
     return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');

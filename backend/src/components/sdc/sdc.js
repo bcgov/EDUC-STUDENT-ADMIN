@@ -113,15 +113,6 @@ async function getAllCollectionsForSchool(req, res) {
   }
 }
 
-function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  }
-
-  return req.session.roles.includes('SCHOOL_ADMIN');
-}
-
-
 module.exports = {
   getFundingGroupDataForSchool,
   deleteFundingDataForSchool,
