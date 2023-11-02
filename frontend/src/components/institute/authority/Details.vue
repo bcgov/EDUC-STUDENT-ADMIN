@@ -1072,7 +1072,7 @@ export default {
       this.$refs.authorityForm.validate();
     },
     showEditLinks(fieldValue) {
-      return hasAccess && !fieldValue;
+      return this.hasAccess && !fieldValue;
     },
     saveAuthority() {
       if (this.sameAsMailingCheckbox) {
