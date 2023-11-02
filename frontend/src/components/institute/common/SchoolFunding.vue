@@ -19,7 +19,7 @@
     <v-row v-else>
       <v-col
         cols="12"
-        xl="6"
+        md="6"
       >
         <v-row>
           <v-col>
@@ -134,7 +134,7 @@
 
       <v-col
         cols="12"
-        xl="6"
+        md="6"
       >
         <h3 class="subHeading pt-2 pb-2">
           Historic Funding Configurations
