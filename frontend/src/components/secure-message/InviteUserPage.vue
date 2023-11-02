@@ -34,7 +34,6 @@
                             class="mt-1"
                             variant="underlined"
                             maxlength="255"
-                            :rules="requiredRules"
                           />
                           <v-text-field
                             id="newUserLastName"
