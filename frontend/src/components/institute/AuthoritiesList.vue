@@ -258,6 +258,7 @@ import router from '@/router';
 import NewAuthorityPage from './NewAuthorityPage.vue';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'AuthoritiesListPage',
@@ -329,6 +330,7 @@ export default {
     this.getAuthorityList();
   },
   methods: {
+    hasRequiredPermission,
     setAuthorityStatuses() {
       this.authorityStatus = [{name: 'Open', code: 'Open'}, {name: 'Closing', code: 'Closing'}, {
         name: 'Closed',
