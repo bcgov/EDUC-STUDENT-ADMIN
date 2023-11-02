@@ -1,82 +1,13 @@
 <template>
   <v-row style="height: 100%; margin-bottom: 1.5em">
     <v-col>
-      <v-card height="100%">
+      <v-card style="min-height:17.5em" class="d-flex flex-column">
         <v-card-title class="pb-0">
           <v-row no-gutters>
             <v-col>
               <v-row no-gutters>
                 <v-col cols="10">
                   <strong class="name">{{ `${user.firstName} ${user.lastName}` }}</strong>
-                </v-col>
-                <v-col
-                  cols="2"
-                  class="d-flex justify-end"
-                >
-                  <v-btn
-                    :id="`user-edit-button-${user.firstName}-${user.lastName}`"
-                    title="Edit"
-                    color="white"
-                    width="0.5em"
-                    min-width="0.5em"
-                    variant="flat"
-                    size="small"
-                    class="mr-2"
-                    @click="clickEditButton"
-                  >
-                    <v-icon
-                      size="x-large"
-                      color="#003366"
-                      dark
-                    >
-                      mdi-pencil
-                    </v-icon>
-                  </v-btn>
-                  <v-btn
-                    :id="`user-remove-button-${user.firstName}-${user.lastName}`"
-                    title="Remove"
-                    color="white"
-                    width="0.5em"
-                    min-width="0.5em"
-                    variant="flat"
-                    size="small"
-                    class="mr-2"
-                    @click="clickDeleteButton"
-                  >
-                    <v-icon
-                      size="x-large"
-                      color="#003366"
-                      dark
-                    >
-                      mdi-delete
-                    </v-icon>
-                  </v-btn>
-                  <v-btn
-                    :id="`user-relink-button-${user.firstName}-${user.lastName}`"
-                    title="Re-Link"
-                    color="white"
-                    width="0.5em"
-                    min-width="0.5em"
-                    variant="flat"
-                    size="small"
-                    @click="clickRelinkButton"
-                  >
-                    <v-icon
-                      size="x-large"
-                      color="#003366"
-                      dark
-                    >
-                      mdi-backup-restore
-                    </v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  class="pt-1"
-                >
-                  <span>{{ user.email }}</span>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -88,8 +19,31 @@
             </v-col>
           </v-row>
         </v-card-title>
+        <v-card-subtitle>
+          <p
+              v-if="getExpiryDate(user)"
+              class="expiry-date"
+          >
+            {{ formatExpiryDate(getExpiryDate(user)) }}
+          </p>
+        </v-card-subtitle>
+        <v-card-text class="pb-0">
+          <v-list class="pt-0">
+            <v-list-item
+                v-if="user.email"
+                class="pl-0"
+            >
+              <v-icon
+                  icon="mdi-email"
+                  style="margin-bottom: 3px;"
+                  start
+              />
+              <span id="user-email"> {{ user.email }}</span>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
         <v-card-text
-          class="pt-2"
+          class="pt-0"
           :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
         >
           <div v-if="!editState">
@@ -98,19 +52,11 @@
                 v-for="role in userRoles"
                 :key="role.edxRoleCode"
                 disabled
+                class="ma-1"
               >
                 {{ getRoleLabel(role) }}
               </v-chip>
             </v-chip-group>
-            <p 
-              v-if="getExpiryDate(user)"
-              class="expiry-date"
-            >
-              <v-icon size="large">
-                mdi-delete-clock-outline
-              </v-icon>
-              {{ formatExpiryDate(getExpiryDate(user)) }}
-            </p>
           </div>
           
           <div v-else>
@@ -174,7 +120,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col class="mt-0 d-flex justify-end">
+              <v-col class="mt-3 d-flex justify-end">
                 <PrimaryButton
                   :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
                   width="5em"
@@ -265,6 +211,12 @@
             </v-row>
           </v-card-text>
         </Transition>
+        <v-spacer></v-spacer>
+        <v-card-actions v-if="!editState && !relinkState && !deleteState" class="justify-start">
+          <v-btn color="#003366" variant="text" @click="clickEditButton">Edit</v-btn>
+          <v-btn color="red" variant="text" @click="clickDeleteButton">Remove</v-btn>
+          <v-btn color="#003366" variant="text" @click="clickRelinkButton">Re-link</v-btn>
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -348,9 +300,6 @@ export default {
         return;
       }
       this.selectedRoles = [this.edxInstituteAdminRole];
-    },
-    getButtonWidth() {
-      return '7em';
     },
     isDistrictUser(){
       return this.instituteTypeCode === 'DISTRICT';
@@ -541,14 +490,7 @@ export default {
 
 .name {
     word-break: break-word;
-}
-
-.bounce-enter-active {
-    animation: bounce-in 0.2s;
-}
-
-.bounce-leave-active {
-    animation: bounce-in 0.1s reverse;
+    font-size: 0.85em
 }
 
 @keyframes bounce-in {
@@ -565,7 +507,8 @@ export default {
 
 .expiry-date {
   color: grey;
-  text-align: right;
+  font-style: italic;
+  font-size: 0.95em
 }
 </style>
 

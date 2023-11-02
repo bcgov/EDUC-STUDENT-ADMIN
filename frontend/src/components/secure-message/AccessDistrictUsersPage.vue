@@ -206,7 +206,7 @@
           >
             <v-row style="height: 100%;">
               <v-col style="min-height: 150px">
-                <v-card class="h-100 add-new-user">
+                <v-card class="add-new-user" style="min-height: 17.5em">
                   <v-row
                     class="add-new-user"
                     align="center"
@@ -516,21 +516,6 @@ export default {
     margin-right: 0;
     border-radius: 5px;
     background-color: #F2F2F2;
-}
-
-.primary_color {
-    background-color: #4caf50;
-    color: white;
-}
-
-.secondary_color {
-    background-color: #424242;
-    color: white;
-}
-
-.card-hint {
-    color: #000 !important;
-    font-size: 1rem;
 }
 
 .v-dialog__content >>> .v-bottom-sheet {
