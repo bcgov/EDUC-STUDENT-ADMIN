@@ -435,6 +435,7 @@ import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {instituteStore} from '@/store/modules/institute';
 import {notificationsStore} from '@/store/modules/notifications';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'SchoolListPage',
@@ -497,7 +498,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(appStore, ['schoolsMap']),
     ...mapState(edxStore, ['schoolSearchParams']),
     ...mapState(notificationsStore, ['notification']),
@@ -567,6 +568,7 @@ export default {
     }
   },
   methods: {
+    hasRequiredPermission,
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     setSearchValues() {
       this.schoolCodeNameFilter = this.schoolSearchParams.schoolID;
@@ -579,7 +581,7 @@ export default {
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
     canAddSchool() {
-      return this.SCHOOL_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     isOpenNotClosingAuthority,
     setSchoolStatuses() {

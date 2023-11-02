@@ -345,12 +345,6 @@ async function addSchool(req, res) {
   try {
     const token = getBackendToken(req);
 
-    if(!hasSchoolAdminRole(req, req.body)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     const payload = {
       createUser: utils.getUser(req).idir_username,
       createDate: null,
@@ -433,9 +427,9 @@ async function addNewSchoolNote(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -472,9 +466,9 @@ async function updateSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if (!school || !hasSchoolAdminRole(req, school)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!school) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     const payload = {
@@ -494,9 +488,9 @@ async function deleteSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
@@ -512,9 +506,9 @@ async function addSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -554,9 +548,9 @@ async function updateSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -587,9 +581,9 @@ async function deleteSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
 
@@ -984,9 +978,9 @@ async function updateSchool(req, res) {
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
 
-    if (!school || !hasSchoolAdminRole(req, school)) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
+    if (!school) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
       });
     }
     const payload = req.body;
@@ -1086,13 +1080,6 @@ async function getSchoolsPaginated(req, res){
 async function moveSchool(req, res) {
   try {
     const token = getBackendToken(req);
-
-    if(!hasSchoolAdminRole(req, req.body.toSchool)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     let school = cacheService.getSchoolBySchoolID(req.body.fromSchoolId);
 
     if(!school || school.schoolCategoryCode === 'OFFSHORE') {

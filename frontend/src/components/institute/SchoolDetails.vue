@@ -154,11 +154,15 @@
                 <v-window-item value="details">
                   <Details
                     :school-i-d="schoolID"
+                    :has-access="canEditSchoolDetails()"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
                 <v-window-item value="contacts">
-                  <SchoolContacts :school-i-d="schoolID" />
+                  <SchoolContacts 
+                    :school-i-d="schoolID" 
+                    :has-access="canEditSchoolDetails()"
+                  />
                 </v-window-item>
                 <v-window-item value="notes">
                   <InstituteNotes
@@ -211,6 +215,7 @@ import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import {appStore} from '@/store/modules/app';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -227,7 +232,7 @@ export default {
     schoolID: {
       type: String,
       required: true
-    },
+    }
   },
   data() {
     return {
@@ -247,7 +252,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(notificationsStore, ['notification']),
     ...mapState(appStore, ['config']),
     notesLoading() {
@@ -264,6 +269,7 @@ export default {
     this.setTab();
   },
   methods: {
+    hasRequiredPermission,
     setTab(){
       if(this.$route.query?.contact){
         this.tab = 'contacts';
@@ -352,15 +358,15 @@ export default {
         });
     },
     canEditSchoolDetails() {
-      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
-      } else if(this.school.schoolCategoryCode && this.offshoreArray.includes(this.school.schoolCategoryCode)) {
-        return this.OFFSHORE_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
-      }
-      return this.SCHOOL_ADMIN_ROLE;
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || 
+      (this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) ||
+      (this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION));
     },
     canViewFundingTab() {
-      return this.independentArray.includes(this.school.schoolCategoryCode) && (this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE) && !this.config.DISABLE_SDC_FUNCTIONALITY;
+      return this.independentArray.includes(this.school?.schoolCategoryCode) && 
+      (this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)
+      || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)) 
+      && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
