@@ -333,7 +333,7 @@ echo Assigning permissions to SCHOOL_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SCHOOL_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson, $editIndependentSchoolPermissionJson, $editOffshoreSchoolPermissionJson ]"
 
 echo
 echo Creating INDEPENDENT_AUTHORITY_ADMIN role
