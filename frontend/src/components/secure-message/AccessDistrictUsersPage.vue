@@ -280,7 +280,6 @@
             :district-name="districtName"
             :district-number="districtNumber"
             @access-user:messageSent="messageSent"
-            @access-user:updateRoles="updateUserRoles"
             @access-user:cancelMessage="closeNewUserModal"
           />
         </v-card-text>
@@ -464,10 +463,6 @@ export default {
     },
     messageSent() {
       this.newUserInviteSheet = !this.newUserInviteSheet;
-    },
-    updateUserRoles(newValue) {
-      const eStore = edxStore();
-      eStore.setDistrictRoles(newValue);
     },
     backButtonClick() {
       router.push({name: 'exchangeDistrictAccess'});
