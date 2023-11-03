@@ -86,7 +86,6 @@
                                 lines="two"
                                 return-object
                                 select-strategy="classic"
-                                @update:selected="disableRoles"
                               >
                                 <div
                                   v-for="newrole in userRoles"
@@ -94,7 +93,6 @@
                                   :value="newrole.edxRoleCode"
                                 >
                                   <v-list-item
-                                    :disabled="newrole.disabled"
                                     :value="newrole.edxRoleCode"
                                   >
                                     <template #prepend="{ isActive }">
