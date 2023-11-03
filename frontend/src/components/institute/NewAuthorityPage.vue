@@ -327,11 +327,11 @@ export default {
     filteredAuthorityTypeCodes() {
       if(this.canOnlyAddOffshoreAuthority && this.canOnlyAddIndependentAuthority) {
         return this.authorityTypeCodes;
-      } else if(this.canOnlyAddOffshoreAuthority) {
+      } else if(this.canOnlyAddOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
         return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyAddIndependentAuthority) {
+      } else if(this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
         return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      }
+      } 
     },
     canOnlyAddIndependentAuthority() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 

@@ -10,7 +10,7 @@ const _ = require('lodash');
 
 function getBackendToken(req) {
     const thisSession = req.session;
-    return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
+    return thisSession['passport']?.user?.jwt;
 }
 
 function checkUserHasPermission(permission) {
