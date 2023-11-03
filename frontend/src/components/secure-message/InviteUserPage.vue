@@ -222,9 +222,6 @@ export default {
       minExpiryDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString()
     };
   },
-  mounted() {
-    this.validateForm();
-  },
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['schoolMap']),
@@ -233,10 +230,10 @@ export default {
         v => !!v || this.emailHint,
         v => /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(v) || this.emailHint,
       ];
-    },
-    edxAdminUserCodeSelected() {
-      return this.edxActivationRoleCodes.includes(this.edxAdminUserCode);
     }
+  },
+  mounted() {
+    this.validateForm();
   },
   created() {
     if (!this.instituteNameAndCode) {
@@ -256,37 +253,6 @@ export default {
         return ', ' + this.userRoles.filter(userRole => userRole.edxRoleCode === role.value)[0].label;
       }
       return this.userRoles.filter(userRole => userRole.edxRoleCode === role.value)[0].label;
-    },
-    disableRoles() {
-      if (this.edxAdminUserCode === '') {
-        for (const element of this.userRoles) {
-          if ((this.instituteTypeCode === 'SCHOOL' && element.edxRoleCode === 'EDX_SCHOOL_ADMIN')
-            || (this.instituteTypeCode === 'DISTRICT' && element.edxRoleCode === 'EDX_DISTRICT_ADMIN')) {
-            this.edxAdminUserCode = element.edxRoleCode;
-            break;
-          }
-        }
-      }
-      let newRoles = [];
-      if (this.edxAdminUserCodeSelected) {
-        newRoles = this.userRoles.map(el => {
-          el.disabled = el.edxRoleCode !== this.edxAdminUserCode;
-          if (el.disabled) {
-            el.selected = false;
-          }
-          return el;
-        });
-        this.edxActivationRoleCodes.length = 0;
-        this.edxActivationRoleCodes.push(this.edxAdminUserCode);
-        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all ${this.instituteTypeLabel.toLowerCase()} roles`;
-      } else {
-        newRoles = this.userRoles.map(el => {
-          el.disabled = false;
-          return el;
-        });
-        this.rolesHint = 'Pick the roles to be assigned to the new user';
-      }
-      this.$emit('access-user:updateRoles', newRoles);
     },
     messageSent() {
       this.requiredRules = [v => !!v?.trim() || 'Required'];
