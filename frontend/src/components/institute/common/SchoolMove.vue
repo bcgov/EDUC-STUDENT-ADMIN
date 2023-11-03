@@ -111,8 +111,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
+
+    canOnlyMoveIndependentSchools() {
+      return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+    },
+    canMoveSchools() {
+      return !this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+    }
   },
   watch: {
     notification(notificationData) {
@@ -193,13 +200,8 @@ export default {
     formatDate(datetime) {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
     },
-    canEditSchoolDetails() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) ||
-      (this.independentArray.includes(this.school?.schoolCategoryCode) && 
-      this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION));
-    },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.school.schoolCategoryCode !== 'OFFSHORE' && this.canEditSchoolDetails();
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.school.schoolCategoryCode !== 'OFFSHORE' && (this.canOnlyMoveIndependentSchools || this.canMoveSchools);
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;

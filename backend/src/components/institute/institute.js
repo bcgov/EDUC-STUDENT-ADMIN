@@ -425,14 +425,6 @@ async function addSchool(req, res) {
 async function addNewSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
-
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if(!school){
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
-
     const params = {
       content: req.body.content,
       schoolId: req.body.schoolId
@@ -465,12 +457,6 @@ async function updateSchoolNote(req, res) {
   }
   try {
     const token = getBackendToken(req);
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-    if (!school) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
     const payload = {
       noteId: req.body.noteId,
       schoolId: req.body.schoolId,
@@ -487,12 +473,6 @@ async function updateSchoolNote(req, res) {
 async function deleteSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school){
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
     await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
@@ -506,12 +486,6 @@ async function addSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school){
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
-
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Unable to add contact for a closed or never opened school'
@@ -548,12 +522,6 @@ async function updateSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
-    if(!school){
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
-
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Unable to update contacts for a closed or never opened school'
@@ -581,12 +549,6 @@ async function deleteSchoolContact(req, res) {
     const token = getBackendToken(req);
 
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school){
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
-
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Unable to delete contacts for a closed or never opened school'
@@ -620,11 +582,6 @@ async function addAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -662,11 +619,6 @@ async function updateAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -692,11 +644,6 @@ async function deleteAuthorityContact(req, res) {
     const token = getBackendToken(req);
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -729,13 +676,6 @@ async function deleteAuthorityContact(req, res) {
 async function addAuthority(req, res) {
   try {
     const token = getBackendToken(req);
-
-    if(!hasAuthorityAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;
 
     const payload = {
@@ -803,14 +743,6 @@ async function addAuthority(req, res) {
 async function updateAuthority(req, res) {
   try {
     const token = getBackendToken(req);
-
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.id);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     let authorityPayload = req.body;
 
     if(authorityPayload.authorityTypeCode === 'OFFSHORE'){
@@ -836,15 +768,6 @@ async function updateAuthority(req, res) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
     return errorResponse(res);
   }
-}
-
-function hasAuthorityAdminRole(req, authority){
-  if(authority?.authorityTypeCode === 'INDEPENDNT') {
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('INDEPENDENT_SCHOOLS_ADMIN');
-  } else if(authority?.authorityTypeCode === 'OFFSHORE'){
-    return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN') || req.session.roles.includes('OFFSHORE_SCHOOLS_ADMIN');
-  }
-  return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');
 }
 
 async function getSchoolByID(req, res) {
@@ -962,13 +885,6 @@ async function updateSchool(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
-
-    if (!school) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'School not found'
-      });
-    }
     const payload = req.body;
 
     payload.addresses?.forEach(function(addy) {
@@ -1265,14 +1181,6 @@ async function addNewAuthorityNote(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
-
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
     const params = {
       content: req.body.content,
       independentAuthorityId: req.body.independentAuthorityId
@@ -1312,12 +1220,7 @@ async function updateAuthorityNote(req, res) {
   }
   try {
     const token = getBackendToken(req);
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
+
     const payload = {
       noteId: req.body.noteId,
       independentAuthorityId: req.body.independentAuthorityId,
@@ -1334,12 +1237,7 @@ async function updateAuthorityNote(req, res) {
 async function deleteAuthorityNote(req, res) {
   try {
     const token = getBackendToken(req);
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
+
     await utils.deleteData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {

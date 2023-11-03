@@ -154,20 +154,20 @@
                 <v-window-item value="details">
                   <Details
                     :school-i-d="schoolID"
-                    :has-access="canEditSchoolDetails()"
+                    :has-access="canOnlyEditIndependentSchools || canOnlyEditOffshoreSchools || canEditSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
                 <v-window-item value="contacts">
                   <SchoolContacts 
                     :school-i-d="schoolID" 
-                    :has-access="canEditSchoolDetails()"
+                    :has-access="canOnlyEditIndependentSchools || canOnlyEditOffshoreSchools || canEditSchools"
                   />
                 </v-window-item>
                 <v-window-item value="notes">
                   <InstituteNotes
                     :notes="notes"
-                    :has-access="canEditSchoolDetails()"
+                    :has-access="canOnlyEditIndependentSchools || canOnlyEditOffshoreSchools || canEditSchools"
                     :loading="notesLoading"
                     @add-institute-note="saveNewSchoolNote"
                     @edit-institute-note="saveChangesToSchoolNote"
@@ -252,7 +252,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(notificationsStore, ['notification']),
     ...mapState(appStore, ['config']),
     notesLoading() {
@@ -261,6 +261,15 @@ export default {
     dataReady: function () {
       return this.userInfo;
     },
+    canOnlyEditIndependentSchools() {
+      return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+    },
+    canOnlyEditOffshoreSchools() {
+      return this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
+    },
+    canEditSchools() {
+      return ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+    }
   },
   watch: {},
   created() {
@@ -357,16 +366,8 @@ export default {
           this.getThisSchoolsDetails();
         });
     },
-    canEditSchoolDetails() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || 
-      (this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) ||
-      (this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION));
-    },
     canViewFundingTab() {
-      return this.independentArray.includes(this.school?.schoolCategoryCode) && 
-      (this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)
-      || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)) 
-      && !this.config.DISABLE_SDC_FUNCTIONALITY;
+    return this.canOnlyEditIndependentSchools && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;

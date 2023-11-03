@@ -23,7 +23,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canAddAuthority()"
+            v-if="canOnlyAddOffshoreAuthority || canOnlyAddIndependentAuthority"
             id="addAuthorityBtn"
             icon-left
             width="12em"
@@ -258,6 +258,7 @@ import router from '@/router';
 import NewAuthorityPage from './NewAuthorityPage.vue';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'AuthoritiesListPage',
@@ -304,12 +305,18 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo']),
     ...mapState(instituteStore, ['authorityTypeCodes']),
 
     getSheetWidth() {
       return 30;
     },
+    canOnlyAddIndependentAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 
+    },
+    canOnlyAddOffshoreAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
+    }
   },
   watch: {
     pageSize() {
@@ -329,6 +336,7 @@ export default {
     this.getAuthorityList();
   },
   methods: {
+    hasRequiredPermission,
     setAuthorityStatuses() {
       this.authorityStatus = [{name: 'Open', code: 'Open'}, {name: 'Closing', code: 'Closing'}, {
         name: 'Closed',
@@ -447,9 +455,6 @@ export default {
     searchButtonClick() {
       this.resetPageNumber();
       this.getAuthorityList();
-    },
-    canAddAuthority() {
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     newAuthorityAdded() {
       this.newAuthoritySheet = !this.newAuthoritySheet;
