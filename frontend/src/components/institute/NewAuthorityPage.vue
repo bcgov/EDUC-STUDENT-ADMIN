@@ -332,6 +332,7 @@ export default {
       } else if(this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
         return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
       } 
+      return [];
     },
     canOnlyAddIndependentAuthority() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 

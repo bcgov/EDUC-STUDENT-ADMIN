@@ -645,6 +645,7 @@ export default {
       }else if (this.canOnlyAddOffshoreSchools) {
         return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
       }
+      return this.districtNames;
     },
     schoolCategoryTypeCodes() {
       if(this.canAddSchools) {
@@ -654,6 +655,7 @@ export default {
       } else if(this.canOnlyAddOffshoreSchools) {
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.offshoreArray.includes(cat.schoolCategoryCode));
       }
+      return [];
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
