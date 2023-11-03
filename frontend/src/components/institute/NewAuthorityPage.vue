@@ -325,12 +325,13 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     },
     filteredAuthorityTypeCodes() {
-     if(this.canOnlyAddOffshoreAuthority) {
+      if(this.canOnlyAddOffshoreAuthority && this.canOnlyAddIndependentAuthority) {
+        return this.authorityTypeCodes;
+      } else if(this.canOnlyAddOffshoreAuthority) {
         return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
       } else if(this.canOnlyAddIndependentAuthority) {
         return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
       }
-      return this.authorityTypeCodes;
     },
     canOnlyAddIndependentAuthority() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 

@@ -9,7 +9,7 @@ const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
 const {v4: uuidv4} = require('uuid');
-const utils = require('../components/utils');
+const permUtils = require('../components/permissionUtils');
 const {
   body,
   validationResult
@@ -78,7 +78,7 @@ async function generateTokens(req, res) {
     const isValidUsers = auth.isValidUsers(req);
     const isValidAdminUsers = auth.isValidAdminUsers(req);
     const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-    const checkUserPermissions = utils.isAuthorized(req);
+    const checkUserPermissions = permUtils.isAuthorized(req);
     const responseJson = {
       jwtFrontend: req.user.jwtFrontend,
       isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
@@ -116,7 +116,7 @@ router.post('/refresh', [
       const isValidUsers = auth.isValidUsers(req);
       const isValidAdminUsers = auth.isValidAdminUsers(req);
       const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-      const checkUserPermissions = utils.isAuthorized(req);
+      const checkUserPermissions = permUtils.isAuthorized(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
         isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
@@ -136,7 +136,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   const isValidUsers = auth.isValidUsers(req);
   const isValidAdminUsers = auth.isValidAdminUsers(req);
   const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-  const checkUserPermissions = utils.isAuthorized(req);
+  const checkUserPermissions = permUtils.isAuthorized(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,

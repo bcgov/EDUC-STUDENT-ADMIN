@@ -640,18 +640,20 @@ export default {
       return sortBy(facilityTypes, ['displayOrder']);
     },
     filteredDistrictNames() {
-      if (this.canOnlyAddOffshoreSchools) {
+      if(this.canAddSchools) {
+        return this.districtNames;
+      }else if (this.canOnlyAddOffshoreSchools) {
         return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
       }
-      return this.districtNames;
     },
     schoolCategoryTypeCodes() {
-      if (this.canOnlyAddIndependentSchools) {
+      if(this.canAddSchools) {
+        return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
+      } else if (this.canOnlyAddIndependentSchools) {
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
       } else if(this.canOnlyAddOffshoreSchools) {
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.offshoreArray.includes(cat.schoolCategoryCode));
       }
-      return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
@@ -683,6 +685,9 @@ export default {
     },
     canOnlyAddOffshoreSchools() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
+    },
+    canAddSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     },
   },
   mounted() {
@@ -731,7 +736,7 @@ export default {
       this.$refs.newSchoolDatePicker.openMenu();
     },
     preselectSchoolDistrict() {
-      if (this.filteredDistrictNames.length !== 1) {
+      if (this.filteredDistrictNames?.length !== 1) {
         return;
       }
       this.newSchool.districtID = this.filteredDistrictNames[0].districtId;

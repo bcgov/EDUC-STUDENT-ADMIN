@@ -12,7 +12,6 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
-const perm = require('../util/Permission');
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
@@ -178,157 +177,6 @@ async function logRequestData(operationType, url, data) {
   log.info(`${operationType} Data Url`, url);
   if (data) {
     log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
-  }
-}
-
-function checkUserHasPermission(permission) {
-  return function(req, res, next) {
-    try {
-      const jwtToken = getBackendToken(req);
-      if (!jwtToken) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'Unauthorized user'
-        });
-      }
-      let userToken;
-      try {
-        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      } catch (e) {
-        log.debug('error is from verify', e);
-        return res.status(HttpStatus.UNAUTHORIZED).json();
-      }
-      if (userToken['realm_access']?.roles && userToken['realm_access'].roles.includes(permission)) {
-        return next();
-      }
-      return res.status(HttpStatus.FORBIDDEN).json({
-        message: 'user is missing role'
-      });
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-    }
-  }
-}
-
-function hasPermissionToAddOrUpdateAuthority() {
-  return function(req, res, next) {
-    try {
-      const jwtToken = getBackendToken(req);
-      if (!jwtToken) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'Unauthorized user'
-        });
-      }
-      let userToken;
-      try {
-        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      } catch (e) {
-        log.debug('error is from verify', e);
-        return res.status(HttpStatus.UNAUTHORIZED).json();
-      }
-
-      let authority = req.body;
-      let hasIndependentPerm = authority?.authorityTypeCode === 'INDEPENDNT' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION);
-      let hasOffshorePerm = authority?.authorityTypeCode === 'OFFSHORE' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-      
-      if(hasIndependentPerm || hasOffshorePerm) {
-        return next();
-      } 
-      return res.status(HttpStatus.FORBIDDEN).json({
-        message: 'user is missing role'
-      });
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-    }
-  }
-}
-
-function hasPermissionToAddOrUpdateSchool() {
-  return function(req, res, next) {
-    try {
-      const jwtToken = getBackendToken(req);
-      if (!jwtToken) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'Unauthorized user'
-        });
-      }
-      let userToken;
-      try {
-        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      } catch (e) {
-        log.debug('error is from verify', e);
-        return res.status(HttpStatus.UNAUTHORIZED).json();
-      }
-
-      let school = req.body;
-      let independentArr = ['INDEPEND', 'INDP_FNS'];
-      let offshoreArr = ['OFFSHORE']
-
-      let hasIndependentPerm = independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
-      let hasOffshorePerm = offshoreArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
-      let hasEditSchoolPerm = ![...independentArr, ...offshoreArr].includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_SCHOOL_PERMISSION)
-
-      if(hasIndependentPerm || hasOffshorePerm || hasEditSchoolPerm) {
-        return next();
-      } 
-      return res.status(HttpStatus.FORBIDDEN).json({
-        message: 'user is missing role'
-      });
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-    }
-  }
-}
-
-function hasPermissionToAddOrUpdateFundingData() {
-  return function(req, res, next) {
-    try {
-      const jwtToken = getBackendToken(req);
-      if (!jwtToken) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'Unauthorized user'
-        });
-      }
-      let userToken;
-      try {
-        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      } catch (e) {
-        log.debug('error is from verify', e);
-        return res.status(HttpStatus.UNAUTHORIZED).json();
-      }
-
-      let school = req.body;
-      let independentArr = ['INDEPEND', 'INDP_FNS'];
-
-      if(independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) {
-        return next();
-      }
-      return res.status(HttpStatus.FORBIDDEN).json({
-        message: 'user is missing role'
-      });
-    } catch (e) {
-      log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-    }
-  }
-}
-
-function isAuthorized(req) {
-  try {
-    const thisSession = req['session'];
-    if (thisSession['passport']?.user?.jwt) {
-      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-      const allowedPermissions = Object.values(perm.PERMISSION);
-      if (userToken?.realm_access?.roles.some(role => allowedPermissions.includes(role))) {
-        return true;
-      }
-    }
-    return false;
-  } catch (e) {
-    log.error(e);
-    return false;
   }
 }
 
@@ -713,11 +561,6 @@ const utils = {
   forwardGet,
   isPdf,
   isImage,
-  checkUserHasPermission,
-  hasPermissionToAddOrUpdateAuthority,
-  hasPermissionToAddOrUpdateSchool,
-  hasPermissionToAddOrUpdateFundingData,
-  isAuthorized
 };
 
 module.exports = utils;
