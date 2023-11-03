@@ -259,7 +259,6 @@
             institute-type-label="School"
             :school-name="getSchoolNameForUserInvite()"
             @access-user:messageSent="closeNewUserModal"
-            @access-user:updateRoles="updateUserRoles"
             @access-user:cancelMessage="closeNewUserModal"
           />
         </v-card-text>
@@ -439,10 +438,6 @@ export default {
     },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);
-    },
-    updateUserRoles(newValue){
-      const eStore = edxStore();
-      eStore.setSchoolRoles(newValue);
     },
     closeNewUserModal(){
       const eStore = edxStore();
