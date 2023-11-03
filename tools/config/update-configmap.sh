@@ -186,13 +186,6 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"EDIT_DISTRICT_PERMISSION\",\"description\" : \"Permission to edit district\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating EDIT_AUTHORITY_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EDIT_AUTHORITY_PERMISSION\",\"description\" : \"Permission to edit authority\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
 echo Creating EDIT_INDEPENDENT_SCHOOL_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -259,12 +252,6 @@ editSchoolPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOA
 echo
 echo Retrieving EDIT_DISTRICT_PERMISSION permission
 editDistrictPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_DISTRICT_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
-echo
-echo Retrieving EDIT_AUTHORITY_PERMISSION permission
-editAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_AUTHORITY_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
@@ -360,7 +347,7 @@ echo Assigning permissions to INDEPENDENT_AUTHORITY_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/INDEPENDENT_AUTHORITY_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editAuthorityPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editIndependentAuthorityPermissionJson, $editOffshoreAuthorityPermissionJson]"
 
 echo
 echo Creating INDEPENDENT_SCHOOLS_ADMIN role

@@ -121,19 +121,19 @@
                     <Details 
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority || canEditAuthority"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
                     <AuthorityContacts 
                       :authority-i-d="authorityID"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority || canEditAuthority"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
                       :notes="notes ? notes : []"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority || canEditAuthority"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                       :loading="notesLoading"
                       @add-institute-note="saveNewAuthorityNote"
                       @edit-institute-note="saveChangesToAuthorityNote"
@@ -228,9 +228,6 @@ export default {
     },
     canOnlyEditOffshoreAuthority() {
       return this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    },
-    canEditAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_AUTHORITY_PERMISSION);
     }
   },
   created() {

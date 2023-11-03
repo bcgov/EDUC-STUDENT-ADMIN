@@ -23,7 +23,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canAddAuthority || canOnlyAddOffshoreAuthority || canOnlyAddIndependentAuthority"
+            v-if="canOnlyAddOffshoreAuthority || canOnlyAddIndependentAuthority"
             id="addAuthorityBtn"
             icon-left
             width="12em"
@@ -316,9 +316,6 @@ export default {
     },
     canOnlyAddOffshoreAuthority() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    },
-    canAddAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_AUTHORITY_PERMISSION);
     }
   },
   watch: {

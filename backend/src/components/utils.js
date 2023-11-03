@@ -210,6 +210,39 @@ function checkUserHasPermission(permission) {
   }
 }
 
+function hasPermissionToAddOrUpdateAuthority() {
+  return function(req, res, next) {
+    try {
+      const jwtToken = getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'Unauthorized user'
+        });
+      }
+      let userToken;
+      try {
+        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      } catch (e) {
+        log.debug('error is from verify', e);
+        return res.status(HttpStatus.UNAUTHORIZED).json();
+      }
+
+      let authority = req.body;
+      if(authority?.authorityTypeCode === 'INDEPENDNT' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION)) {
+        return next();
+      } else if(authority?.authorityTypeCode === 'OFFSHORE' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION)) {
+        return next();
+      }
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'user is missing role'
+      });
+    } catch (e) {
+      log.error(e);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
+  }
+}
+
 function isAuthorized(req) {
   try {
     const thisSession = req['session'];
@@ -609,6 +642,7 @@ const utils = {
   isPdf,
   isImage,
   checkUserHasPermission,
+  hasPermissionToAddOrUpdateAuthority,
   isAuthorized
 };
 
