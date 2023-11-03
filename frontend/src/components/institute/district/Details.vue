@@ -690,7 +690,6 @@ import { mapState, mapActions } from 'pinia';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import { isNumber } from '@/utils/institute/formInput';
-import { authStore } from '@/store/modules/auth';
 import { instituteStore } from '@/store/modules/institute';
 import { edxStore } from '@/store/modules/edx';
 

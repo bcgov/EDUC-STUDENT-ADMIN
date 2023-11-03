@@ -862,7 +862,6 @@ import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
 import { isEmpty, omitBy } from 'lodash';
-import { authStore } from '@/store/modules/auth';
 import { instituteStore } from '@/store/modules/institute';
 
 export default {
