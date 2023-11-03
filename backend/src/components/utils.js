@@ -228,11 +228,12 @@ function hasPermissionToAddOrUpdateAuthority() {
       }
 
       let authority = req.body;
-      if(authority?.authorityTypeCode === 'INDEPENDNT' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION)) {
+      let hasIndependentPerm = authority?.authorityTypeCode === 'INDEPENDNT' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION);
+      let hasOffshorePerm = authority?.authorityTypeCode === 'OFFSHORE' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
+      
+      if(hasIndependentPerm || hasOffshorePerm) {
         return next();
-      } else if(authority?.authorityTypeCode === 'OFFSHORE' && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION)) {
-        return next();
-      }
+      } 
       return res.status(HttpStatus.FORBIDDEN).json({
         message: 'user is missing role'
       });
@@ -264,13 +265,13 @@ function hasPermissionToAddOrUpdateSchool() {
       let independentArr = ['INDEPEND', 'INDP_FNS'];
       let offshoreArr = ['OFFSHORE']
 
-      if(independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) {
+      let hasIndependentPerm = independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
+      let hasOffshorePerm = offshoreArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
+      let hasEditSchoolPerm = ![...independentArr, ...offshoreArr].includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_SCHOOL_PERMISSION)
+
+      if(hasIndependentPerm || hasOffshorePerm || hasEditSchoolPerm) {
         return next();
-      } else if(offshoreArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION)) {
-        return next();
-      } else if(![...independentArr, ...offshoreArr].includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_SCHOOL_PERMISSION)) {
-        return next();
-      }
+      } 
       return res.status(HttpStatus.FORBIDDEN).json({
         message: 'user is missing role'
       });
