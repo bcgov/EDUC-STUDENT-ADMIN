@@ -627,7 +627,7 @@ export default {
       return this.activeCountryCodes ? this.activeCountryCodes : [];
     },
     canOnlyEditIndependentSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
     },
   },
   created() {

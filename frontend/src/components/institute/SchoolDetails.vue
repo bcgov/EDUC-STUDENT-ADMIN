@@ -268,7 +268,7 @@ export default {
       return this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
     },
     canEditSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+      return ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     }
   },
   watch: {},
