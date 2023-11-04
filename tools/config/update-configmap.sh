@@ -123,18 +123,25 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"STUDENT_ANALYTICS_BATCH\",\"description\" : \"Allows access to Pen Request Batch Analytics\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating SECURE_EXCHANGE role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"SECURE_EXCHANGE\",\"description\" : \"Allows access to Pen Secure Exchange Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
 echo Creating PEN_TEAM_ROLE role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"PEN_TEAM_ROLE\",\"description\" : \"PEN team role for Secure Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION\",\"description\" : \"Permission to view exchange stat dashboard\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating MANAGE_EXCHANGE_INBOX_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"MANAGE_EXCHANGE_INBOX_PERMISSION\",\"description\" : \"Permission to manage exchange inbox\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
 echo Creating MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
@@ -278,6 +285,32 @@ echo Retrieving EDIT_OFFSHORE_AUTHORITY_PERMISSION permission
 editOffshoreAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_OFFSHORE_AUTHORITY_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION permission
+viewExchangeStatPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving MANAGE_EXCHANGE_INBOX_PERMISSION permission
+manageExchangeInboxPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EXCHANGE_INBOX_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Creating SECURE_EXCHANGE role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"SECURE_EXCHANGE\",\"description\" : \"Allows access to Pen Secure Exchange Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to SECURE_EXCHANGE role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SECURE_EXCHANGE/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewExchangeStatPermissionJson, $manageExchangeInboxPermissionJson]"
 
 echo
 echo Creating EDX_ADMIN role
