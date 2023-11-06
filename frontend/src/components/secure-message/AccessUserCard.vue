@@ -2,7 +2,7 @@
   <v-row style="height: 100%; margin-bottom: 1.5em">
     <v-col>
       <v-card
-        style="min-height:17.5em"
+        style="min-height:21.7em"
         class="d-flex flex-column"
       >
         <v-card-title class="pb-0">

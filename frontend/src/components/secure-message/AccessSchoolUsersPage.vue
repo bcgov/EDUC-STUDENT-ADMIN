@@ -188,13 +188,13 @@
       >
         <v-row style="height: 100%;">
           <v-col style="min-height: 150px">
-            <v-card class="add-new-user" style="min-height: 17.5em">
+            <v-card class="add-new-user d-flex align-center flex-column" style="min-height: 21.7em">
               <v-row
                 class="add-new-user"
                 align="center"
                 justify="center"
               >
-                <v-col class="d-flex justify-center">
+                <v-col class="justify-center">
                   <PrimaryButton
                     id="new-user-button"
                     icon="mdi-plus"
@@ -207,7 +207,7 @@
                   />
                 </v-col>
               </v-row>
-              <v-row v-if="!primaryEdxActivationCode">
+              <v-row v-if="!primaryEdxActivationCode" class="align-end h-0 mt-n16">
                 <v-col class="mx-3 mb-3">
                   <v-alert
                     density="compact"
@@ -477,6 +477,15 @@ export default {
   margin-right: 0;
   border-radius: 5px;
   background-color: #F2F2F2;
+}
+
+.primary_color {
+  background-color: #4caf50;
+  color: white;
+}
+.secondary_color {
+  background-color: #424242;
+  color: white;
 }
 
 .add-new-user {
