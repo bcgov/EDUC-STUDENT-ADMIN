@@ -20,7 +20,7 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GMP & UMP & P
 
 const isValidUITokenWithSearchRoles = auth.isValidUiTokenWithRoles('StudentSearch & PenRequestBatchAnalytics', [...roles.User.StudentSearch, ...roles.User.PenRequestBatchAnalytics]);
 
-const isValidUiTokenWithSimpleSearchRoles = auth.isValidUiTokenWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.Exchange]);
+const isValidUiTokenWithSimpleSearchRoles = auth.isValidUiTokenWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration]);
 
 router.get('/allStudents', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getAllStudentByStudentIds);
 router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:genderCodesURL', 'studentGenderCodes'));

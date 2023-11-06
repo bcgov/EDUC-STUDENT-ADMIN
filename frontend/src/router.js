@@ -329,8 +329,7 @@ const router = createRouter({
           path: 'exchange',
           component: RouterView,
           meta: {
-            requiresAuth: true,
-            role: 'EXCHANGE_ROLE'
+            requiresAuth: true
           },
           children: [
             {
@@ -343,7 +342,7 @@ const router = createRouter({
               meta: {
                 pageTitle: PAGE_TITLES.EXCHANGE,
                 requiresAuth: true,
-                role: 'PEN_TEAM_ROLE'
+                permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
               }
             }
           ]
@@ -406,7 +405,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
             requiresAuth: true,
-            role: 'EXCHANGE_ROLE'
+            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
           }
         },
         {
@@ -416,7 +415,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.NEW_EXCHANGE,
             requiresAuth: true,
-            role: 'EXCHANGE_ROLE'
+            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
           }
         }
       ]

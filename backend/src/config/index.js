@@ -119,9 +119,6 @@ nconf.defaults({
       moveSchoolSagaURL: process.env.EDX_API_URL + '/exchange/move-school-saga',
       createSchoolSagaURL: process.env.EDX_API_URL + '/exchange/create-school-saga',
       roleAdmin: process.env.EDX_ADMIN,
-      teamRoles: {
-        pen: process.env.EDX_PEN_TEAM_ROLES ? process.env.EDX_PEN_TEAM_ROLES.split(',') : '', // comma separated list
-      },
     },
     institute: {
       rootURL: process.env.INSTITUTE_API_URL,

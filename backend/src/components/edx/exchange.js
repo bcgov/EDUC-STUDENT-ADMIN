@@ -343,11 +343,6 @@ async function createExchange(req, res) {
 
 async function markAs(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
   try {
     const currentExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
     currentExchange.isReadByMinistry = !currentExchange.isReadByMinistry;
@@ -365,13 +360,7 @@ async function markAs(req, res) {
 
 async function markExchangeStatusAs(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
-  if (!['open', 'closed'].includes(req.params.status)) {
+   if (!['open', 'closed'].includes(req.params.status)) {
     return res.status(HttpStatus.BAD_REQUEST).json({
       message: `Trying to mark exchange with an invalid status ${req.params.status}`
     });
@@ -804,11 +793,6 @@ const uploadDocumentToExchange = async (req, res) => {
 async function removeDocumentFromExchange(req, res){
   try {
     const token = utils.getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
     const result = await utils.deleteData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/documents/${req.params.documentID}`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -925,19 +909,6 @@ async function createSecureExchangeStudent(req, res) {
   try {
     const accessToken = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    if(!req.session.roles.includes('SECURE_EXCHANGE')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
     const attachedSecureExchangeStudents = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`);
     if (attachedSecureExchangeStudents && attachedSecureExchangeStudents?.some((student) => student.studentId === req.body.studentID)) {
       return errorResponse(res, 'Error adding student to an existing secure exchange. Student already attached.', HttpStatus.CONFLICT);
@@ -959,19 +930,6 @@ async function createSecureExchangeStudent(req, res) {
 async function removeSecureExchangeStudent(req, res){
   try {
     const accessToken = getBackendToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    if(!req.session.roles.includes('SECURE_EXCHANGE')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
     const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/students/${req.params.studentID}`);
     return res.status(HttpStatus.OK).json(result);
 
@@ -985,13 +943,6 @@ async function createSecureExchangeNote(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
-
-    if(!req.session.roles.includes('SECURE_EXCHANGE')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
 
     const payload = {
       secureExchangeID: req.params.secureExchangeID,
@@ -1012,19 +963,6 @@ async function removeSecureExchangeNote(req, res) {
   try {
     const accessToken = getBackendToken(req);
     const userInfo = utils.getUser(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    if(!req.session.roles.includes('SECURE_EXCHANGE')){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
     let secureExchange = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}`);
     if (!secureExchange) {
       return res.status(HttpStatus.NOT_FOUND).json();

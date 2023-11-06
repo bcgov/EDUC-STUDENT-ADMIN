@@ -20,10 +20,6 @@ const roles = {
     GUMPAnalytics: config.get('server:studentRequest:roleAnalytics'),
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
     PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics'),
-    //Help functions created in auth module: isValidExchangeUserToken, isValidExchangeUser
-    Exchange: ['SECURE_EXCHANGE'],
-    //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
-    PenTeamRole: config.get('server:edx:teamRoles:pen'),
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
