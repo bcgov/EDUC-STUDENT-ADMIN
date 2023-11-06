@@ -219,7 +219,7 @@ export default {
           title: PAGE_TITLES.PEN_COORDINATORS,
           link: 'studentRegistrationContacts',
           newTab: true,
-          authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_REGISTRATION_CONTACTS_PERMISSION)
         },
         {
           title: PAGE_TITLES.EXCHANGE,

@@ -22,9 +22,9 @@ router.get('/district/:districtId', passport.authenticate('jwt', {session: false
 
 router.put('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, updateDistrict);
 
-router.get('/studentRegistrationContacts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getStudentRegistrationContacts);
+router.get('/studentRegistrationContacts', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_REGISTRATION_CONTACTS_PERMISSION), extendSession, getStudentRegistrationContacts);
 
-router.get('/studentRegistrationContact/:mincode', passport.authenticate('jwt', {session: false}, undefined), extendSession, getStudentRegistrationContactByMincode);
+router.get('/studentRegistrationContact/:mincode', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_REGISTRATION_CONTACTS_PERMISSION), extendSession, getStudentRegistrationContactByMincode);
 
 router.put('/district/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_DISTRICT_PERMISSION), extendSession, updateDistrictContact);
 
