@@ -171,7 +171,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['config']),
-    ...mapState(authStore, ['userInfo','isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
+    ...mapState(authStore, ['userInfo','isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
     items() {
       return [
         {
@@ -223,12 +223,12 @@ export default {
         },
         {
           title: PAGE_TITLES.EXCHANGE,
-          authorized: this.EXCHANGE_ROLE,
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION),
           items: [
             {
               title: 'PEN Team Inbox',
               link: 'exchange_inbox_PEN_TEAM_ROLE',
-              authorized: this.PEN_TEAM_ROLE
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)
             }
           ]
         },

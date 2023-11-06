@@ -25,8 +25,6 @@ export const authStore = defineStore('auth', {
     isValidNominalRollUser: localStorage.getItem('isValidNominalRollUser') !== null,
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
-    isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
-    isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
     isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
   }),
   getters: {
@@ -56,8 +54,6 @@ export const authStore = defineStore('auth', {
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
-    EXCHANGE_ROLE: state => state.isValidExchangeUser,
-    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser
    },
   actions: {
     //sets Json web token and determines whether user is authenticated
@@ -214,24 +210,6 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem(('isValidPenRequestBatchAnalyticsUser'));
       }
     },
-    async setExchangeUser(isValidExchangeUser) {
-      if (isValidExchangeUser) {
-        this.isValidExchangeUser = true;
-        localStorage.setItem('isValidExchangeUser', 'true');
-      } else {
-        this.isValidExchangeUser = false;
-        localStorage.removeItem(('isValidExchangeUser'));
-      }
-    },
-    async setIsValidPenTeamRoleUser(isValidPenTeamRoleUser) {
-      if (isValidPenTeamRoleUser) {
-        this.isValidPenTeamRoleUser = true;
-        localStorage.setItem('isValidPenTeamRoleUser', 'true');
-      } else {
-        this.isValidPenTeamRoleUser = false;
-        localStorage.removeItem('isValidPenTeamRoleUser');
-      }
-    },
     async setAuthorizedWebsocketUser(isAuthorizedWebsocketUser){
       if (isAuthorizedWebsocketUser) {
         this.isAuthorizedWebsocketUser = true;
@@ -303,8 +281,6 @@ export const authStore = defineStore('auth', {
       await this.setValidNominalRollAdmin(response.isValidNominalRollAdmin);
       await this.setGUMPAnalytics(response.isValidGUMPAnalyticsUser);
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
-      await this.setExchangeUser(response.isValidExchangeUser);
-      await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
 
       ApiService.setAuthHeader(response.jwtFrontend);

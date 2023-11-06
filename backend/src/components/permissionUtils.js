@@ -230,6 +230,66 @@ function checkUserHasPermission(permission) {
       }
     }
   }
+
+  function hasPermissionToGetStudentByPEN(isValidUiTokenWithSimpleSearchRoles) {
+    return function(req, res, next) {
+      try {
+        const jwtToken = getBackendToken(req);
+        if (!jwtToken) {
+          return res.status(HttpStatus.UNAUTHORIZED).json({
+            message: 'Unauthorized user'
+          });
+        }
+        let userToken;
+        try {
+          userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+        } catch (e) {
+          log.debug('error is from verify', e);
+          return res.status(HttpStatus.UNAUTHORIZED).json();
+        }
+    
+        if(isValidUiTokenWithSimpleSearchRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)) {
+          return next();
+        }
+        return res.status(HttpStatus.FORBIDDEN).json({
+          message: 'User is missing role'
+        });
+      } catch (e) {
+        log.error(e);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+      }
+    }
+  }
+
+  function hasPermissionToGetMacros(hasMacroRoles) {
+    return function(req, res, next) {
+      try {
+        const jwtToken = getBackendToken(req);
+        if (!jwtToken) {
+          return res.status(HttpStatus.UNAUTHORIZED).json({
+            message: 'Unauthorized user'
+          });
+        }
+        let userToken;
+        try {
+          userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+        } catch (e) {
+          log.debug('error is from verify', e);
+          return res.status(HttpStatus.UNAUTHORIZED).json();
+        }
+    
+        if(hasMacroRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)) {
+          return next();
+        }
+        return res.status(HttpStatus.FORBIDDEN).json({
+          message: 'User is missing role'
+        });
+      } catch (e) {
+        log.error(e);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+      }
+    }
+  }
   
   function isAuthorized(req) {
     try {
@@ -256,6 +316,8 @@ function checkUserHasPermission(permission) {
     hasPermissionToAddOrUpdateSchool,
     hasPermissionToAddOrUpdateFundingData,
     hasPermissionToAddAuthority,
+    hasPermissionToGetStudentByPEN,
+    hasPermissionToGetMacros,
     isAuthorized
   }
 
