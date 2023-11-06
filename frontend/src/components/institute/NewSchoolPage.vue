@@ -505,7 +505,7 @@
                   :rules="[userFieldRules().email, requiredForOffshoreOrIndependentSchool]"
                   variant="underlined"
                   :maxlength="255"
-                  label="Email Address"
+                  label="Email"
                   hide-details="auto"
                   @update:model-value="validateForm"
                 />
