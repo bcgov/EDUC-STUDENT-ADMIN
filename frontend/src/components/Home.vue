@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row
-      v-if="hasNoRole"
+      v-if="hasNoRole && !hasPermissiontoViewExchangeDashboard"
     >
       <v-col
         class="pt-6"
@@ -252,8 +252,9 @@
           </v-row>
         </v-card>
       </v-col>
+
       <v-col
-        v-if="EXCHANGE_ROLE && hasAuthorizedExchangeData"
+        v-if="hasPermissiontoViewExchangeDashboard && hasAuthorizedExchangeData"
         cols="8"
       >
         <DashboardTable
@@ -300,6 +301,7 @@ import {isPresentDateAndAfter1900, isValidMincode, isValidPEN} from '@/utils/val
 import alertMixin from '@/mixins/alertMixin';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'Home',
@@ -341,13 +343,11 @@ export default {
       'HAS_STATS_ROLE',
       'STUDENT_ANALYTICS_STUDENT_PROFILE',
       'STUDENT_ANALYTICS_BATCH',
-      'EXCHANGE_ROLE',
-      'PEN_TEAM_ROLE'
+      'userInfo',
     ]),
     hasNoRole() {
       const roles = [
         this.HAS_STATS_ROLE,
-        this.EXCHANGE_ROLE,
         this.ADVANCED_SEARCH_ROLE,
         this.VIEW_GMP_REQUESTS_ROLE,
         this.VIEW_UMP_REQUESTS_ROLE,
@@ -374,6 +374,9 @@ export default {
     },
     hasAuthorizedExchangeData() {
       return this.authorizedExchangeData.length > 0;
+    },
+    hasPermissiontoViewExchangeDashboard() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION);
     }
   },
   async beforeMount() {
@@ -443,21 +446,26 @@ export default {
     }).finally(() => {
       this.isLoadingGmpUmp = false;
     });
-    if (this.EXCHANGE_ROLE) {
-      ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/PEN_TEAM_ROLE`).then(response => {
-        this.exchangeData.push({
-          title: 'PEN Team Inbox',
-          button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
-          authorized: this.PEN_TEAM_ROLE,
-          unreadMessages: {data: response.data.unreadMessages, name: 'unread messages'},
-          openMessages: {data: response.data.openMessages, name: 'open messages'},
+
+    authStore().getUserInfo().finally(() => {
+      if (this.hasPermissiontoViewExchangeDashboard) {
+        ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/PEN_TEAM_ROLE`).then(response => {
+          this.exchangeData.push({
+            title: 'PEN Team Inbox',
+            button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
+            authorized: this.hasPermissiontoViewExchangeDashboard,
+            unreadMessages: {data: response.data.unreadMessages, name: 'unread messages'},
+            openMessages: {data: response.data.openMessages, name: 'open messages'},
+          });
+        }).finally(() => {
+          this.isLoadingExchange = false;
         });
-      }).finally(() => {
-        this.isLoadingExchange = false;
-      });
-    }
+      }
+    })
+    
   },
   methods: {
+    hasRequiredPermission,
     quickSearch() {
       ApiService.apiAxios
         .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.pen}})
