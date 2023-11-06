@@ -196,9 +196,4 @@ export default {
   .viewer-open {
     padding-right: 0 !important;
   }
-
-  /* Increase specificity of Vue Datepicker's style in order to overcome Vuetify re-setting the button color */
-  .dp__action_row .dp__action_buttons .dp__action_select {
-    color: var(--dp-primary-text-color);
-  }
 </style>
