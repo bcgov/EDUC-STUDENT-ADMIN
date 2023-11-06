@@ -6,11 +6,12 @@ const utils = require('../components/utils');
 const { addSagaStatus, updateMacroByMacroId, createMacro } = require('../components/macro');
 const extendSession = utils.extendSession();
 const roles = require('../components/roles');
+const permUtils = require('../components/permissionUtils');
 
 const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & GMP & PenRequestBatch & StudentSearch & StaffAdministration', [...roles.User.UMP, ...roles.User.GMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration]);
 
 
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), hasMacroRoles, utils.forwardGet('getMacros', 'server:macro:penMacroURL', null, addSagaStatus));
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToGetMacros(hasMacroRoles), utils.forwardGet('getMacros', 'server:macro:penMacroURL', null, addSagaStatus));
 
 router.post('/:macroId/updateMacro', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, updateMacroByMacroId);
 

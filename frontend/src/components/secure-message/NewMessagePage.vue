@@ -322,7 +322,7 @@ export default {
     ...mapState(edxStore, ['messageMacros', 'ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments', 'secureExchangeStudents', 'validDistrictIDsForMessaging', 'fileRequirements']),
     ...mapState(appStore, ['schoolMap', 'districtMap']),
     myTeam() {
-      return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
+      return this.ministryTeams.find(team => role => team.groupRoleIdentifier === 'PEN_TEAM_ROLE') || {};
     },
   },
   created() {
