@@ -3,26 +3,29 @@
     fluid
     class="px-0 mb-4"
   >
-    <v-toolbar
-      flat
-      density="compact"
-    >
-      <v-toolbar-title><strong>{{ title }}</strong></v-toolbar-title>
-      <v-spacer />
-      <PrimaryButton
-        id="add-macro"
-        text="Add Macro"
-        short
-        :disabled="!selected || loading || processing"
-        @click-action="clickAddBtn"
-      />
-    </v-toolbar>
-    <v-divider />
-    <v-progress-linear
-      indeterminate
-      color="blue"
-      :active="loading || processing"
-    />
+    <v-row>
+      <v-col>
+        <v-toolbar
+          flat
+          density="compact"
+        >
+          <v-toolbar-title><strong>{{ title }}</strong></v-toolbar-title>
+          <v-spacer />
+          <PrimaryButton
+            id="add-macro"
+            text="Add Macro"
+            short
+            :disabled="!selected || loading || processing"
+            @click-action="clickAddBtn"
+          />
+        </v-toolbar>
+        <v-progress-linear
+          indeterminate
+          color="blue"
+          :active="loading || processing"
+        />
+      </v-col>
+    </v-row>
     <v-row>
       <v-col>
         <v-list lines="one">
