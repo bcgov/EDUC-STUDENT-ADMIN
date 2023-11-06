@@ -10,12 +10,12 @@
         style="background-color:white;"
       >
         <v-col
-          cols="7"
+          cols="8"
           class="pa-0"
         >
           <v-sheet
             class="mx-0 px-2 pb-1 pt-3 d-flex align-end align-self-start"
-            color="rgba(0, 0, 0, 0.06)"
+            color="grey-lighten-3"
             outlined
             rounded
           >
@@ -251,7 +251,7 @@
         </v-col>
 
         <v-col
-          cols="5"
+          cols="4"
           class="pa-0 d-flex justify-end align-end"
         >
           <v-menu offset-y>

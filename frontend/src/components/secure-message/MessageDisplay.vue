@@ -135,8 +135,9 @@
                   <v-icon v-else>
                     mdi-email-open-outline
                   </v-icon>
-                  <span class="ml-1 markAsSpan">{{ `Mark as ${secureExchange.isReadByMinistry ? 'unread' : 'read'}`
-                    }}</span>
+                  <span class="ml-1 markAsSpan">
+                    {{ `Mark as ${secureExchange.isReadByMinistry ? 'unread' : 'read'}` }}
+                  </span>
                 </v-btn>
                 <v-btn
                   id="claimAsButton"
@@ -166,7 +167,7 @@
               class="mt-2"
             >
               <v-col>
-                <v-divider class="divider"/>
+                <v-divider class="divider" />
               </v-col>
             </v-row>
             <v-row>
@@ -277,7 +278,7 @@
                         @select="insertMacroMessage"
                       />
                     </v-col>
-                    <v-spacer/>
+                    <v-spacer />
                     <v-col class="d-flex justify-start mr-16 pr-12">
                       <PrimaryButton
                         id="cancelMessage"
@@ -390,23 +391,17 @@
                     :key="activity.secureExchangeCommentID"
                     :left="activity.isSchool"
                     icon-color="#003366"
+                    class="timeline-item"
                     color="white"
                     dot-color="white"
                     fill-dot
                     elevation="1"
                     :icon="getActivityIcon(activity)"
                     size="large"
-                    width="100%"
                   >
                     <v-card v-if="activity.type === 'message'">
                       <v-card-title class="pb-0">
-                        <v-row no-gutters>
-                          <v-col class="d-flex justify-start">
-                            <span>
-                              {{ activity.title }}
-                            </span>
-                          </v-col>
-                        </v-row>
+                        {{ activity.title }}
                       </v-card-title>
                       <v-card-subtitle>
                         <span class="activityDisplayDate">
@@ -419,13 +414,7 @@
                     </v-card>
                     <v-card v-if="activity.type === 'student'">
                       <v-card-title class="pb-0">
-                        <v-row no-gutters>
-                          <v-col class="d-flex justify-start">
-                            <span>
-                              {{ activity.title }}
-                            </span>
-                          </v-col>
-                        </v-row>
+                        {{ activity.title }}
                       </v-card-title>
                       <v-card-subtitle class="pb-2">
                         <span class="activityDisplayDate">
@@ -580,7 +569,7 @@
                           v-show="isOpenStudentIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider/>
+                          <v-divider />
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
@@ -616,13 +605,7 @@
                     </v-card>
                     <v-card v-if="activity.type === 'document'">
                       <v-card-title class="pb-0">
-                        <v-row no-gutters>
-                          <v-col class="d-flex justify-start">
-                            <span>
-                              {{ activity.title }}
-                            </span>
-                          </v-col>
-                        </v-row>
+                        {{ activity.title }}
                       </v-card-title>
                       <v-card-subtitle>
                         <span class="activityDisplayDate">
@@ -643,8 +626,8 @@
                               v-else
                               :class="disabledAnchorDocumentName"
                               :to="{
-                              path: documentUrl(activity)
-                            }"
+                                path: documentUrl(activity)
+                              }"
                               target="_blank"
                             >
                               {{ activity.fileName }}
@@ -652,8 +635,8 @@
                           </v-col>
                         </v-row>
                         <v-row
-                          no-gutters
                           v-if="activity.documentType.label !== 'Other'"
+                          no-gutters
                         >
                           <v-col class="d-flex justify-start">
                             {{ activity.documentType.label }}
@@ -676,7 +659,7 @@
                           v-show="isOpenDocIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider/>
+                          <v-divider />
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
@@ -712,13 +695,7 @@
                     </v-card>
                     <v-card v-if="activity.type === 'note'">
                       <v-card-title class="pb-0">
-                        <v-row no-gutters>
-                          <v-col class="d-flex justify-start">
-                            <span>
-                              {{ activity.title }}
-                            </span>
-                          </v-col>
-                        </v-row>
+                        {{ activity.title }}
                       </v-card-title>
                       <v-card-subtitle>
                         <span class="activityDisplayDate">
@@ -744,7 +721,7 @@
                           v-show="isOpenNoteIndex === index"
                           class="greyBackground"
                         >
-                          <v-divider/>
+                          <v-divider />
                           <v-card-text style="background-color: #e7ebf0;">
                             <v-row no-gutters>
                               <v-col class="d-flex justify-start">
@@ -1385,6 +1362,10 @@ export default {
     border-color: #FCBA19;
     border-width: 2px;
     opacity: unset;
+}
+
+.timeline-item .v-card-title {
+  white-space: unset;
 }
 
 .v-timeline--vertical.v-timeline--justify-auto {

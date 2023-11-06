@@ -85,4 +85,8 @@ export default defineComponent({
   width: 100%;
   box-sizing: border-box;
 }
+
+.dp__action_row .dp__action_buttons .dp__action_select {
+  color: var(--dp-primary-text-color);
+}
 </style>

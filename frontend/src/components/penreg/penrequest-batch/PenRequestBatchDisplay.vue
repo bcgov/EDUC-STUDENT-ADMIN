@@ -27,7 +27,7 @@
         <v-form v-model="isValidSearchForm">
           <v-sheet
             class="mx-4 px-2 py-0 mb-2 pt-3 d-flex flex-row flex-grow-1 align-center align-self-start"
-            color="rgba(0, 0, 0, 0.06)"
+            color="grey-lighten-3"
             outlined
             rounded
           >
