@@ -9,16 +9,25 @@
     >
       <div class="full-width">
         <v-row class="pt-0">
-          <v-col cols="12 pt-0">
-            <v-progress-linear
-              absolute
-              top
+          <v-col
+            v-if="loading"
+            class="d-flex justify-center"
+          >
+            <v-progress-circular
+              class="mt-16"
+              :size="70"
+              :width="7"
+              color="primary"
               indeterminate
-              color="blue"
               :active="loading"
             />
+          </v-col>
+          <v-col
+            v-else
+            cols="12 pt-0"
+          >
             <div
-              v-if="!loading && prbStudent"
+              v-if="prbStudent"
               style="width: 100%;"
               :overlay="false"
             >
