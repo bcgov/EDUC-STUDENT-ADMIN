@@ -268,7 +268,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_COORDINATORS,
         requiresAuth: true,
-        role: 'VIEW_PEN_COORDINATOR_INFO_ROLE'
+        permission: PERMISSION.VIEW_REGISTRATION_CONTACTS_PERMISSION
       },
     },
     {
