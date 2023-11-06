@@ -9,14 +9,14 @@ const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
 const {v4: uuidv4} = require('uuid');
-const utils = require('../components/utils');
+const permUtils = require('../components/permissionUtils');
 const {
   body,
   validationResult
 } = require('express-validator');
 
-const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange & Institute', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange, ...roles.User.Institute]);
-const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & Exchange & Institute', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.Exchange, ...roles.User.Institute]);
+const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange]);
+const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.Exchange]);
 
 const router = express.Router();
 
@@ -78,7 +78,7 @@ async function generateTokens(req, res) {
     const isValidUsers = auth.isValidUsers(req);
     const isValidAdminUsers = auth.isValidAdminUsers(req);
     const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-    const checkUserPermissions = utils.isAuthorized(req);
+    const checkUserPermissions = permUtils.isAuthorized(req);
     const responseJson = {
       jwtFrontend: req.user.jwtFrontend,
       isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
@@ -116,7 +116,7 @@ router.post('/refresh', [
       const isValidUsers = auth.isValidUsers(req);
       const isValidAdminUsers = auth.isValidAdminUsers(req);
       const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-      const checkUserPermissions = utils.isAuthorized(req);
+      const checkUserPermissions = permUtils.isAuthorized(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
         isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
@@ -136,7 +136,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   const isValidUsers = auth.isValidUsers(req);
   const isValidAdminUsers = auth.isValidAdminUsers(req);
   const isAuthorizedWebsocketUser = isValidWebSocketUserWithRoles(req);
-  const checkUserPermissions = utils.isAuthorized(req);
+  const checkUserPermissions = permUtils.isAuthorized(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,

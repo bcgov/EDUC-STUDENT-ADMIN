@@ -27,7 +27,7 @@
           </v-col>
           <v-col class="d-flex justify-end">
             <PrimaryButton
-              v-if="canAddSchool()"
+              v-if="canOnlyAddIndependentSchools || canOnlyAddOffshoreSchools || canAddSchools"
               id="addSchoolBtn"
               icon-left
               width="11em"
@@ -498,7 +498,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['schoolsMap']),
     ...mapState(edxStore, ['schoolSearchParams']),
     ...mapState(notificationsStore, ['notification']),
@@ -513,6 +513,15 @@ export default {
     getSheetWidth() {
       return 30;
     },
+    canOnlyAddIndependentSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+    },
+    canOnlyAddOffshoreSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
+    },
+    canAddSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+    }
   },
   watch: {
     notification(notificationData) {
@@ -579,9 +588,6 @@ export default {
       this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
       this.schoolReportingRequirementCodeFilter = this.schoolSearchParams.schoolReportingRequirementCode;
       this.pageNumber = this.schoolSearchParams.pageNumber;
-    },
-    canAddSchool() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
     },
     isOpenNotClosingAuthority,
     setSchoolStatuses() {

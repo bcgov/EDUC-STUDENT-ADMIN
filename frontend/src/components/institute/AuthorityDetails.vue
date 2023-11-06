@@ -121,15 +121,19 @@
                     <Details 
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
-                    <AuthorityContacts :authority-i-d="authorityID" />
+                    <AuthorityContacts 
+                      :authority-i-d="authorityID"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
+                    />
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
                       :notes="notes ? notes : []"
-                      :has-access="canEditAuthorities()"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                       :loading="notesLoading"
                       @add-institute-note="saveNewAuthorityNote"
                       @edit-institute-note="saveChangesToAuthorityNote"
@@ -162,6 +166,7 @@ import {instituteStore} from '@/store/modules/institute';
 import Details from './authority/Details.vue';
 import AuthorityContacts from './authority/AuthoritiesContacts.vue';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'AuthorityDetailsPage',
@@ -205,7 +210,7 @@ export default {
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -217,6 +222,12 @@ export default {
         return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy.authorityTypeCode);
       }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
+    },
+    canOnlyEditIndependentAuthority() {
+      return this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
+    },
+    canOnlyEditOffshoreAuthority() {
+      return this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
     }
   },
   created() {
@@ -234,6 +245,7 @@ export default {
     this.getAuthorityNotes();
   },
   methods: {
+    hasRequiredPermission,
     formatPhoneNumber,
     formatDate,
     getStatusColorAuthorityOrSchool,
@@ -266,23 +278,12 @@ export default {
       router.push({name: 'instituteAuthoritiesList'});
     },
     deepCloneObject,
-    canEditAuthorities() {
-      if(this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
-      } else if(this.authority?.authorityTypeCode === 'OFFSHORE') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-      }
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
-    },
     setHasSamePhysicalFlag() {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
     async clickSameAsAddressButton() {
       await this.$nextTick();
       this.$refs.authorityForm.validate();
-    },
-    showEditLinks(fieldValue) {
-      return this.canEditAuthorities() && !fieldValue;
     },
     saveAuthority(authorityCopy) {
       this.loading = true;

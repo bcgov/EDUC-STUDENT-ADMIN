@@ -27,7 +27,7 @@
               class="d-flex justify-end"
             >
               <PrimaryButton
-                v-if="canEditAuthorities()"
+                v-if="hasAccess"
                 id="editButton"
                 icon-left
                 width="6em"
@@ -452,7 +452,7 @@
           </v-row>
           <div v-if="!editing">
             <v-row
-              v-if="canEditAuthorities() && !hasMailingAddress() && !editing"
+              v-if="hasAccess && !hasMailingAddress() && !editing"
               no-gutters
               class="d-flex justify-start"
             >
@@ -862,7 +862,6 @@ import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
 import { isEmpty, omitBy } from 'lodash';
-import { authStore } from '@/store/modules/auth';
 import { instituteStore } from '@/store/modules/institute';
 
 export default {
@@ -876,7 +875,11 @@ export default {
     authorityID: {
       type: String,
       required: true
-    }
+    },
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -904,7 +907,6 @@ export default {
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE','INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -1060,14 +1062,6 @@ export default {
         });
       }
     },
-    canEditAuthorities() {
-      if (this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE;
-      } else if (this.authority?.authorityTypeCode === 'OFFSHORE') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-      }
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
-    },
     setHasSamePhysicalFlag() {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
@@ -1076,7 +1070,7 @@ export default {
       this.$refs.authorityForm.validate();
     },
     showEditLinks(fieldValue) {
-      return this.canEditAuthorities() && !fieldValue;
+      return this.hasAccess && !fieldValue;
     },
     saveAuthority() {
       if (this.sameAsMailingCheckbox) {

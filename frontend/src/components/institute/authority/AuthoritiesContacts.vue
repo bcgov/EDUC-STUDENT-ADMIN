@@ -37,7 +37,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canEditAuthorityContact"
+            v-if="hasAccess && isNotClosedAndNeverOpened()"
             icon-left
             width="11em"
             icon="mdi-plus-thick"
@@ -76,7 +76,7 @@
           >
             <AuthorityContact
               :contact="contact"
-              :can-edit-authority-contact="canEditAuthorityContact"
+              :can-edit-authority-contact="hasAccess && isNotClosedAndNeverOpened()"
               @edit-authority-contact:show-edit-authority-contact-form="showContactEditForm(contact)"
               @remove-authority-contact:show-confirmation-prompt="removeContact"
             />
@@ -158,7 +158,11 @@ export default {
     authorityID: {
       type: String,
       required: true
-    }
+    },
+    hasAccess: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -171,18 +175,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE', 'INDEPENDENT_SCHOOLS_ADMIN_ROLE', 'OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated']),
     ...mapState(instituteStore, ['authorityContactTypeCodes', 'independentAuthorityAuthorityContacts', 'offshoreAuthorityContacts', 'regularAuthorityContactTypes']),
     loading() {
       return this.loadingCount !== 0;
-    },
-    canEditAuthorityContact() {
-      if(this.authority?.authorityTypeCode === 'INDEPENDNT') {
-        return (this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.INDEPENDENT_SCHOOLS_ADMIN_ROLE) && this.isNotClosedAndNeverOpened();
-      } else if(this.authority?.authorityTypeCode === 'OFFSHORE') {
-        return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE || this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-      }
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE && this.isNotClosedAndNeverOpened();
     },
   },
   watch: {

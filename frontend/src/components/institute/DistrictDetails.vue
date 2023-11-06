@@ -119,7 +119,6 @@
                 Contacts
               </v-tab>
               <v-tab
-                v-if="!isOffshoreUser()"
                 value="notes"
               >
                 Ministry Notes
@@ -216,7 +215,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo','OFFSHORE_SCHOOLS_ADMIN_ROLE']),
+    ...mapState(authStore, ['userInfo']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
     notesLoading() {
@@ -242,9 +241,6 @@ export default {
     hasRequiredPermission,
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     formatPhoneNumber,
-    isOffshoreUser() {
-      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-    },
     setTab(){
       if(this.$route.query?.contact){
         this.tab = 'contacts';

@@ -123,18 +123,25 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"STUDENT_ANALYTICS_BATCH\",\"description\" : \"Allows access to Pen Request Batch Analytics\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Creating SECURE_EXCHANGE role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"SECURE_EXCHANGE\",\"description\" : \"Allows access to Pen Secure Exchange Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
 echo Creating PEN_TEAM_ROLE role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"PEN_TEAM_ROLE\",\"description\" : \"PEN team role for Secure Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION\",\"description\" : \"Permission to view exchange stat dashboard\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating MANAGE_EXCHANGE_INBOX_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"MANAGE_EXCHANGE_INBOX_PERMISSION\",\"description\" : \"Permission to manage exchange inbox\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
 echo Creating MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
@@ -184,13 +191,6 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"EDIT_DISTRICT_PERMISSION\",\"description\" : \"Permission to edit district\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Creating EDIT_AUTHORITY_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EDIT_AUTHORITY_PERMISSION\",\"description\" : \"Permission to edit authority\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
 echo Creating EDIT_INDEPENDENT_SCHOOL_PERMISSION permission
@@ -263,12 +263,6 @@ editDistrictPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$S
   -H "Authorization: Bearer $TKN")
 
 echo
-echo Retrieving EDIT_AUTHORITY_PERMISSION permission
-editAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_AUTHORITY_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
-echo
 echo Retrieving EDIT_INDEPENDENT_SCHOOL_PERMISSION permission
 editIndependentSchoolPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_INDEPENDENT_SCHOOL_PERMISSION" \
   -H "Content-Type: application/json" \
@@ -291,6 +285,32 @@ echo Retrieving EDIT_OFFSHORE_AUTHORITY_PERMISSION permission
 editOffshoreAuthorityPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_OFFSHORE_AUTHORITY_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION permission
+viewExchangeStatPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving MANAGE_EXCHANGE_INBOX_PERMISSION permission
+manageExchangeInboxPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EXCHANGE_INBOX_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Creating SECURE_EXCHANGE role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"SECURE_EXCHANGE\",\"description\" : \"Allows access to Pen Secure Exchange Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to SECURE_EXCHANGE role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SECURE_EXCHANGE/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewExchangeStatPermissionJson, $manageExchangeInboxPermissionJson]"
 
 echo
 echo Creating EDX_ADMIN role
@@ -346,7 +366,7 @@ echo Assigning permissions to SCHOOL_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SCHOOL_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson, $editIndependentSchoolPermissionJson, $editOffshoreSchoolPermissionJson ]"
 
 echo
 echo Creating INDEPENDENT_AUTHORITY_ADMIN role
@@ -360,7 +380,7 @@ echo Assigning permissions to INDEPENDENT_AUTHORITY_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/INDEPENDENT_AUTHORITY_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editAuthorityPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editIndependentAuthorityPermissionJson, $editOffshoreAuthorityPermissionJson]"
 
 echo
 echo Creating INDEPENDENT_SCHOOLS_ADMIN role
@@ -500,7 +520,7 @@ BANNER_COLOR="$bannerColor"
 WEB_SOCKET_URL="wss://$SERVER_FRONTEND/api/socket"
 
 echo Creating config map $APP_NAME-backend-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-backend-config-map --from-literal=WEB_SOCKET_URL="$WEB_SOCKET_URL" --from-literal=BANNER_COLOR="$BANNER_COLOR" --from-literal=BANNER_ENVIRONMENT="$BANNER_ENVIRONMENT" --from-literal=TZ=$TZVALUE --from-literal=UI_PRIVATE_KEY="$UI_PRIVATE_KEY_VAL" --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$siteMinderLogoutUrl" --from-literal=UI_PUBLIC_KEY="$UI_PUBLIC_KEY_VAL" --from-literal=ID=$APP_NAME-soam --from-literal=SECRET=$studentAdminClientSecret --from-literal=SERVER_FRONTEND=https://$SERVER_FRONTEND --from-literal=ISSUER=STUDENT_ADMIN_APPLICATION --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" --from-literal=PEN_REQUEST_EMAIL_API_URL="http://student-profile-email-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/gmp" --from-literal=PEN_REQUEST_API_URL="http://pen-request-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-request" --from-literal=DISCOVERY=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/.well-known/openid-configuration --from-literal=KC_DOMAIN=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID --from-literal=PEN_DEMOGRAPHICS_URL="http://pen-demographics-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080" --from-literal=DIGITAL_ID_URL="http://digitalid-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/digital-id" --from-literal=STUDENT_API_URL="http://student-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student" --from-literal=LOG_LEVEL=info --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir --from-literal=REDIS_HOST=redis --from-literal=REDIS_PORT=6379 --from-literal=STUDENT_PROFILE_API_URL="http://student-profile-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-profile" --from-literal=SCHOOL_API_URL="http://school-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=STUDENT_PROFILE_EMAIL_API_URL="http://student-profile-email-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/ump" --from-literal=PROFILE_REQUEST_SAGA_API_URL="http://student-profile-saga-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-profile-saga" --from-literal=NATS_URL="$NATS_URL" --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=UMP_ROLES="STUDENT_PROFILE_ADMIN,STUDENT_PROFILE_READ_ONLY" --from-literal=GMP_ROLES="STUDENT_ADMIN,STUDENT_ADMIN_READ_ONLY" --from-literal=STUDENT_SEARCH_ADMIN="STUDENT_SEARCH_ADMIN" --from-literal=STUDENT_SEARCH_ROLES="STUDENT_SEARCH_ADMIN,STUDENT_SEARCH_READ_ONLY" --from-literal=STUDENT_ADMIN_ADMINISTRATOR="STUDENT_ADMIN_ADMINISTRATOR" --from-literal=UMP_ROLE_ADMIN="STUDENT_PROFILE_ADMIN" --from-literal=GMP_ROLE_ADMIN="STUDENT_ADMIN" --from-literal=PEN_REQUEST_BATCH_ADMIN="PEN_REQUEST_BATCH_ADMIN" --from-literal=EDX_ADMIN="EDX_ADMIN" --from-literal=PEN_REQUEST_BATCH_API_URL="http://pen-reg-batch-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=PEN_MATCH_API_URL="http://pen-match-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-match" --from-literal=SESSION_MAX_AGE=$sessionMaxAge --from-literal=TOKEN_EXPIRES_IN=$tokenExpiresIn --from-literal=SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS="0/30 * * * * *" --from-literal=MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS=10 --from-literal=PEN_SERVICES_API_URL="http://pen-services-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-services" --from-literal=PEN_TRAX_API_URL="http://pen-trax-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=SLD_API_URL="http://sld-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=QUEUE_GROUP_NAME="student-admin-node-queue-group" --from-literal=STAN_ENABLED="true" --from-literal=NODE_ENV="openshift" --from-literal=SCHEDULER_CRON_DOC_TYPE_MIGRATION="$SCHEDULER_CRON_DOC_TYPE_MIGRATION" --from-literal=ENABLE_PRR_STUDENT_DEMOGRAPHICS="$ENABLE_PRR_STUDENT_DEMOGRAPHICS" --from-literal=NOMINAL_ROLL="NOMINAL_ROLL_EDIT" --from-literal=MACRO_API_URL="http://macro-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/macro" --from-literal=NOMINAL_ROLL_API_URL="http://pen-nominal-roll-api-main.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/nominal-roll" --from-literal=STUDENT_ANALYTICS_STUDENT_PROFILE="STUDENT_ANALYTICS_STUDENT_PROFILE" --from-literal=STUDENT_ANALYTICS_BATCH="STUDENT_ANALYTICS_BATCH" --from-literal=NOMINAL_ROLL_ROLES="NOMINAL_ROLL,NOMINAL_ROLL_EDIT" --from-literal=EDX_API_URL="http://edx-api-master.$EDX_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/edx" --from-literal=SDC_API_URL="http://student-data-collection-api-master.$EDX_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-data-collection" --from-literal=INSTITUTE_API_URL="http://institute-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/institute"  --from-literal=EDX_PEN_TEAM_ROLES="PEN_TEAM_ROLE" --from-literal=INSTITUTE_ROLES="INDEPENDENT_SCHOOLS_ADMIN,OFFSHORE_SCHOOLS_ADMIN" --from-literal=DISABLE_SDC_FUNCTIONALITY=$disableSdcFunctionality --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-backend-config-map --from-literal=WEB_SOCKET_URL="$WEB_SOCKET_URL" --from-literal=BANNER_COLOR="$BANNER_COLOR" --from-literal=BANNER_ENVIRONMENT="$BANNER_ENVIRONMENT" --from-literal=TZ=$TZVALUE --from-literal=UI_PRIVATE_KEY="$UI_PRIVATE_KEY_VAL" --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$siteMinderLogoutUrl" --from-literal=UI_PUBLIC_KEY="$UI_PUBLIC_KEY_VAL" --from-literal=ID=$APP_NAME-soam --from-literal=SECRET=$studentAdminClientSecret --from-literal=SERVER_FRONTEND=https://$SERVER_FRONTEND --from-literal=ISSUER=STUDENT_ADMIN_APPLICATION --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" --from-literal=PEN_REQUEST_EMAIL_API_URL="http://student-profile-email-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/gmp" --from-literal=PEN_REQUEST_API_URL="http://pen-request-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-request" --from-literal=DISCOVERY=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/.well-known/openid-configuration --from-literal=KC_DOMAIN=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID --from-literal=PEN_DEMOGRAPHICS_URL="http://pen-demographics-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080" --from-literal=DIGITAL_ID_URL="http://digitalid-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/digital-id" --from-literal=STUDENT_API_URL="http://student-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student" --from-literal=LOG_LEVEL=info --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir --from-literal=REDIS_HOST=redis --from-literal=REDIS_PORT=6379 --from-literal=STUDENT_PROFILE_API_URL="http://student-profile-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-profile" --from-literal=SCHOOL_API_URL="http://school-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=STUDENT_PROFILE_EMAIL_API_URL="http://student-profile-email-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/ump" --from-literal=PROFILE_REQUEST_SAGA_API_URL="http://student-profile-saga-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-profile-saga" --from-literal=NATS_URL="$NATS_URL" --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=UMP_ROLES="STUDENT_PROFILE_ADMIN,STUDENT_PROFILE_READ_ONLY" --from-literal=GMP_ROLES="STUDENT_ADMIN,STUDENT_ADMIN_READ_ONLY" --from-literal=STUDENT_SEARCH_ADMIN="STUDENT_SEARCH_ADMIN" --from-literal=STUDENT_SEARCH_ROLES="STUDENT_SEARCH_ADMIN,STUDENT_SEARCH_READ_ONLY" --from-literal=STUDENT_ADMIN_ADMINISTRATOR="STUDENT_ADMIN_ADMINISTRATOR" --from-literal=UMP_ROLE_ADMIN="STUDENT_PROFILE_ADMIN" --from-literal=GMP_ROLE_ADMIN="STUDENT_ADMIN" --from-literal=PEN_REQUEST_BATCH_ADMIN="PEN_REQUEST_BATCH_ADMIN" --from-literal=EDX_ADMIN="EDX_ADMIN" --from-literal=PEN_REQUEST_BATCH_API_URL="http://pen-reg-batch-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=PEN_MATCH_API_URL="http://pen-match-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-match" --from-literal=SESSION_MAX_AGE=$sessionMaxAge --from-literal=TOKEN_EXPIRES_IN=$tokenExpiresIn --from-literal=SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS="0/30 * * * * *" --from-literal=MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS=10 --from-literal=PEN_SERVICES_API_URL="http://pen-services-api-master.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/pen-services" --from-literal=PEN_TRAX_API_URL="http://pen-trax-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=SLD_API_URL="http://sld-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1" --from-literal=QUEUE_GROUP_NAME="student-admin-node-queue-group" --from-literal=STAN_ENABLED="true" --from-literal=NODE_ENV="openshift" --from-literal=SCHEDULER_CRON_DOC_TYPE_MIGRATION="$SCHEDULER_CRON_DOC_TYPE_MIGRATION" --from-literal=ENABLE_PRR_STUDENT_DEMOGRAPHICS="$ENABLE_PRR_STUDENT_DEMOGRAPHICS" --from-literal=NOMINAL_ROLL="NOMINAL_ROLL_EDIT" --from-literal=MACRO_API_URL="http://macro-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/macro" --from-literal=NOMINAL_ROLL_API_URL="http://pen-nominal-roll-api-main.$PEN_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/nominal-roll" --from-literal=STUDENT_ANALYTICS_STUDENT_PROFILE="STUDENT_ANALYTICS_STUDENT_PROFILE" --from-literal=STUDENT_ANALYTICS_BATCH="STUDENT_ANALYTICS_BATCH" --from-literal=NOMINAL_ROLL_ROLES="NOMINAL_ROLL,NOMINAL_ROLL_EDIT" --from-literal=EDX_API_URL="http://edx-api-master.$EDX_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/edx" --from-literal=SDC_API_URL="http://student-data-collection-api-master.$EDX_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/student-data-collection" --from-literal=INSTITUTE_API_URL="http://institute-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/api/v1/institute"  --from-literal=EDX_PEN_TEAM_ROLES="PEN_TEAM_ROLE" --from-literal=DISABLE_SDC_FUNCTIONALITY=$disableSdcFunctionality --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for $APP_NAME-backend-$SOAM_KC_REALM_ID application
 oc -n $PEN_NAMESPACE-$envValue set env --from=configmap/$APP_NAME-backend-config-map dc/$APP_NAME-backend-$SOAM_KC_REALM_ID

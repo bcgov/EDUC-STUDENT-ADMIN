@@ -690,7 +690,6 @@ import { mapState, mapActions } from 'pinia';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import { isNumber } from '@/utils/institute/formInput';
-import { authStore } from '@/store/modules/auth';
 import { instituteStore } from '@/store/modules/institute';
 import { edxStore } from '@/store/modules/edx';
 
@@ -726,7 +725,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['OFFSHORE_SCHOOLS_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     ...mapState(edxStore, ['schoolSearchParams']),
     notesLoading() {
@@ -749,9 +747,6 @@ export default {
   methods: {
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     formatPhoneNumber,
-    isOffshoreUser() {
-      return this.OFFSHORE_SCHOOLS_ADMIN_ROLE;
-    },
     getDistrict() {
       this.loading = true;
       ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${this.districtID}`)
