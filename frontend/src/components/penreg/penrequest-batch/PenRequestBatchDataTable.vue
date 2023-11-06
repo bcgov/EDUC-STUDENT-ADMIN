@@ -25,7 +25,7 @@
           :key="h.id"
           v-model="allSelected"
           :class="['file-checkbox', {'header-checkbox': hasFilterHeader}]"
-          color="#606060"
+          color="grey-lighten-3"
           hide-details="auto"
           :indeterminate="partialSelected"
           @update:model-value="selectAllFiles"
@@ -49,7 +49,7 @@
                 v-model="column.isFiltered"
                 class="file-checkbox filter-checkbox"
                 hide-details="auto"
-                color="#606060"
+                color="grey-lighten-3"
                 @update:model-value="selectFilter(column)"
               />
             </span>
@@ -74,7 +74,7 @@
                   v-model="item.item.raw.isSelected"
                   class="file-checkbox"
                   hide-details="auto"
-                  color="#606060"
+                  color="grey-lighten-3"
                   :disabled="item.item.raw.sagaInProgress"
                   @click.stop="handleFileCheckBoxClicked(item.item.raw)"
                 />
