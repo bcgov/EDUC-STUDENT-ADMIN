@@ -144,6 +144,13 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"MANAGE_EXCHANGE_INBOX_PERMISSION\",\"description\" : \"Permission to manage exchange inbox\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating MANAGE_EXCHANGE_PEN_INBOX_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"MANAGE_EXCHANGE_PEN_INBOX_PERMISSION\",\"description\" : \"Permission to manage PEN team exchange inbox\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
 echo Creating MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -299,6 +306,12 @@ manageExchangeInboxPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/re
   -H "Authorization: Bearer $TKN")
 
 echo
+echo Retrieving MANAGE_EXCHANGE_PEN_INBOX_PERMISSION permission
+manageExchangePENInboxPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EXCHANGE_PEN_INBOX_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
 echo Retrieving VIEW_REGISTRATION_CONTACTS_PERMISSION permission
 viewRegistrationContactsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_REGISTRATION_CONTACTS_PERMISSION" \
   -H "Content-Type: application/json" \
@@ -316,7 +329,7 @@ echo Assigning permissions to SECURE_EXCHANGE role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SECURE_EXCHANGE/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewExchangeStatPermissionJson, $manageExchangeInboxPermissionJson]"
+  -d "[$viewExchangeStatPermissionJson, $manageExchangeInboxPermissionJson, $manageExchangePENInboxPermissionJson]"
 
 echo
 echo Creating EDX_ADMIN role
