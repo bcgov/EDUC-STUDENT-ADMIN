@@ -57,8 +57,10 @@ export default defineComponent({
     :clearable="false"
     :min-date="minDate"
     :max-date="maxDate"
-    :teleport="true"
     @update:model-value="saveDate"
+    teleport
+    auto-apply
+    position="center"
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
       <v-text-field
