@@ -333,19 +333,40 @@ const router = createRouter({
           },
           children: [
             {
-              path: 'PEN_TEAM_ROLE',
-              name: 'exchange_inbox_PEN_TEAM_ROLE',
+              path: 'PEN_TEAM_INBOX',
+              name: 'exchange_inbox_MANAGE_EXCHANGE_PEN_INBOX_PERMISSION',
               component: ExchangePage,
               props: {
-                ministryOwnershipGroupRoleID: 'PEN_TEAM_ROLE'
+                ministryOwnershipGroupRoleID: 'MANAGE_EXCHANGE_PEN_INBOX_PERMISSION'
               },
               meta: {
                 pageTitle: PAGE_TITLES.EXCHANGE,
                 requiresAuth: true,
-                permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
+                permission: PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION
               }
             }
           ]
+        },
+        {
+          path: 'exchange/:secureExchangeID/:ministryOwnershipGroupRoleID',
+          name: 'viewExchange',
+          component: MessageDisplay,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
+            requiresAuth: true,
+            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
+          }
+        },
+        {
+          path: 'newExchange',
+          name: 'newExchange',
+          component: NewMessagePage,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_EXCHANGE,
+            requiresAuth: true,
+            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
+          }
         },
         {
           path: 'exchange/access',
@@ -395,27 +416,6 @@ const router = createRouter({
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
             permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
-          }
-        },
-        {
-          path: 'exchange/:secureExchangeID/:ministryOwnershipGroupRoleID',
-          name: 'viewExchange',
-          component: MessageDisplay,
-          props: true,
-          meta: {
-            pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
-            requiresAuth: true,
-            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
-          }
-        },
-        {
-          path: 'newExchange',
-          name: 'newExchange',
-          component: NewMessagePage,
-          meta: {
-            pageTitle: PAGE_TITLES.NEW_EXCHANGE,
-            requiresAuth: true,
-            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
           }
         }
       ]

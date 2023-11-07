@@ -449,10 +449,10 @@ export default {
 
     authStore().getUserInfo().finally(() => {
       if (this.hasPermissiontoViewExchangeDashboard) {
-        ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/PEN_TEAM_ROLE`).then(response => {
+        ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/MANAGE_EXCHANGE_PEN_INBOX_PERMISSION`).then(response => {
           this.exchangeData.push({
             title: 'PEN Team Inbox',
-            button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
+            button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_INBOX`, text: 'View Inbox'},
             authorized: this.hasPermissiontoViewExchangeDashboard,
             unreadMessages: {data: response.data.unreadMessages, name: 'unread messages'},
             openMessages: {data: response.data.openMessages, name: 'open messages'},

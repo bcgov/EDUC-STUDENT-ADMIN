@@ -502,6 +502,7 @@
         <v-divider />
         <v-card-text>
           <NewMessagePage
+            :ministryOwnershipGroupRoleID="ministryOwnershipGroupRoleID"
             @secure-exchange:message-sent="messageSent"
             @secure-exchange:cancel-message="newMessageSheet = false"
           />
