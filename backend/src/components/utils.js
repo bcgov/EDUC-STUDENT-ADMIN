@@ -133,7 +133,7 @@ async function deleteDataWithBody(token, url, data) {
 async function getData(token, url, params) {
   try {
     params = addTokenToHeader(params, token);
-    logRequestData('GET', url);
+    logRequestData('GET', url, null, params);
     const response = await axios.get(url, params);
     logResponseData(url, response, 'GET');
     return response.data;
@@ -173,8 +173,8 @@ async function logResponseData(url, response, operationType) {
  * @param data the data passed onto the http request.
  * @returns {Promise<void>}
  */
-async function logRequestData(operationType, url, data) {
-  log.info(`${operationType} Data Url`, url);
+async function logRequestData(operationType, url, data, params) {
+  log.info(`${operationType} Data Url ${url}, with params ${params}`);
   if (data) {
     log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
   }
