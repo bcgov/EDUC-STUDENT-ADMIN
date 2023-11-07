@@ -291,6 +291,12 @@ export default {
     MacroMenu
   },
   mixins: [alertMixin],
+  props: {
+    ministryOwnershipGroupRoleID: {
+      type: String,
+      required: true
+    },
+  },
   data() {
     return {
       newMessage: '',
@@ -322,7 +328,7 @@ export default {
     ...mapState(edxStore, ['messageMacros', 'ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments', 'secureExchangeStudents', 'validDistrictIDsForMessaging', 'fileRequirements']),
     ...mapState(appStore, ['schoolMap', 'districtMap']),
     myTeam() {
-      return this.ministryTeams.find(team => team.groupRoleIdentifier === 'PEN_TEAM_ROLE') || {};
+      return this.ministryTeams.find(team => team.groupRoleIdentifier === this.ministryOwnershipGroupRoleID) || {};
     },
   },
   created() {
