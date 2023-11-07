@@ -174,7 +174,11 @@ async function logResponseData(url, response, operationType) {
  * @returns {Promise<void>}
  */
 async function logRequestData(operationType, url, data, params) {
-  log.info(`${operationType} Data Url ${url}, with params ${params}`);
+  if(params){
+    log.info(`${operationType} Data Url ${url}, with params ${JSON.stringify(params)}`);
+  }else{
+    log.info(`${operationType} Data Url ${url}`);
+  }
   if (data) {
     log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
   }
