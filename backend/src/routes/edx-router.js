@@ -74,7 +74,7 @@ router.post('/district-user-activation-invite', passport.authenticate('jwt', {se
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION), extendSession, getExchanges);
-router.get('/exchange/stats/:teamRole', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION), extendSession, getExchangeStats);
+router.get('/exchange/stats/:teamRole', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, getExchangeStats);
 
 router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION), extendSession, claimAllExchanges);
 router.post('/exchange/:secureExchangeID/students', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION), extendSession, createSecureExchangeStudent);

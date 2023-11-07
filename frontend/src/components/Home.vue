@@ -376,7 +376,7 @@ export default {
       return this.authorizedExchangeData.length > 0;
     },
     hasPermissiontoViewExchangeDashboard() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_EXCHANGE_STAT_DASHBOARD_PERMISSION);
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION);
     }
   },
   async beforeMount() {
