@@ -76,7 +76,7 @@ router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, u
 
 router.get('/schoolHistoryPaginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolHistoryPaginated);
 
-router.post('/school/moveSchool', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddOrUpdateSchool(), extendSession, moveSchool);
+router.post('/school/moveSchool', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToMoveSchool(), extendSession, moveSchool);
 
 router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_AUTHORITY_PERMISSION), extendSession, getAuthoritiesPaginated);
 
