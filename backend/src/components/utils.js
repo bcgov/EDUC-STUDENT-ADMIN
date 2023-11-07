@@ -133,7 +133,7 @@ async function deleteDataWithBody(token, url, data) {
 async function getData(token, url, params) {
   try {
     params = addTokenToHeader(params, token);
-    logRequestData('GET', url, null, params);
+    logRequestData('GET', url);
     const response = await axios.get(url, params);
     logResponseData(url, response, 'GET');
     return response.data;
@@ -149,9 +149,9 @@ async function logApiError(e, functionName, message) {
     log.error(fsStringify(e.response.data));
   } else if (message) {
     log.error(message);
-    log.error(functionName, ' Error', e.stack);
+    log.error(functionName, ' Error', e);
   } else {
-    log.error(functionName, ' Error', e.stack);
+    log.error(functionName, ' Error', e);
   }
 }
 
@@ -173,12 +173,8 @@ async function logResponseData(url, response, operationType) {
  * @param data the data passed onto the http request.
  * @returns {Promise<void>}
  */
-async function logRequestData(operationType, url, data, params) {
-  if(params){
-    log.info(`${operationType} Data Url ${url}, with params ${JSON.stringify(params)}`);
-  }else{
-    log.info(`${operationType} Data Url ${url}`);
-  }
+async function logRequestData(operationType, url, data) {
+  log.info(`${operationType} Data Url ${url}`);
   if (data) {
     log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
   }
