@@ -149,9 +149,9 @@ async function logApiError(e, functionName, message) {
     log.error(fsStringify(e.response.data));
   } else if (message) {
     log.error(message);
-    log.error(functionName, ' Error', e);
+    log.error(functionName, ' Error', JSON.stringify(e));
   } else {
-    log.error(functionName, ' Error', e);
+    log.error(functionName, ' Error', JSON.stringify(e));
   }
 }
 
