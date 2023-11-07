@@ -990,14 +990,6 @@ async function removeSecureExchangeNote(req, res) {
 async function getExchangeStats(req, res) {
   try {
     const token = utils.getBackendToken(req);
-
-    if (!req.session.roles.includes('SECURE_EXCHANGE')) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'You are not authorized to access this page'
-      });
-    }
-
     let ministryTeamCodeResponse = await getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL'));
 
     let ministryTeam = ministryTeamCodeResponse.find(minTeam => minTeam['groupRoleIdentifier'] === req.params.teamRole);
