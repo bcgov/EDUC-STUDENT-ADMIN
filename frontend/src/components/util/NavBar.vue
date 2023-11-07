@@ -227,8 +227,8 @@ export default {
           items: [
             {
               title: 'PEN Team Inbox',
-              link: 'exchange_inbox_PEN_TEAM_ROLE',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)
+              link: 'exchange_inbox_MANAGE_EXCHANGE_PEN_INBOX_PERMISSION',
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION)
             }
           ]
         },
