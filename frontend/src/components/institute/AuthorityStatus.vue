@@ -73,8 +73,8 @@
               class="pb-0 pt-2"
             >
               <v-col>
-                <p>This authority cannot be closed, as there are still open schools under this authority.</p>
-                <p>The schools must be closed or moved to another authority before the authority can be closed.</p>
+                <p class="pb-1">This authority cannot be closed, as there are still open schools under this authority.</p>
+                <p class="pb-2">The following schools must be closed or moved to another authority before the authority can be closed.</p>
                 <ul class="school-highlight pb-2 pl-4">
                   <li
                     v-for="openSchool in listOfOpenSchoolsByMincode"
@@ -90,7 +90,7 @@
                     }}</a>
                   </li>
                 </ul>
-                <p>Refresh the page to see an updated list and options</p>
+                <p>Refresh the page to see an updated list of schools and new update options.</p>
               </v-col>
             </v-row>
             <v-row
