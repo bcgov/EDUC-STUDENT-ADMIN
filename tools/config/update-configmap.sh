@@ -491,7 +491,7 @@ echo Removing student-admin-service if exists - value: $studentAdminServiceClien
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID" \
   -H "Authorization: Bearer $TKN"
 
-if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSecret" != "null") && ("$envValue" = "tools" || "$envValue" = "dev") ]]; then
+if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSecret" != "null" && "$studentAdminServiceClientSecret" != null) && ("$envValue" = "tools" || "$envValue" = "dev") ]]; then
   echo
   echo Creating client student-admin-service with secret
   curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
