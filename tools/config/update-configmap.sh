@@ -305,6 +305,20 @@ viewRegistrationContactsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/adm
   -H "Authorization: Bearer $TKN")
 
 echo
+echo Creating VIEW_REGISTRATION_CONTACTS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_REGISTRATION_CONTACTS\",\"description\" : \"Role to view registration conatcts\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to VIEW_REGISTRATION_CONTACTS role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_REGISTRATION_CONTACTS/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewRegistrationContactsPermissionJson]"
+
+echo
 echo Creating SECURE_EXCHANGE role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -358,7 +372,7 @@ echo Assigning permissions to DISTRICT_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/DISTRICT_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editDistrictPermissionJson, $viewRegistrationContactsPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editDistrictPermissionJson]"
 
 echo
 echo Creating SCHOOL_ADMIN role
@@ -372,7 +386,7 @@ echo Assigning permissions to SCHOOL_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SCHOOL_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson, $editIndependentSchoolPermissionJson, $editOffshoreSchoolPermissionJson, $viewRegistrationContactsPermissionJson]"
+  -d "[$viewSchoolPermissionJson, $viewDistrictPermissionJson, $viewAuthorityPermissionJson, $editSchoolPermissionJson, $editIndependentSchoolPermissionJson, $editOffshoreSchoolPermissionJson]"
 
 echo
 echo Creating INDEPENDENT_AUTHORITY_ADMIN role
