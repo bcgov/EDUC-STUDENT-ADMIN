@@ -61,6 +61,7 @@ export default defineComponent({
     :teleport="true"
     :auto-position="true"
     position="left"
+    auto-apply
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
       <v-text-field
