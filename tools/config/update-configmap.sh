@@ -487,7 +487,7 @@ studentAdminServiceClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/real
   | jq -r '.value')
 
 echo
-echo Removing student-admin-service if exists - value: $studentAdminServiceClientSecret
+echo Removing student-admin-service if exists
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID" \
   -H "Authorization: Bearer $TKN"
 
