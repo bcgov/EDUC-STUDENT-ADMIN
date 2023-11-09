@@ -249,7 +249,7 @@
                     id="authorityTypeSelect"
                     v-model="authorityCopy.authorityTypeCode"
                     label="Authority Type"
-                    :items="authorityTypes"
+                    :items="getAuthorityTypes"
                     item-title="label"
                     item-value="authorityTypeCode"
                     variant="underlined"
@@ -880,6 +880,14 @@ export default {
       type: Boolean,
       required: true
     },
+    canOnlyEditIndependentAuthority: {
+      type: Boolean,
+      required: true
+    },
+    canOnlyEditOffshoreAuthority: {
+      type: Boolean,
+      required: true
+    },
   },
   data() {
     return {
@@ -902,7 +910,8 @@ export default {
       excludeShowingPhysicalAddressesForAuthoritiesOfType: [
         'OFFSHORE',
       ],
-
+      offshoreArray: ['OFFSHORE'],
+      independentArray: ['INDEPENDNT']
     };
   },
   computed: {
@@ -918,6 +927,16 @@ export default {
         return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy?.authorityTypeCode);
       }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
+    },
+    getAuthorityTypes() {
+      if(this.canOnlyEditIndependentAuthority && this.canOnlyEditOffshoreAuthority) {
+        return this.authorityTypes;
+      } else if(this.canOnlyEditIndependentAuthority && !this.canOnlyEditOffshoreAuthority) {
+        return this.authorityTypes.filter(type => this.independentArray.includes(type.authorityTypeCode));
+      } else if(this.canOnlyEditOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+        return this.authorityTypes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
+      }
+      return [];
     }
   },
   created() {
@@ -1086,7 +1105,7 @@ export default {
       await this.$refs.authorityForm.validate();
     },
     getAuthorityType(authority) {
-      return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority?.authorityTypeCode).label;
+      return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority?.authorityTypeCode)?.label;
     },
     hasMailingAddress() {
       return this.authority?.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0;

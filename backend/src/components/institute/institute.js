@@ -1141,13 +1141,6 @@ async function addNewAuthorityNote(req, res) {
 
 async function getAuthorityNotes(req, res) {
   try {
-    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
-    
-    if(!authority){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
     const result = await getData(`${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {

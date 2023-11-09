@@ -173,14 +173,14 @@ function hasPermissionToAddSchool() {
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
 
-      let school = req?.body;
+      let school = req?.body?.school;
       let independentArr = ['INDEPEND', 'INDP_FNS'];
       let offshoreArr = ['OFFSHORE'];
-  
+
       let hasIndependentPerm = independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
       let hasOffshorePerm = offshoreArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
       let hasEditSchoolPerm = ![...independentArr, ...offshoreArr].includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_SCHOOL_PERMISSION);
-  
+
       if(hasIndependentPerm || hasOffshorePerm || hasEditSchoolPerm) {
         return next();
       } 
@@ -211,7 +211,7 @@ function hasPermissionToMoveSchool() {
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
 
-      let school = req?.body;
+      let school = req?.body?.toSchool;
       let independentArr = ['INDEPEND', 'INDP_FNS'];
   
       let hasIndependentPerm = independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);

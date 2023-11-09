@@ -122,6 +122,8 @@
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
                       :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
+                      :canOnlyEditIndependentAuthority="canOnlyEditIndependentAuthority"
+                      :canOnlyEditOffshoreAuthority="canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
