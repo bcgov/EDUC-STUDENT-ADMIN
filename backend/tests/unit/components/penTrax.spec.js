@@ -33,7 +33,7 @@ describe('getTraxDataByPen', () => {
 
   it('should return trax data if Courses/Exams/Assmts', async () => {
     const student = {gradDate: 201306, studStatus: 'A'};
-    utils.getData.mockImplementation((token, url) => 
+    utils.getData.mockImplementation(( url) =>
       Promise.resolve(url.includes('students') ? student : {totalElements: 2})
     );
     await penTrax.getTraxDataByPen(req, res);
@@ -42,7 +42,7 @@ describe('getTraxDataByPen', () => {
   });
 
   it('should return Student not found if no student record', async () => {
-    utils.getData.mockImplementation((token, url) => 
+    utils.getData.mockImplementation((url) =>
       url.includes('students') ? Promise.reject({status: HttpStatus.NOT_FOUND}) : Promise.resolve({totalElements: 2})
     );
     await penTrax.getTraxDataByPen(req, res);
@@ -52,7 +52,7 @@ describe('getTraxDataByPen', () => {
 
   it('should return trax data if no Courses/Exams/Assmts', async () => {
     const student = {gradDate: 201306, studStatus: 'A'};
-    utils.getData.mockImplementation((token, url) => 
+    utils.getData.mockImplementation((url) =>
       Promise.resolve(url.includes('students') ? student : {totalElements: 0})
     );
     await penTrax.getTraxDataByPen(req, res);
@@ -62,7 +62,7 @@ describe('getTraxDataByPen', () => {
 
   it('should return trax data if only Exams', async () => {
     const student = {gradDate: 201306, studStatus: 'A'};
-    utils.getData.mockImplementation((token, url) => 
+    utils.getData.mockImplementation((url) =>
       Promise.resolve(url.includes('students') ? student : {totalElements: url.includes('prov-exams') ? 1 : 0})
     );
     await penTrax.getTraxDataByPen(req, res);

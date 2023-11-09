@@ -1,5 +1,5 @@
 'use strict';
-const {getBackendToken, getData, errorResponse} = require('./utils');
+const {getData, errorResponse} = require('./utils');
 const config = require('../config/index');
 const log = require('./logger');
 const HttpStatus = require('http-status-codes');
@@ -33,7 +33,7 @@ function getLast13MonthsPaginatedStats(url) {
             }])
           }
         };
-        requestPromises.push(getData(getBackendToken(req), url, params));
+        requestPromises.push(getData(url, params));
       }
       Promise.all(requestPromises)
         .then(responses => {
@@ -58,7 +58,7 @@ function getStatsByStatsType(url) {
     if (!statsType) {
       return res.status(HttpStatus.BAD_REQUEST).json({message: 'Missing required parameter statsType'});
     }
-    getData(getBackendToken(req), url + '/stats?statsType=' + statsType)
+    getData(url + '/stats?statsType=' + statsType)
       .then(dataResponse => {
         return res.status(HttpStatus.OK).json(dataResponse);
       })
@@ -70,7 +70,7 @@ function getStatsByStatsType(url) {
 }
 
 function getNumberOfMergesInLast13Month(req, res) {
-  getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/stats?statsType=NUMBER_OF_MERGES_IN_LAST_13_MONTH')
+  getData(config.get('server:penServices:rootURL') + '/merges/stats?statsType=NUMBER_OF_MERGES_IN_LAST_13_MONTH')
     .then(response => {
       return res.status(HttpStatus.OK).json({
         labels: Object.keys(response.numberOfMergesInLastMonths),
@@ -83,7 +83,7 @@ function getNumberOfMergesInLast13Month(req, res) {
 
 function findMergesBetweenDates(req, createDateStart, createDateEnd) {
   const params = {params: {createDateStart, createDateEnd}};
-  return getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/between-dates-created', params);
+  return getData(config.get('server:penServices:rootURL') + '/merges/between-dates-created', params);
 }
 
 async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd) {
@@ -102,7 +102,7 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
       studentIDs.push(studentMerge.studentID);
       studentIDs.push(studentMerge.mergeStudentID);
     }
-    const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), studentIDs.join());
+    const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(studentIDs.join());
     const students = studentsPage.content;
     let groupIndex = 0;
     studentMerges.forEach((studentMerge) => {

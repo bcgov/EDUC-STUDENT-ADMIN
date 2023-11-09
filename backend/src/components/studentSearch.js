@@ -6,16 +6,10 @@ const utils = require('./utils');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION } = require('../util/constants');
 
 async function searchStudent(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
   let searchListCriteria = [];
   let legalNicknames = [];
   let usualNicknames = [];
-  let isAuditHistorySearch = false;
+  let isAuditHistorySearch = 'false';
 
   if(req.query.searchQueries) {
     let searchQueries = req.query.searchQueries;
@@ -23,10 +17,10 @@ async function searchStudent(req, res) {
     const useNameVariants = searchQueries['useNameVariants'];
     if (useNameVariants) {
       if (searchQueries['legalFirstName']) {
-        legalNicknames = await getNicknames(token, searchQueries['legalFirstName']);
+        legalNicknames = await getNicknames(searchQueries['legalFirstName']);
       }
       if (searchQueries['usualFirstName']) {
-        usualNicknames = await getNicknames(token, searchQueries['usualFirstName']);
+        usualNicknames = await getNicknames(searchQueries['usualFirstName']);
       }
     }
     Object.keys(searchQueries).forEach(element => {
@@ -111,7 +105,7 @@ async function searchStudent(req, res) {
 
   const baseUrl = config.get('server:student:rootURL');
   try {
-    const dataResponse = await utils.getData(token, isAuditHistorySearch === 'true' ? baseUrl + '/history/paginated/distinct/students' : baseUrl + '/paginated', params);
+    const dataResponse = await utils.getData(isAuditHistorySearch === 'true' ? baseUrl + '/history/paginated/distinct/students' : baseUrl + '/paginated', params);
     if (dataResponse?.totalElements > 2000000) {
       logInfo(`Search Criteria produced ${dataResponse?.totalElements} records`, params?.params);
       return res.status(400).json({
@@ -128,8 +122,8 @@ async function searchStudent(req, res) {
 
 }
 
-async function getNicknames(token, givenName) {
-  return utils.getData(token, config.get('server:penMatch:rootURL') + '/nicknames/' + givenName
+async function getNicknames(givenName) {
+  return utils.getData(config.get('server:penMatch:rootURL') + '/nicknames/' + givenName
   ).then((dataResponse) => {
     return dataResponse;
   }).catch((e) => {
@@ -139,8 +133,6 @@ async function getNicknames(token, givenName) {
 }
 
 async function getStudentHistoryByStudentID(req, res) {
-  const token = utils.getBackendToken(req);
-
   const params = {
     params: {
       pageSize: req.query.pageSize <= 20 ? req.query.pageSize : 20,
@@ -150,11 +142,11 @@ async function getStudentHistoryByStudentID(req, res) {
   };
 
   try {
-    const dataResponse = await utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/history/paginated`, params);
+    const dataResponse = await utils.getData(`${config.get('server:student:rootURL')}/${req.params.id}/history/paginated`, params);
     const dataWithTrueStudentID = dataResponse.content.filter(item => item.trueStudentID);
     const trueStudentIDs = dataWithTrueStudentID.map(item => item.trueStudentID).join();
     if(trueStudentIDs.length > 0) {
-      const students = await utils.getStudentsFromStudentAPIByTheirIds(token, trueStudentIDs);
+      const students = await utils.getStudentsFromStudentAPIByTheirIds(trueStudentIDs);
       dataWithTrueStudentID.forEach(item => {
         item.truePen = students.content.find(student => student.studentID === item.trueStudentID)?.pen;
       });

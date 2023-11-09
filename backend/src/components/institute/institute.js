@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('../utils');
+const { logApiError, getData, errorResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
@@ -44,10 +44,9 @@ function getCachedInstituteData(cacheKey,url){
 
 
 async function getDistricts(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:instituteDistrictURL')}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getDistricts', 'Error occurred while attempting to GET all districts.');
@@ -57,8 +56,6 @@ async function getDistricts(req, res) {
 
 async function addDistrictContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -88,7 +85,7 @@ async function addDistrictContact(req, res) {
       expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
-    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(url, payload, null, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
@@ -108,10 +105,9 @@ async function getCachedDistrictByDistrictId(req, res) {
 }
 
 async function getDistrictByDistrictID(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:rootURL')}/district/${req.params.districtId}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getDistrictByID', 'Error occurred while attempting to GET district entity.');
@@ -121,8 +117,6 @@ async function getDistrictByDistrictID(req, res) {
 
 async function updateDistrict(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
 
     if (!district) {
@@ -142,7 +136,7 @@ async function updateDistrict(req, res) {
     districtPayload.updateDate = null;
     districtPayload.updateUser = utils.getUser(req).idir_username;
 
-    const result = await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + districtPayload.districtId, districtPayload, utils.getUser(req).idir_username);
+    const result = await utils.putData(config.get('server:institute:instituteDistrictURL') + '/' + districtPayload.districtId, districtPayload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
 
   }catch(e)
@@ -155,8 +149,6 @@ async function updateDistrict(req, res) {
 
 async function updateDistrictContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -175,7 +167,7 @@ async function updateDistrictContact(req, res) {
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
 
-    const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.params.contactId}` , params, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.params.contactId}` , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateDistrictContact', 'Error occurred while attempting to update a district contact.');
@@ -185,8 +177,6 @@ async function updateDistrictContact(req, res) {
 
 async function deleteDistrictContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -200,7 +190,7 @@ async function deleteDistrictContact(req, res) {
       });
     }
 
-    const contact =  await utils.getData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/contact/${req.params.contactId}`);
+    const contact =  await utils.getData(`${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/contact/${req.params.contactId}`);
 
     if (!contact) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -213,7 +203,7 @@ async function deleteDistrictContact(req, res) {
     contact.updateUser = utils.getUser(req).idir_username;
     contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
-    await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.params.districtId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+    await utils.putData(config.get('server:institute:instituteDistrictURL') + '/' + req.params.districtId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
@@ -224,15 +214,13 @@ async function deleteDistrictContact(req, res) {
 
 async function getDistrictNotes(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
     if(!district){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
     }
-    const result = await getData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note`);
+    const result = await getData(`${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'getDistrictNotes', 'Error occurred while attempting to add a retrieve district notes.');
@@ -242,8 +230,6 @@ async function getDistrictNotes(req, res) {
 
 async function addNewDistrictNote(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -254,7 +240,7 @@ async function addNewDistrictNote(req, res) {
       districtId: req.body.districtId,
       content: req.body.content
     };
-    const result = await utils.postData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note`, params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(`${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewDistrictNote', 'Error occurred while attempting to add a new district note.');
@@ -269,7 +255,6 @@ async function updateDistrictNote(req, res) {
     });
   }
   try {
-    const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -281,7 +266,7 @@ async function updateDistrictNote(req, res) {
       districtId: req.body.districtId,
       content: req.body.content
     };
-    const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateDistrictNote', 'Error occurred while attempting to save the changes to the district note.');
@@ -291,14 +276,13 @@ async function updateDistrictNote(req, res) {
 
 async function deleteDistrictNote(req, res) {
   try {
-    const token = getBackendToken(req);
     let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
     if(!district){
       return res.status(HttpStatus.NOT_FOUND).json({
         message: 'District not found'
       });
     }
-    await utils.deleteData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note/${req.params.noteId}`);
+    await utils.deleteData(`${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
     await logApiError(e, 'deleteDistrictNote', 'An error occurred while attempting to remove a district note.');
@@ -307,10 +291,9 @@ async function deleteDistrictNote(req, res) {
 }
 
 async function getSchools(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:instituteSchoolURL')}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getSchools', 'Error occurred while attempting to GET all schools.');
@@ -343,8 +326,6 @@ async function getCachedSchoolBySchoolID(req, res) {
 
 async function addSchool(req, res) {
   try {
-    const token = getBackendToken(req);
-
     const payload = {
       createUser: utils.getUser(req).idir_username,
       createDate: null,
@@ -414,7 +395,7 @@ async function addSchool(req, res) {
       payload.grades = req.body.grades;
     }
 
-    const data = await utils.postData(token, config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'addSchool', 'Error occurred while attempting to POST School entity.');
@@ -424,12 +405,11 @@ async function addSchool(req, res) {
 
 async function addNewSchoolNote(req, res) {
   try {
-    const token = getBackendToken(req);
     const params = {
       content: req.body.content,
       schoolId: req.body.schoolId
     };
-    const result = await utils.postData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note`, params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(`${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewSchoolNote', 'Error occurred while attempting to add a new school note.');
@@ -439,8 +419,7 @@ async function addNewSchoolNote(req, res) {
 
 async function getSchoolNotes(req, res) {
   try {
-    const token = getBackendToken(req);
-    const result = await getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note`);
+    const result = await getData(`${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note`);
 
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -456,13 +435,12 @@ async function updateSchoolNote(req, res) {
     });
   }
   try {
-    const token = getBackendToken(req);
     const payload = {
       noteId: req.body.noteId,
       schoolId: req.body.schoolId,
       content: req.body.content
     };
-    const result = await utils.putData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateSchoolNote', 'Error occurred while attempting to save the changes to the school note.');
@@ -472,8 +450,7 @@ async function updateSchoolNote(req, res) {
 
 async function deleteSchoolNote(req, res) {
   try {
-    const token = getBackendToken(req);
-    await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
+    await utils.deleteData(`${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
     await logApiError(e, 'deleteSchoolNote', 'An error occurred while attempting to remove a school note.');
@@ -483,8 +460,6 @@ async function deleteSchoolNote(req, res) {
 
 async function addSchoolContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -508,7 +483,7 @@ async function addSchoolContact(req, res) {
       expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
-    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(url, payload, null, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
@@ -519,8 +494,6 @@ async function addSchoolContact(req, res) {
 
 async function updateSchoolContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -536,7 +509,7 @@ async function updateSchoolContact(req, res) {
     params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
     params.expiryDate = req.body.expiryDate ? req.body.expiryDate : null;
 
-    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
+    const result = await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateSchoolContact', 'Error occurred while attempting to update a school contact.');
@@ -546,8 +519,6 @@ async function updateSchoolContact(req, res) {
 
 async function deleteSchoolContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
     if (isSchoolOrAuthorityClosedOrNeverOpened(school)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -555,7 +526,7 @@ async function deleteSchoolContact(req, res) {
       });
     }
 
-    const contact =  await utils.getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/contact/${req.params.contactId}`);
+    const contact =  await utils.getData(`${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/contact/${req.params.contactId}`);
 
     if (!contact) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -568,7 +539,7 @@ async function deleteSchoolContact(req, res) {
     contact.updateUser = utils.getUser(req).idir_username;
     contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
-    await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+    await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
@@ -579,8 +550,6 @@ async function deleteSchoolContact(req, res) {
 
 async function addAuthorityContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
@@ -605,7 +574,7 @@ async function addAuthorityContact(req, res) {
       expiryDate: req.body.expiryDate ? req.body.expiryDate : null
     };
 
-    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(url, payload, null, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
@@ -616,8 +585,6 @@ async function addAuthorityContact(req, res) {
 
 async function updateAuthorityContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
@@ -631,7 +598,7 @@ async function updateAuthorityContact(req, res) {
     params.createDate = null;
     params.updateUser = utils.getUser(req).idir_username;
 
-    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
+    const result = await utils.putData(config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthorityContact', 'Error occurred while attempting to update an authority contact.');
@@ -641,8 +608,6 @@ async function updateAuthorityContact(req, res) {
 
 async function deleteAuthorityContact(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
 
     if(isSchoolOrAuthorityClosedOrNeverOpened(authority)) {
@@ -651,7 +616,7 @@ async function deleteAuthorityContact(req, res) {
       });
     }
 
-    const contact =  await utils.getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/contact/${req.params.contactId}`);
+    const contact =  await utils.getData(`${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/contact/${req.params.contactId}`);
 
     if (!contact) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -664,7 +629,7 @@ async function deleteAuthorityContact(req, res) {
     contact.updateUser = utils.getUser(req).idir_username;
     contact.expiryDate = LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'));
 
-    await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.independentAuthorityId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+    await utils.putData(config.get('server:institute:instituteAuthorityURL') + '/' + req.params.independentAuthorityId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
@@ -675,7 +640,6 @@ async function deleteAuthorityContact(req, res) {
 
 async function addAuthority(req, res) {
   try {
-    const token = getBackendToken(req);
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;
 
     const payload = {
@@ -731,7 +695,7 @@ async function addAuthority(req, res) {
       payload.addresses.push(physicalAddress);
     }
 
-    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(url, payload, null, utils.getUser(req).idir_username);
 
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
@@ -742,7 +706,6 @@ async function addAuthority(req, res) {
 
 async function updateAuthority(req, res) {
   try {
-    const token = getBackendToken(req);
     let authorityPayload = req.body;
 
     if(authorityPayload.authorityTypeCode === 'OFFSHORE'){
@@ -762,7 +725,7 @@ async function updateAuthority(req, res) {
     authorityPayload.createDate = null;
     authorityPayload.updateDate = null;
     authorityPayload.updateUser = utils.getUser(req).idir_username;
-    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.id, authorityPayload, utils.getUser(req).idir_username);
+    const result = await utils.putData(config.get('server:institute:instituteAuthorityURL') + '/' + req.params.id, authorityPayload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
@@ -771,10 +734,9 @@ async function updateAuthority(req, res) {
 }
 
 async function getSchoolByID(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:rootURL')}/school/${req.params.id}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
@@ -783,11 +745,10 @@ async function getSchoolByID(req, res) {
 }
 
 async function getSchoolByMincode(req, res) {
-  const token = getBackendToken(req);
   try {
     let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
     const url = `${config.get('server:institute:rootURL')}/school/${school.schoolID}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getSchoolByMincode', 'Error occurred while attempting to GET school entity by mincode.');
@@ -797,14 +758,13 @@ async function getSchoolByMincode(req, res) {
 
 
 async function getStudentRegistrationContacts(req, res) {
-  const token = getBackendToken(req);
   let contactsList = [];
   try {
     const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
     const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
     Promise.all([
-      getData(token, schoolContactURL),
-      getData(token, districtContactURL),
+      getData(schoolContactURL),
+      getData(districtContactURL),
     ])
       .then(async ([schoolContactResponse, districtContactResponse]) => {
         if (schoolContactResponse && districtContactResponse) {
@@ -840,7 +800,6 @@ async function getStudentRegistrationContacts(req, res) {
 }
 
 async function getStudentRegistrationContactByMincode(req, res) {
-  const accessToken = getBackendToken(req);
   try {
     let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
     let searchCriteriaList = [];
@@ -861,7 +820,7 @@ async function getStudentRegistrationContactByMincode(req, res) {
       }
     };
 
-    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
+    let response = await getData(config.get('server:institute:rootURL') + '/school/contact/paginated', schoolSearchParam);
     let schoolRegistrationContact = {};
     if(response?.content && response.content[0]){
       let firstStudRegContact = response.content[0];
@@ -883,8 +842,6 @@ async function getStudentRegistrationContactByMincode(req, res) {
 
 async function updateSchool(req, res) {
   try {
-    const token = getBackendToken(req);
-
     const payload = req.body;
 
     payload.addresses?.forEach(function(addy) {
@@ -936,7 +893,7 @@ async function updateSchool(req, res) {
     }
     payload.neighborhoodLearning = nlcObjectsArray;
     payload.grades=gradesObjectArray;
-    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
 
   }catch(e)
@@ -949,9 +906,6 @@ async function updateSchool(req, res) {
 
 async function getSchoolsPaginated(req, res){
   try {
-    const accessToken = getBackendToken(req);
-    validateAccessToken(accessToken, res);
-
     let parsedParams = '';
     if (req.query.searchParams) {
       parsedParams = req.query.searchParams;
@@ -971,7 +925,7 @@ async function getSchoolsPaginated(req, res){
       }
     };
     
-    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
+    let response = await getData(config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
@@ -981,7 +935,6 @@ async function getSchoolsPaginated(req, res){
 
 async function moveSchool(req, res) {
   try {
-    const token = getBackendToken(req);
     let school = cacheService.getSchoolBySchoolID(req.body.fromSchoolId);
 
     if(!school || school.schoolCategoryCode === 'OFFSHORE') {
@@ -1046,7 +999,7 @@ async function moveSchool(req, res) {
       fromSchoolId: req.body.fromSchoolId
     };
 
-    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURL'), payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(config.get('server:edx:moveSchoolSagaURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'moveSchool', 'Error occurred while attempting to POST School entity.');
@@ -1056,9 +1009,6 @@ async function moveSchool(req, res) {
 
 async function getSchoolHistoryPaginated(req, res) {
   try {
-    const accessToken = getBackendToken(req);
-    validateAccessToken(accessToken, res);
-
     let parsedParams = '';
     if (req.query.searchParams) {
       parsedParams = req.query.searchParams;
@@ -1076,7 +1026,7 @@ async function getSchoolHistoryPaginated(req, res) {
         searchCriteriaList: JSON.stringify(historySearchCriteria)
       }
     };
-    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
+    let response = await getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
@@ -1141,10 +1091,9 @@ function createSchoolSearchCriteria(searchParams){
 }
 
 async function getAuthorities(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET all authorities.');
@@ -1166,10 +1115,9 @@ async function getCachedAuthorities(req, res) {
 }
 
 async function getAuthorityByID(req, res) {
-  const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:rootURL')}/authority/${req.params.id}`;
-    const data = await getData(token, url);
+    const data = await getData(url);
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAuthorityByID', 'Error occurred while attempting to GET authority entity.');
@@ -1179,13 +1127,11 @@ async function getAuthorityByID(req, res) {
 
 async function addNewAuthorityNote(req, res) {
   try {
-    const token = getBackendToken(req);
-
     const params = {
       content: req.body.content,
       independentAuthorityId: req.body.independentAuthorityId
     };
-    const result = await utils.postData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note`, params, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(`${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note`, params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewAuthorityNote', 'Error occurred while attempting to add a new authority note.');
@@ -1195,8 +1141,6 @@ async function addNewAuthorityNote(req, res) {
 
 async function getAuthorityNotes(req, res) {
   try {
-    const token = getBackendToken(req);
-
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
     
     if(!authority){
@@ -1204,7 +1148,7 @@ async function getAuthorityNotes(req, res) {
         message: 'You do not have the required access for this function'
       });
     }
-    const result = await getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note`);
+    const result = await getData(`${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewAuthorityNote', 'Error occurred while attempting to add a new authority note.');
@@ -1219,14 +1163,12 @@ async function updateAuthorityNote(req, res) {
     });
   }
   try {
-    const token = getBackendToken(req);
-
     const payload = {
       noteId: req.body.noteId,
       independentAuthorityId: req.body.independentAuthorityId,
       content: req.body.content
     };
-    const result = await utils.putData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:institute:instituteAuthorityURL')}/${req.body.independentAuthorityId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthorityNote', 'Error occurred while attempting to save the changes to the authority note.');
@@ -1236,9 +1178,7 @@ async function updateAuthorityNote(req, res) {
 
 async function deleteAuthorityNote(req, res) {
   try {
-    const token = getBackendToken(req);
-
-    await utils.deleteData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note/${req.params.noteId}`);
+    await utils.deleteData(`${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
     await logApiError(e, 'deleteAuthorityNote', 'An error occurred while attempting to remove an authority note.');
@@ -1257,9 +1197,6 @@ async function getCachedAuthorityByAuthorityID(req, res) {
 }
 
 async function getAuthoritiesPaginated(req, res){
-  const accessToken = getBackendToken(req);
-  validateAccessToken(accessToken, res);
-
   let parsedParams = '';
   if (req.query.searchParams) {
     parsedParams = req.query.searchParams;
@@ -1278,7 +1215,7 @@ async function getAuthoritiesPaginated(req, res){
       searchCriteriaList: JSON.stringify(authoritySearchCriteria)
     }
   };
-  let response = await getData(accessToken, config.get('server:institute:rootURL') + '/authority/paginated', authoritySearchParam);
+  let response = await getData(config.get('server:institute:rootURL') + '/authority/paginated', authoritySearchParam);
   return res.status(HttpStatus.OK).json(response);
 }
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf, isImage} = require('../utils');
+const {errorResponse, logApiError, logError, postData, isPdf, isImage} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -12,7 +12,6 @@ const log = require('../logger');
 
 async function claimAllExchanges(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
 
     const params = new URLSearchParams({
@@ -20,7 +19,7 @@ async function claimAllExchanges(req, res) {
       secureExchangeIDs: req.body.secureExchangeIDs
     }).toString();
 
-    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
+    await utils.postData(config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
     return res.status(HttpStatus.OK).json({});
   } catch (e) {
     logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
@@ -30,12 +29,6 @@ async function claimAllExchanges(req, res) {
 
 async function claimExchange(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    if (!token && req.session.userMinCodes) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
     let params;
     const userInfo = utils.getUser(req);
     if (!req.body.claimedStatus || req.body.currentlyClaimedBy !== userInfo.idir_username) {
@@ -49,8 +42,8 @@ async function claimExchange(req, res) {
         secureExchangeIDs: req.body.secureExchangeIDs
       }).toString();
     }
-    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
-    const thisExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.body.secureExchangeIDs}`);
+    await utils.postData( config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
+    const thisExchange = await getData( config.get('server:edx:exchangeURL') + `/${req.body.secureExchangeIDs}`);
 
     return res.status(HttpStatus.OK).json(thisExchange);
 
@@ -61,16 +54,9 @@ async function claimExchange(req, res) {
 }
 
 async function getExchanges(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token && req.session.userMinCodes) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
   return Promise.all([
-    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
-    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getCodeTable(CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
     getExchangesPaginated(req, res),
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
@@ -99,19 +85,11 @@ async function getExchanges(req, res) {
 
 async function getExchangesPaginated(req, res) {
   let criteria = [];
-  let token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
-  console.log('req.query' + JSON.stringify(req.query));
   let parsedParams = JSON.parse(req.query.searchParams);
 
   if (req.query.searchParams) {
     if (parsedParams.studentPEN) {
-      let studentDetail = await getData(token, config.get('server:student:rootURL') + '?pen=' + parsedParams.studentPEN);
+      let studentDetail = await getData(config.get('server:student:rootURL') + '?pen=' + parsedParams.studentPEN);
       if(studentDetail[0]){
         parsedParams.studentId = studentDetail[0].studentID;
         delete parsedParams.studentPEN;
@@ -136,7 +114,7 @@ async function getExchangesPaginated(req, res) {
     }
   };
 
-  return utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', params);
+  return utils.getData(config.get('server:edx:exchangeURL') + '/paginated', params);
 }
 
 function getCriteria(key, value, operation, valueType) {
@@ -144,16 +122,10 @@ function getCriteria(key, value, operation, valueType) {
 }
 
 async function getExchange(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token && req.session.userMinCodes) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  } 
   return Promise.all([
-    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
-    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`)
+    getCodeTable(CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getData(config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`)
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
 
@@ -230,7 +202,7 @@ async function getExchange(req, res) {
       }
       if (dataResponse['studentsList']) {
         for (const student of dataResponse['studentsList']) {
-          let studentDetail = await getData(token, config.get('server:student:rootURL') + '/' + student.studentId);
+          let studentDetail = await getData(config.get('server:student:rootURL') + '/' + student.studentId);
           let activity = {};
           activity['type'] = 'student';
           activity['isSchool'] = student.edxUserID ? true : false;
@@ -282,7 +254,6 @@ async function getExchange(req, res) {
 
 async function createExchange(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const message = req.body;
 
@@ -333,7 +304,7 @@ async function createExchange(req, res) {
       districtName: message.districtName,
     };
 
-    const result = await utils.postData(token, config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);
+    const result = await utils.postData(config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createExchange', 'Error occurred while attempting to create a new exchange.');
@@ -342,14 +313,13 @@ async function createExchange(req, res) {
 }
 
 async function markAs(req, res) {
-  const token = utils.getBackendToken(req);
   try {
-    const currentExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
+    const currentExchange = await getData(config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
     currentExchange.isReadByMinistry = !currentExchange.isReadByMinistry;
     currentExchange.createDate = null;
     currentExchange.updateDate = null;
 
-    await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
+    await putData(`${config.get('server:edx:exchangeURL')}`, currentExchange);
 
     return getExchange(req, res);
   } catch (e) {
@@ -359,16 +329,15 @@ async function markAs(req, res) {
 }
 
 async function markExchangeStatusAs(req, res) {
-  const token = utils.getBackendToken(req);
-   if (!['open', 'closed'].includes(req.params.status)) {
+  if (!['open', 'closed'].includes(req.params.status)) {
     return res.status(HttpStatus.BAD_REQUEST).json({
       message: `Trying to mark exchange with an invalid status ${req.params.status}`
     });
   }
   return Promise.all([
-    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
-    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`),
+    getCodeTable(CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getData(config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`),
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, exchange]) => {
       if (statusCodeResponse && ministryTeamCodeResponse && exchange) {
@@ -385,7 +354,7 @@ async function markExchangeStatusAs(req, res) {
         exchange.secureExchangeStatusCode = req.params.status.toUpperCase();
         exchange.createDate = null;
         exchange.updateDate = null;
-        await putData(token, `${config.get('server:edx:exchangeURL')}`, exchange);
+        await putData(`${config.get('server:edx:exchangeURL')}`, exchange);
 
         return getExchange(req, res);
       }
@@ -396,14 +365,13 @@ async function markExchangeStatusAs(req, res) {
 }
 
 async function getEdxDistrictUsers(req, res) {
-  const token = utils.getBackendToken(req);
   try {
     const districtParams = {
       params: {
         districtID: req.params.districtID
       }  
-    }
-    let response = await getData(token, config.get('server:edx:edxUsersURL'), districtParams);
+    };
+    let response = await getData(config.get('server:edx:edxUsersURL'), districtParams);
 
     let filteredResponse = [];
     filteredResponse = response.map(user => {
@@ -421,15 +389,14 @@ async function getEdxDistrictUsers(req, res) {
 }
 
 async function getEdxSchoolUsers(req, res) {
-  const token = utils.getBackendToken(req);
   try {
     const schoolParams = {
       params: {
         schoolID: req.params.schoolID
       }  
-    }
+    };
 
-    let response = await getData(token, config.get('server:edx:edxUsersURL'), schoolParams);
+    let response = await getData(config.get('server:edx:edxUsersURL'), schoolParams);
     
     let filteredResponse = [];
     filteredResponse = response.map(user => {
@@ -447,10 +414,8 @@ async function getEdxSchoolUsers(req, res) {
 }
 
 async function findSchoolPrimaryEdxActivationCode(req, res) {
-  const token = utils.getBackendToken(req);
-  
   try {
-    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`);
+    const data = await getData(`${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     if (e.status === 404) {
@@ -462,10 +427,8 @@ async function findSchoolPrimaryEdxActivationCode(req, res) {
 }
 
 async function findDistrictPrimaryEdxActivationCode(req, res) {
-  const token = utils.getBackendToken(req);
-  
   try {
-    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`);
+    const data = await getData(`${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     if (e.status === 404) {
@@ -478,12 +441,11 @@ async function findDistrictPrimaryEdxActivationCode(req, res) {
 
 async function generateOrRegeneratePrimaryEdxActivationSchoolCode(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const payload = {
       schoolID: req.params.instituteIdentifier
     };
-    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(`${config.get('server:edx:activationCodeUrl')}/primary/SCHOOL/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'generateOrRegeneratePrimaryEdxActivationSchoolCode', 'Error occurred while attempting to generate a Primary Activation Code for school.');
@@ -493,12 +455,11 @@ async function generateOrRegeneratePrimaryEdxActivationSchoolCode(req, res) {
 
 async function generateOrRegeneratePrimaryEdxActivationDistrictCode(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const payload = {
       districtID: req.params.instituteIdentifier
     };
-    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(`${config.get('server:edx:activationCodeUrl')}/primary/DISTRICT/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'generateOrRegeneratePrimaryEdxActivationDistrictCode', 'Error occurred while attempting to generate a Primary Activation Code for district.');
@@ -506,9 +467,9 @@ async function generateOrRegeneratePrimaryEdxActivationDistrictCode(req, res) {
   }
 }
 
-async function checkIfPrimaryCodeExists(req,res, token, instituteType, instituteIdentifier){
+async function checkIfPrimaryCodeExists(req,res, instituteType, instituteIdentifier){
   try {
-    await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${instituteIdentifier}`);
+    await getData(`${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${instituteIdentifier}`);
     return true;
   } catch (e) {
     return false;
@@ -516,14 +477,7 @@ async function checkIfPrimaryCodeExists(req,res, token, instituteType, institute
 }
 
 async function districtUserActivationInvite(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
-  if(!await checkIfPrimaryCodeExists(req,res,token,'DISTRICT', req.body.districtID)){
+  if(!await checkIfPrimaryCodeExists(req,res,'DISTRICT', req.body.districtID)){
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No primary code exists for this district'
     });
@@ -534,7 +488,7 @@ async function districtUserActivationInvite(req, res) {
     edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
-    const response = await utils.postData(token, config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
+    const response = await utils.postData(config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(200).json(response);
   } catch (e) {
     await logApiError(e, 'districtUserActivationInvite', 'Error occurred while sending district user activation invite');
@@ -543,14 +497,7 @@ async function districtUserActivationInvite(req, res) {
 
 }
 async function schoolUserActivationInvite(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
-  if(!await checkIfPrimaryCodeExists(req,res,token,'SCHOOL', req.body.schoolID)){
+  if(!await checkIfPrimaryCodeExists(req,res,'SCHOOL', req.body.schoolID)){
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No primary code exists for this school'
     });
@@ -561,7 +508,7 @@ async function schoolUserActivationInvite(req, res) {
     edxUserExpiryDate: req.body.edxUserExpiryDate
   };
   try {
-    const response = await utils.postData(token, config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
+    const response = await utils.postData(config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(200).json(response);
   } catch (e) {
     await logApiError(e, 'schoolUserActivationInvite', 'Error occurred while sending user activation invite');
@@ -572,10 +519,9 @@ async function schoolUserActivationInvite(req, res) {
 
 async function updateEdxUserSchoolRoles(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
 
-    let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
+    let edxUser = await getData(`${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
     let selectedUserSchools = edxUser.edxUserSchools.filter(school => school.schoolID === req.body.params.schoolID);
     if (!selectedUserSchools[0]) {
       return errorResponse(res, 'A user school entry was not found for the selected user.', HttpStatus.NOT_FOUND);
@@ -604,7 +550,7 @@ async function updateEdxUserSchoolRoles(req, res) {
     selectedUserSchool.createDate = null;
     selectedUserSchool.expiryDate = req.body.params.expiryDate;
 
-    const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
+    const result = await utils.putData(`${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'updateEdxUserSchoolRoles', 'Error occurred while attempting to update user roles.');
@@ -614,10 +560,9 @@ async function updateEdxUserSchoolRoles(req, res) {
 
 async function updateEdxUserDistrictRoles(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
 
-    let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
+    let edxUser = await getData(`${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
     let selectedUserDistricts = edxUser.edxUserDistricts.filter(district => district.districtID === req.body.params.districtId);
     if (!selectedUserDistricts[0]) {
       return errorResponse(res, 'A user district entry was not found for the selected user.', HttpStatus.NOT_FOUND);
@@ -646,7 +591,7 @@ async function updateEdxUserDistrictRoles(req, res) {
     selectedUserDistrict.createDate = null;
     selectedUserDistrict.expiryDate = req.body.params.expiryDate;
 
-    const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
+    const result = await utils.putData(`${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'updateEdxUserDistrictRoles', 'Error occurred while attempting to update user roles.');
@@ -656,7 +601,6 @@ async function updateEdxUserDistrictRoles(req, res) {
 
 async function createSecureExchangeComment(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const message = req.body;
     const secureExchangeComment = {
@@ -693,7 +637,7 @@ async function createSecureExchangeComment(req, res) {
       };
     }
 
-    const result = await utils.postData(token, config.get('server:edx:secureExchangeCommentSagaURL') , payload, null, userInfo.idir_username);
+    const result = await utils.postData(config.get('server:edx:secureExchangeCommentSagaURL') , payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'createExchangeComment', 'Error occurred while attempting to create a new exchange comment.');
@@ -765,8 +709,6 @@ const getContactIdentifierType = (contactIdentifier, res) => {
 
 const uploadDocumentToExchange = async (req, res) => {
   try {
-    const token = utils.getBackendToken(req);
-
     const userName = utils.getUser(req).idir_username;
 
     const document = {
@@ -783,7 +725,7 @@ const uploadDocumentToExchange = async (req, res) => {
         correlationID: req.session.correlationID,
       }
     };
-    const result = await postData(token, config.get('server:edx:exchangeURL') + '/' + req.params.secureExchangeID + '/documents', document, params, userName);
+    const result = await postData(config.get('server:edx:exchangeURL') + '/' + req.params.secureExchangeID + '/documents', document, params, userName);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     return errorResponse(res, e.data?.message, e.status);
@@ -792,8 +734,7 @@ const uploadDocumentToExchange = async (req, res) => {
 
 async function removeDocumentFromExchange(req, res){
   try {
-    const token = utils.getBackendToken(req);
-    const result = await utils.deleteData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/documents/${req.params.documentID}`);
+    const result = await utils.deleteData(config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/documents/${req.params.documentID}`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'removeDocumentFromExchange', 'Error occurred while attempting to remove a document from an exchange.');
@@ -803,8 +744,7 @@ async function removeDocumentFromExchange(req, res){
 
 async function removeUserSchoolAccess(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
+    await utils.deleteData(config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
     log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove school user access.');
@@ -814,8 +754,7 @@ async function removeUserSchoolAccess(req, res) {
 
 async function removeUserDistrictAccess(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/district' + `/${req.body.params.edxUserDistrictID}`);
+    await utils.deleteData(config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/district' + `/${req.body.params.edxUserDistrictID}`);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
     log.error(e, 'removeUserDistrictAccess', 'Error occurred while attempting to remove district user access.');
@@ -825,9 +764,8 @@ async function removeUserDistrictAccess(req, res) {
 
 function getExchangeDocumentById() {
   return async function getDocumentByIdHandler(req, res) {
-    const token = getBackendToken(req);
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
-    getData(token, url).then(resultData => {
+    getData(url).then(resultData => {
       res.setHeader('Content-type', resultData.fileExtension);
       if(isImage(resultData)){
         res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
@@ -849,10 +787,9 @@ function getExchangeDocumentById() {
 
 async function relinkUserSchoolAccess(req, res) {
   try {
-    const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
 
-    let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
+    let edxUserDetails = await getData(config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
     let payload = {};
     let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
     let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
@@ -867,7 +804,7 @@ async function relinkUserSchoolAccess(req, res) {
       edxUserSchoolID: req.body.params.userSchoolID,
       edxUserExpiryDate: req.body.params.edxUserExpiryDate
     };
-    await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
+    await postData(config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
     log.error(e, 'relinkUserSchoolAccess', 'Error occurred while attempting to relink user school access.');
@@ -877,10 +814,9 @@ async function relinkUserSchoolAccess(req, res) {
 
 async function relinkUserDistrictAccess(req, res) {
   try {
-    const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
 
-    let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
+    let edxUserDetails = await getData(config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
     let payload = {};
 
     let userDistrict = edxUserDetails.edxUserDistricts.find(district => district.districtID === req.body.params.districtID);
@@ -896,7 +832,7 @@ async function relinkUserDistrictAccess(req, res) {
       edxUserDistrictID: req.body.params.edxUserDistrictID,
       edxUserExpiryDate: req.body.params.edxUserExpiryDate
     };
-    await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
+    await postData(config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
 
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
@@ -907,9 +843,8 @@ async function relinkUserDistrictAccess(req, res) {
 
 async function createSecureExchangeStudent(req, res) {
   try {
-    const accessToken = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
-    const attachedSecureExchangeStudents = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`);
+    const attachedSecureExchangeStudents = await getData(`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`);
     if (attachedSecureExchangeStudents && attachedSecureExchangeStudents?.some((student) => student.studentId === req.body.studentID)) {
       return errorResponse(res, 'Error adding student to an existing secure exchange. Student already attached.', HttpStatus.CONFLICT);
     }
@@ -919,7 +854,7 @@ async function createSecureExchangeStudent(req, res) {
       studentId: req.body.studentID
     };
 
-    const result = await postData(accessToken,`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`, secureExchangeStudent,null, userName );
+    const result = await postData(`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`, secureExchangeStudent,null, userName );
     return res.status(HttpStatus.CREATED).json(result);
   } catch (e) {
     log.error(e, 'createSecureExchangeStudent', 'Error occurred while attempting to add a secure exchange student.');
@@ -929,8 +864,7 @@ async function createSecureExchangeStudent(req, res) {
 
 async function removeSecureExchangeStudent(req, res){
   try {
-    const accessToken = getBackendToken(req);
-    const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/students/${req.params.studentID}`);
+    const result = await utils.deleteData(config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/students/${req.params.studentID}`);
     return res.status(HttpStatus.OK).json(result);
 
   } catch (e) {
@@ -941,7 +875,6 @@ async function removeSecureExchangeStudent(req, res){
 
 async function createSecureExchangeNote(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
 
     const payload = {
@@ -951,7 +884,7 @@ async function createSecureExchangeNote(req, res) {
       noteTimestamp: LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')),
     };
 
-    const result = await utils.postData(token, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes` , payload, null, userInfo.idir_username);
+    const result = await utils.postData(`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes` , payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'createExchangeNote', 'Error occurred while attempting to create a new exchange note.');
@@ -961,9 +894,8 @@ async function createSecureExchangeNote(req, res) {
 
 async function removeSecureExchangeNote(req, res) {
   try {
-    const accessToken = getBackendToken(req);
     const userInfo = utils.getUser(req);
-    let secureExchange = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}`);
+    let secureExchange = await getData(`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}`);
     if (!secureExchange) {
       return res.status(HttpStatus.NOT_FOUND).json();
     }
@@ -978,7 +910,7 @@ async function removeSecureExchangeNote(req, res) {
       });
     }
 
-    const result = await utils.deleteData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
+    const result = await utils.deleteData(`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
     return res.status(HttpStatus.OK).json(result);
 
   } catch (e) {
@@ -989,8 +921,7 @@ async function removeSecureExchangeNote(req, res) {
 
 async function getExchangeStats(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    let ministryTeamCodeResponse = await getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL'));
+    let ministryTeamCodeResponse = await getCodeTable(CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL'));
 
     let ministryTeam = ministryTeamCodeResponse.find(minTeam => minTeam['groupRoleIdentifier'] === req.params.teamRole);
     if (!ministryTeam) {
@@ -1020,7 +951,7 @@ async function getExchangeStats(req, res) {
       }
     };
 
-    let openMessages = await utils.getData(token,config.get('server:edx:exchangeURL') + '/paginated', paramsOpen).then(response => response?.totalElements);
+    let openMessages = await utils.getData(config.get('server:edx:exchangeURL') + '/paginated', paramsOpen).then(response => response?.totalElements);
 
     searchCriteriaList.push({
       key: 'isReadByMinistry',
@@ -1036,7 +967,7 @@ async function getExchangeStats(req, res) {
       }
     };
 
-    let unreadMessages = await utils.getData(token,config.get('server:edx:exchangeURL') + '/paginated', paramsOpenAndUnread).then(response => response?.totalElements);
+    let unreadMessages = await utils.getData(config.get('server:edx:exchangeURL') + '/paginated', paramsOpenAndUnread).then(response => response?.totalElements);
 
     return res.status(HttpStatus.OK).json({unreadMessages, openMessages});
 
@@ -1061,12 +992,10 @@ async function createSchool(req, res) {
       initialEdxUser: userHasEmptyVals ? null : user
     };
     delete payload.school.districtID;
-
-    const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
 
     const result = await utils
-      .postData(token, `${config.get('server:edx:createSchoolSagaURL')}`, payload, null, userInfo.idir_username);
+      .postData(`${config.get('server:edx:createSchoolSagaURL')}`, payload, null, userInfo.idir_username);
 
     return res.status(HttpStatus.ACCEPTED).json(result);
   } catch (e) {

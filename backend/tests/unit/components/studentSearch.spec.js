@@ -25,7 +25,7 @@ describe('searchStudent', () => {
 
     req.query.searchQueries = JSON.parse(req.query.searchQueries);
     await studentSearch.searchStudent(req,res);
-    expect(utils.getData).toHaveBeenCalledWith('token', config.get('server:student:rootURL') + '/paginated', params);
+    expect(utils.getData).toHaveBeenCalledWith(config.get('server:student:rootURL') + '/paginated', params);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith({});
   };

@@ -56,8 +56,8 @@ describe('renew', () => {
     scopes_supported: ['openid', 'offline_access'],
   };
 
-  const spy = jest.spyOn(utils, 'getOidcDiscovery');
-  jest.mock('../../../src/components/utils');
+  const spy = jest.spyOn(auth, 'getOidcDiscovery');
+  jest.mock('../../../src/components/auth');
 
   afterEach(() => {
     spy.mockClear();
@@ -80,7 +80,7 @@ describe('renew', () => {
   });*/
 
   it('should gracefully return the error response', async () => {
-    utils.getOidcDiscovery.mockResolvedValue(discovery);
+    auth.getOidcDiscovery.mockResolvedValue(discovery);
     mockAxios.onPost(url).reply(400, {
       error: 'invalid_grant',
       error_description: 'Maximum allowed refresh token reuse exceeded'
@@ -245,12 +245,6 @@ describe('isValidGMPUserToken', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-  
-  it ('should return 401 when no backend token', () => {
-    utils.getBackendToken.mockReturnValue(null);
-    isValidGMPUserToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 
   it ('should call next when token and role are validated', () => {

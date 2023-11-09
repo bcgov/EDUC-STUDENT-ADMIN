@@ -19,6 +19,7 @@ const utils = require('../../../src/components/utils');
 const { ApiError, ServiceError } = require('../../../src/components/error');
 jest.mock('../../../src/config/index');
 const config = require('../../../src/config/index');
+const auth = require('../../../src/components/auth');
 
 const penRequestStatusCodesData = [
   {
@@ -146,12 +147,12 @@ describe('getPenRequestCommentById', () => {
 
   let req;
   let res;
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'getUser');
   jest.spyOn(utils, 'getData');
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     utils.getUser.mockResolvedValue(userData);
     utils.getData.mockResolvedValue(penRequestsData);
     utils.formatCommentTimestamp.mockReturnValue('2020-03-18 2:22pm');
@@ -287,13 +288,13 @@ describe('getPenRequestById', () => {
   let req;
   let res;
 
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'getData');
   jest.spyOn(utils, 'getCodeLabel');
   jest.spyOn(utils, 'saveSession');
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     utils.saveSession.mockReturnValue(null);
     req = mockRequest();
     res = mockResponse();
@@ -356,13 +357,13 @@ describe('getStudentById', () => {
   const formattedResponse = Object.keys(studentData[0]).filter(key => key!=='studentId').reduce( (re, key) => Object.assign(re, { [key]: studentData[0][key] }), {} );
   formattedResponse.genderCode = 'genderLabel';
 
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'getData');
   jest.spyOn(utils, 'getCodeTable');
   jest.spyOn(utils, 'getCodeLabel');
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     utils.getCodeTable.mockResolvedValue(genderCodesData);
     utils.getCodeLabel.mockReturnValue('genderLabel');
     req = mockRequest();
@@ -448,12 +449,12 @@ describe('getStudentDemographicsById', () => {
   let req;
   let res;
 
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'getData');
   jest.spyOn(utils, 'formatDate');
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     utils.formatDate.mockReturnValue(formattedValue);
     req = mockRequest();
     res = mockResponse();
@@ -506,14 +507,14 @@ describe('updatePenRequest', () => {
   let req;
   let res;
 
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'putData');
   jest.spyOn(utils, 'getCodeTable');
   jest.spyOn(utils, 'getCodeLabel');
 
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.session.penRequest = {
@@ -528,10 +529,6 @@ describe('updatePenRequest', () => {
     jest.clearAllMocks();
   });
 
-  it('should throw ServiceError error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    expect(requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).rejects.toThrowError(ServiceError);
-  });
   it('should return api error if there is no session data', async () => {
     delete req.session.penRequest;
     expect(requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).rejects.toThrowError(ServiceError);
@@ -584,7 +581,7 @@ describe('putPenRequest', () => {
   let res;
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.body = {};

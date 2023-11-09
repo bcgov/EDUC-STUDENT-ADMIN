@@ -11,7 +11,6 @@ const commonRequest = require('./requests');
 
 
 function createStudentRequestApiServiceReq(studentRequest, req) {
-  //studentRequest.pen = req.body.pen;
   studentRequest.studentRequestStatusCode = req.body.studentRequestStatusCode;
   commonRequest.setDefaultsForCreateApiReq(studentRequest, req);
   return studentRequest;
@@ -31,8 +30,8 @@ async function getUMPRequestStats(req, res) {
     valueType: 'STRING'
   }];
   return Promise.all([
-    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
-    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
+    utils.getData(config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
+    utils.getData(config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
   ]).then(([initRevResponse, subsRevResponse]) => {
     return res.status(200).json({ numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements });
   }).catch(e => {
@@ -52,12 +51,12 @@ async function rejectProfileRequest(req, res) {
   profileRequest.rejectionReason = req.body.failureReason;
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-reject-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'reject', userToken['idir_username']);
+  return await executeProfReqSaga(url, profileRequest, res, 'reject', userToken['idir_username']);
 }
 
-async function executeProfReqSaga(token, url, profileRequest, res, sagaType, user) {
+async function executeProfReqSaga(url, profileRequest, res, sagaType, user) {
   try {
-    const sagaId = await utils.postData(token, url, profileRequest, null, user);
+    const sagaId = await utils.postData(url, profileRequest, null, user);
     const event = {
       sagaId: sagaId,
       studentRequestID: profileRequest.studentProfileRequestID, //DONT change the key it will break the check during getAllRequests or getRequestById in requests.js
@@ -82,7 +81,7 @@ async function returnProfileRequest(req, res) {
   profileRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-return-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'return', userToken['idir_username']);
+  return await executeProfReqSaga(url, profileRequest, res, 'return', userToken['idir_username']);
 }
 
 
@@ -99,7 +98,7 @@ async function completeProfileRequest(req, res) {
   profileRequest.pen = thisSession.studentDemographics.pen;
   commonRequest.setDefaultsInRequestForComplete(profileRequest, thisSession, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-complete-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'complete', req.body.reviewer);
+  return await executeProfReqSaga(url, profileRequest, res, 'complete', req.body.reviewer);
 }
 module.exports = {
   createStudentRequestApiServiceReq,

@@ -39,7 +39,7 @@ async function getPossibleMatchesByStudentID(req, res) {
   try {
     const studentID = req.params.studentID;
     if (studentID) {
-      return res.status(HttpStatus.OK).json(await utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${studentID}`));
+      return res.status(HttpStatus.OK).json(await utils.getData(`${config.get('server:penMatch:possibleMatch')}/${studentID}`));
     }
     return res.status(HttpStatus.BAD_REQUEST).json();
   } catch (e) {
@@ -55,7 +55,7 @@ async function deletePossibleMatchesByStudentIDAndMatchedStudentID(req, res) {
     const studentID = req.params.studentID;
     const matchedStudentID = req.params.matchedStudentID;
     if (studentID && matchedStudentID) {
-      return res.status(HttpStatus.NO_CONTENT).json(await utils.deleteData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${studentID}/${matchedStudentID}`));
+      return res.status(HttpStatus.NO_CONTENT).json(await utils.deleteData(`${config.get('server:penMatch:possibleMatch')}/${studentID}/${matchedStudentID}`));
     }
     return res.status(HttpStatus.BAD_REQUEST).json();
   } catch (e) {
@@ -85,7 +85,7 @@ async function savePossibleMatchesForStudent(req, res) {
         item.createUser = userName;
         item.updateUser = userName;
       });
-      return res.status(HttpStatus.CREATED).json(await utils.postData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}`, payload));
+      return res.status(HttpStatus.CREATED).json(await utils.postData(`${config.get('server:penMatch:possibleMatch')}`, payload));
     }
     return res.status(HttpStatus.BAD_REQUEST).json();
 
@@ -107,7 +107,7 @@ async function deletePossibleMatches(req, res) {
   try {
     const payload = req.body;
     if (payload && payload.length > 0) {
-      await utils.deleteDataWithBody(utils.getBackendToken(req), config.get('server:penMatch:possibleMatch'), payload);
+      await utils.deleteDataWithBody(config.get('server:penMatch:possibleMatch'), payload);
       return res.status(HttpStatus.NO_CONTENT).json();
     }
     return res.status(HttpStatus.BAD_REQUEST).json();

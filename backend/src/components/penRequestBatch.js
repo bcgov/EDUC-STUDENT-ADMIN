@@ -1,7 +1,7 @@
 'use strict';
 const config = require('../config/index');
 const {
-  logApiError, postData, getBackendToken, getData, putData, errorResponse,
+  logApiError, postData, getData, putData, errorResponse,
   getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug, addSagaStatusToRecords
 } = require('./utils');
 const HttpStatus = require('http-status-codes');
@@ -15,7 +15,7 @@ const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
 
 async function getPENBatchRequestStats(req, res) {
   try{
-    const response = await getData(getBackendToken(req), config.get('server:penRequestBatch:rootURL')+'/pen-request-batch/stats');
+    const response = await getData(config.get('server:penRequestBatch:rootURL')+'/pen-request-batch/stats');
     let formattedResponse = {};
     formattedResponse['ERROR'] = {
       loadFailed: response.loadFailCount
@@ -37,16 +37,9 @@ async function getPENBatchRequestStats(req, res) {
 }
 
 async function updatePrbStudentInfoRequested(req, res) {
-  const token = getBackendToken(req, res);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    let studentData = await getData(token, url);
+    let studentData = await getData(url);
 
     const studentReq = {
       ...studentData,
@@ -54,7 +47,7 @@ async function updatePrbStudentInfoRequested(req, res) {
       penRequestBatchStudentStatusCode: req.body.penRequestBatchStudentStatusCode
     };
 
-    const studentRes = await putData(token, url, studentReq, getUser(req).idir_username);
+    const studentRes = await putData(url, studentReq, getUser(req).idir_username);
     return res.status(200).json(studentRes);
   } catch (e) {
     logApiError(e, 'updateStudentInfoRequested', 'Error updating a PrbStudent.');
@@ -72,7 +65,7 @@ async function getPenRequestBatchStudentIDs(req, res) {
       }
     };
 
-    const dataResponse = await getData(getBackendToken(req), `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/pen-request-batch-ids`, params);
+    const dataResponse = await getData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/pen-request-batch-ids`, params);
     return res.status(200).json(dataResponse);
 
   } catch (e) {
@@ -85,7 +78,7 @@ async function getPenRequestBatchStudentIDs(req, res) {
 
 async function getPenRequestBatchSamePENStudentIDs(req, res) {
   try {
-    const dataResponse = await getData(getBackendToken(req), `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/same-pen?penRequestBatchID=` + req.query.batchIDs);
+    const dataResponse = await getData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/same-pen?penRequestBatchID=` + req.query.batchIDs);
     return res.status(200).json(dataResponse);
   } catch (e) {
     logApiError(e, 'getPenRequestBatchSamePENStudentIDs', 'Error occurred while attempting to get prb same pen student IDs.');
@@ -96,10 +89,9 @@ async function getPenRequestBatchSamePENStudentIDs(req, res) {
 }
 
 async function getPenRequestBatchStudentById(req, res) {
-  const token = getBackendToken(req, res);
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    let studentData = await getData(token, url);
+    let studentData = await getData(url);
     studentData.repeatRequestOriginalStatus = studentData.penRequestBatchStudentStatusCode;
     await addPenRequestBatchStudentSagaStatus([studentData]);
     return res.status(200).json(studentData);
@@ -110,20 +102,13 @@ async function getPenRequestBatchStudentById(req, res) {
 }
 
 async function getPenRequestBatchStudentMatchOutcome(req, res) {
-  const token = getBackendToken(req, res);
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
-
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.query.id}/student/${req.query.studentId}/possible-match`;
-    let matchData = await getData(token, url);
+    let matchData = await getData(url);
 
     return Promise.all(matchData.map(async (match) => {
       const studentUrl = `${config.get('server:student:rootURL')}/${match.matchedStudentId}`;
-      return await getData(token, studentUrl);
+      return await getData(studentUrl);
     })).then((response) => {
       return res.status(200).json(response);
     }).catch(e => {
@@ -137,8 +122,6 @@ async function getPenRequestBatchStudentMatchOutcome(req, res) {
 }
 
 async function issueNewPen(req, res) {
-  const token = getBackendToken(req, res);
-
   try {
     let studentData = req.body.prbStudent;
 
@@ -152,7 +135,7 @@ async function issueNewPen(req, res) {
       matchedStudentIDList: req.body.twinStudentIDs
     };
 
-    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
 
     await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA', 'issueNewPen', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
@@ -179,13 +162,12 @@ async function issueNewPen(req, res) {
  * @returns {Promise<*>}
  */
 async function userMatchSaga(req, res) {
-  const token = getBackendToken(req, res);
   try {
     if (!req.body.matchedPEN || req.body.matchedPEN.length !== 9) {
       return res.status(400).json({'message': 'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
     }
     const possibleMatchUrl = `${config.get('server:penMatch:possibleMatch')}/${req.body.studentID}`;
-    const possibleMatches = await getData(token, possibleMatchUrl);
+    const possibleMatches = await getData(possibleMatchUrl);
     const studentData = stripAuditColumns(req.body.prbStudent);
     studentData.assignedPEN = req.body.matchedPEN;
     studentData.studentID = req.body.studentID;
@@ -198,7 +180,7 @@ async function userMatchSaga(req, res) {
       matchedStudentIDList: possibleMatchIds
     };
 
-    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
 
     await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA', 'user match', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
@@ -240,11 +222,10 @@ function filterPossibleMatchIds(studentPossibleMatchResponse, studentPossibleMat
  * @returns {Promise<*>}
  */
 async function userUnmatchSaga(req, res) {
-  const token = getBackendToken(req, res);
   try {
     const possibleMatchUrl = `${config.get('server:penMatch:possibleMatch')}/${req.body.studentID}`;
     const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    const results = await Promise.all([getData(token, possibleMatchUrl), getData(token, prbStudentUrl)]);
+    const results = await Promise.all([getData(possibleMatchUrl), getData(prbStudentUrl)]);
     const studentData = stripAuditColumns(results[1]);
     const possibleMatchIds = lodash.compact(req.body.matchedStudentIDList.map(matchedStudentID =>
       lodash.find(results[0], ['matchedStudentID', matchedStudentID])?.matchedStudentID
@@ -256,7 +237,7 @@ async function userUnmatchSaga(req, res) {
       matchedStudentIDList: possibleMatchIds
     };
 
-    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-unmatch`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-unmatch`, sagaReq, null, getUser(req).idir_username);
 
     await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA', 'user unmatch', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
@@ -295,8 +276,6 @@ function addPenRequestBatchSagaStatus(batchFiles) {
 }
 
 async function updateFilesByIDs(req, res, updateFile) {
-  const token = getBackendToken(req, res);
-
   try {
     const params = {
       params: {
@@ -313,10 +292,10 @@ async function updateFilesByIDs(req, res, updateFile) {
       }
     };
 
-    const dataResponse = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, params);
+    const dataResponse = await getData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, params);
     const promises = dataResponse.content.map(batchFile => {
       updateFile(batchFile);
-      return putData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${batchFile.penRequestBatchID}`, batchFile, getUser(req).idir_username);
+      return putData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${batchFile.penRequestBatchID}`, batchFile, getUser(req).idir_username);
     });
 
     const results = await Promise.allSettled(promises);
@@ -337,12 +316,11 @@ async function updateFilesByIDs(req, res, updateFile) {
 
 async function archiveFiles(req, res) {
   if(req.body.penRequestBatchIDs?.length) {
-    const token = getBackendToken(req, res);
     const body = lodash.map(req.body.penRequestBatchIDs, function(item) {
       return { penRequestBatchID: item };
     });
     try{
-      const data = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/archive`, body, null, getUser(req).idir_username);
+      const data = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/archive`, body, null, getUser(req).idir_username);
       return res.status(200).json(data);
     }catch (e){
       if (e.status === HttpStatus.CONFLICT) {
@@ -360,12 +338,11 @@ async function archiveFiles(req, res) {
 
 async function archiveAndReturnFiles(req, res) {
   if(req.body.penRequestBatchIDs?.length) {
-    const token = getBackendToken(req, res);
     try {
       const sagaReq = {
         penRequestBatchArchiveAndReturnSagaData: req.body.penRequestBatchIDs
       };
-      let sagaIds = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/archive-and-return`, sagaReq, null, getUser(req).idir_username);
+      let sagaIds = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/archive-and-return`, sagaReq, null, getUser(req).idir_username);
       sagaIds.forEach(async (sagaId) => {
         await createPenRequestBatchSagaRecordInRedis(sagaId.sagaId, 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC', 'archiveAndReturn', null, sagaId.penRequestBatchID);
       });
@@ -407,10 +384,9 @@ function releaseBatchFilesForFurtherProcessing(req, res){
 
 
 async function repostReports(req, res) {
-  const token = getBackendToken(req, res);
   try {
     const sagaReq = req.body;
-    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/repost-reports`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/repost-reports`, sagaReq, null, getUser(req).idir_username);
     await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_REPOST_REPORTS_SAGA', 'repostReports', null, req.body.penRequestBatchID);
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -423,10 +399,9 @@ async function repostReports(req, res) {
 }
 
 const findValidationIssuesByPrbStudentID = async (req, res) =>{
-  const token = getBackendToken(req, res);
   try {
     const prbStudentID = req.params.id;
-    const validationIssues = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/students/${prbStudentID}/validation-issues`);
+    const validationIssues = await getData(`${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/students/${prbStudentID}/validation-issues`);
     return res.status(200).json(validationIssues);
   } catch (e) {
     logApiError(e, 'findValidationIssuesByPrbStudentID', 'Error calling findValidationIssuesByPrbStudentID.');

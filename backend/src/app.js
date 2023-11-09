@@ -10,7 +10,6 @@ const express = require('express');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
-const utils = require('./components/utils');
 const auth = require('./components/auth');
 const bodyParser = require('body-parser');
 dotenv.config();
@@ -109,7 +108,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //initialize our authentication strategy
-utils.getOidcDiscovery().then(discovery => {
+auth.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
   passport.use('oidc', new OidcStrategy({
     issuer: discovery.issuer,
