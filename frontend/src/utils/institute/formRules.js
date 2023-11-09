@@ -51,7 +51,7 @@ const noSpecialCharactersContactName = (message = 'Remove or replace any special
   v => !v || !/[^A-Za-z.'\s-]/.test(v) || message;
 
 const specialCharactersInSchDisName = (displayName, message = 'Required. Enter a school name without special characters.') =>{
-  if(/[^A-Za-z.'\s-]/.test(displayName)) {
+  if(/[^A-Za-z.'0-9#@&():?/\s-]/.test(displayName)) {
     return required(message);
   }
 };
