@@ -731,7 +731,8 @@ export default {
       };
     },
     requiredForOffshoreOrIndependentSchool(formValue) {
-      return this.rules.requiredIf(this.independentArray.includes(this.newSchool.schoolCategoryCode))(formValue);
+      const categories = [...this.offshoreArray, ...this.independentArray];
+      return this.rules.requiredIf(categories.includes(this.newSchool.schoolCategoryCode))(formValue);
     },
     openEffectiveDatePicker() {
       this.$refs.newSchoolDatePicker.openMenu();
