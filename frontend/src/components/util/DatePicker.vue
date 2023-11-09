@@ -30,6 +30,11 @@ export default defineComponent({
     modelType: {
       type: String,
       required: true
+    },
+    allowTeleport: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   emits: ['update:model-value', 'clearDate'],
@@ -58,10 +63,10 @@ export default defineComponent({
     :min-date="minDate"
     :max-date="maxDate"
     @update:model-value="saveDate"
-    :teleport="true"
-    :auto-position="true"
     position="left"
     auto-apply
+    :auto-position="true"
+    :teleport="allowTeleport"
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
       <v-text-field

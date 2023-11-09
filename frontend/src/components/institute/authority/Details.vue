@@ -830,7 +830,7 @@
       no-click-animation
       scrollable
       persistent
-      width="50%"
+      max-width="30%"
     >
       <AuthorityStatus
         v-if="openAuthorityStatusEditCard"

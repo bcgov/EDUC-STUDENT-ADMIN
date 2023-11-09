@@ -63,6 +63,7 @@
                       :max-date="cutOffDate"
                       model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
+                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>
@@ -146,6 +147,7 @@
                       :min-date="dateOfLastSchoolClosure"
                       model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
+                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>
@@ -204,6 +206,7 @@
                       :min-date="dateOfLastSchoolClosure"
                       model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
+                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>

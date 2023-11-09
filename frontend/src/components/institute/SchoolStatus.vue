@@ -104,6 +104,7 @@
                         :rules="[rules.required()]"
                         model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
+                        :allowTeleport="true"
                       />
                     </v-col>
                   </v-row>
@@ -126,6 +127,7 @@
                         :rules="[rules.required()]"
                         model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
+                        :allowTeleport="true"
                       />
                     </v-col>
                   </v-row>
@@ -148,6 +150,7 @@
                         :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
                         model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
+                        :allowTeleport="true"
                       />
                     </v-col>
                   </v-row>
@@ -170,6 +173,7 @@
                         :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
                         model-type="yyyy-MM-dd'T'00:00:00"
                         @update:model-value="validateForm"
+                        :allowTeleport="true"
                       />
                     </v-col>
                   </v-row>
