@@ -3,7 +3,6 @@ const CronJob = require('cron').CronJob;
 const config = require('../config/index');
 const log = require('../components/logger');
 const SAGAS = require('../components/saga');
-const {getApiCredentials} = require('../components/auth');
 const safeStringify = require('fast-safe-stringify');
 const {getData} = require('../components/utils');
 const schedulerCronStaleSagaRecordRedis = config.get('scheduler:schedulerCronStaleSagaRecordRedis');
