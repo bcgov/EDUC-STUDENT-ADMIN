@@ -980,16 +980,12 @@ async function createSchool(req, res) {
   try {
     const {school, user} = req.body;
 
-    const isEmptyString = str => typeof str === 'string' && str.trim() === '';
-    const userHasEmptyVals = Object.values(user)
-      .reduce((result, currentValue) => result || isEmptyString(currentValue), false);
-
     const payload = {
       school: {
         ...school,
         districtId: school.districtID
       },
-      initialEdxUser: userHasEmptyVals ? null : user
+      initialEdxUser: user
     };
     delete payload.school.districtID;
     const userInfo = utils.getUser(req);
