@@ -9,7 +9,7 @@ async function searchStudent(req, res) {
   let searchListCriteria = [];
   let legalNicknames = [];
   let usualNicknames = [];
-  let isAuditHistorySearch = false;
+  let isAuditHistorySearch = 'false';
 
   if(req.query.searchQueries) {
     let searchQueries = req.query.searchQueries;
