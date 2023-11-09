@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, putData, logApiError, errorResponse, unauthorizedError } = require('./utils');
+const { getData, putData, logApiError, errorResponse } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const SAGAS = require('./saga');
@@ -11,10 +11,6 @@ const {LocalDateTime} = require('@js-joda/core');
 
 function getAllRequests(requestType) {
   return async function getAllRequestsHandler(req, res) {
-    const token = getBackendToken(req);
-    if (!token) {
-      return unauthorizedError(res);
-    }
     //remove previous pen request from session
     delete req['session'].penRequest;
     delete req['session'].identityType;
@@ -45,7 +41,7 @@ function getAllRequests(requestType) {
     const statusCodeKeyName = `${requestType}StatusCode`;
 
     if (statusFilters) {
-      const statusCodes = await utils.getCodeTable(token, `${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`));
+      const statusCodes = await utils.getCodeTable(`${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`));
       statusFilters.forEach((element, index) => {
         statusFilters[index] = utils.getCodeFromLabel(statusCodes, statusCodeKeyName, element);
       });
@@ -66,8 +62,8 @@ function getAllRequests(requestType) {
     };
 
     return Promise.all([
-      utils.getCodeTable(token, `${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`)),
-      getData(token, config.get(`server:${requestType}:rootURL`) + '/paginated', params)
+      utils.getCodeTable(`${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`)),
+      getData(config.get(`server:${requestType}:rootURL`) + '/paginated', params)
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
         const eventsArrayFromRedis = await redisUtil.getSagaEventsByRedisKey(SAGAS.GMP_UMP.sagaEventRedisKey);
@@ -107,11 +103,7 @@ function getAllRequests(requestType) {
 function getRequestCommentById(requestType) {
   return async function getRequestCommentByIdHandler(req, res) {
     try {
-      const token = utils.getBackendToken(req);
-      if (!token) {
-        return unauthorizedError(res);
-      }
-      const dataResponse = await getData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments');
+      const dataResponse = await getData(config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments');
 
       let response = {
         messages: []
@@ -141,17 +133,13 @@ function getRequestCommentById(requestType) {
 function getRequestById(requestType) {
   return async function getRequestByIdHandler(req, res) {
     try {
-      const token = getBackendToken(req, res);
-      if (!token) {
-        return unauthorizedError(res);
-      }
       return Promise.all([
-        getData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id),
-        utils.getCodeTable(token, 'identityTypeCodes', config.get('server:digitalIdIdentityTypeCodesURL')),
-        utils.getCodeTable(token, `${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`))
+        getData(config.get(`server:${requestType}:rootURL`) + '/' + req.params.id),
+        utils.getCodeTable('identityTypeCodes', config.get('server:digitalIdIdentityTypeCodesURL')),
+        utils.getCodeTable(`${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`))
       ])
         .then(async ([dataResponse, digitalIdIdentityTypeCodesResponse, statusCodesResponse]) => {
-          const response = await getData(token, config.get('server:digitalIdURL') + '/' + dataResponse['digitalID']);
+          const response = await getData(config.get('server:digitalIdURL') + '/' + dataResponse['digitalID']);
           req['session'].identityType = response['identityTypeCode']; // add this to session for next use while triggering email.
           if (!digitalIdIdentityTypeCodesResponse) {
             log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
@@ -200,14 +188,10 @@ function getRequestById(requestType) {
 }
 
 async function getStudentById(req, res) {
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    return unauthorizedError(res);
-  }
   const id = req.params.id;
   return Promise.all([
-    utils.getData(token, config.get('server:student:rootURL'), {params: {pen: id}}),
-    utils.getCodeTable(token, 'genderCodes', config.get('server:student:genderCodesURL'))
+    utils.getData(config.get('server:student:rootURL'), {params: {pen: id}}),
+    utils.getCodeTable('genderCodes', config.get('server:student:genderCodesURL'))
   ])
     .then(async ([dataResponse, genderCodesResponse]) => {
       if (Array.isArray(dataResponse) && dataResponse.length === 1) {
@@ -236,16 +220,9 @@ async function getStudentById(req, res) {
 
 async function getStudentDemographicsById(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
     let statusCode;
     if(config.get('server:enablePrrStudentDemographics')) {
-      const response = await utils.getData(token, config.get('server:student:rootURL'), {params: {pen: req.params.id}});
+      const response = await utils.getData(config.get('server:student:rootURL'), {params: {pen: req.params.id}});
       if(response.length === 0) {
         const message = `No student record was found for pen :: ${req.params.id}`;
         log.error(message);
@@ -268,7 +245,7 @@ async function getStudentDemographicsById(req, res) {
       };
       statusCode = response[0]['statusCode'];
     } else {
-      const response = await utils.getData(token, config.get('server:demographicsURL') + '/' + req.params.id);
+      const response = await utils.getData(config.get('server:demographicsURL') + '/' + req.params.id);
       const birthDate = utils.formatDate(response['studBirth']);
       req['session'].studentDemographics = response;
       req['session'].studentDemographics.dob = birthDate;
@@ -315,11 +292,6 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
     log.error('Error attempting to update request.  There is no request stored in session.');
     throw new ServiceError('updateRequest', {message: 'Empty session'});
   }
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    log.error('Error attempting to update request.  Unable to get token.');
-    throw new ServiceError('updateRequest', {message: 'No access token'});
-  }
   let request = thisSession.penRequest;
   const dataSourceCode = request.dataSourceCode;
   delete request.dataSourceCode;
@@ -327,8 +299,8 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
   request = createApiServiceReq(request, req);
 
   return Promise.all([
-    putData(token, config.get(`server:${requestType}:rootURL`), request, utils.getUser(req).idir_username),
-    utils.getCodeTable(token, `${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`))
+    putData(config.get(`server:${requestType}:rootURL`), request, utils.getUser(req).idir_username),
+    utils.getCodeTable(`${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`))
   ])
     .then(async ([dataResponse, statusCodesResponse]) => {
       dataResponse.dataSourceCode = dataSourceCode;

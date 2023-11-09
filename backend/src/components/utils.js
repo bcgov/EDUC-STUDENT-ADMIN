@@ -12,18 +12,17 @@ const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
+const auth = require('./auth');
+
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
   return axiosRequestConfig;
 });
 
-let discovery = null;
 let memCache = new cache.Cache();
-
-function getBackendToken(req) {
-  const thisSession = req.session;
-  return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
+async function getBackendToken() {
+  return await auth.getBackendServiceToken();
 }
 
 function unauthorizedError(res) {
@@ -66,11 +65,11 @@ function addTokenToHeader(params, token) {
   return params;
 }
 
-async function deleteData(token, url) {
+async function deleteData(url) {
   try {
     const delConfig = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${await getBackendToken()}`,
       }
     };
 
@@ -107,14 +106,14 @@ function getFileExtensionWithDot(fileName) {
   return (extension.length > 0 ? ('.' + extension) : '');
 }
 
-async function deleteDataWithBody(token, url, data) {
+async function deleteDataWithBody(url, data) {
   if (!data) {
     throw new ApiError(400, {message: 'Invalid request for delete with body'}, new Error('Empty body'));
   }
   try {
     const delConfig = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${await getBackendToken()}`,
       },
       data: data
     };
@@ -130,9 +129,9 @@ async function deleteDataWithBody(token, url, data) {
   }
 }
 
-async function getData(token, url, params) {
+async function getData(url, params) {
   try {
-    params = addTokenToHeader(params, token);
+    params = addTokenToHeader(params, await getBackendToken());
     logRequestData('GET', url);
     const response = await axios.get(url, params);
     logResponseData(url, response, 'GET');
@@ -180,9 +179,9 @@ async function logRequestData(operationType, url, data) {
   }
 }
 
-async function postData(token, url, data, params, user) {
+async function postData(url, data, params, user) {
   try {
-    params = addTokenToHeader(params, token);
+    params = addTokenToHeader(params, await getBackendToken());
     params.maxContentLength = Infinity;
     params.maxBodyLength = Infinity;
 
@@ -212,11 +211,11 @@ function throwError(e, url, operationType) {
   throw new ApiError(status, data, e);
 }
 
-async function putData(token, url, data, user) {
+async function putData(url, data, user) {
   try {
     const putDataConfig = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${await getBackendToken()}`,
       }
     };
     if(user && typeof user === 'string'){
@@ -232,7 +231,7 @@ async function putData(token, url, data, user) {
 }
 
 //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
-function getCodeTable(token, key, url, useCache = true) {
+async function getCodeTable(key, url, useCache = true) {
   try {
     let cacheContent = useCache && memCache.get(key);
     if (cacheContent) {
@@ -240,7 +239,7 @@ function getCodeTable(token, key, url, useCache = true) {
     } else {
       const getDataConfig = {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await getBackendToken()}`,
         }
       };
       return axios.get(url, getDataConfig)
@@ -262,13 +261,6 @@ function getCodeTable(token, key, url, useCache = true) {
 function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
-      const token = getBackendToken(req);
-      if (!token) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'No access token'
-        });
-      }
-
       let pageSize = req.query.pageSize;
       if(!req.query.pageSizeOverride && pageSize > 20) {
         pageSize = 20;
@@ -283,7 +275,7 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
         }
       };
 
-      const dataResponse = await getData(token, url, params);
+      const dataResponse = await getData(url, params);
       if(handleResponse && dataResponse.content) {
         await handleResponse(dataResponse.content);
       }
@@ -317,14 +309,13 @@ async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
 
 function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   return async function forwardGetHandler(req, res) {
-    const token = getBackendToken(req);
     try {
       const params = {
         params: req.query
       };
 
       const url = config.get(urlKey);
-      const data = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
+      const data = await getData(extraPath ? `${url}${extraPath}` : url, params);
       if(handleResponse && data) {
         await handleResponse(data);
       }
@@ -339,18 +330,6 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
 
 
 const utils = {
-  // Returns OIDC Discovery values
-  async getOidcDiscovery() {
-    if (!discovery) {
-      try {
-        const response = await axios.get(config.get('oidc:discovery'));
-        discovery = response.data;
-      } catch (error) {
-        log.error('getOidcDiscovery', `OIDC Discovery failed - ${error.message}`);
-      }
-    }
-    return discovery;
-  },
   getUser(req) {
     const thisSession = req.session;
     if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
@@ -394,12 +373,8 @@ const utils = {
   getActiveCodes(urlKey, cacheKey) {
     return async function getActiveCodesHandler(req, res) {
       try {
-        const token = getBackendToken(req);
-        if (!token) {
-          return unauthorizedError(res);
-        }
         const url = config.get(urlKey);
-        const codes = await getCodeTable(token, cacheKey, url);
+        const codes = await getCodeTable(cacheKey, url);
 
         const curDate = LocalDateTime.now();
         const filtered = codes.filter(d => curDate.isAfter(LocalDateTime.parse(d.effectiveDate)) && curDate.isBefore(LocalDateTime.parse(d.expiryDate)));
@@ -414,12 +389,8 @@ const utils = {
   getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     return async function getCodesHandler(req, res) {
       try {
-        const token = getBackendToken(req);
-        if (!token) {
-          return unauthorizedError(res);
-        }
         const url = config.get(urlKey);
-        const codes = await getCodeTable(token, cacheKey, extraPath ? `${url}${extraPath}` : url, useCache);
+        const codes = await getCodeTable(cacheKey, extraPath ? `${url}${extraPath}` : url, useCache);
 
         return res.status(HttpStatus.OK).json(codes);
 
@@ -507,7 +478,7 @@ const utils = {
    * @param {String} studentIDs the comma separated ids of student
    * @returns {Promise<undefined>}
    */
-  async getStudentsFromStudentAPIByTheirIds(token, studentIDs) {
+  async getStudentsFromStudentAPIByTheirIds(studentIDs) {
     const pageSize = studentIDs.split(',').length; // it is expected to get all the student ids as a comma separated string.
     let searchListCriteria = [];
     searchListCriteria.push({
@@ -528,7 +499,7 @@ const utils = {
       }
     };
 
-    return utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
+    return utils.getData(config.get('server:student:rootURL') + '/paginated', params);
   },
   async logDebug(message, data) {
     log.debug(message, data ?? '');

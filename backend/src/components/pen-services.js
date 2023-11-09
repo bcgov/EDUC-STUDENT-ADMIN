@@ -4,20 +4,19 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
-const {getBackendToken, getData, postData, stripAuditColumns, getUser, errorResponse} = require('./utils');
+const {getData, postData, stripAuditColumns, getUser, errorResponse} = require('./utils');
 const {v4: uuidv4} = require('uuid');
 const SAGAS = require('./saga');
 
 async function validateStudentDemogData(req, res) {
   try {
-    const token = getBackendToken(req);
     const student = req.body.student;
     Object.keys(student).forEach(key => {
       student[key] = student[key] || ''; // send empty string than null or undefined.
     });
     student.isInteractive = true;
     student.transactionID = uuidv4();
-    const dataResponse = await postData(token, config.get('server:penServices:validateDemographicsURL'), student, null);
+    const dataResponse = await postData(config.get('server:penServices:validateDemographicsURL'), student, null);
     return res.status(200).json(dataResponse);
 
   } catch (e) {
@@ -30,9 +29,8 @@ async function validateStudentDemogData(req, res) {
 
 async function getMergeByStudentIDAndMergeDirection(req, res) {
   try {
-    const token = getBackendToken(req);
     const studentID = req.params.id;
-    const result = await getData(token, config.get('server:penServices:rootURL') + '/' + studentID + '/merges', {params: {mergeDirection: req.query.mergeDirection}});
+    const result = await getData(config.get('server:penServices:rootURL') + '/' + studentID + '/merges', {params: {mergeDirection: req.query.mergeDirection}});
     if (result && result.length > 0) {
       return res.status(200).json(result);
     } else {
@@ -45,8 +43,6 @@ async function getMergeByStudentIDAndMergeDirection(req, res) {
 }
 
 async function mergeStudents(req, res) {
-  const token = getBackendToken(req, res);
-
   try {
     let mergeData = req.body;
     mergeData.mincode = mergeData.mincode?.replace(/ /g,'');
@@ -59,7 +55,7 @@ async function mergeStudents(req, res) {
       createUser: getUser(req).idir_username,
     };
 
-    const sagaId = await postData(token, `${config.get('server:penServices:mergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penServices:mergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
 
     await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA', 'merge students', mergeData.studentID);
 
@@ -74,8 +70,6 @@ async function mergeStudents(req, res) {
 }
 
 async function demergeStudents(req, res) {
-  const token = getBackendToken(req, res);
-
   try {
     let demergeData = req.body;
 
@@ -85,7 +79,7 @@ async function demergeStudents(req, res) {
       createUser: getUser(req).idir_username,
     };
 
-    const sagaId = await postData(token, `${config.get('server:penServices:demergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penServices:demergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
 
     await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA', 'demerge students', demergeData.mergedFromStudentID);
 
@@ -100,8 +94,6 @@ async function demergeStudents(req, res) {
 }
 
 async function splitPen(req, res) {
-  const token = getBackendToken(req, res);
-
   try {
     let reqData = req.body;
 
@@ -109,7 +101,7 @@ async function splitPen(req, res) {
       ...stripAuditColumns(reqData),
     };
 
-    const sagaId = await postData(token, `${config.get('server:penServices:rootURL')}/split-pen-saga`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penServices:rootURL')}/split-pen-saga`, sagaReq, null, getUser(req).idir_username);
 
     await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_SPLIT_PEN_SAGA', 'split pen', reqData.studentID);
 
@@ -124,8 +116,6 @@ async function splitPen(req, res) {
 }
 
 async function moveSldRecords(req, res) {
-  const token = getBackendToken(req, res);
-
   try {
     let reqData = req.body;
 
@@ -133,7 +123,7 @@ async function moveSldRecords(req, res) {
       ...stripAuditColumns(reqData),
     };
 
-    const sagaId = await postData(token, `${config.get('server:penServices:rootURL')}/move-sld-saga`, sagaReq, null, getUser(req).idir_username);
+    const sagaId = await postData(`${config.get('server:penServices:rootURL')}/move-sld-saga`, sagaReq, null, getUser(req).idir_username);
     await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_MOVE_SLD_SAGA', 'move SLD records', reqData.studentID);
     
     return res.status(200).json(sagaId);

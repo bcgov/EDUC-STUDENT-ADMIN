@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, putData, logApiError, getUser, isPdf } = require('./utils');
+const { getData, putData, logApiError, getUser, isPdf } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
@@ -8,14 +8,7 @@ const log = require('./logger');
 function getDocuments(requestType) {
   return function getDocumentsHandler(req, res) {
     try{
-      const token = getBackendToken(req, res);
-      if(!token) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'No access token'
-        });
-      }
-
-      getData(token,`${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents`)
+      getData(`${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents`)
         .then((documentsResponse) => {
           const results=[];
           for(const element of documentsResponse)  {
@@ -43,9 +36,8 @@ function getDocuments(requestType) {
 
 function getDocumentById(requestType) {
   return async function getDocumentByIdHandler(req, res) {
-    const token = getBackendToken(req);
     const url = `${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents/${req.params.documentId}`;
-    getData(token, url).then(resData =>{
+    getData(url).then(resData =>{
       res.setHeader('Content-type', resData.fileExtension);
       if(!isPdf(resData)){
         res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
@@ -64,13 +56,6 @@ function getDocumentById(requestType) {
 
 function updateDocumentTypeById(requestType) {
   return async function updateDocumentTypeByIdHandler(req, res) {
-    const token = getBackendToken(req, res);
-    if(!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
     const thisSession = req['session'];
     if (!thisSession.penRequest || thisSession.penRequest[`${requestType}ID`] !== req.params.id) {
       log.error(`Error attempting to update ${requestType}.  There is no request or different request stored in session.`);
@@ -82,7 +67,7 @@ function updateDocumentTypeById(requestType) {
     try {
       const url = `${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents/${req.params.documentId}`;
 
-      let documentMetaData = await getData(token, url + '?includeDocData=N');
+      let documentMetaData = await getData(url + '?includeDocData=N');
 
       const documentReq = {
         documentID: documentMetaData.documentID,
@@ -92,7 +77,7 @@ function updateDocumentTypeById(requestType) {
         fileSize: documentMetaData.fileSize
       };
 
-      const documentRes = await putData(token, url, documentReq, getUser(req).idir_username);
+      const documentRes = await putData(url, documentReq, getUser(req).idir_username);
       return res.status(200).json(documentRes);
     } catch(e) {
       logApiError(e, 'updateDocumentTypeById', 'Error updating a document.');

@@ -2,7 +2,6 @@
 const CronJob = require('cron').CronJob;
 const config = require('../config/index');
 const log = require('../components/logger');
-const {getApiCredentials} = require('../components/auth');
 const {getData, putData} = require('../components/utils');
 const redisUtil = require('../util/redis/redis-utils');
 const lodash = require('lodash');
@@ -10,9 +9,9 @@ const retry = require('async-retry');
 const schedulerCronDocTypeMigration = config.get('scheduler:schedulerCronDocTypeMigration');
 log.info(`The cron to migrate document type codes from GUMPI to student-api is :: ${schedulerCronDocTypeMigration}`);
 
-async function getDigitalIdDocMetaMap(data, url) {
+async function getDigitalIdDocMetaMap(url) {
   const didMap = new Map();
-  const docMetadataList = await getData(data.accessToken, url);
+  const docMetadataList = await getData(url);
   log.info(`found ${docMetadataList.length} document metadata.`);
   if (docMetadataList && docMetadataList.length > 0) {
     for (const docMetadata of docMetadataList) {
@@ -33,14 +32,12 @@ async function getDigitalIdDocMetaMap(data, url) {
 }
 
 async function migrateDocumentTypeCodeAndDateOfConfirmation(url, historyActivityCode){
-  const data = await getApiCredentials(); // get the tokens first to make api calls.
-  const didMap = await getDigitalIdDocMetaMap(data, url);
+  const didMap = await getDigitalIdDocMetaMap(url);
   log.info(`found ${didMap.size} unique dids for which system will process migration`);
   for(const did of didMap.keys()){
-    const tokenData = await getApiCredentials(); // get the tokens first to make api calls.
-    let digitalIDData= await getData(tokenData.accessToken, config.get('server:digitalIdURL') + '/' + did);
+    let digitalIDData= await getData(config.get('server:digitalIdURL') + '/' + did);
     if(digitalIDData?.studentID){
-      let studentData = await getData(tokenData.accessToken, config.get('server:student:rootURL') + '/' + digitalIDData.studentID);
+      let studentData = await getData(config.get('server:student:rootURL') + '/' + digitalIDData.studentID);
       if(!studentData.documentTypeCode){
         const docMetaList = didMap.get(did);
         let docTypeCode;
@@ -61,7 +58,7 @@ async function migrateDocumentTypeCodeAndDateOfConfirmation(url, historyActivity
         delete studentData.createDate;
         delete studentData.updateDate;
         await retry(async () => {
-          await putData(tokenData.accessToken, `${config.get('server:student:rootURL')}/${studentData.studentID}`, studentData, 'STUDENT-ADMIN');
+          await putData(`${config.get('server:student:rootURL')}/${studentData.studentID}`, studentData, 'STUDENT-ADMIN');
         },
         {
           retries: 3

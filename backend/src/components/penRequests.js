@@ -22,17 +22,11 @@ function createPenRequestApiServiceReq(penRequest, req) {
 
 async function findPenRequestsByPen(req, res) {
   try {
-    const token = utils.getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-    var yearAgo = LocalDateTime.now().minus(1, ChronoUnit.YEARS);
-    var now = LocalDateTime.now();
+    let yearAgo = LocalDateTime.now().minus(1, ChronoUnit.YEARS);
+    let now = LocalDateTime.now();
     const url = `${config.get('server:penRequest:rootURL')}/paginated?pageNumber=0&pageSize=200&searchCriteriaList=[{"key":"initialSubmitDate","operation":"btn","value":"${yearAgo},${now}","valueType":"DATE_TIME"},{"key":"pen","operation":"eq","value":"${req.query.pen}","valueType":"STRING"}]}]`
 
-    const response = await getData(token, url);
+    const response = await getData(url);
     return res.status(200).json(response.numberOfElements);
   } catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
@@ -57,9 +51,9 @@ function updateForRejectAndReturn(penRequest, userToken, req) {
   commonRequest.setDefaultsInRequestForRejectAndReturn(penRequest, req, userToken);
 }
 
-async function executePenReqSaga(token, url, penRequest, res, sagaType, user) {
+async function executePenReqSaga(url, penRequest, res, sagaType, user) {
   try {
-    const sagaId = await postData(token, url, penRequest,null, user);
+    const sagaId = await postData(url, penRequest,null, user);
     const event = {
       sagaId: sagaId,
       penRequestID: penRequest.penRetrievalRequestID || penRequest.penRequestID,
@@ -84,7 +78,7 @@ async function returnPenRequest(req, res) {
   penRequest.commentContent = req.body.content;
   penRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
   updateForRejectAndReturn(penRequest, userToken, req);
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`, penRequest, res, 'return', req.body.reviewer);
+  return await executePenReqSaga(`${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`, penRequest, res, 'return', req.body.reviewer);
 }
 
 
@@ -95,7 +89,7 @@ async function unlinkRequest(req, res) {
   request.digitalID = req['session'].penRequest.digitalID;
   request.penRetrievalRequestID = request.penRequestID;
   request.penRequestStatusCode = 'SUBSREV';
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-unlink-saga`, request, res, 'unlink', req.body.reviewer);
+  return await executePenReqSaga(`${config.get('server:profileSagaAPIURL')}/pen-request-unlink-saga`, request, res, 'unlink', req.body.reviewer);
 }
 
 async function rejectPenRequest(req, res) {
@@ -104,7 +98,7 @@ async function rejectPenRequest(req, res) {
   penRequest.penRequestStatusCode = 'REJECTED';
   penRequest.rejectionReason = req.body.failureReason;
   updateForRejectAndReturn(penRequest, userToken, req);
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-reject-saga`, penRequest, res, 'reject', req.body.reviewer);
+  return await executePenReqSaga(`${config.get('server:profileSagaAPIURL')}/pen-request-reject-saga`, penRequest, res, 'reject', req.body.reviewer);
 }
 
 async function completePenRequest(req, res) {
@@ -127,7 +121,7 @@ async function completePenRequest(req, res) {
   penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
   penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
   commonRequest.setDefaultsInRequestForComplete(penRequest, thisSession, req);
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete', req.body.reviewer);
+  return await executePenReqSaga(`${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete', req.body.reviewer);
 }
 
 async function getPENRequestStats(req, res) {
@@ -144,13 +138,13 @@ async function getPENRequestStats(req, res) {
     valueType: 'STRING'
   }];
   return Promise.all([
-    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {
+    getData(config.get('server:penRequest:paginated'), {
       params: {
         pageSize: 1,
         searchCriteriaList: JSON.stringify(initRevSearchCriteriaList)
       }
     }),
-    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {
+    getData(config.get('server:penRequest:paginated'), {
       params: {
         pageSize: 1,
         searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList)

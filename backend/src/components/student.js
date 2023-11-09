@@ -21,15 +21,13 @@ function addSagaStatus(students) {
 }
 
 async function updateStudent(req, res) {
-
   try {
-    const token = utils.getBackendToken(req);
     if (!req.params.studentID) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'No Student ID for PUT operation.'
       });
     }
-    const currentStudent = await getData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`);
+    const currentStudent = await getData(`${config.get('server:student:rootURL')}/${req.params.studentID}`);
     const student = req.body.student;
 
     if(student.statusCode === 'D' && currentStudent.statusCode !== 'D') { //student statusCode changed to deceased
@@ -58,7 +56,7 @@ async function updateStudent(req, res) {
     student.createDate = null;
     student.updateDate = null;
     await retry(async () => {
-      const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
+      const result = await putData(`${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
       return res.status(HttpStatus.OK).json(result);
     },
     {
@@ -72,10 +70,9 @@ async function updateStudent(req, res) {
 }
 
 async function getStudentDemographicsOnlyByStudentId(req, res) {
-  const token = utils.getBackendToken(req);
   const id = req.params.id;
   try {
-    const studentResponse = await utils.getData(token, config.get('server:student:rootURL') + '/' + id);
+    const studentResponse = await utils.getData(config.get('server:student:rootURL') + '/' + id);
     return res.status(HttpStatus.OK).json(studentResponse);
   } catch (e) {
     return errorResponse(res);
@@ -83,13 +80,12 @@ async function getStudentDemographicsOnlyByStudentId(req, res) {
 }
 
 async function getStudentByStudentId(req, res) {
-  const token = utils.getBackendToken(req);
   const id = req.params.id;
 
   return Promise.all([
-    utils.getData(token, config.get('server:student:rootURL') + '/' + id),
-    utils.getData(token, `${config.get('server:penServices:rootURL')}/${id}/merges`),
-    utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${id}`)
+    utils.getData(config.get('server:student:rootURL') + '/' + id),
+    utils.getData(`${config.get('server:penServices:rootURL')}/${id}/merges`),
+    utils.getData(`${config.get('server:penMatch:possibleMatch')}/${id}`)
   ]).then(async ([studentResponse, mergesResponse, possibleMatches]) => {
     if (studentResponse) {
       addSagaStatus([studentResponse]);
@@ -103,7 +99,7 @@ async function getStudentByStudentId(req, res) {
         const matchedStudentIDs = possibleMatches.map((matchingRecord) => {
           return matchingRecord.matchedStudentID;
         }).join();
-        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), matchedStudentIDs);
+        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(matchedStudentIDs);
         const students = studentsPage.content;
         possibleMatches.forEach((possibleMatch) => {
           possibleMatch.matchedStudent = students.find((student) => student.studentID === possibleMatch.matchedStudentID);
@@ -114,7 +110,7 @@ async function getStudentByStudentId(req, res) {
         const mergeStudentIDs = mergesResponse.map((mergeRecord) => {
           return mergeRecord.mergeStudentID;
         }).join();
-        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), mergeStudentIDs);
+        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(mergeStudentIDs);
         const students = studentsPage.content;
         mergesResponse.forEach((merge) => {
           merge.mergeStudent = students.find((student) => student.studentID === merge.mergeStudentID);
@@ -137,7 +133,7 @@ async function getStudentByStudentId(req, res) {
 
 async function getAllStudentByStudentIds(req, res) {
   try {
-    const result = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), req.query.studentIDs);
+    const result = await utils.getStudentsFromStudentAPIByTheirIds(req.query.studentIDs);
     return res.status(HttpStatus.OK).json(result.content);
   } catch (e) {
     logApiError(e, 'getAllStudentByStudentIds', 'Error occurred while attempting to GET all students by their ids.');
@@ -147,9 +143,8 @@ async function getAllStudentByStudentIds(req, res) {
 
 async function getStudentByPen(req, res) {
   try {
-    const token = utils.getBackendToken(req);
     const pen = req.query.pen;
-    const result = await utils.getData(token, config.get('server:student:rootURL'), {params: {pen: pen}});
+    const result = await utils.getData(config.get('server:student:rootURL'), {params: {pen: pen}});
     if (result && result[0] && result[0].studentID) {
       return res.status(200).json(result[0]);
     } else {
@@ -182,8 +177,7 @@ async function createNewStudent(req, res) {
         transactionID
       }
     };
-    const token = utils.getBackendToken(req);
-    const penNumber = await utils.getData(token, config.get('server:penServices:nextPenURL'), params);
+    const penNumber = await utils.getData(config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
     student.dob = utils.formatDate(student.dob?.replace(/\D/g, ''));
     student.pen = penNumber;
@@ -194,7 +188,7 @@ async function createNewStudent(req, res) {
     student.statusCode = student.statusCode || 'A';
     student.createDate = null;
     student.updateDate = null;
-    const result = await utils.postData(token, config.get('server:student:rootURL'), student, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(config.get('server:student:rootURL'), student, null, utils.getUser(req).idir_username);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {

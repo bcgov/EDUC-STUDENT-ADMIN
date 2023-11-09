@@ -4,7 +4,7 @@ jest.mock('../../../src/components/utils', () => {
   return {
     __esModule: true, // Use it when dealing with esModules
     ...originalModule,
-    getBackendToken: jest.fn(),
+    getBackendServiceToken: jest.fn(),
     getData: jest.fn(),
     putData: jest.fn(),
     postData: jest.fn(),
@@ -17,6 +17,7 @@ const utils = require('../../../src/components/utils');
 const redisUtil = require('../../../src/util/redis/redis-utils');
 const penRequestBatch = require('../../../src/components/penRequestBatch');
 const SAGAS = require('../../../src/components/saga');
+const auth = require('../../../src/components/auth');
 
 const prbStudentData =
   {
@@ -35,7 +36,7 @@ describe('updatePrbStudentInfoRequested', () => {
   let res;
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.body = {
@@ -46,12 +47,6 @@ describe('updatePrbStudentInfoRequested', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should return UNAUTHORIZED if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await penRequestBatch.updatePrbStudentInfoRequested(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 
   it('should return data if success', async () => {
@@ -81,12 +76,12 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
   let req;
   let res;
 
-  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(auth, 'getBackendServiceToken');
   jest.spyOn(utils, 'getData');
 
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.query = {
@@ -97,12 +92,6 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should return UNAUTHORIZED if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await penRequestBatch.getPenRequestBatchStudentMatchOutcome(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 
   it('should return data if success', async () => {
@@ -158,7 +147,7 @@ describe('issueNewPen', () => {
   const twinStudentIDs = ['201', '202'];
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.params = {
@@ -202,9 +191,9 @@ describe('issueNewPen', () => {
 });
 
 function expectationsForUserActionsInPRBSaga(matchedStudentIDList) {
-  expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.mincode);
-  expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(matchedStudentIDList);
-  expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
+  expect(utils.postData.mock.calls[0][1].mincode).toBe(prbStudentData.mincode);
+  expect(utils.postData.mock.calls[0][1].matchedStudentIDList).toEqual(matchedStudentIDList);
+  expect(utils.postData.mock.calls[0][1].createUser).toBeUndefined();
 }
 
 describe('user match saga', () => {
@@ -221,13 +210,13 @@ describe('user match saga', () => {
 
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
-    utils.getData.mockImplementation((token, url) =>
+    utils.getData.mockImplementation((url) =>
       url.includes('possible-match') ? [{possibleMatchID: '801', matchedStudentID: '201'}, {possibleMatchID: '901', matchedStudentID: '301'}] : prbStudentData
     );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userMatchSaga(req, res);
     expectationsForUserActionsInPRBSaga(['202']);
-    expect(utils.postData.mock.calls[0][2].gradeCode).toBe(prbStudentData.gradeCode);
+    expect(utils.postData.mock.calls[0][1].gradeCode).toBe(prbStudentData.gradeCode);
     expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
@@ -253,7 +242,7 @@ describe('getPenRequestBatchStudentById', () => {
   let res;
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
+    auth.getBackendServiceToken.mockReturnValue('token');
     req = mockRequest();
     res = mockResponse();
     req.params = {
@@ -314,12 +303,12 @@ describe('user unmatch saga', () => {
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
     utils.getData.mockResolvedValue(prbStudentData);
-    utils.getData.mockImplementation((token, url) =>
+    utils.getData.mockImplementation((url) =>
       url.includes('possible-match') ? [{possibleMatchID: '801', matchedStudentID: '201'}, {possibleMatchID: '901', matchedStudentID: '301'}] : prbStudentData
     );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userUnmatchSaga(req, res);
-    expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(['201']);
+    expect(utils.postData.mock.calls[0][1].matchedStudentIDList).toEqual(['201']);
     expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
@@ -348,7 +337,7 @@ describe('user unmatch saga', () => {
 
 function initializeMatchUnmatchTestData() {
   const matchedStudentIDList = ['201', '202'];
-  utils.getBackendToken.mockReturnValue('token');
+  auth.getBackendServiceToken.mockReturnValue('token');
   const req = mockRequest();
   const res = mockResponse();
   req.params = {
@@ -389,7 +378,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     const resp = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
     }));
-    utils.postData.mockImplementation((token, url, data) =>
+    utils.postData.mockImplementation((url, data) =>
       Promise.resolve(data)
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -414,7 +403,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     }));
 
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data) =>
+    utils.putData.mockImplementation((url, data) =>
       Promise.resolve(data)
     );
     await penRequestBatch.unarchiveFiles(req, res);
@@ -428,7 +417,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
       penRequestBatchStatusCode: 'LOADED',
     }));
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data) =>
+    utils.putData.mockImplementation((url, data) =>
       Promise.resolve(data)
     );
     await penRequestBatch.releaseBatchFilesForFurtherProcessing(req, res);
@@ -438,7 +427,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
 });
 
 function prepArchiveAndReturnTests(req, res, penRequestBatchIDs) {
-  utils.getBackendToken.mockReturnValue('token');
+  auth.getBackendServiceToken.mockReturnValue('token');
   req = mockRequest();
   res = mockResponse();
   req.body = {
@@ -474,7 +463,7 @@ describe('archiveAndReturnFiles', () => {
       }];
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.archiveAndReturnFiles(req, res);
-    expect(utils.postData.mock.calls[0][2]).toEqual({penRequestBatchArchiveAndReturnSagaData: penRequestBatchIDs});
+    expect(utils.postData.mock.calls[0][1]).toEqual({penRequestBatchArchiveAndReturnSagaData: penRequestBatchIDs});
     expect(redisUtil.createSagaRecord).toHaveBeenCalledTimes(2);
     expect(redisUtil.createSagaRecord).toHaveBeenNthCalledWith(1,{
       sagaId: resp[0].sagaId,

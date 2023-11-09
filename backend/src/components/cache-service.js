@@ -1,7 +1,6 @@
 'use strict';
 const config = require('../config/index');
 const log = require('../components/logger');
-const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
 const {generateDistrictObject, isDistrictActive, generateSchoolObject, isSchoolActive, isAuthorityActive,
@@ -29,8 +28,7 @@ const cacheService = {
     log.debug('Loading all schools during start up');
     await retry(async () => {
       // if anything throws, we retry
-      const data = await getApiCredentials(); // get the tokens first to make api calls.
-      const schools = await getData(data.accessToken, config.get('server:institute:instituteSchoolURL'));
+      const schools = await getData(config.get('server:institute:instituteSchoolURL'));
       let newMincodeSchoolMap = new Map();
       let newSchoolMap = new Map();
       let newMincodeSchools = [];
@@ -75,8 +73,7 @@ const cacheService = {
   async loadAllDistrictsToMap() {
     log.debug('Loading all districts during start up');
     await retry(async () => {
-      const data = await getApiCredentials();
-      const districtsResponse = await getData(data.accessToken, config.get('server:institute:instituteDistrictURL'));
+      const districtsResponse = await getData(config.get('server:institute:instituteDistrictURL'));
       // reset the value.
       districts = [];
       activeDistricts = [];
@@ -109,8 +106,7 @@ const cacheService = {
   async loadAllAuthoritiesToMap() {
     log.debug('Loading all authorities during start up');
     await retry(async () => {
-      const data = await getApiCredentials();
-      const authoritiesResponse = await getData(data.accessToken, config.get('server:institute:instituteAuthorityURL'));
+      const authoritiesResponse = await getData(config.get('server:institute:instituteAuthorityURL'));
       // reset the value.
       authorities = [];
       activeAuthorities = [];
@@ -146,8 +142,7 @@ const cacheService = {
     log.debug('Loading all document type codes during start up');
     await retry(async () => {
       // if anything throws, we retry
-      const data = await getApiCredentials(); // get the tokens first to make api calls.
-      const documentTypeCodesList = await getData(data.accessToken, `${config.get('server:edx:exchangeURL')}/document-types`);
+      const documentTypeCodesList = await getData(`${config.get('server:edx:exchangeURL')}/document-types`);
       documentTypeCodes = []; // reset the value.
       documentTypeCodesMap.clear();// reset the value.
       if (documentTypeCodesList && documentTypeCodesList.length > 0) {
@@ -229,8 +224,7 @@ const cacheService = {
   async loadDataToCache(cacheKey,url){
     log.debug(` loading all ${cacheKey} during start up`);
     await retry(async () => {
-      const tokenData = await getApiCredentials();
-      const responseData = await getData(tokenData.accessToken, config.get(url));
+      const responseData = await getData(config.get(url));
       // reset the value.
       const records = [];
       const activeRecords = [];

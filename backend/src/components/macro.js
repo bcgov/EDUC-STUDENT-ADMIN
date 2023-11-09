@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../config/index');
-const {getBackendToken, getData, postData, getUser, logApiError, errorResponse, stripAuditColumns, addSagaStatusToRecords} = require('./utils');
+const {getData, postData, getUser, logApiError, errorResponse, stripAuditColumns, addSagaStatusToRecords} = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
 const SAGAS = require('./saga');
@@ -8,11 +8,10 @@ const { randomInt } = require('crypto');
 
 async function updateMacroByMacroId(req, res) {
   try {
-    const token = getBackendToken(req);
     stripAuditColumns(req.body);
     
     const url = `${config.get('server:macro:penMacroURL')}/update-macro`;
-    const sagaId = await postData(token, url, req.body, null, getUser(req).idir_username);
+    const sagaId = await postData(url, req.body, null, getUser(req).idir_username);
     await createMacroSagaRecordInRedis(sagaId, 'MACRO_UPDATE_SAGA', 'update macro', req.params.macroId);
 
     return res.status(200).json(sagaId);
@@ -42,15 +41,14 @@ function createMacroCode(macros) {
 
 async function createMacro(req, res) {
   try {
-    const token = getBackendToken(req);
     const newMacro = req.body;
     stripAuditColumns(newMacro);
 
     const penMacroURL = config.get('server:macro:penMacroURL');
-    const currentMacros = await getData(token, `${penMacroURL}?businessUseTypeCode=${newMacro.businessUseTypeCode}&macroTypeCode=${newMacro.macroTypeCode}`);
+    const currentMacros = await getData(`${penMacroURL}?businessUseTypeCode=${newMacro.businessUseTypeCode}&macroTypeCode=${newMacro.macroTypeCode}`);
     newMacro.macroCode = createMacroCode(currentMacros);
     
-    const sagaId = await postData(token, `${penMacroURL}/create-macro`, newMacro, null, getUser(req).idir_username);
+    const sagaId = await postData(`${penMacroURL}/create-macro`, newMacro, null, getUser(req).idir_username);
 
     await createMacroSagaRecordInRedis(sagaId, 'MACRO_CREATE_SAGA', 'create macro', null);
 
