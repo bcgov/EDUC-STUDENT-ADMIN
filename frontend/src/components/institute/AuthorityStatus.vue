@@ -74,9 +74,9 @@
               class="pb-0 pt-2"
             >
               <v-col>
-                <p class="pb-1">This authority cannot be closed, as there are still open schools under this authority.</p>
-                <p class="pb-2">The following schools must be closed or moved to another authority before the authority can be closed.</p>
-                <ul class="school-highlight pb-2 pl-4">
+                <p>This authority cannot be closed, as there are still open schools under this authority.</p>
+                <p>The following schools must be closed or moved to another authority before the authority can be closed.</p>
+                <ul class="school-highlight">
                   <li
                     v-for="openSchool in listOfOpenSchoolsByMincode"
                     :key="openSchool.schoolId"
@@ -107,15 +107,15 @@
                   class="px-2"
                   variant="tonal"
                 >
-                  <p>Some schools under this authority have closing dates in the future.</p>
-                  <p>
+                  <p class="py-1">Some schools under this authority have closing dates in the future.</p>
+                  <p class="py-1">
                     The closing date of the authority must be on or after
                     <strong>{{
                       dateOfLastSchoolClosureFormatted
                     }}</strong>.
                   </p>
-                  <p>The following schools have close dates in the future:</p>
-                  <ul class="school-highlight pb-2">
+                  <p class="py-1">The following schools have close dates in the future:</p>
+                  <ul class="school-highlight py-1">
                     <li
                       v-for="closingSchool in listOfClosingSchoolsByMincode"
                       :key="closingSchool.schoolId"
@@ -130,7 +130,7 @@
                       }}</a>
                     </li>
                   </ul>
-                  <p>Refresh the page to see an updated list of schools.</p>
+                  <p class="py-1">Refresh the page to see an updated list of schools.</p>
                 </v-alert>
                 <v-row class="d-flex justify-start mt-3">
                   <h3>Select the closure date</h3>
@@ -412,10 +412,6 @@ export default {
     font-weight: bolder !important;
 }
 
-.v-alert__content p:last-child {
-    margin-bottom: 0;
-}
-
 .details {
     color: rgb(0, 51, 102);
 }
@@ -425,6 +421,7 @@ export default {
 }
 
 .school-highlight {
-    color: #003366;
+  color: #003366;
+  padding: revert;
 }
 </style>
