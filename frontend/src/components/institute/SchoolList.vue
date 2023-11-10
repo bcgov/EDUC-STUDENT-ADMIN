@@ -526,7 +526,6 @@ export default {
   watch: {
     notification(notificationData) {
       if (notificationData) {
-        console.log('Here: ' + JSON.stringify(notificationData));
         if (notificationData.eventType === 'CREATE_SCHOOL' && notificationData.eventOutcome === 'SCHOOL_CREATED' && notificationData.eventPayload) {
           try {
             const schoolData = JSON.parse(notificationData.eventPayload);

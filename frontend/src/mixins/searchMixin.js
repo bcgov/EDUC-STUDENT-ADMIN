@@ -43,9 +43,7 @@ export default {
       return this.searchEnabled;
     },
     enterPushed() {
-      console.log('Enter1');
       if (this.isValidSearchForm && this.searchHasValues()) {
-        console.log('Enter2');
         this.search();
       }
     },
