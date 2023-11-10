@@ -27,7 +27,7 @@
           </v-col>
           <v-col class="d-flex justify-end">
             <PrimaryButton
-              v-if="canOnlyAddIndependentSchools || canOnlyAddOffshoreSchools || canAddSchools"
+              v-if="canAddSchools"
               id="addSchoolBtn"
               icon-left
               width="11em"
@@ -513,20 +513,13 @@ export default {
     getSheetWidth() {
       return 30;
     },
-    canOnlyAddIndependentSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
-    },
-    canOnlyAddOffshoreSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
-    },
     canAddSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
     }
   },
   watch: {
     notification(notificationData) {
       if (notificationData) {
-        console.log('Here: ' + JSON.stringify(notificationData));
         if (notificationData.eventType === 'CREATE_SCHOOL' && notificationData.eventOutcome === 'SCHOOL_CREATED' && notificationData.eventPayload) {
           try {
             const schoolData = JSON.parse(notificationData.eventPayload);

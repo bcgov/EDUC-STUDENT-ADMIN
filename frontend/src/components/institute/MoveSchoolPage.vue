@@ -521,6 +521,7 @@ export default {
       isGradeOfferedDisabled: false,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      offshoreArray: ['OFFSHORE'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       notAllowedDistrictCodes: ['PSI', 'OFFSHORE'],
@@ -599,10 +600,15 @@ export default {
       return this.formatDate(this.school.openedDate);
     },
     schoolCategoryTypeCodes() {
-      if (this.canOnlyEditIndependentSchools) {
-        return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
+      let returnedSchoolCatCodes = this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
+      if(this.canMoveOtherSchoolTypes) {
+        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode));
+        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
       }
-      return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
+      if (this.canMoveIndependentSchools) {
+        returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
+      }
+      return sortBy(returnedSchoolCatCodes, ['displayOrder']);
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
@@ -626,8 +632,11 @@ export default {
     countryCodes() {
       return this.activeCountryCodes ? this.activeCountryCodes : [];
     },
-    canOnlyEditIndependentSchools() {
+    canMoveIndependentSchools() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
+    },
+    canMoveOtherSchoolTypes() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     },
   },
   created() {

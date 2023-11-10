@@ -640,22 +640,30 @@ export default {
       return sortBy(facilityTypes, ['displayOrder']);
     },
     filteredDistrictNames() {
-      if(this.canAddSchools) {
-        return this.districtNames;
-      }else if (this.canOnlyAddOffshoreSchools) {
-        return this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE');
+      let returnedDistrictNames = this.districtNames ? this.districtNames : [];
+      if(this.canAddOtherSchoolTypes) {
+        returnedDistrictNames = returnedDistrictNames.filter(district => district?.districtRegionCode !== 'OFFSHORE');
       }
-      return this.districtNames;
+
+      if (this.canAddOffshoreSchools) {
+        returnedDistrictNames = returnedDistrictNames.concat(this.districtNames.filter(district => district?.districtRegionCode === 'OFFSHORE'));
+      }
+      return sortBy(returnedDistrictNames, ['districtNumberName']);
     },
     schoolCategoryTypeCodes() {
-      if(this.canAddSchools) {
-        return this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
-      } else if (this.canOnlyAddIndependentSchools) {
-        return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
-      } else if(this.canOnlyAddOffshoreSchools) {
-        return this.activeSchoolCategoryTypeCodes?.filter(cat => this.offshoreArray.includes(cat.schoolCategoryCode));
+      let returnedSchoolCatCodes = this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
+      if(this.canAddOtherSchoolTypes) {
+        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode));
+        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
       }
-      return [];
+      if (this.canAddIndependentSchools) {
+        returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
+      }
+
+      if(this.canAddOffshoreSchools) {
+        returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes?.filter(cat => this.offshoreArray.includes(cat.schoolCategoryCode)));
+      }
+      return sortBy(returnedSchoolCatCodes, ['displayOrder']);
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
@@ -682,13 +690,13 @@ export default {
     schoolReportingRequirementCodes() {
       return this.schoolReportingRequirementTypeCodes ? this.schoolReportingRequirementTypeCodes : [];
     },
-    canOnlyAddIndependentSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) 
+    canAddIndependentSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
     },
-    canOnlyAddOffshoreSchools() {
+    canAddOffshoreSchools() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
     },
-    canAddSchools() {
+    canAddOtherSchoolTypes() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     },
   },
