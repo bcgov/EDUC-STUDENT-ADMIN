@@ -23,7 +23,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-            v-if="canOnlyAddOffshoreAuthority || canOnlyAddIndependentAuthority"
+            v-if="canAddIndependentAuthority"
             id="addAuthorityBtn"
             icon-left
             width="12em"
@@ -250,7 +250,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import {mapState} from 'pinia';
-import {isEmpty, omitBy} from 'lodash';
+import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
@@ -311,12 +311,9 @@ export default {
     getSheetWidth() {
       return 30;
     },
-    canOnlyAddIndependentAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 
+    canAddIndependentAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
     },
-    canOnlyAddOffshoreAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    }
   },
   watch: {
     pageSize() {
@@ -328,7 +325,7 @@ export default {
   },
   created() {
     instituteStore().getAllAuthorityTypeCodes().then(() => {
-      this.authorityTypes = this.authorityTypeCodes;
+      this.authorityTypes = sortBy(this.authorityTypeCodes, ['label']);
     });
 
     this.setAuthorityStatuses();

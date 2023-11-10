@@ -335,7 +335,7 @@ export default {
       return [];
     },
     canOnlyAddIndependentAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) 
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION);
     },
     canOnlyAddOffshoreAuthority() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
