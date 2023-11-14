@@ -600,15 +600,15 @@ export default {
       return this.formatDate(this.school.openedDate);
     },
     schoolCategoryTypeCodes() {
-      let returnedSchoolCatCodes = this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
+      let returnedCodes = [];
+      let publicOnlyTypes = this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode)) : [];
       if(this.canMoveOtherSchoolTypes) {
-        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode));
-        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
+        returnedCodes = publicOnlyTypes;
       }
       if (this.canMoveIndependentSchools) {
-        returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
+        returnedCodes = returnedCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
       }
-      return sortBy(returnedSchoolCatCodes, ['displayOrder']);
+      return sortBy(returnedCodes, ['displayOrder']);
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
