@@ -84,7 +84,6 @@
                   item-title="label"
                   class="pt-0"
                   label="School Category"
-                  :disabled="schoolCategoryDisabled"
                   @update:model-value="schoolCategoryChanged"
                 />
               </v-col>
@@ -475,9 +474,9 @@
         id="newSchoolPostBtn"
         text="Move"
         width="7rem"
-        @click-action="moveSchool"
         :disabled="!isMoveFormValid"
         :loading="processing"
+        @click-action="moveSchool"
       />
     </v-card-actions>
   </v-card>
@@ -528,7 +527,6 @@ export default {
       districtSchoolCategoryConstraints: [
         {districtRegionCode: 'YUKON', schoolCategory: 'YUKON'}
       ],
-      schoolCategoryDisabled: false,
       resetFacilitiesForSchoolCat: [''],
       activeDistricts: [],
       activeAuthorities: [],
@@ -573,13 +571,6 @@ export default {
       showAddress: false,
     };
   },
-  mounted() {
-    this.validateForm();
-    this.addressButton = {
-      icon: 'mdi-plus-thick',
-      label: 'Add Address'
-    };
-  },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
@@ -602,8 +593,8 @@ export default {
     schoolCategoryTypeCodes() {
       let returnedSchoolCatCodes = this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
       if(this.canMoveOtherSchoolTypes) {
-        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode));
-        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
+        returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode) && cat.schoolCategoryCode !== 'YUKON');
+        //returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
       }
       if (this.canMoveIndependentSchools) {
         returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
@@ -639,6 +630,13 @@ export default {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     },
   },
+  mounted() {
+    this.validateForm();
+    this.addressButton = {
+      icon: 'mdi-plus-thick',
+      label: 'Add Address'
+    };
+  },
   created() {
     const instStore = instituteStore();
     instStore.getAllActiveFacilityTypeCodes();
@@ -671,8 +669,6 @@ export default {
       const schoolCategory = this.districtSchoolCategoryConstraints
         .find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
 
-      this.schoolCategoryDisabled = schoolCategory !== undefined;
-
       if (schoolCategory && this.moveSchoolObject.schoolCategoryCode !== schoolCategory) {
         this.moveSchoolObject.schoolCategoryCode = schoolCategory;
         this.schoolCategoryChanged();
@@ -683,12 +679,14 @@ export default {
         if (response.data) {
           let districts = response.data.filter(val => !this.notAllowedDistrictCodes.includes(val.districtRegionCode));
           for (const district of districts) {
-            let districtItem = {
-              districtNumberName: `${district.districtNumber} - ${district.name}`,
-              districtId: district.districtId,
-              districtRegionCode: district.districtRegionCode
-            };
-            this.activeDistricts.push(districtItem);
+            if(district.districtRegionCode !== 'YUKON' && district.districtId !== this.school.districtId) {
+              let districtItem = {
+                districtNumberName: `${district.districtNumber} - ${district.name}`,
+                districtId: district.districtId,
+                districtRegionCode: district.districtRegionCode
+              };
+              this.activeDistricts.push(districtItem);
+            }
           }
         }
         this.activeDistricts = this.sortByNameValue(this.activeDistricts, 'districtNumberName');
@@ -759,8 +757,6 @@ export default {
       return (LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'))).toString();
     },
     schoolDistrictChanged() {
-      this.schoolCategoryDisabled = false;
-
       const districtRegionCode = this.activeDistricts
         .find(d => d.districtId === this.moveSchoolObject.districtId)?.districtRegionCode;
 
