@@ -46,19 +46,6 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col>
-                <v-text-field
-                  id="newAuthorityEmailInput"
-                  v-model="newAuthority.email"
-                  :rules="[rules.required(), rules.email()]"
-                  variant="underlined"
-                  class="pt-0"
-                  :maxlength="255"
-                  label="Email"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
               <v-col cols="6">
                 <v-text-field
                   id="newAuthorityPhoneNumberInput"
@@ -81,6 +68,19 @@
                   :maxlength="10"
                   label="Fax"
                   @keypress="isNumber($event)"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  id="newAuthorityEmailInput"
+                  v-model="newAuthority.email"
+                  :rules="[rules.required(), rules.email()]"
+                  variant="underlined"
+                  class="pt-0"
+                  :maxlength="255"
+                  label="Email"
                 />
               </v-col>
             </v-row>
