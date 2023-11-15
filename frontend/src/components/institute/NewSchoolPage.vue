@@ -656,7 +656,7 @@ export default {
       if(this.canAddOtherSchoolTypes) {
         returnedCodes = publicOnlyTypes;
       }
-      if (this.canAddIndependentSchools()) {
+      if (this.canAddIndependentSchools) {
         returnedCodes = returnedCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
       }
       if(this.canAddOffshoreSchools) {
@@ -740,9 +740,6 @@ export default {
     requiredForOffshoreOrIndependentSchool(formValue) {
       const categories = [...this.offshoreArray, ...this.independentArray];
       return this.rules.requiredIf(categories.includes(this.newSchool.schoolCategoryCode))(formValue);
-    },
-    openEffectiveDatePicker() {
-      this.$refs.newSchoolDatePicker.openMenu();
     },
     preselectSchoolDistrict() {
       if (this.filteredDistrictNames?.length !== 1) {
