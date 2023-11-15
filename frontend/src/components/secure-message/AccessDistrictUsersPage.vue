@@ -1,5 +1,5 @@
 <template>
-  <v-container class="containerSetup">
+  <v-container class="containerSetup mb-5">
     <v-row v-if="loadingUsers">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -206,7 +206,7 @@
           >
             <v-row style="height: 100%;">
               <v-col style="min-height: 150px">
-                <v-card class="add-new-user d-flex align-center flex-column" style="min-height: 21.7em">
+                <v-card class="add-new-user d-flex align-center flex-column h-100">
                   <v-row
                     class="add-new-user"
                     align="center"

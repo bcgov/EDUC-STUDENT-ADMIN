@@ -98,7 +98,7 @@ export default {
     opacity: 1;
   }
 
-  .v-application {
+  .v-application, .v-dialog, .v-bottom-sheet {
     font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   }
 
