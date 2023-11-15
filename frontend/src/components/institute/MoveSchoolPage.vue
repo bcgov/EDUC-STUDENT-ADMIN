@@ -594,7 +594,6 @@ export default {
       let returnedSchoolCatCodes = this.activeSchoolCategoryTypeCodes ? sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']) : [];
       if(this.canMoveOtherSchoolTypes) {
         returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode) && cat.schoolCategoryCode !== 'YUKON');
-        //returnedSchoolCatCodes = returnedSchoolCatCodes.filter(cat => !this.offshoreArray.includes(cat.schoolCategoryCode));
       }
       if (this.canMoveIndependentSchools) {
         returnedSchoolCatCodes = returnedSchoolCatCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
