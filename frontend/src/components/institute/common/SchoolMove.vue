@@ -30,8 +30,8 @@
               secondary
               icon-left
               icon="mdi-arrow-left-right"
-              @click-action="moveSchool"
               text="Move School"
+              @click-action="moveSchool"
             />
           </v-col>
         </v-row>
@@ -201,7 +201,7 @@ export default {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
     },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.school.schoolCategoryCode !== 'OFFSHORE' && (this.canOnlyMoveIndependentSchools || this.canMoveSchools);
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.school.schoolCategoryCode !== 'OFFSHORE' && (this.canOnlyMoveIndependentSchools || this.canMoveSchools) && this.school.schoolCategoryCode !== 'YUKON';
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;
