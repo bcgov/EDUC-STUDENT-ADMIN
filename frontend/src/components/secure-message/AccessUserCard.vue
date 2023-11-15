@@ -2,8 +2,7 @@
   <v-row style="height: 100%; margin-bottom: 1.5em">
     <v-col>
       <v-card
-        style="min-height:21.7em"
-        class="d-flex flex-column"
+        class="d-flex flex-column h-100"
       >
         <v-card-title class="pb-0">
           <v-row no-gutters>
@@ -47,9 +46,8 @@
         </v-card-text>
         <v-card-text
           class="pt-0"
-          :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
         >
-          <div v-if="!editState">
+          <div>
             <v-chip-group>
               <v-chip
                 v-for="role in userRoles"
@@ -61,152 +59,19 @@
               </v-chip>
             </v-chip-group>
           </div>
-          
-          <div v-else>
-            <v-list
-              v-model:selected="selectedRoles"
-              lines="two"
-              return-object
-              select-strategy="classic"
-              style="background-color: #e7ebf0"
-            >
-              <div
-                v-for="newrole in instituteRoles"
-                :key="newrole.edxRoleCode"
-                :value="newrole.edxRoleCode"
-              >
-                <v-list-item
-                  :value="newrole.edxRoleCode"
-                >
-                  <template #prepend="{ isActive }">
-                    <v-list-item-action>
-                      <v-checkbox-btn :model-value="isActive" />
-                    </v-list-item-action>
-                  </template>
-
-                  <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ newrole.roleDescription }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </div>
-            </v-list>
-
-            <DatePicker
-              id="accessExpiryDate"
-              v-model="accessExpiryDate"
-              class="pl-7"
-              label="Access Expiry Date"
-              model-type="yyyy-MM-dd'T'00:00:00"
-              :min-date="minExpiryDate"
-              @clear-date="clearExpiryDate"
-            />
-          </div>
         </v-card-text>
-        <Transition name="bounce">
-          <v-card-text
-            v-if="deleteState"
-            style="background-color: #e7ebf0;"
-          >
-            <v-row no-gutters>
-              <v-col class="d-flex justify-center">
-                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove this users access for the {{
-                  instituteTypeLabel.toLowerCase()
-                }}?</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="mt-3 d-flex justify-end">
-                <PrimaryButton
-                  :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
-                  width="5em"
-                  text="Cancel"
-                  class="mr-2"
-                  secondary
-                  @click-action="clickDeleteButton"
-                />
-                <PrimaryButton
-                  :id="`user-remove-action-button-${user.firstName}-${user.lastName}`"
-                  text="Remove"
-                  @click-action="clickRemoveButton"
-                />
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </Transition>
-        <Transition name="bounce">
-          <v-card-text
-            v-if="relinkState"
-            style="background-color: #e7ebf0;"
-          >
-            <v-row no-gutters>
-              <v-col class="d-flex justify-center">
-                <span style="font-size: medium; font-weight: bold; color: black">Re-linking an account will remove the current user and resend the activation code so that the user can set up EDX access with their new credential.</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="pt-3 d-flex justify-start">
-                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to re-link this account?</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="mt-3 d-flex justify-end">
-                <PrimaryButton
-                  :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
-                  width="5em"
-                  text="Cancel"
-                  class="mr-2"
-                  secondary
-                  :disabled="isRelinking"
-                  @click-action="clickRelinkButton"
-                />
-                <PrimaryButton
-                  :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
-                  text="Re-Link"
-                  :disabled="isRelinking"
-                  :loading="isRelinking"
-                  @click-action="clickActionRelinkButton"
-                />
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </Transition>
-        <Transition name="bounce">
-          <v-card-text
-            v-if="editState"
-            class="pt-0"
-            style="background-color: #e7ebf0;"
-          >
-            <v-row
-              v-if="!minimumRolesSelected"
-              no-gutters
-            >
-              <v-col class="mt-0 mb-5 d-flex justify-start">
-                <p style="font-weight: bolder;color: black;">
-                  Please select at least one role for {{ user.firstName }}.
-                </p>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton
-                  :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
-                  width="5em"
-                  text="Cancel"
-                  class="mr-2"
-                  secondary
-                  @click-action="clickEditButton"
-                />
-                <PrimaryButton
-                  :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
-                  text="Save"
-                  :disabled="!minimumRolesSelected"
-                  @click-action="clickSaveButton"
-                />
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </Transition>
+        <ConfirmationDialog ref="confirmRemoveUser">
+          <template #message>
+            <p>Are you sure you want to remove this user's access for the {{ instituteTypeLabel.toLowerCase() }}?</p>
+          </template>
+        </ConfirmationDialog>
+        <ConfirmationDialog ref="confirmRelinkUser">
+          <template #message>
+            <p class="mb-4">Re-linking an account will remove the current user and resend the activation code so
+              that the user can set up EDX access with their new credentials.</p>
+            <p class="font-weight-bold">Are you sure you want to re-link this account?</p>
+          </template>
+        </ConfirmationDialog>
         <v-spacer />
         <v-card-actions
           v-if="!editState && !relinkState && !deleteState"
@@ -237,6 +102,94 @@
       </v-card>
     </v-col>
   </v-row>
+  <v-bottom-sheet
+    v-model="editUserSheet"
+    :no-click-animation="true"
+    :inset="true"
+    :persistent="true"
+  >
+    <v-card
+      v-if="editUserSheet"
+      id="editUserVCard"
+      class="information-window-v-card"
+    >
+      <v-card-title
+        id="editUserInviteVCardTitle"
+        class="header pt-1 pb-1"
+      >
+        Edit User for {{user.firstName}} {{user.lastName}}
+      </v-card-title>
+      <v-divider />
+      <v-card-text>
+        <v-alert
+            v-if="!minimumRolesSelected"
+            id="logoutAlert"
+            class="mt-4"
+            color="#003366"
+            density="compact"
+            type="info"
+            variant="tonal"
+        >
+          <span>Please select at least one role for {{ user.firstName }}.</span>
+        </v-alert>
+        <v-list
+            v-model:selected="selectedRoles"
+            lines="two"
+            return-object
+            select-strategy="classic"
+        >
+          <div
+              v-for="newrole in instituteRoles"
+              :key="newrole.edxRoleCode"
+              :value="newrole.edxRoleCode"
+          >
+            <v-list-item
+                :value="newrole.edxRoleCode"
+            >
+              <template #prepend="{ isActive }">
+                <v-list-item-action>
+                  <v-checkbox-btn :model-value="isActive" />
+                </v-list-item-action>
+              </template>
+
+              <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+              <v-list-item-subtitle>
+                {{ newrole.roleDescription }}
+              </v-list-item-subtitle>
+            </v-list-item>
+          </div>
+        </v-list>
+
+        <DatePicker
+            id="accessExpiryDate"
+            v-model="accessExpiryDate"
+            class="pl-7"
+            label="Access Expiry Date"
+            model-type="yyyy-MM-dd'T'00:00:00"
+            :min-date="minExpiryDate"
+            @clear-date="clearExpiryDate"
+        />
+        <v-row no-gutters class="py-4 justify-end">
+          <v-col class="mt-0 d-flex justify-end">
+            <PrimaryButton
+                :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
+                width="5em"
+                text="Cancel"
+                class="mr-2"
+                secondary
+                @click-action="clickEditButton"
+            />
+            <PrimaryButton
+                :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
+                text="Save"
+                :disabled="!minimumRolesSelected"
+                @click-action="clickSaveButton"
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-bottom-sheet>
 </template>
 
 <script>
@@ -247,10 +200,11 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatDate} from '@/utils/format';
 import DatePicker from '../util/DatePicker.vue';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import ConfirmationDialog from "@/components/util/ConfirmationDialog.vue";
 
 export default {
   name: 'AccessUserCard',
-  components: {PrimaryButton, DatePicker},
+  components: {ConfirmationDialog, PrimaryButton, DatePicker},
   mixins: [alertMixin],
   props: {
     user: {
@@ -280,7 +234,7 @@ export default {
   },
   data() {
     return {
-      editState: false,
+      editUserSheet: false,
       deleteState: false,
       relinkState: false,
       isRelinking: false,
@@ -315,29 +269,38 @@ export default {
     clickEditButton() {
       this.relinkState = false;
       this.deleteState = false;
-      this.editState = !this.editState;
+      this.editUserSheet = !this.editUserSheet;
       this.setUserRolesAsSelected();
     },
-    clickDeleteButton() {
-      this.editState = false;
-      this.relinkState = false;
-      this.deleteState = !this.deleteState;
+    async clickDeleteButton() {
+      const confirmation = await this.$refs.confirmRemoveUser.open('Confirm Removal of User', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Remove', rejectText: 'Cancel'});
+      if (!confirmation) {
+        return;
+      }
+      this.loading = true;
+
+      if (this.instituteTypeCode === 'SCHOOL') {
+        this.removeSchoolUser();
+      } else {
+        this.removeDistrictUser();
+      }
     },
-    clickRelinkButton() {
-      this.editState = false;
-      this.deleteState = false;
-      this.relinkState = !this.relinkState;
-    },
-    formatExpiryDate(date) {
-      return formatDate(date, this.from, this.pickerFormat);
-    },
-    clickActionRelinkButton() {
+    async clickRelinkButton() {
+      const confirmation = await this.$refs.confirmRelinkUser.open('Confirm Re-link of User', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Re-link', rejectText: 'Cancel'});
+      if (!confirmation) {
+        return;
+      }
+      this.loading = true;
+
       this.isRelinking = true;
       if (this.instituteTypeCode === 'SCHOOL') {
         this.relinkSchoolUser();
       } else {
         this.relinkDistrictUser();
       }
+    },
+    formatExpiryDate(date) {
+      return formatDate(date, this.from, this.pickerFormat);
     },
     relinkSchoolUser() {
       const payload = {
@@ -384,13 +347,6 @@ export default {
         });
 
     },
-    clickRemoveButton() {
-      if (this.instituteTypeCode === 'SCHOOL') {
-        this.removeSchoolUser();
-      } else {
-        this.removeDistrictUser();
-      }
-    },
     removeSchoolUser() {
       const payload = {
         params: {
@@ -433,7 +389,7 @@ export default {
         this.setFailureAlert(`Please select at least one role for ${this.user.firstName}.`);
         return;
       }
-      this.editState = !this.editState;
+      this.editUserSheet = !this.editUserSheet;
       const payload = {
         params: {
           edxUserID: this.user.edxUserID,
@@ -487,6 +443,13 @@ export default {
 .name {
     word-break: break-word;
     font-size: 0.85em
+}
+
+.header {
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
 }
 
 @keyframes bounce-in {
