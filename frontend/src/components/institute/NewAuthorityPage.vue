@@ -226,14 +226,16 @@
                   </v-col>
                 </v-row>
                 <v-row class="ml-lg-1 pt-4">
-                  <v-checkbox
-                    id="sameAsMailingCheckbox"
-                    v-model="sameAsMailingCheckbox"
-                    dense
-                    label="Same as Mailing Address"
-                    class="mt-n3 pt-0"
-                    @update:model-value="clickSameAsAddressButton"
-                  />
+                  <v-col cols="6">
+                    <v-checkbox
+                      id="sameAsMailingCheckbox"
+                      v-model="sameAsMailingCheckbox"
+                      dense
+                      label="Same as Mailing Address"
+                      class="mt-n3 pt-0"
+                      @update:model-value="clickSameAsAddressButton"
+                    />
+                  </v-col>
                 </v-row>
               </v-col>
             </v-row>
