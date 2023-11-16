@@ -145,6 +145,7 @@
                                rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
                                rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
                       :min-date="dateOfLastSchoolClosure"
+                      :start-date="dateOfLastSchoolClosure"
                       model-type="yyyy-MM-dd'T'00:00:00"
                       @update:model-value="validateForm"
                       :allowTeleport="true"
