@@ -188,7 +188,7 @@
       >
         <v-row style="height: 100%;">
           <v-col style="min-height: 150px">
-            <v-card class="add-new-user d-flex align-center flex-column h-100">
+            <v-card class="add-new-user d-flex align-center flex-column h-100" style="min-height: 12em">
               <v-row
                 class="add-new-user"
                 align="center"
