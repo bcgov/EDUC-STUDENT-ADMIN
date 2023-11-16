@@ -857,14 +857,12 @@ import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import { formatPhoneNumber, formatDate } from '@/utils/format';
 import { getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool } from '@/utils/institute/status';
 import { mapState } from 'pinia';
-import {authStore} from '@/store/modules/auth';
 import router from '@/router';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
 import { isEmpty, omitBy } from 'lodash';
 import { instituteStore } from '@/store/modules/institute';
-import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'Details',
@@ -879,6 +877,14 @@ export default {
       required: true
     },
     hasAccess: {
+      type: Boolean,
+      required: true
+    },
+    canEditOffshoreAuthority: {
+      type: Boolean,
+      required: true
+    },
+    canEditIndependentAuthority: {
       type: Boolean,
       required: true
     }
@@ -910,7 +916,6 @@ export default {
   },
   computed: {
     ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapState(authStore, ['userInfo']),
     notesLoading() {
       return this.noteRequestCount > 0;
     },
@@ -924,24 +929,15 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     },
     getAuthorityTypes() {
-      if(this.canEditIndependentAndOffshoreAuth) {
+      if(this.canEditIndependentAuthority && this.canEditOffshoreAuthority) {
         return this.authorityTypes;
-      } else if(this.canOnlyEditIndependentAuthority && !this.canOnlyEditOffshoreAuthority) {
+      } else if((this.canEditIndependentAuthority && this.authority?.authorityTypeCode === 'INDEPENDNT') && !this.canEditOffshoreAuthority) {
         return this.authorityTypes.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyEditOffshoreAuthority && !this.canOnlyEditIndependentAuthority) {
+      } else if((this.canEditOffshoreAuthority && this.authority?.authorityTypeCode === 'OFFSHORE') && !this.canEditIndependentAuthority) {
         return this.authorityTypes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
       }
       return [];
     },
-    canEditIndependentAndOffshoreAuth() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    },
-    canOnlyEditIndependentAuthority() {
-      return this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
-    },
-    canOnlyEditOffshoreAuthority() {
-      return this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    }
   },
   created() {
     const instStore = instituteStore();
@@ -959,7 +955,6 @@ export default {
     this.findClosedDateOfLastClosingSchool();
   },
   methods: {
-    hasRequiredPermission,
     formatPhoneNumber,
     formatDate,
     getStatusColorAuthorityOrSchool,
