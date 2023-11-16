@@ -327,13 +327,19 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     },
     filteredAuthorityTypeCodes() {
+      const codes = [...this.authorityTypeCodes].toSorted((a, b) => {
+        if (a.authorityTypeCode < b.authorityTypeCode) return -1;
+        if (a.authorityTypeCode > b.authorityTypeCode) return 1;
+        return 0;
+      });
+
       if(this.canOnlyAddOffshoreAuthority && this.canOnlyAddIndependentAuthority) {
-        return this.authorityTypeCodes;
-      } else if(this.canOnlyAddOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
-        return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
-        return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } 
+        return codes;
+      } else if (this.canOnlyAddOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+        return codes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
+      } else if (this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
+        return codes.filter(type => this.independentArray.includes(type.authorityTypeCode));
+      }
       return [];
     },
     canOnlyAddIndependentAuthority() {
