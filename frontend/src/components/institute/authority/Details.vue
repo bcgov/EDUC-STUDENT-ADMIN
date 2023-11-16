@@ -931,9 +931,9 @@ export default {
     getAuthorityTypes() {
       if(this.canOnlyEditIndependentAuthority && this.canOnlyEditOffshoreAuthority) {
         return this.authorityTypes;
-      } else if(this.canOnlyEditIndependentAuthority && !this.canOnlyEditOffshoreAuthority) {
+      } else if(this.canOnlyEditIndependentAuthority && this.authority?.authorityTypeCode === 'INDEPENDNT' && !this.canOnlyEditOffshoreAuthority) {
         return this.authorityTypes.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyEditOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+      } else if(this.canOnlyEditOffshoreAuthority && this.authority?.authorityTypeCode === 'OFFSHORE' && !this.canOnlyAddIndependentAuthority) {
         return this.authorityTypes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
       }
       return [];
