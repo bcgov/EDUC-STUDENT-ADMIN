@@ -1,8 +1,8 @@
 <template>
-  <v-container class="containerSetup">
+  <v-container class="d-flex justify-center">
     <div v-if="instituteArray.length >=1">
       <v-row>
-        <v-col class="mb-1 d-flex justify-start">
+        <v-col class="mb-1">
           <v-icon
             size="small"
             color="#1976d2"
@@ -16,49 +16,33 @@
           >Return to Dashboard</a>
         </v-col>
       </v-row>
-      <v-card color="#F2F2F2">
-        <v-card-title>
-          <v-row justify="center">
-            <v-col class="d-flex justify-center">
-              <strong>Search a {{ instituteTypeLabel.toLowerCase() }} below to manage their EDX Access</strong>
-            </v-col>
-          </v-row>
+      <v-card
+        color="#F2F2F2"
+        min-width="55em"
+      >
+        <v-card-title class="text-center">
+          <strong>Search a {{ instituteTypeLabel.toLowerCase() }} below to manage their EDX Access</strong>
         </v-card-title>
-        <v-card-text>
-          <v-row justify="center">
-            <v-col cols="8">
-              <v-row
-                justify="center"
-                no-gutters
-              >
-                <v-col cols="8">
-                  <v-autocomplete
-                    id="selectInstituteName"
-                    v-model="instituteCode"
-                    variant="underlined"
-                    class="pt-0 mt-n1"
-                    item-title="text"
-                    prepend-inner-icon="mdi-account-box-outline"
-                    :items="instituteArray"
-                    color="#003366"
-                    :label="instituteTypeLabel"
-                    clearable
-                  />
-                </v-col>
-                <v-col
-                  class="pl-4 mt-3"
-                  cols="4"
-                >
-                  <PrimaryButton
-                    id="manageInstituteButton"
-                    :to="`/edx/exchange/access/${instituteTypeLabel.toLowerCase()}/${instituteCode}`"
-                    :disabled="!instituteCode"
-                    :text="'Manage ' + instituteTypeLabel + ' Access'"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
+        <v-card-text class="d-flex align-center">
+          <v-autocomplete
+            id="selectInstituteName"
+            v-model="instituteCode"
+            variant="underlined"
+            class="pt-0 mt-n1"
+            item-title="text"
+            prepend-inner-icon="mdi-account-box-outline"
+            :items="instituteArray"
+            color="#003366"
+            :label="instituteTypeLabel"
+            clearable
+          />
+          <PrimaryButton
+            id="manageInstituteButton"
+            class="ml-4"
+            :to="`/edx/exchange/access/${instituteTypeLabel.toLowerCase()}/${instituteCode}`"
+            :disabled="!instituteCode"
+            :text="'Manage ' + instituteTypeLabel + ' Access'"
+          />
         </v-card-text>
       </v-card>
     </div>
