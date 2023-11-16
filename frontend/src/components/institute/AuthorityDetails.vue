@@ -121,21 +121,19 @@
                     <Details 
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
-                      :has-access="canEditAuthorities"
-                      :canOnlyEditIndependentAuthority="canOnlyEditIndependentAuthority"
-                      :canOnlyEditOffshoreAuthority="canOnlyEditOffshoreAuthority"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
                     <AuthorityContacts 
                       :authority-i-d="authorityID"
-                      :has-access="canEditAuthorities"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
                       :notes="notes ? notes : []"
-                      :has-access="canEditAuthorities"
+                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
                       :loading="notesLoading"
                       @add-institute-note="saveNewAuthorityNote"
                       @edit-institute-note="saveChangesToAuthorityNote"
@@ -226,13 +224,10 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     },
     canOnlyEditIndependentAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
+      return this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
     },
     canOnlyEditOffshoreAuthority() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
-    },
-    canEditAuthorities() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION);
+      return this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
     }
   },
   created() {
