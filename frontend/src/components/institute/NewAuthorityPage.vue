@@ -227,14 +227,16 @@
                   </v-col>
                 </v-row>
                 <v-row class="ml-lg-1 pt-4">
-                  <v-checkbox
-                    id="sameAsMailingCheckbox"
-                    v-model="sameAsMailingCheckbox"
-                    dense
-                    label="Same as Mailing Address"
-                    class="mt-n3 pt-0"
-                    @update:model-value="clickSameAsAddressButton"
-                  />
+                  <v-col cols="6">
+                    <v-checkbox
+                      id="sameAsMailingCheckbox"
+                      v-model="sameAsMailingCheckbox"
+                      dense
+                      label="Same as Mailing Address"
+                      class="mt-n3 pt-0"
+                      @update:model-value="clickSameAsAddressButton"
+                    />
+                  </v-col>
                 </v-row>
               </v-col>
             </v-row>
@@ -326,13 +328,19 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     },
     filteredAuthorityTypeCodes() {
+      const codes = [...this.authorityTypeCodes].toSorted((a, b) => {
+        if (a.authorityTypeCode < b.authorityTypeCode) return -1;
+        if (a.authorityTypeCode > b.authorityTypeCode) return 1;
+        return 0;
+      });
+
       if(this.canOnlyAddOffshoreAuthority && this.canOnlyAddIndependentAuthority) {
-        return this.authorityTypeCodes;
-      } else if(this.canOnlyAddOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
-        return this.authorityTypeCodes?.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
-        return this.authorityTypeCodes?.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } 
+        return codes;
+      } else if (this.canOnlyAddOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+        return codes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
+      } else if (this.canOnlyAddIndependentAuthority && !this.canOnlyAddOffshoreAuthority) {
+        return codes.filter(type => this.independentArray.includes(type.authorityTypeCode));
+      }
       return [];
     },
     canOnlyAddIndependentAuthority() {
