@@ -319,7 +319,7 @@ viewRegistrationContactsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/adm
   -H "Authorization: Bearer $TKN")
 
 echo
-echo Retrieving VIEW_STUDENT_DATA_COLLECTION permission
+echo Retrieving VIEW_STUDENT_DATA_COLLECTION_PERMISSION permission
 viewStudentDataCollectionPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_STUDENT_DATA_COLLECTION_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
