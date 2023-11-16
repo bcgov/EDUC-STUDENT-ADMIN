@@ -221,6 +221,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"EDIT_OFFSHORE_AUTHORITY_PERMISSION\",\"description\" : \"Permission to edit offshore authority\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating VIEW_STUDENT_DATA_COLLECTION_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_STUDENT_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to view Student Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating EDIT_STUDENT_DATA_COLLECTION_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"EDIT_STUDENT_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to edit Student Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
 echo Retrieving MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
 manageSchoolUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EDX_SCHOOL_USERS_PERMISSION" \
   -H "Content-Type: application/json" \
