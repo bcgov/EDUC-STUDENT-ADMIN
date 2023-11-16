@@ -41,6 +41,7 @@
                   label="Open Date"
                   :rules="[rules.required()]"
                   model-type="yyyy-MM-dd'T'00:00:00"
+                  :max-date="new Date()"
                   @update:model-value="validateForm"
                 />
               </v-col>
