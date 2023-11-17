@@ -155,6 +155,7 @@
                   <Details
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
+                    :canEditAllSchools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -264,7 +265,10 @@ export default {
     canEditSchools() {
       return ((this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION))) ||
       (this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION)) ||
-      ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
+      ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.canEditAllSchools;
+    },
+    canEditAllSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)
     }
   },
   watch: {},
