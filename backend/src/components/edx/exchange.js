@@ -983,8 +983,10 @@ async function createSchool(req, res) {
     const isEmptyString = str => typeof str === 'string' && str.trim() === '';
     const userFieldsHaveEmptyValues = [user.lastName, user.email]
       .reduce((result, currentValue) => result || isEmptyString(currentValue), false);
+    const allFieldsAreEmpty = Object.values(user)
+      .reduce((allEmpty, currentValue) => allEmpty === false ? allEmpty : isEmptyString(currentValue));
 
-    if (user && userFieldsHaveEmptyValues) {
+    if (!allFieldsAreEmpty && userFieldsHaveEmptyValues) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Initial EDX School Account Manager must have a last name and email address.'
       });
@@ -995,7 +997,7 @@ async function createSchool(req, res) {
         ...school,
         districtId: school.districtID
       },
-      initialEdxUser: user || null
+      initialEdxUser: allFieldsAreEmpty ? null : user
     };
     delete payload.school.districtID;
     const userInfo = utils.getUser(req);
