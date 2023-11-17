@@ -84,7 +84,7 @@ async function generateTokens(req, res) {
       isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
       ...isValidUsers,
       ...isValidAdminUsers,
-      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
+      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser || checkUserPermissions
     };
     return res.status(HttpStatus.OK).json(responseJson);
   } else {
@@ -122,7 +122,7 @@ router.post('/refresh', [
         isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
         ...isValidUsers,
         ...isValidAdminUsers,
-        isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
+        isAuthorizedWebsocketUser: isAuthorizedWebsocketUser || checkUserPermissions
       };
       return res.status(HttpStatus.OK).json(responseJson);
     }
@@ -143,7 +143,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       isAuthorizedUser: isAuthorizedUser || checkUserPermissions,
       ...isValidUsers,
       ...isValidAdminUsers,
-      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser
+      isAuthorizedWebsocketUser: isAuthorizedWebsocketUser || checkUserPermissions
     };
     req.session.correlationID = uuidv4();
     res.status(HttpStatus.OK).json(responseJson);
