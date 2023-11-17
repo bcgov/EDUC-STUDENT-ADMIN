@@ -232,8 +232,8 @@ export default {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
     },
     hasEditAccess() {
-      return (this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION)) || 
-      (this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION));
+      return (this.authority?.authorityTypeCode === 'INDEPENDNT' && this.canEditIndependentAuthority) || 
+      (this.authority?.authorityTypeCode === 'OFFSHORE' && this.canEditOffshoreAuthority);
     }
   },
   created() {
