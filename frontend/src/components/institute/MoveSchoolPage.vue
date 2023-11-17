@@ -573,7 +573,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'gradeOptions', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.moveSchoolObject?.schoolCategoryCode) {
@@ -611,7 +611,7 @@ export default {
       return this.moveSchoolObject?.schoolCategoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
-      return this.activeGradeCodes ? this.activeGradeCodes : [];
+      return this.gradeOptions ? this.gradeOptions : [];
     },
     provincialCodes() {
       if (!this.activeProvinceCodes) {
