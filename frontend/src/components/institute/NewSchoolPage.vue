@@ -630,7 +630,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'gradeOptions', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
@@ -674,7 +674,7 @@ export default {
       return this.newSchool?.schoolCategoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
-      return this.activeGradeCodes ? this.activeGradeCodes : [];
+      return this.gradeOptions ? this.gradeOptions : [];
     },
     provincialCodes() {
       if (!this.activeProvinceCodes) {
@@ -711,7 +711,7 @@ export default {
     instStore.getAllActiveFacilityTypeCodes();
     instStore.getAllActiveSchoolCategoryTypeCodes();
     instStore.getAllActiveSchoolOrganizationTypeCodes();
-    instStore.getAllActiveGradeCodes();
+    instStore.getAllGradeCodes();
     instStore.getAllActiveSchoolNeighborhoodLearningCodes();
     instStore.getAllActiveProvinceCodes();
     instStore.getAllActiveCountryCodes();
