@@ -880,14 +880,14 @@ export default {
       type: Boolean,
       required: true
     },
-    canOnlyEditIndependentAuthority: {
+    canEditOffshoreAuthority: {
       type: Boolean,
       required: true
     },
-    canOnlyEditOffshoreAuthority: {
+    canEditIndependentAuthority: {
       type: Boolean,
       required: true
-    },
+    }
   },
   data() {
     return {
@@ -929,15 +929,15 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     },
     getAuthorityTypes() {
-      if(this.canOnlyEditIndependentAuthority && this.canOnlyEditOffshoreAuthority) {
+      if(this.canEditIndependentAuthority && this.canEditOffshoreAuthority) {
         return this.authorityTypes;
-      } else if(this.canOnlyEditIndependentAuthority && !this.canOnlyEditOffshoreAuthority) {
+      } else if((this.canEditIndependentAuthority && this.authority?.authorityTypeCode === 'INDEPENDNT') && !this.canEditOffshoreAuthority) {
         return this.authorityTypes.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyEditOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+      } else if((this.canEditOffshoreAuthority && this.authority?.authorityTypeCode === 'OFFSHORE') && !this.canEditIndependentAuthority) {
         return this.authorityTypes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
       }
       return [];
-    }
+    },
   },
   created() {
     const instStore = instituteStore();
