@@ -207,7 +207,7 @@ export default {
 
       if (value?.schoolCategoryCode === 'OFFSHORE') {
         this.schoolContactTypes = this.offshoreSchoolContacts;
-      } else if (value?.schoolCategoryCode === 'INDEPEND') {
+      } else if (this.independentArray.includes(value?.schoolCategoryCode)) {
         this.schoolContactTypes = this.independentAuthoritySchoolContacts;
       } else {
         this.schoolContactTypes = this.regularSchoolContactTypes;
