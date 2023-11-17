@@ -1179,6 +1179,10 @@ export default {
       type: Boolean,
       required: true
     },
+    canEditAllSchools: {
+      type: Boolean,
+      required: true
+    }
   },
   data() {
     return {
@@ -1244,7 +1248,7 @@ export default {
       }
     },
     schoolCategorySchoolEditOptions() {
-      if (['INDP_FNS', 'FED_BAND'].includes(this.school.schoolCategoryCode)) {
+      if (this.canEditAllSchools && ['INDP_FNS', 'FED_BAND'].includes(this.school.schoolCategoryCode)) {
         return this.activeSchoolCategoryTypes.filter(category => ['INDP_FNS', 'FED_BAND'].includes(category.schoolCategoryCode));
       } else {
         return this.activeSchoolCategoryTypes.filter(category => category.schoolCategoryCode === this.school.schoolCategoryCode);
