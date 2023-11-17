@@ -264,7 +264,7 @@
                   <v-col cols="4">
                     <v-text-field
                       id="newSchoolMailingAddressLine1Input"
-                      v-model="newSchool.mailingAddrLine1"
+                      v-model="mailingAddress.addressLine1"
                       class="pt-0 pb-5"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                       :maxlength="255"
@@ -276,7 +276,7 @@
                   <v-col cols="4">
                     <v-text-field
                       id="newSchoolMailingAddressLine2Input"
-                      v-model="newSchool.mailingAddrLine2"
+                      v-model="mailingAddress.addressLine2"
                       class="pt-0 pb-5"
                       :rules="[rules.noSpecialCharactersAddress()]"
                       :maxlength="255"
@@ -288,7 +288,7 @@
                   <v-col cols="4">
                     <v-text-field
                       id="newContactMailingAddressCityInput"
-                      v-model="newSchool.mailingAddrCity"
+                      v-model="mailingAddress.city"
                       class="pt-0 pb-5"
                       label="City"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
@@ -302,7 +302,7 @@
                   <v-col cols="4">
                     <v-select
                       id="newSchoolMailingAddressProvinceInput"
-                      v-model="newSchool.mailingAddrProvince"
+                      v-model="mailingAddress.provinceCode"
                       :rules="[rules.required()]"
                       class="pt-0"
                       label="Province"
@@ -315,7 +315,7 @@
                   <v-col cols="4">
                     <v-select
                       id="newSchoolMailingAddressCountryInput"
-                      v-model="newSchool.mailingAddrCountry"
+                      v-model="mailingAddress.countryCode"
                       :rules="[rules.required()]"
                       class="pt-0"
                       label="Country"
@@ -328,7 +328,7 @@
                   <v-col cols="4">
                     <v-text-field
                       id="newContactMailingAddressPostalCodeInput"
-                      v-model="newSchool.mailingAddrPostal"
+                      v-model="mailingAddress.postal"
                       :rules="[rules.required(), rules.postalCode()]"
                       variant="underlined"
                       class="pt-0"
@@ -361,7 +361,7 @@
                         dense
                         label="Same as Mailing Address"
                         class="mt-n3 pt-0"
-                        @update:model-value="validateForm"
+                        @update:model-value="combobulatePhysicalAddress"
                       />
                     </v-row>
                     <div v-else>
@@ -369,7 +369,7 @@
                         <v-col cols="4">
                           <v-text-field
                             id="newSchoolPhysicalAddressLine1Input"
-                            v-model="newSchool.physicalAddrLine1"
+                            v-model="physicalAddress.addressLine1"
                             :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                             class="pt-0 pb-5"
                             :maxlength="255"
@@ -381,7 +381,7 @@
                         <v-col cols="4">
                           <v-text-field
                             id="newSchoolPhysicalAddressLine2Input"
-                            v-model="newSchool.physicalAddrLine2"
+                            v-model="physicalAddress.addressLine2"
                             :rules="[rules.noSpecialCharactersAddress()]"
                             class="pt-0 pb-5"
                             variant="underlined"
@@ -393,7 +393,7 @@
                         <v-col cols="4">
                           <v-text-field
                             id="newContactPhysicalAddressCityInput"
-                            v-model="newSchool.physicalAddrCity"
+                            v-model="physicalAddress.city"
                             :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                             class="pt-0 pb-5"
                             :maxlength="255"
@@ -407,7 +407,7 @@
                         <v-col cols="4">
                           <v-select
                             id="newSchoolPhysicalAddressProvinceInput"
-                            v-model="newSchool.physicalAddrProvince"
+                            v-model="physicalAddress.provinceCode"
                             :rules="[rules.required()]"
                             class="pt-0"
                             label="Province"
@@ -420,7 +420,7 @@
                         <v-col cols="4">
                           <v-select
                             id="newSchoolPhysicalAddressCountryInput"
-                            v-model="newSchool.physicalAddrCountry"
+                            v-model="physicalAddress.countryCode"
                             :rules="[rules.required()]"
                             class="pt-0"
                             label="Country"
@@ -433,7 +433,7 @@
                         <v-col cols="4">
                           <v-text-field
                             id="newContactPhysicalAddressPostalCodeInput"
-                            v-model="newSchool.physicalAddrPostal"
+                            v-model="physicalAddress.postal"
                             :rules="[rules.required(), rules.postalCode()]"
                             variant="underlined"
                             class="pt-0"
@@ -454,7 +454,7 @@
                             dense
                             label="Same as Mailing Address"
                             class="mt-n3 pt-0"
-                            @update:model-value="validateForm"
+                            @update:model-value="combobulatePhysicalAddress"
                           />
                         </v-col>
                       </v-row>
@@ -543,7 +543,7 @@ import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {findUpcomingDate} from '@/utils/dateHelpers';
-import {sortBy} from 'lodash';
+import {sortBy, cloneDeep} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 import DatePicker from '@/components/util/DatePicker.vue';
@@ -601,19 +601,27 @@ export default {
         faxNumber: null,
         email: null,
         website: null,
-        mailingAddrLine1: null,
-        mailingAddrLine2: null,
-        mailingAddrCity: null,
-        mailingAddrProvince: null,
-        mailingAddrCountry: null,
-        mailingAddrPostal: null,
-        physicalAddrLine1: null,
-        physicalAddrLine2: null,
-        physicalAddrCity: null,
-        physicalAddrProvince: null,
-        physicalAddrCountry: null,
-        physicalAddrPostal: null,
       },
+      addresses: [
+        {
+          addressLine1: null,
+          addressLine2: null,
+          city: null,
+          postal: null,
+          addressTypeCode: 'MAILING',
+          provinceCode: null,
+          countryCode: null
+        },
+        {
+          addressLine1: null,
+          addressLine2: null,
+          city: null,
+          postal: null,
+          addressTypeCode: 'PHYSICAL',
+          provinceCode: null,
+          countryCode: null
+        }
+      ],
       initialUser: {
         firstName: '',
         lastName: '',
@@ -632,6 +640,8 @@ export default {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
 
+    physicalAddress() { return this.addresses.find(a => a.addressTypeCode === 'PHYSICAL'); },
+    mailingAddress() { return this.addresses.find(a => a.addressTypeCode === 'MAILING'); },
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
         return [];
@@ -771,10 +781,26 @@ export default {
       this.resetForm();
       this.$emit('newSchool:closeNewSchoolPage');
     },
+    prepareAddressPayload() {
+      if (!this.showAddress) return [];
+
+      const addresses = cloneDeep(this.addresses);
+      if (this.sameAsMailingCheckbox) {
+        addresses[1] = {...addresses[0], addressTypeCode: 'PHYSICAL'};
+      }
+      return addresses;
+    },
     addNewSchool() {
       this.processing = true;
 
-      ApiService.apiAxios.post(`${Routes.edx.CREATE_SCHOOL}`, {school: this.newSchool, user: this.initialUser})
+
+      ApiService.apiAxios.post(`${Routes.edx.CREATE_SCHOOL}`, {
+        school: {
+          ...this.newSchool,
+          addresses: this.prepareAddressPayload()
+        },
+        user: this.initialUser
+      })
         .then(() => {
           this.setSuccessAlert('Success! The school is being created.');
           this.resetForm();
@@ -836,31 +862,49 @@ export default {
         this.isFormValid = valid.valid;
       }
     },
-    async toggleAddressForm() {
+    toggleAddressForm() {
       this.showAddress = !this.showAddress;
       this.addressButton = {
         icon: !this.showAddress ? 'mdi-plus-thick ' : 'mdi-minus',
         label: !this.showAddress ? 'Add Address' : 'Remove Address'
       };
       this.resetAddressForms();
-      await this.validateForm();
+      this.$nextTick(() => {
+        this.validateForm();
+      });
+    },
+    combobulatePhysicalAddress() {
+      const addressTypeCode = 'PHYSICAL';
+      if (this.sameAsMailingCheckbox) {
+        this.addresses[1] = {...this.addresses[1], addressTypeCode};
+      } else {
+        this.addresses[1] = {
+          addressTypeCode,
+          addressLine1: null,
+          addressLine2: null,
+          city: null,
+          postal: null,
+          provinceCode: null,
+          countryCode: null,
+        };
+      }
+      this.$nextTick(() => {
+        this.validateForm();
+      });
     },
     resetAddressForms() {
-      this.newSchool.mailingAddrLine1 = null;
-      this.newSchool.mailingAddrLine2 = null;
-      this.newSchool.mailingAddrCity = null;
-      this.newSchool.mailingAddrProvince = null;
-      this.newSchool.mailingAddrCountry = null;
-      this.newSchool.mailingAddrPostal = null;
-      this.newSchool.physicalAddrLine1 = null;
-      this.newSchool.physicalAddrLine2 = null;
-      this.newSchool.physicalAddrCity = null;
-      this.newSchool.physicalAddrProvince = null;
-      this.newSchool.physicalAddrCountry = null;
-      this.newSchool.physicalAddrPostal = null;
+      this.addresses = ['MAILING', 'PHYSICAL'].map(addressTypeCode => ({
+        addressTypeCode,
+        addressLine1: null,
+        addressLine2: null,
+        city: null,
+        postal: null,
+        provinceCode: null,
+        countryCode: null
+      }));
     },
     isNumber,
-  },
+  }
 };
 </script>
 
