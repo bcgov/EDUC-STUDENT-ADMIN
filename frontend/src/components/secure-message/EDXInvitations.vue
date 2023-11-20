@@ -1,117 +1,122 @@
 <template>
-    <v-container fluid
-    class="px-0 mb-4">
-     
-      <v-row no-gutters>
-          <v-col>
-            <v-tabs v-model="tab">
-              <v-tab value="districtAccess" @click="loadDistrictInvites">
-                District Invitations
-              </v-tab>
-              <v-tab value="schoolAccess" @click="loadSchoolInvites">
-                School Invitations
-              </v-tab>
-              <v-tab value="sendInvites">
-                Send Invitations
-              </v-tab>
-            </v-tabs>
-          </v-col>
-        </v-row>
+  <v-container
+    fluid
+    class="px-0 mb-4"
+  >
+    <v-row no-gutters>
+      <v-col>
+        <v-tabs v-model="tab">
+          <v-tab
+            value="districtAccess"
+            @click="loadDistrictInvites"
+          >
+            District Invitations
+          </v-tab>
+          <v-tab
+            value="schoolAccess"
+            @click="loadSchoolInvites"
+          >
+            School Invitations
+          </v-tab>
+          <v-tab value="sendInvites">
+            Send Invitations
+          </v-tab>
+        </v-tabs>
+      </v-col>
+    </v-row>
 
-        <v-row no-gutters>
-          <v-col>
-            <v-card-text class="pt-0">
-              <v-window v-model="tab">
-                <v-window-item value="districtAccess">
-                  <v-row
-      no-gutters
-      style="background-color:white;"
-    >
+    <v-row no-gutters>
       <v-col>
-        <v-data-table
-          id="dataTable"
-          v-model:page="pageNumber"
-          v-model:items="districtInvites"
-          v-model:items-per-page="itemsPerPage"
-          :headers="districtHeaders"
-          :search="search"
-          :loading="districtLoading"
-          :sort-by="districtSortBy"
-        >
-          <template #top>
-            <v-text-field
-              v-model="search"
-              clearable
-              hide-details="auto"
-              label="Search"
-              class="pa-4"
-            />
-          </template>
-        </v-data-table>
+        <v-card-text class="pt-0">
+          <v-window v-model="tab">
+            <v-window-item value="districtAccess">
+              <v-row
+                no-gutters
+                style="background-color:white;"
+              >
+                <v-col>
+                  <v-data-table
+                    id="dataTable"
+                    v-model:page="pageNumber"
+                    v-model:items="districtInvites"
+                    v-model:items-per-page="itemsPerPage"
+                    :headers="districtHeaders"
+                    :search="search"
+                    :loading="districtLoading"
+                    :sort-by="districtSortBy"
+                  >
+                    <template #top>
+                      <v-text-field
+                        v-model="search"
+                        clearable
+                        hide-details="auto"
+                        label="Search"
+                        class="pa-4"
+                      />
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item value="schoolAccess">
+              <v-row
+                no-gutters
+                style="background-color:white;"
+              >
+                <v-col>
+                  <v-data-table
+                    id="dataTable"
+                    v-model:page="pageNumber"
+                    v-model:items="schoolInvites"
+                    v-model:items-per-page="itemsPerPage"
+                    :headers="schoolHeaders"
+                    :search="search"
+                    :loading="schoolLoading"
+                    :sort-by="schoolSortBy"
+                  >
+                    <template #top>
+                      <v-text-field
+                        v-model="search"
+                        clearable
+                        hide-details="auto"
+                        label="Search"
+                        class="pa-4"
+                      />
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item value="sendInvites">
+              sendInvites
+            </v-window-item>
+          </v-window>
+        </v-card-text>
       </v-col>
     </v-row>
-                </v-window-item>
-                <v-window-item value="schoolAccess">
-                  <v-row
-      no-gutters
-      style="background-color:white;"
-    >
-      <v-col>
-        <v-data-table
-          id="dataTable"
-          v-model:page="pageNumber"
-          v-model:items="schoolInvites"
-          v-model:items-per-page="itemsPerPage"
-          :headers="schoolHeaders"
-          :search="search"
-          :loading="schoolLoading"
-          :sort-by="schoolSortBy"
-        >
-          <template #top>
-            <v-text-field
-              v-model="search"
-              clearable
-              hide-details="auto"
-              label="Search"
-              class="pa-4"
-            />
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-                </v-window-item>
-                <v-window-item value="sendInvites">
-                  sendInvites
-                </v-window-item>
-                
-              </v-window>
-            </v-card-text>
-          </v-col>
-        </v-row>
-    
-    </v-container>
-  </template>
+  </v-container>
+</template>
   
-  <script>
+<script>
   
-  import ApiService from '../../common/apiService';
-  import {Routes} from '@/utils/constants';
-  import PrimaryButton from '@/components/util/PrimaryButton.vue';
-  import alertMixin from '@/mixins/alertMixin';
+import ApiService from '../../common/apiService';
+import {Routes} from '@/utils/constants';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import alertMixin from '@/mixins/alertMixin';
   
-  export default {
-    name: 'EDXInvitations',
-    components: {
-      PrimaryButton,
-    },
-    mixins: [alertMixin],
-    props: {
+export default {
+  name: 'EDXInvitations',
+  components: {
+    PrimaryButton,
+  },
+  mixins: [alertMixin],
+  props: {
       
-    },
-    data() {
-      return {
-        tab: null,
-        search: null,
+  },
+  data() {
+    return {
+      tab: null,
+      search: null,
       pageNumber: 1,
       pageCount: 0,
       itemsPerPage: 10,
@@ -189,52 +194,52 @@
       schoolInvites: [],
       districtLoading: false,
       schoolLoading: false,
-      };
-    },
-    computed: {
+    };
+  },
+  computed: {
       
 
-    },
-    async mounted() {
-      this.loadDistrictInvites();
-    },
-    created() {
-    },
-    methods: {
+  },
+  async mounted() {
+    this.loadDistrictInvites();
+  },
+  created() {
+  },
+  methods: {
 
-      loadSchoolInvites() {
-        this.schoolLoading = true;
-        ApiService.apiAxios
-          .get(`${Routes.edx.FIND_SCHOOL_INVITATIONS}`)
-          .then(response => {
-            if (response) {
-              this.schoolInvites = response.data;
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('An error occurred while loading the School Invitations. Please try again later.');
-          })
-          .finally(() => (this.schoolLoading = false));
-      },
-      loadDistrictInvites() {
-        this.districtLoading = true;
-        ApiService.apiAxios
-          .get(`${Routes.edx.FIND_DISTRICT_INVITATIONS}`)
-          .then(response => {
-            if (response) {
-              this.districtInvites = response.data;
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('An error occurred while loading the District Invitations. Please try again later.');
-          })
-          .finally(() => (this.districtLoading = false));
-      },
-    }
-  };
-  </script>
+    loadSchoolInvites() {
+      this.schoolLoading = true;
+      ApiService.apiAxios
+        .get(`${Routes.edx.FIND_SCHOOL_INVITATIONS}`)
+        .then(response => {
+          if (response) {
+            this.schoolInvites = response.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the School Invitations. Please try again later.');
+        })
+        .finally(() => (this.schoolLoading = false));
+    },
+    loadDistrictInvites() {
+      this.districtLoading = true;
+      ApiService.apiAxios
+        .get(`${Routes.edx.FIND_DISTRICT_INVITATIONS}`)
+        .then(response => {
+          if (response) {
+            this.districtInvites = response.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the District Invitations. Please try again later.');
+        })
+        .finally(() => (this.districtLoading = false));
+    },
+  }
+};
+</script>
   
   <style scoped>
   
