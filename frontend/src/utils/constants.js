@@ -466,6 +466,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_CONTACTS: 'School Contacts',
     SCHOOL_HISTORY: 'School History',
     SCHOOL_MOVE: 'School Move',
+    DATA_COLLECTIONS: "Data Collections",
   }
 );
 
