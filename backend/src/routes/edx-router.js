@@ -37,7 +37,10 @@ const {
   removeSecureExchangeNote,
   getExchangeStats,
   districtUserActivationInvite,
-  createSchool
+  createSchool,
+  findAllSchoolInvitations,
+  findAllDistrictInvitations
+
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -71,6 +74,9 @@ router.post('/users/activation-code/primary/district/:instituteIdentifier', pass
 
 router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), schoolUserActivationInvite);
 router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), districtUserActivationInvite);
+
+router.get('/findAll-school-invites', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, findAllSchoolInvitations);
+router.get('/findAll-district-invites', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, findAllDistrictInvitations);
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION), extendSession, getExchanges);

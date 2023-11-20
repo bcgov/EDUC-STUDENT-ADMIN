@@ -1012,6 +1012,52 @@ async function createSchool(req, res) {
   }
 }
 
+async function findAllDistrictInvitations(req, res) {
+  try {
+    
+    const instituteType =  {
+      params: {
+        instituteType :  'DISTRICT'
+      }
+    }
+
+    const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
+    result.forEach((element) => {
+      element.district = cacheService.getDistrictJSONByDistrictId(element?.districtID);
+      element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
+      element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';      
+    })
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'findAllDistrictInvitations', 'Error occurred while attempting to get all invitations for district.');
+    return errorResponse(res);
+  }
+}
+
+async function findAllSchoolInvitations(req, res) {
+  try {
+    
+    const instituteType =  {
+      params: {
+        instituteType :  'SCHOOL'
+      }
+    }
+    
+    const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
+
+    result.forEach((element) => {
+      element.school = cacheService.getSchoolBySchoolID(element?.schoolID);
+      element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
+      element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';  
+    })
+
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'findAllSchoolInvitations', 'Error occurred while attempting to get all invitations for school.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -1043,5 +1089,7 @@ module.exports = {
   getExchangeStats,
   removeSecureExchangeNote,
   districtUserActivationInvite,
-  createSchool
+  createSchool,
+  findAllDistrictInvitations,
+  findAllSchoolInvitations
 };
