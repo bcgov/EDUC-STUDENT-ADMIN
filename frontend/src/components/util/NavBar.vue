@@ -250,6 +250,11 @@ export default {
               title: 'EDX District Access',
               link: 'exchangeDistrictAccess',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION)
+            },
+            {
+              title: 'EDX Invitations',
+              link: 'edxInvitations',
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION)
             }
           ],
         },

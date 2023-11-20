@@ -118,6 +118,7 @@ nconf.defaults({
       secureExchangeCommentSagaURL: process.env.EDX_API_URL + '/exchange/secure-exchange-comment-saga',
       moveSchoolSagaURL: process.env.EDX_API_URL + '/exchange/move-school-saga',
       createSchoolSagaURL: process.env.EDX_API_URL + '/exchange/create-school-saga',
+      findAllInvitations: process.env.EDX_API_URL + '/users/user-invitations',
       roleAdmin: process.env.EDX_ADMIN,
     },
     institute: {

@@ -171,7 +171,9 @@ let object = {
     CREATE_SCHOOL: edxRoot + '/create-school',
     PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
     NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
-    NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite'
+    NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite',
+    FIND_DISTRICT_INVITATIONS: edxRoot + '/findAll-district-invites',
+    FIND_SCHOOL_INVITATIONS: edxRoot + '/findAll-school-invites'
   },
   sdc: {
     FUNDING_DATA_URL: sdcRoot + '/funding-groups',
@@ -466,6 +468,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_CONTACTS: 'School Contacts',
     SCHOOL_HISTORY: 'School History',
     SCHOOL_MOVE: 'School Move',
+    INVITATIONS: 'EDX Invitations'
   }
 );
 

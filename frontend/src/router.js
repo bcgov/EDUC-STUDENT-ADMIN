@@ -48,6 +48,7 @@ import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -416,6 +417,17 @@ const router = createRouter({
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
             permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
+          }
+        },
+        {
+          path: 'invitations',
+          name: 'edxInvitations',
+          component: EDXInvitations,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.INVITATIONS,
+            requiresAuth: true,
+            permission: (PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION || PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION)
           }
         }
       ]
