@@ -280,7 +280,7 @@ function hasPermissionToGetStudentByPEN(isValidUiTokenWithSimpleSearchRoles) {
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
     
-      if(isValidUiTokenWithSimpleSearchRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)) {
+      if(isValidUiTokenWithSimpleSearchRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION)) {
         return next();
       }
       return res.status(HttpStatus.FORBIDDEN).json({
@@ -310,7 +310,7 @@ function hasPermissionToGetMacros(hasMacroRoles) {
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
     
-      if(hasMacroRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION)) {
+      if(hasMacroRoles || userToken['realm_access'].roles.includes(perm.PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION)) {
         return next();
       }
       return res.status(HttpStatus.FORBIDDEN).json({
