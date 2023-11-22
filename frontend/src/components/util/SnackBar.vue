@@ -14,11 +14,11 @@
       class="snackbar"
     >
       <div v-html="alertNotificationText" />
-      <template #action="{ attrs }">
+      <template #actions>
         <v-btn
           text
           color="white"
-          v-bind="attrs"
+          v-bind="$attrs"
           @click="showSnackBar = false"
         >
           {{ alertNotificationQueue.length > 0 ? 'Next (' + alertNotificationQueue.length + ')' : 'Close' }}
