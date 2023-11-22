@@ -2,16 +2,14 @@
   <v-chip
     :id="id"
     class="filter-chip"
-    closable
+    :closable="true"
     :text="text"
-    @click="$emit('closeItem')"
-  >
-  </v-chip>
+    @click:close="$emit('closeItem')"
+  />
 </template>
 
 <script>
 export default {
-  emits: ['closeItem'],
   name: 'FilterTag',
   props: {
     id: {
@@ -21,7 +19,8 @@ export default {
     text: {
       type: String
     }
-  }
+  },
+  emits: ['closeItem']
 };
 </script>
 
@@ -36,10 +35,10 @@ export default {
     background-color: #38598a !important;
     color: white;
   }
-  .filter-chip /deep/ .v-icon {
+  .filter-chip :deep(.v-icon) {
     color: #38598a !important;
   }
-  .filter-chip:hover /deep/ .v-icon {
+  .filter-chip:hover :deep(.v-icon) {
     color: white !important;
   }
 </style>
