@@ -861,7 +861,7 @@ import router from '@/router';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
-import { isEmpty, omitBy } from 'lodash';
+import {isEmpty, omitBy, sortBy} from 'lodash';
 import { instituteStore } from '@/store/modules/institute';
 
 export default {
@@ -948,7 +948,7 @@ export default {
       this.countryCodeValues = this.countryCodes;
     });
     instStore.getAllAuthorityTypeCodes().then(() => {
-      this.authorityTypes = this.authorityTypeCodes;
+      this.authorityTypes = sortBy(this.authorityTypeCodes, ['label']);
     });
     this.getAuthority();
     this.determineIfAuthorityHasAnyOpenSchools();

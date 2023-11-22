@@ -704,7 +704,7 @@ export default {
     getActiveAuthorityDropDownItems() {
       ApiService.getActiveAuthorities().then((response) => {
         for (const authority of response.data) {
-          if (this.isOpenNotClosingAuthority(authority)) {
+          if (this.isOpenNotClosingAuthority(authority) && authority.authorityID !== this.school.independentAuthorityId) {
             let authorityItem = {
               authorityNumber: +authority.authorityNumber,
               authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
