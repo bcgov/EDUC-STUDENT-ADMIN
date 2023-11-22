@@ -7,11 +7,16 @@
     <v-card-text>
       <v-row class="move-description">
         <v-col>
-          <p>
+          <v-alert
+            density="compact"
+            color="#003366"
+            type="info"
+            class="px-2"
+            variant="tonal"
+          >
             Moving the school will close the school in the current district and open it in a new district and/or
-            authority. If it is available, the school code will remain the same in the new district
-          </p>
-          <p>Any users associated with the closing school will be moved to the new school.</p>
+            authority. If it is available, the school code will remain the same in the new district. Any users associated with the closing school will be moved to the new school.
+          </v-alert>
         </v-col>
       </v-row>
 

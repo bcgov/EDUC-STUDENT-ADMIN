@@ -188,7 +188,7 @@
     >
       <v-col
         class="textFieldColumn"
-        cols="4"
+        cols="5"
       >
         <v-text-field
           :value="getSchoolName(studentHistoryDetail.mincode)"

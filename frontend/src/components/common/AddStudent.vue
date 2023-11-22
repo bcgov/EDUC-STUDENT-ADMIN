@@ -46,7 +46,10 @@
     <v-row
       v-if="showStudentDetails"
     >
-      <v-col cols="auto" class="pr-0">
+      <v-col
+        cols="auto"
+        class="pr-0"
+      >
         <v-icon
           v-if="showStudentDetails"
           size="x-large"
@@ -117,7 +120,7 @@ export default {
       isSearchingStudent: false,
       showStudentDetails: false,
       penNumber: null,
-      penRules: [v => (!v || isValidPEN(v))],
+      penRules: [v => (!v || isValidPEN(v) || 'Invalid PEN')],
       studentExist: false,
       student: {},
       alert: false,
@@ -178,8 +181,8 @@ export default {
         .catch(() => {
           this.setErrorAlert('PEN must be a valid PEN associated with a student');
         }).finally(() => {
-        this.isSearchingStudent = false;
-      });
+          this.isSearchingStudent = false;
+        });
     },
     populateStudentInfoCard(data) {
       this.alert = false;

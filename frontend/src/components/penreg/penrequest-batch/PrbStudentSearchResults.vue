@@ -118,7 +118,7 @@
               density="compact"
               hide-details="auto"
               color="#606060"
-              @click.stop="handleRecordCheckBoxClicked(item.item.raw)"
+              @click.prevent="handleRecordCheckBoxClicked(item.item.raw)"
             />
             <div
               v-else
