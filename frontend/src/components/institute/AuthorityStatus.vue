@@ -62,8 +62,8 @@
                       :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, true,`The open date must occur on or prior to ${currentDateFormatted}.`)]"
                       :max-date="cutOffDate"
                       model-type="yyyy-MM-dd'T'00:00:00"
+                      :allow-teleport="true"
                       @update:model-value="validateForm"
-                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>
@@ -107,14 +107,18 @@
                   class="px-2"
                   variant="tonal"
                 >
-                  <p class="py-1">Some schools under this authority have closing dates in the future.</p>
+                  <p class="py-1">
+                    Some schools under this authority have closing dates in the future.
+                  </p>
                   <p class="py-1">
                     The closing date of the authority must be on or after
                     <strong>{{
                       dateOfLastSchoolClosureFormatted
                     }}</strong>.
                   </p>
-                  <p class="py-1">The following schools have close dates in the future:</p>
+                  <p class="py-1">
+                    The following schools have close dates in the future:
+                  </p>
                   <ul class="school-highlight py-1">
                     <li
                       v-for="closingSchool in listOfClosingSchoolsByMincode"
@@ -130,7 +134,9 @@
                       }}</a>
                     </li>
                   </ul>
-                  <p class="py-1">Refresh the page to see an updated list of schools.</p>
+                  <p class="py-1">
+                    Refresh the page to see an updated list of schools.
+                  </p>
                 </v-alert>
                 <v-row class="d-flex justify-start mt-3">
                   <h3>Select the closure date</h3>
@@ -147,8 +153,8 @@
                       :min-date="dateOfLastSchoolClosure"
                       :start-date="dateOfLastSchoolClosure"
                       model-type="yyyy-MM-dd'T'00:00:00"
+                      :allow-teleport="true"
                       @update:model-value="validateForm"
-                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>
@@ -206,8 +212,8 @@
                                rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
                       :min-date="dateOfLastSchoolClosure"
                       model-type="yyyy-MM-dd'T'00:00:00"
+                      :allow-teleport="true"
                       @update:model-value="validateForm"
-                      :allowTeleport="true"
                     />
                   </v-col>
                 </v-row>
@@ -254,11 +260,13 @@ export default {
   props: {
     authorityOpenDate: {
       type: String,
-      required: false
+      required: false,
+      default: ''
     },
     authorityCloseDate: {
       type: String,
-      required: false
+      required: false,
+      default: ''
     },
     authorityStatus: {
       type: String,
@@ -270,17 +278,24 @@ export default {
     },
     dateOfLastSchoolClosure: {
       type: String,
-      required: false
+      required: false,
+      default: ''
     },
     listOfOpenSchools: {
       type: Array,
-      required: false
+      required: false,
+      default: () => []
     },
     listOfClosingSchools: {
       type: Array,
-      required: false
+      required: false,
+      default: () => []
     }
   },
+  emits: [
+    'authorityStatus:closeEditAuthorityStatusPage',
+    'updateAuthorityDates'
+  ],
   data() {
     let currentLocalDate = LocalDate.now();
     return {
