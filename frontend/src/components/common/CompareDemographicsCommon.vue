@@ -11,12 +11,12 @@
       :merged-from-student-i-d="mergedFromStudentID"
       @mergeStudentsModalOpenEmit="mergeStudentsModalOpenEmit"
     />
-    <v-card-title class="px-0 pb-0 pt-5">
+    <v-card-title class="px-0 py-5">
       <v-row>
         <v-col
           v-if="title"
           cols="2"
-          class="pr-0 pt-0"
+          class="pr-0 py-0"
         >
           {{ title }}
         </v-col>
@@ -33,6 +33,7 @@
             maxlength="9"
             :disabled="studentRecords.length > 2"
             :rules="penRules"
+            hide-details="auto"
             @keyup.enter="enterPushed()"
             @input="checkStudentStatusForValidPen()"
           />
@@ -63,7 +64,7 @@
             truePen
           }}</a></span>
         </v-col>
-        <v-col class="pt-0">
+        <v-col class="py-0">
           <v-btn
             v-if="closeCompareModal"
             id="closeCompareModalBtn"

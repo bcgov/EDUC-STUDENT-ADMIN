@@ -27,7 +27,6 @@
           :tabindex="tabIndex"
           class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
           :class="{darkBackgound: hovering || hasEdits(name)}"
-          color="#FFFFFF"
           :items="items"
           item-title="text"
           item-value="value"
