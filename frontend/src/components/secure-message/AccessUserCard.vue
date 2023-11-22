@@ -117,7 +117,7 @@
         id="editUserInviteVCardTitle"
         class="header pt-1 pb-1"
       >
-        Edit User for {{user.firstName}} {{user.lastName}}
+        Edit {{user.firstName}} {{user.lastName}}
       </v-card-title>
       <v-divider />
       <v-card-text>
