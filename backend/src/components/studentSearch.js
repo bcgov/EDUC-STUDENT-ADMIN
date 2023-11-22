@@ -57,7 +57,7 @@ async function searchStudent(req, res) {
             searchQueries[element] = searchQueries[element].substring(1);
           }
 
-          if (useNameVariants) {
+          if (useNameVariants === 'true') {
             if (element === 'legalFirstName') {
               operation = FILTER_OPERATION.IN;
               legalNicknames.push(searchQueries[element].toUpperCase());
