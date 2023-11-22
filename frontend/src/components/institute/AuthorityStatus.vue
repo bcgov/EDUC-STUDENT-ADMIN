@@ -9,218 +9,165 @@
       <v-card-title class="sheetHeader pt-1 pb-1">
         Update Authority Status
       </v-card-title>
-      <v-divider />
-      <v-card-text>
-        <v-row class="pl-3 pr-3 d-flex justify-center">
-          <v-col>
-            <v-row class="d-flex justify-start">
-              <h3>How would you like to update the status?</h3>
-            </v-row>
-            <v-row class="d-flex justify-start">
-              <v-radio-group v-model="action">
-                <span v-if="displayOptionsForOpenAuthorityStatus">
-                  <v-radio
-                    label="Close the Authority"
-                    value="setCloseDate"
-                  />
-                </span>
-                <span v-if="displayOptionsForClosingAuthorityStatus">
-                  <v-radio
-                    label="Open the Authority"
-                    value="setOpenDate"
-                  />
-                  <v-radio
-                    label="Update Closing Date"
-                    value="updateCloseDate"
-                  />
-                </span>
-                <span v-if="displayOptionsForClosedAuthorityStatus">
-                  <v-radio
-                    label="Open the Authority"
-                    value="setOpenDate"
-                  />
-                </span>
-              </v-radio-group>
-            </v-row>
-            <v-row class="d-flex justify-start">
-              <v-divider class="mt-1" />
-            </v-row>
-            <v-row
-              v-if="action === 'setOpenDate'"
-              class="d-flex justify-start"
+      <v-card-text class="mt-4">
+        <h3>How would you like to update the status?</h3>
+        <v-radio-group
+          v-model="action"
+          hide-details="auto"
+        >
+          <span v-if="displayOptionsForOpenAuthorityStatus">
+            <v-radio
+              label="Close the Authority"
+              value="setCloseDate"
+            />
+          </span>
+          <span v-if="displayOptionsForClosingAuthorityStatus">
+            <v-radio
+              label="Open the Authority"
+              value="setOpenDate"
+            />
+            <v-radio
+              label="Update Closing Date"
+              value="updateCloseDate"
+            />
+          </span>
+          <span v-if="displayOptionsForClosedAuthorityStatus">
+            <v-radio
+              label="Open the Authority"
+              value="setOpenDate"
+            />
+          </span>
+        </v-radio-group>
+        <v-divider class="mb-2" />
+        <template v-if="action === 'setOpenDate'">
+          <h3>Select the open date</h3>
+          <DatePicker
+            id="newOpenDateTextField"
+            v-model="newOpenDate"
+            label="Open Date"
+            :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, true,`The open date must occur on or prior to ${currentDateFormatted}.`)]"
+            :max-date="cutOffDate"
+            model-type="yyyy-MM-dd'T'00:00:00"
+            :allow-teleport="true"
+            @update:model-value="validateForm"
+          />
+        </template>
+        <template v-if="action === 'setCloseDate' && authorityHasOpenSchools">
+          <p>This authority cannot be closed, as there are still open schools under this authority.  The following schools must be closed or moved to another authority before the authority can be closed.</p>
+          <ul class="school-highlight mt-4 mb-4">
+            <li
+              v-for="openSchool in listOfOpenSchoolsByMincode"
+              :key="openSchool.schoolId"
             >
-              <v-col>
-                <v-row class="d-flex justify-start">
-                  <h3>Select the open date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <DatePicker
-                      id="newOpenDateTextField"
-                      v-model="newOpenDate"
-                      label="Open Date"
-                      :rules="[rules.required(), rules.dateIsPriorOrEqualTo(newOpenDate, currentDate, true,`The open date must occur on or prior to ${currentDateFormatted}.`)]"
-                      :max-date="cutOffDate"
-                      model-type="yyyy-MM-dd'T'00:00:00"
-                      :allow-teleport="true"
-                      @update:model-value="validateForm"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row
-              v-if="action === 'setCloseDate' && authorityHasOpenSchools"
-              class="pb-0 pt-2"
-            >
-              <v-col>
-                <p>This authority cannot be closed, as there are still open schools under this authority.</p>
-                <p>The following schools must be closed or moved to another authority before the authority can be closed.</p>
-                <ul class="school-highlight">
-                  <li
-                    v-for="openSchool in listOfOpenSchoolsByMincode"
-                    :key="openSchool.schoolId"
-                  >
-                    {{
-                      openSchool.mincode
-                    }} - <a
-                      class="details"
-                      @click="openSchoolDetailsPage(openSchool.schoolId)"
-                    >{{
-                      openSchool.displayName
-                    }}</a>
-                  </li>
-                </ul>
-                <p>Refresh the page to see an updated list of schools and new update options.</p>
-              </v-col>
-            </v-row>
-            <v-row
-              v-if="action === 'setCloseDate' && !authorityHasOpenSchools"
-              class="d-flex justify-start"
-            >
-              <v-col>
-                <v-alert
-                  v-if="showAlertForFutureClosureDate"
-                  color="#003366"
-                  density="compact"
-                  type="info"
-                  class="px-2"
-                  variant="tonal"
+              {{ openSchool.mincode }} -
+              <a
+                class="details"
+                @click="openSchoolDetailsPage(openSchool.schoolId)"
+              >
+                {{ openSchool.displayName }}
+              </a>
+            </li>
+          </ul>
+          <p>Refresh the page to see an updated list of schools and new update options.</p>
+        </template>
+        <template v-if="action === 'setCloseDate' && !authorityHasOpenSchools">
+          <v-alert
+            v-if="showAlertForFutureClosureDate"
+            color="#003366"
+            density="compact"
+            type="info"
+            class="px-2 mb-2"
+            variant="tonal"
+          >
+            <p class="py-1">
+              Some schools under this authority have closing dates in the future.
+            </p>
+            <p class="py-1">
+              The closing date of the authority must be on or after <strong>{{ dateOfLastSchoolClosureFormatted }}</strong>.
+            </p>
+            <p class="py-1">
+              The following schools have close dates in the future:
+            </p>
+            <ul class="school-highlight py-1">
+              <li
+                v-for="closingSchool in listOfClosingSchoolsByMincode"
+                :key="closingSchool.schoolId"
+              >
+                {{ closingSchool.mincode }} -
+                <a
+                  class="details"
+                  @click="openSchoolDetailsPage(closingSchool.schoolId)"
                 >
-                  <p class="py-1">
-                    Some schools under this authority have closing dates in the future.
-                  </p>
-                  <p class="py-1">
-                    The closing date of the authority must be on or after
-                    <strong>{{
-                      dateOfLastSchoolClosureFormatted
-                    }}</strong>.
-                  </p>
-                  <p class="py-1">
-                    The following schools have close dates in the future:
-                  </p>
-                  <ul class="school-highlight py-1">
-                    <li
-                      v-for="closingSchool in listOfClosingSchoolsByMincode"
-                      :key="closingSchool.schoolId"
-                    >
-                      {{
-                        closingSchool.mincode
-                      }} - <a
-                        class="details"
-                        @click="openSchoolDetailsPage(closingSchool.schoolId)"
-                      >{{
-                        closingSchool.displayName
-                      }}</a>
-                    </li>
-                  </ul>
-                  <p class="py-1">
-                    Refresh the page to see an updated list of schools.
-                  </p>
-                </v-alert>
-                <v-row class="d-flex justify-start mt-3">
-                  <h3>Select the closure date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <DatePicker
-                      id="newCloseDateTextField"
-                      v-model="newCloseDate"
-                      label="Close Date"
-                      :rules="[rules.required(),
-                               rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
-                               rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                      :min-date="dateOfLastSchoolClosure"
-                      :start-date="dateOfLastSchoolClosure"
-                      model-type="yyyy-MM-dd'T'00:00:00"
-                      :allow-teleport="true"
-                      @update:model-value="validateForm"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row
-              v-if="action === 'updateCloseDate'"
-              class="d-flex justify-start"
-            >
-              <v-col>
-                <v-alert
-                  v-if="showAlertForFutureClosureDate"
-                  color="#003366"
-                  density="compact"
-                  type="info"
-                  class="px-2"
-                  variant="tonal"
+                  {{ closingSchool.displayName }}
+                </a>
+              </li>
+            </ul>
+            <p class="py-1">
+              Refresh the page to see an updated list of schools.
+            </p>
+          </v-alert>
+        </template>
+        <template v-if="action === 'setCloseDate' && !authorityHasOpenSchools">
+          <h3>Select the closure date</h3>
+          <DatePicker
+            id="newCloseDateTextField"
+            v-model="newCloseDate"
+            label="Close Date"
+            :rules="[rules.required(),
+                     rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                     rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
+            :min-date="dateOfLastSchoolClosure"
+            :start-date="dateOfLastSchoolClosure"
+            model-type="yyyy-MM-dd'T'00:00:00"
+            :allow-teleport="true"
+            @update:model-value="validateForm"
+          />
+        </template>
+        <template v-if="action === 'updateCloseDate'">
+          <v-alert
+            v-if="showAlertForFutureClosureDate"
+            color="#003366"
+            density="compact"
+            type="info"
+            class="px-2 mb-2"
+            variant="tonal"
+          >
+            <p>Some schools under this authority have closing dates in the future.</p>
+            <p>
+              The closing date of the authority must be on or after
+              <strong>{{ dateOfLastSchoolClosureFormatted }}</strong>.
+            </p>
+            <p>The following schools have close dates in the future:</p>
+            <ul class="school-highlight pb-2">
+              <li
+                v-for="closingSchool in listOfClosingSchoolsByMincode"
+                :key="closingSchool.schoolId"
+              >
+                {{ closingSchool.mincode }} -
+                <a
+                  class="details"
+                  @click="openSchoolDetailsPage(closingSchool.schoolId)"
                 >
-                  <p>Some schools under this authority have closing dates in the future.</p>
-                  <p>
-                    The closing date of the authority must be on or after
-                    <strong>{{
-                      dateOfLastSchoolClosureFormatted
-                    }}</strong>.
-                  </p>
-                  <p>The following schools have close dates in the future:</p>
-                  <ul class="school-highlight pb-2">
-                    <li
-                      v-for="closingSchool in listOfClosingSchoolsByMincode"
-                      :key="closingSchool.schoolId"
-                    >
-                      {{
-                        closingSchool.mincode
-                      }} - <a
-                        class="details"
-                        @click="openSchoolDetailsPage(closingSchool.schoolId)"
-                      >{{
-                        closingSchool.displayName
-                      }}</a>
-                    </li>
-                  </ul>
-                  <p>Refresh the page to see an updated list of schools.</p>
-                </v-alert>
-                <v-row class="d-flex justify-start mt-3">
-                  <h3>Select the new closing date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <DatePicker
-                      id="updatedCloseDateTextField"
-                      v-model="updatedCloseDate"
-                      label="Close Date"
-                      :rules="[rules.required(),
-                               rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
-                               rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
-                      :min-date="dateOfLastSchoolClosure"
-                      model-type="yyyy-MM-dd'T'00:00:00"
-                      :allow-teleport="true"
-                      @update:model-value="validateForm"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+                  {{ closingSchool.displayName }}
+                </a>
+              </li>
+            </ul>
+            <p>Refresh the page to see an updated list of schools.</p>
+          </v-alert>
+          <h3>Select the new closing date</h3>
+          <DatePicker
+            id="updatedCloseDateTextField"
+            v-model="updatedCloseDate"
+            label="Close Date"
+            :rules="[rules.required(),
+                     rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                     rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
+            :min-date="dateOfLastSchoolClosure"
+            model-type="yyyy-MM-dd'T'00:00:00"
+            :allow-teleport="true"
+            @update:model-value="validateForm"
+          />
+        </template>
       </v-card-text>
       <v-card-actions class="justify-end">
         <PrimaryButton
