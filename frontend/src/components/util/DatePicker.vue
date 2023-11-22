@@ -51,6 +51,7 @@ export default defineComponent({
     :model-value="modelValue"
     :enable-time-picker="false"
     :model-type="modelType"
+    :menu-class-name="allowTeleport ? 'teleport-datepicker' : ''"
     format="yyyy/MM/dd"
     preview-format="yyyy/MM/dd"
     :text-input="{
@@ -62,11 +63,10 @@ export default defineComponent({
     :clearable="false"
     :min-date="minDate"
     :max-date="maxDate"
-    @update:model-value="saveDate"
     position="left"
+    :teleport="allowTeleport ? '.v-overlay-container' : false"
     auto-apply
-    :auto-position="true"
-    :teleport-center="allowTeleport"
+    @update:model-value="saveDate"
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
       <v-text-field
@@ -93,8 +93,13 @@ export default defineComponent({
   width: 100%;
   box-sizing: border-box;
 }
-
 .dp__action_row .dp__action_buttons .dp__action_select {
   color: var(--dp-primary-text-color);
+}
+</style>
+<style>
+.teleport-datepicker {
+  pointer-events: auto;
+  position: fixed;
 }
 </style>
