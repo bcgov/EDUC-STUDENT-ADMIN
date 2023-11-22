@@ -346,7 +346,7 @@
                 :value="genderLabel"
                 color="#000000"
                 density="compact"
-                style="margin-top: -10px; color: black"
+                style="margin-top: -0.3em"
                 variant="plain"
                 readonly
                 tabindex="-1"
@@ -498,14 +498,14 @@
                 :value="gradeLabel"
                 color="#000000"
                 density="compact"
-                style="margin-top: -10px"
+                style="margin-top: -0.3em"
                 variant="plain"
                 readonly
                 tabindex="-1"
                 :disabled="true"
               />
             </v-col>
-            <v-col class="py-2">
+            <v-col>
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 id="revertGradeCode"
