@@ -864,8 +864,7 @@ export default {
       router.push({
         name: 'viewExchange',
         params: {
-          secureExchangeID: exchangeID,
-          ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID
+          secureExchangeID: exchangeID
         }
       });
     }

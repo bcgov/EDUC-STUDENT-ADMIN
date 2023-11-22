@@ -41,7 +41,7 @@
                   label="Open Date"
                   :rules="[rules.required()]"
                   model-type="yyyy-MM-dd'T'00:00:00"
-                  :max-date="new Date()"
+                  :max-date="maxOpenDate"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -318,7 +318,8 @@ export default {
         'OFFSHORE',
       ],
       offshoreArray: ['OFFSHORE'],
-      independentArray: ['INDEPENDNT']
+      independentArray: ['INDEPENDNT'],
+      maxOpenDate: LocalDate.now().toString()
     };
   },
   computed: {

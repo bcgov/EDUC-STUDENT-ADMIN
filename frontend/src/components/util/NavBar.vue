@@ -223,7 +223,7 @@ export default {
         },
         {
           title: PAGE_TITLES.EXCHANGE,
-          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION),
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION),
           items: [
             {
               title: 'PEN Team Inbox',
