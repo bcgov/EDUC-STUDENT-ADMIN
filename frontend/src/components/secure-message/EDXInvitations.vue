@@ -87,8 +87,14 @@
                 </v-col>
               </v-row>
             </v-window-item>
-            <v-window-item value="sendInvites">
-              sendInvites
+            <v-window-item value="sendInvites" style="align-self: center" class="mt-8">
+              <DocumentUpload
+                  :small-file-extension="false"
+                  :check-file-rules="true"
+                  :allowed-file-format="formatMessage"
+                  :upload-hint-message="uploadHintMessage"
+                  @upload="uploadDocument">
+              </DocumentUpload>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -102,10 +108,14 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import DocumentUpload from "@/components/common/DocumentUpload.vue";
+import {edxStore} from "@/store/modules/edx";
+import {getFileNameWithMaxNameLength} from "@/utils/file";
   
 export default {
   name: 'EDXInvitations',
   components: {
+    DocumentUpload
   },
   mixins: [alertMixin],
   props: {
@@ -118,6 +128,8 @@ export default {
       pageNumber: 1,
       pageCount: 0,
       itemsPerPage: 10,
+      formatMessage: 'CSV',
+      uploadHintMessage: "CSV files supported",
       districtHeaders: [
         {title: 'District ID', value: 'district.districtNumber', align: 'start', tooltip: 'District ID', key: 'district.districtNumber'},
         {title: 'District Name', value: 'district.name', tooltip: 'District Name', key: 'district.name'},
@@ -234,6 +246,22 @@ export default {
           this.setFailureAlert('An error occurred while loading the District Invitations. Please try again later.');
         })
         .finally(() => (this.districtLoading = false));
+    },
+    async uploadDocument(fileAsString) {
+      try{
+        let document = {
+          fileName: getFileNameWithMaxNameLength(this.uploadFileValue[0].name),
+          fileContents: btoa(unescape(encodeURIComponent(fileAsString)))
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_URL + '/onboarding-file', document)
+            .then((response) => {
+              this.setSuccessAlert('Records uploaded for ' + response.data + ' users.');
+            })
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('The file could not be processed due to the following issue: ' + e.response.data);
+      }
+
     },
   }
 };

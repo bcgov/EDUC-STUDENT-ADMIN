@@ -20,7 +20,7 @@
           label="Select your file"
           :disabled="hasReadOnlyRoleAccess()"
           placeholder="Select your file"
-          hint="JPEG, PNG, CSV, MS-WORD, MS-EXCEL, .STD, .VER and PDF files supported"
+          :hint="uploadHintMessage"
           :error-messages="fileInputError"
           class="pt-0"
           @update:model-value="selectFile"
@@ -85,6 +85,10 @@ export default {
     allowedFileFormat: {
       type: String,
       default: null
+    },
+    uploadHintMessage: {
+      type: String,
+      default: "JPEG, PNG, CSV, MS-WORD, MS-EXCEL, .STD, .VER and PDF files supported"
     }
   },
   data() {
