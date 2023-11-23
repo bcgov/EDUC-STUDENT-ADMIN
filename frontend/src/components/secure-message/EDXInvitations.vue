@@ -302,21 +302,17 @@ export default {
     },
     schoolSearch() {
       this.applySchoolFilter();
-    }
-  },
-  computed: {
-      
-
-  },
-  async mounted() {
-    this.loadDistrictInvites();
-  },
-  watch: {
+    },
     uploadFileValue() {
       if(this.uploadFileValue){
         this.importFile();
       }
     },
+  },
+  computed: {  
+  },
+  async mounted() {
+    this.loadDistrictInvites();
   },
   created() {
   },
