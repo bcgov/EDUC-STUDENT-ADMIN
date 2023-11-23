@@ -105,17 +105,13 @@
                       ref="uploader"
                       v-model="uploadFileValue"
                       accept=".csv"
+                      :clearable="true"
+                      :loading="uploadInProgress"
+                      :disabled="uploadInProgress"
                   />
                 </v-form>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col class="w-100" style="text-align: center">
-
-                </v-col>
-
-              </v-row>
-
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -152,7 +148,7 @@ export default {
       pageCount: 0,
       itemsPerPage: 10,
       acceptableFileExtensions: 'CSV',
-      fileUploadErrorMessage: null,
+      uploadInProgress: false,
       uploadFileValue: null,
       validForm: false,
       districtHeaders: [
@@ -248,49 +244,7 @@ export default {
   created() {
   },
   methods: {
-    async fireFileProgress(){
-      await this.getFileProgress();
-      this.getFileRules();
-      if(this.processing){
-        this.startPollingStatus();
-      }
-    },
-    async getFileProgress() {
-      try{
-        await ApiService.apiAxios.get(ApiRoutes.sdc.BASE_URL + '/' + this.sdcSchoolCollectionID + '/file').then(response => {
-          this.sdcSchoolProgress = response.data;
-          this.totalStudents = this.sdcSchoolProgress.totalStudents;
-          this.totalProcessed = this.sdcSchoolProgress.totalProcessed;
-          if(!this.sdcSchoolProgress.fileName){
-            //Show file upload section
-            this.hasFileAttached = false;
-            this.fileLoaded = false;
-            this.processing = false;
-            this.isDisabled = true;
-          }else if(this.totalStudents === this.totalProcessed){
-            //Show summary
-            this.hasFileAttached = true;
-            this.fileLoaded = true;
-            this.processing = false;
-            this.fileName = this.sdcSchoolProgress.fileName;
-            this.isDisabled = false;
-            clearInterval(this.interval);
-          }else{
-            //Show in progress
-            this.hasFileAttached = true;
-            this.fileLoaded = false;
-            this.processing = true;
-            this.isDisabled = true;
-            this.progress = Math.floor(this.totalProcessed/this.totalStudents * 100);
-          }
-        });
-      } catch (e) {
-        clearInterval(this.interval);
-        console.error(e);
-      } finally {
-        this.initialLoad = false;
-      }
-    },
+
     loadSchoolInvites() {
       this.schoolLoading = true;
       ApiService.apiAxios
@@ -325,11 +279,6 @@ export default {
       await this.$nextTick();
       await this.$refs.documentForm.validate();
     },
-    handleFileImport() {
-      this.fileUploadErrorMessage = null;
-      this.uploadFileValue = null;
-      this.$refs.uploader.click();
-    },
     async importFile() {
       if(this.uploadFileValue) {
         let data = null;
@@ -350,17 +299,20 @@ export default {
     },
     async uploadFile(fileAsString) {
       try{
+        this.uploadInProgress = true;
         let document = {
           fileName: getFileNameWithMaxNameLength(this.uploadFileValue[0].name),
           fileContents: btoa(unescape(encodeURIComponent(fileAsString)))
         };
-        await ApiService.apiAxios.post(Routes.edx.UPLOAD_ONBOARDING_FILE, document);
-        this.setSuccessAlert('Your document was uploaded successfully.');
-        await this.fireFileProgress();
+        const response = await ApiService.apiAxios.post(Routes.edx.UPLOAD_ONBOARDING_FILE, document);
+        this.setSuccessAlert('Data for ' + response.data.processedCount + ' users uploaded');
+        this.uploadFileValue = null;
       } catch (e) {
         console.error(e);
-        this.setFailureAlert('The file could not be processed due to the following issue: ' + e.response.data);
+        this.setFailureAlert('The file could not be processed due to the following issue: ' + e.data);
       }
+
+      this.uploadInProgress = false;
     },
   }
 };
