@@ -4,52 +4,58 @@
       flat
       :disabled="!isProvidePenEnabledForUser"
     >
-      <v-row class="pt-6">
+      <v-row no-gutters>
         <v-col
-          class="pt-0"
-          cols="6"
-          height="100%"
+          cols="2"
+          xl="1"
+          class="px-3 pt-1"
         >
-          <v-row class="mx-0">
-            <v-col
-              cols="12"
-              xl="3"
-              lg="3"
-              md="3"
-              class="py-0"
-            >
-              <v-text-field
-                id="pen-search-text-field"
-                v-model="penSearchId"
-                :disabled="isProvidePenDisabled"
-                maxlength="9"
-                label="PEN:"
-                variant="underlined"
-                clearable
-                class="pt-0"
-                @input="validatePen"
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              xl="2"
-              lg="2"
-              md="2"
-              class="py-0"
-              align-self="center"
-            >
-              <span
-                v-if="numberOfDuplicatePenRequests > 0"
-                id="prior-pen-count"
-                class="pt-4 pr-1"
-              ><span
-                class="red--text font-weight-bold"
-              >{{ numberOfDuplicatePenRequests }}</span><span
-                class="red--text"
-              > prior PEN Requests</span></span>
-            </v-col>
-          </v-row>
-
+          <v-text-field
+            id="pen-search-text-field"
+            v-model="penSearchId"
+            :disabled="isProvidePenDisabled"
+            maxlength="9"
+            label="PEN:"
+            variant="underlined"
+            hide-details="auto"
+            :clearable="true"
+            @input="validatePen"
+          />
+        </v-col>
+        <v-col
+          cols="4"
+          xl="5"
+          class="px-3"
+          align-self="end"
+        >
+          <span
+            v-if="numberOfDuplicatePenRequests > 0"
+            id="prior-pen-count"
+            class="pt-4 pr-1"
+          ><span
+            class="red--text font-weight-bold"
+          >{{ numberOfDuplicatePenRequests }}</span><span
+            class="red--text"
+          > prior PEN Requests</span></span>
+        </v-col>
+        <v-col
+          class="px-3"
+          align-self="end"
+        >
+          <MacroMenu
+            margin="ml-0"
+            :macros="completeMacros"
+            :disabled="isCompleteCommentDisabled"
+            @select="insertMacroText"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="6"
+          class="pt-0"
+          align-self="end"
+        >
           <v-card class="ml-3">
             <v-row
               no-gutters
@@ -153,19 +159,12 @@
           </v-card>
         </v-col>
         <v-col
-          class="pa-0 pr-6"
           cols="6"
+          class="pt-0"
         >
-          <MacroMenu
-            padding="pt-3"
-            margin="ml-0"
-            :macros="completeMacros"
-            :disabled="isCompleteCommentDisabled"
-            @select="insertMacroText"
-          />
           <v-form
             ref="completeForm"
-            class="pt-4"
+            class="mr-3"
           >
             <v-textarea
               id="complete-comment-textarea"
@@ -176,7 +175,8 @@
               :rules="completedRules"
               :disabled="isCompleteCommentDisabled"
               filled
-              clearable
+              hide-details="auto"
+              :clearable="true"
               class="pa-0 ma-0"
               @input="replaceCompleteMacro"
             />
@@ -189,20 +189,19 @@
             v-model="request.demogChanged"
             true-value="Y"
             false-value="N"
-            class="pa-0"
-            cols="12"
+            density="compact"
             label="Student demographics changed"
           />
           <PrimaryButton
             id="unlink-button"
-            class="mt-3 mx-3"
+            class="mx-3"
             text="Unlink"
             :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser"
             @click-action="unlinkRequest"
           />
           <PrimaryButton
             id="provide-pen-to-student"
-            class="mt-3 mx-3"
+            class="mx-3"
             text="Provide PEN to Student"
             :disabled="isCompleteDisabled || !isProvidePenEnabledForUser"
             @click-action="completeRequest"
@@ -444,10 +443,10 @@ export default {
             this.numberOfDuplicatePenRequests = response.data;
           }
         }).catch(error => {
-        console.log(error);
-      }).finally(() => {
-        this.switchLoading(false);
-      });
+          console.log(error);
+        }).finally(() => {
+          this.switchLoading(false);
+        });
     },
     populateAutoMatchedPen() {
       this.penSearchId = this.autoPenResults;

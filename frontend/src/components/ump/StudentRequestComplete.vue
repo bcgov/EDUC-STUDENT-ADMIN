@@ -20,6 +20,7 @@
                 id="pen-search-text-field"
                 v-model="penSearchId"
                 label="PEN:"
+                hide-details="auto"
                 disabled
                 clearable
                 class="pt-0"
@@ -41,7 +42,7 @@
           </v-row>
           <v-row class="pr-3">
             <v-card
-              class="ml-3"
+              class="ml-3 mt-3"
               width="100%"
             >
               <v-row
@@ -173,21 +174,24 @@
               @click-action="sendChanges"
             />
           </v-row>
-          <v-form ref="completeForm">
-            <v-textarea
-              id="complete-comment-textarea"
-              ref="completeCommentTextarea"
-              v-model="request.completeComment"
-              name="description"
-              label="Enter comment"
-              :rules="completedRules"
-              filled
-              clearable
-              class="pt-5"
-              rows="6"
-              @input="replaceCompleteMacro"
-            />
-          </v-form>
+          <v-row>
+            <v-col cols="12">
+              <v-form ref="completeForm">
+                <v-textarea
+                  id="complete-comment-textarea"
+                  ref="completeCommentTextarea"
+                  v-model="request.completeComment"
+                  name="description"
+                  label="Enter comment"
+                  :rules="completedRules"
+                  filled
+                  clearable
+                  rows="6"
+                  @input="replaceCompleteMacro"
+                />
+              </v-form>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-card>

@@ -38,21 +38,56 @@
                   <v-data-table
                     id="dataTable"
                     v-model:page="pageNumber"
-                    v-model:items="districtInvites"
+                    v-model:items="filteredDistrictInvites"
                     v-model:items-per-page="itemsPerPage"
                     :headers="districtHeaders"
-                    :search="search"
+                    :search="districtSearch"
                     :loading="districtLoading"
                     :sort-by="districtSortBy"
                   >
                     <template #top>
-                      <v-text-field
-                        v-model="search"
-                        clearable
-                        hide-details="auto"
-                        label="Search"
-                        class="pa-4"
-                      />
+                      <v-row>
+                        <v-col cols="6">
+                          <v-text-field
+                            v-model="districtSearch"
+                            clearable
+                            hide-details="auto"
+                            variant="underlined"
+                            label="Search"
+                            class="pa-4"
+                          />
+                        </v-col>
+
+                        <v-col cols="3">
+                          <v-select
+                            id="status-select-field"
+                            v-model="statusFilter"
+                            clearable
+                            :items="statusType"
+                            item-title="label"
+                            variant="underlined"
+                            :menu-props="{closeOnContentClick:true}"
+                            label="Status"
+                            class="pa-4"
+                            @update:model-value="applyDistrictFilter"
+                          />
+                        </v-col>
+
+                        <v-col cols="3">
+                          <v-select
+                            id="expiry-select-field"
+                            v-model="expiryFilter"
+                            clearable
+                            :items="expiryType"
+                            item-title="label"
+                            variant="underlined"
+                            :menu-props="{closeOnContentClick:true}"
+                            label="Invitation Expiry"
+                            class="pa-4"
+                            @update:model-value="applyDistrictFilter"
+                          />
+                        </v-col>
+                      </v-row>
                     </template>
                   </v-data-table>
                 </v-col>
@@ -62,26 +97,62 @@
               <v-row
                 no-gutters
                 style="background-color:white;"
-              >
+              > 
                 <v-col>
                   <v-data-table
                     id="dataTable"
                     v-model:page="pageNumber"
-                    v-model:items="schoolInvites"
+                    v-model:items="filteredSchoolInvites"
                     v-model:items-per-page="itemsPerPage"
                     :headers="schoolHeaders"
-                    :search="search"
+                    :search="schoolSearch"
                     :loading="schoolLoading"
                     :sort-by="schoolSortBy"
                   >
                     <template #top>
-                      <v-text-field
-                        v-model="search"
-                        clearable
-                        hide-details="auto"
-                        label="Search"
-                        class="pa-4"
-                      />
+                      <v-row>
+                        <v-col cols="6">
+                          <v-text-field
+                            v-model="schoolSearch"
+                            clearable
+                            hide-details="auto"
+                            variant="underlined"
+                            label="Search"
+                            class="pa-4"
+                          />
+                        </v-col>
+
+                        <v-col cols="3">
+                          <v-select
+                            id="status-select-field"
+                            v-model="statusFilter"
+                            clearable
+                            :items="statusType"
+                            item-title="label"
+                            variant="underlined"
+                            :menu-props="{closeOnContentClick:true}"
+                            label="Status"
+                            class="pa-4"
+                            @update:model-value="applySchoolFilter"
+                          />
+                        </v-col>
+
+                        <v-col cols="3">
+                          <v-select
+                            id="expiry-select-field"
+                            v-model="expiryFilter"
+                            clearable
+                            :items="expiryType"
+                            item-title="label"
+                            variant="underlined"
+                            :menu-props="{closeOnContentClick:true}"
+                            label="Invitation Expiry"
+                            class="pa-4"
+                            @update:model-value="applySchoolFilter"
+                          />
+                        </v-col>
+                      </v-row>
+                      
                     </template>
                   </v-data-table>
                 </v-col>
@@ -125,7 +196,8 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import {getFileNameWithMaxNameLength} from "@/utils/file";
+import { deepCloneObject } from '../../utils/common';
+import {LocalDate} from '@js-joda/core';
   
 export default {
   name: 'EDXInvitations',
@@ -133,7 +205,8 @@ export default {
   data() {
     return {
       tab: null,
-      search: null,
+      schoolSearch: null,
+      districtSearch: null,
       pageNumber: 1,
       pageCount: 0,
       itemsPerPage: 10,
@@ -212,10 +285,24 @@ export default {
         }
       ],
       districtInvites: [],
+      filteredDistrictInvites: [],
       schoolInvites: [],
+      filteredSchoolInvites: [],
       districtLoading: false,
       schoolLoading: false,
+      statusFilter: null,
+      expiryFilter: null,
+      statusType: ['Pending', 'Accepted'],
+      expiryType: ['Active', 'Expired']
     };
+  },
+  watch: {
+    districtSearch() {
+      this.applyDistrictFilter();
+    },
+    schoolSearch() {
+      this.applySchoolFilter();
+    }
   },
   computed: {
       
@@ -234,7 +321,45 @@ export default {
   created() {
   },
   methods: {
+    applySchoolFilter() {
+      this.filteredSchoolInvites = this.filter(this.schoolInvites);
+    },
+    applyDistrictFilter() {
+      this.filteredDistrictInvites = this.filter(this.districtInvites);
+    },
+    filter(data){
+      let tempInvites = deepCloneObject(data);
 
+      if(this.statusFilter){
+        tempInvites = tempInvites.filter(invite => invite.status.toUpperCase() === this.statusFilter.toUpperCase());
+      } 
+
+      if(this.expiryFilter === 'Active') {   
+        let currentDate = LocalDate.parse(LocalDate.now().toString().substring(0, 10));
+        tempInvites = tempInvites.filter(invite => {
+          let expiryDate = LocalDate.parse(invite.expiryDate.substring(0, 10));
+          return expiryDate.isAfter(currentDate);
+        });
+      }
+
+      if(this.expiryFilter === 'Expired') {
+        let currentDate = LocalDate.parse(LocalDate.now().toString().substring(0, 10));
+        tempInvites = tempInvites.filter(invite => {
+          let expiryDate = LocalDate.parse(invite.expiryDate.substring(0, 10));
+          return expiryDate.isBefore(currentDate);
+        });
+      }
+
+      if(this.districtSearch){
+        tempInvites = tempInvites.filter(invite => invite.fullSearch.toUpperCase().includes(this.districtSearch.toUpperCase()));   
+      }
+
+      if(this.schoolSearch){
+        tempInvites = tempInvites.filter(invite => invite.fullSearch.toUpperCase().includes(this.schoolSearch.toUpperCase()));   
+      }
+
+      return tempInvites;
+    },
     loadSchoolInvites() {
       this.schoolLoading = true;
       ApiService.apiAxios
@@ -242,6 +367,10 @@ export default {
         .then(response => {
           if (response) {
             this.schoolInvites = response.data;
+            this.schoolInvites.forEach(invite => {
+              invite.fullSearch = invite?.school?.mincode + ' ' + invite?.school?.schoolName+ ' ' + invite.firstName + ' ' + invite.lastName + ' '+ invite.email + ' ' + invite.status;
+            });
+            this.filteredSchoolInvites = this.schoolInvites;
           }
         })
         .catch(error => {
@@ -257,6 +386,10 @@ export default {
         .then(response => {
           if (response) {
             this.districtInvites = response.data;
+            this.districtInvites.forEach(invite => {
+              invite.fullSearch = invite.district.districtNumber + ' ' + invite.district.name+ ' ' + invite.firstName + ' ' + invite.lastName + ' ' + invite.email + ' ' + invite.status;
+            });
+            this.filteredDistrictInvites = this.districtInvites;
           }
         })
         .catch(error => {
@@ -307,4 +440,16 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-tab {
+    text-transform: none !important;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+:deep(.v-btn--variant-text) {
+    color: #003366
+}
+</style>
   

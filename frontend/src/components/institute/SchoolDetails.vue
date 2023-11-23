@@ -367,7 +367,7 @@ export default {
         });
     },
     canViewFundingTab() {
-      return this.canOnlyEditIndependentSchools && !this.config.DISABLE_SDC_FUNCTIONALITY;
+      return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;

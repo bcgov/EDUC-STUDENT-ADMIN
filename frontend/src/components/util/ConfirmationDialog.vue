@@ -13,9 +13,8 @@
         :cancel="cancel"
       >
         <v-toolbar
-          :dark="options.dark"
-          :color="options.color"
           density="compact"
+          class="header"
           flat
         >
           <span class="pb-2 pl-3" style="font-size: 1.15em" :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle': options.subtitle}">
@@ -127,5 +126,12 @@ export default {
 
   .white--text{
       color: white;
+  }
+
+  .header {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
   }
 </style>

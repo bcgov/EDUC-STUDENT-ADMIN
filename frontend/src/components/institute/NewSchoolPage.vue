@@ -128,7 +128,7 @@
                 <v-select
                   id="newSchoolGradesOfferedInput"
                   v-model="newSchool.grades"
-                  :items="gradeCodes"
+                  :items="filteredGradeOptions"
                   item-value="schoolGradeCode"
                   item-title="label"
                   :disabled="isGradeOfferedDisabled"
@@ -683,8 +683,14 @@ export default {
     displayPhysicalAddress() {
       return this.newSchool?.schoolCategoryCode !== 'OFFSHORE';
     },
-    gradeCodes() {
-      return this.gradeOptions ? this.gradeOptions : [];
+    filteredGradeOptions() {
+      if (!this.gradeOptions) {
+        return [];
+      }
+      if (!this.independentArray.includes(this.newSchool.schoolCategoryCode)) {
+        return this.gradeOptions.filter(gradeObj => gradeObj.schoolGradeCode !== 'KINDHALF');
+      }
+      return this.gradeOptions;
     },
     provincialCodes() {
       if (!this.activeProvinceCodes) {

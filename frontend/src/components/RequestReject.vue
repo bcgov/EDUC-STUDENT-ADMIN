@@ -161,7 +161,7 @@ export default {
     getRequestStore,
     submitReject() {
       this.rejectOperationOutcomeMessage = null;
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate()?.valid) {
         this.beforeSubmit();
         this.request.failureReason = this.rejectComment;
         this.request.reviewer = this.myself.name;

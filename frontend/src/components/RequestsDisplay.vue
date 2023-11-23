@@ -392,7 +392,7 @@ export default {
   methods: {
     ...mapActions(appStore, ['setSelectedRequest', 'setRequest']),
     remove(item) {
-      this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
+      this.selectedStatuses.splice(this.selectedStatuses.indexOf(item.title), 1);
       this.selectedStatuses = [...this.selectedStatuses];
     },
     async validateForm() {

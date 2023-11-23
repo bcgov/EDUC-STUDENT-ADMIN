@@ -992,6 +992,7 @@ async function createSchool(req, res) {
       });
     }
 
+    const userInfo = utils.getUser(req);
     const payload = {
       school: {
         ...school,
@@ -1000,10 +1001,10 @@ async function createSchool(req, res) {
       initialEdxUser: allFieldsAreEmpty ? null : user
     };
     delete payload.school.districtID;
-    const userInfo = utils.getUser(req);
+    payload.school.createUser = userInfo.idir_username;
+    payload.school.updateUser = userInfo.idir_username;
 
-    const result = await utils
-      .postData(`${config.get('server:edx:createSchoolSagaURL')}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(`${config.get('server:edx:createSchoolSagaURL')}`, payload, null, null);
 
     return res.status(HttpStatus.ACCEPTED).json(result);
   } catch (e) {
@@ -1019,14 +1020,14 @@ async function findAllDistrictInvitations(req, res) {
       params: {
         instituteType :  'DISTRICT'
       }
-    }
+    };
 
     const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
     result.forEach((element) => {
       element.district = cacheService.getDistrictJSONByDistrictId(element?.districtID);
       element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
       element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';      
-    })
+    });
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'findAllDistrictInvitations', 'Error occurred while attempting to get all invitations for district.');
@@ -1041,7 +1042,7 @@ async function findAllSchoolInvitations(req, res) {
       params: {
         instituteType :  'SCHOOL'
       }
-    }
+    };
     
     const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
 
@@ -1049,7 +1050,7 @@ async function findAllSchoolInvitations(req, res) {
       element.school = cacheService.getSchoolBySchoolID(element?.schoolID);
       element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
       element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';  
-    })
+    });
 
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {

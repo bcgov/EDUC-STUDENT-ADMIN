@@ -404,6 +404,10 @@ export default {
     display: none;
 }
 
+:deep(.mdi-checkbox-marked){
+  color: initial;
+}
+
 :deep(.v-data-table__th) {
     font-size: 0.75em !important;
     font-weight: bold !important;
