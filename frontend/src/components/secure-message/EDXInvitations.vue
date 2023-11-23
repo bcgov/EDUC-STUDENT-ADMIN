@@ -88,13 +88,34 @@
               </v-row>
             </v-window-item>
             <v-window-item value="sendInvites" style="align-self: center" class="mt-8">
-              <DocumentUpload
-                  :small-file-extension="false"
-                  :check-file-rules="true"
-                  :allowed-file-format="formatMessage"
-                  :upload-hint-message="uploadHintMessage"
-                  @upload="uploadDocument">
-              </DocumentUpload>
+              <v-row>
+                <v-col class="mb-3 d-flex justify-center">
+                  <h1>Upload User Onboarding Data</h1>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                <v-form
+                    ref="documentForm"
+                    v-model="validForm"
+                    class="h-80"
+                >
+                  <v-file-input
+                      id="selectFileInput"
+                      ref="uploader"
+                      v-model="uploadFileValue"
+                      accept=".csv"
+                  />
+                </v-form>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="w-100" style="text-align: center">
+
+                </v-col>
+
+              </v-row>
+
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -111,10 +132,12 @@ import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from "@/components/common/DocumentUpload.vue";
 import {edxStore} from "@/store/modules/edx";
 import {getFileNameWithMaxNameLength} from "@/utils/file";
+import PrimaryButton from "@/components/util/PrimaryButton.vue";
   
 export default {
   name: 'EDXInvitations',
   components: {
+    PrimaryButton,
     DocumentUpload
   },
   mixins: [alertMixin],
@@ -128,8 +151,10 @@ export default {
       pageNumber: 1,
       pageCount: 0,
       itemsPerPage: 10,
-      formatMessage: 'CSV',
-      uploadHintMessage: "CSV files supported",
+      acceptableFileExtensions: 'CSV',
+      fileUploadErrorMessage: null,
+      uploadFileValue: null,
+      validForm: false,
       districtHeaders: [
         {title: 'District ID', value: 'district.districtNumber', align: 'start', tooltip: 'District ID', key: 'district.districtNumber'},
         {title: 'District Name', value: 'district.name', tooltip: 'District Name', key: 'district.name'},
@@ -213,10 +238,59 @@ export default {
   async mounted() {
     this.loadDistrictInvites();
   },
+  watch: {
+    uploadFileValue() {
+      if(this.uploadFileValue){
+        this.importFile();
+      }
+    },
+  },
   created() {
   },
   methods: {
-
+    async fireFileProgress(){
+      await this.getFileProgress();
+      this.getFileRules();
+      if(this.processing){
+        this.startPollingStatus();
+      }
+    },
+    async getFileProgress() {
+      try{
+        await ApiService.apiAxios.get(ApiRoutes.sdc.BASE_URL + '/' + this.sdcSchoolCollectionID + '/file').then(response => {
+          this.sdcSchoolProgress = response.data;
+          this.totalStudents = this.sdcSchoolProgress.totalStudents;
+          this.totalProcessed = this.sdcSchoolProgress.totalProcessed;
+          if(!this.sdcSchoolProgress.fileName){
+            //Show file upload section
+            this.hasFileAttached = false;
+            this.fileLoaded = false;
+            this.processing = false;
+            this.isDisabled = true;
+          }else if(this.totalStudents === this.totalProcessed){
+            //Show summary
+            this.hasFileAttached = true;
+            this.fileLoaded = true;
+            this.processing = false;
+            this.fileName = this.sdcSchoolProgress.fileName;
+            this.isDisabled = false;
+            clearInterval(this.interval);
+          }else{
+            //Show in progress
+            this.hasFileAttached = true;
+            this.fileLoaded = false;
+            this.processing = true;
+            this.isDisabled = true;
+            this.progress = Math.floor(this.totalProcessed/this.totalStudents * 100);
+          }
+        });
+      } catch (e) {
+        clearInterval(this.interval);
+        console.error(e);
+      } finally {
+        this.initialLoad = false;
+      }
+    },
     loadSchoolInvites() {
       this.schoolLoading = true;
       ApiService.apiAxios
@@ -247,21 +321,46 @@ export default {
         })
         .finally(() => (this.districtLoading = false));
     },
-    async uploadDocument(fileAsString) {
+    async validateForm() {
+      await this.$nextTick();
+      await this.$refs.documentForm.validate();
+    },
+    handleFileImport() {
+      this.fileUploadErrorMessage = null;
+      this.uploadFileValue = null;
+      this.$refs.uploader.click();
+    },
+    async importFile() {
+      if(this.uploadFileValue) {
+        let data = null;
+
+        await this.validateForm();
+
+        if (!this.uploadFileValue[0] || !this.validForm) {
+          data = 'No File Chosen';
+        } else {
+          let reader = new FileReader();
+          reader.readAsText(this.uploadFileValue[0]);
+          reader.onload = () => {
+            data = reader.result;
+            this.uploadFile(data);
+          };
+        }
+      }
+    },
+    async uploadFile(fileAsString) {
       try{
         let document = {
           fileName: getFileNameWithMaxNameLength(this.uploadFileValue[0].name),
           fileContents: btoa(unescape(encodeURIComponent(fileAsString)))
         };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_URL + '/onboarding-file', document)
-            .then((response) => {
-              this.setSuccessAlert('Records uploaded for ' + response.data + ' users.');
-            })
+        await ApiService.apiAxios.post(Routes.edx.UPLOAD_ONBOARDING_FILE, document);
+        this.setSuccessAlert('Your document was uploaded successfully.');
+        await this.fireFileProgress();
       } catch (e) {
         console.error(e);
         this.setFailureAlert('The file could not be processed due to the following issue: ' + e.response.data);
       }
-
     },
   }
 };
