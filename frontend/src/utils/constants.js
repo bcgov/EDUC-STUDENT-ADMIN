@@ -173,7 +173,8 @@ let object = {
     NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
     NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite',
     FIND_DISTRICT_INVITATIONS: edxRoot + '/findAll-district-invites',
-    FIND_SCHOOL_INVITATIONS: edxRoot + '/findAll-school-invites'
+    FIND_SCHOOL_INVITATIONS: edxRoot + '/findAll-school-invites',
+    UPLOAD_ONBOARDING_FILE: edxRoot + '/exchange/onboarding-file'
   },
   sdc: {
     FUNDING_DATA_URL: sdcRoot + '/funding-groups',

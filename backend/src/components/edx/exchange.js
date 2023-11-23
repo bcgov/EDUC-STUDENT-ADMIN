@@ -1059,6 +1059,25 @@ async function findAllSchoolInvitations(req, res) {
   }
 }
 
+async function uploadOnboardingFile(req, res){
+  try {
+    console.log("Upload file: ", JSON.stringify(req.body))
+    const user = utils.getUser(req);
+
+    const document = {
+      fileContents: req.body.fileContents,
+      createUser: user.idir_username
+    }
+
+    const result = await postData(config.get('server:edx:uploadOnboardingFile'), document, null, null);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'uploadOnboardingFile', 'Error occurred while uploading onboarding file.');
+
+    return errorResponse(res, e.data?.message, e.status);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -1092,5 +1111,6 @@ module.exports = {
   districtUserActivationInvite,
   createSchool,
   findAllDistrictInvitations,
-  findAllSchoolInvitations
+  findAllSchoolInvitations,
+  uploadOnboardingFile
 };

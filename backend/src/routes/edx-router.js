@@ -39,7 +39,8 @@ const {
   districtUserActivationInvite,
   createSchool,
   findAllSchoolInvitations,
-  findAllDistrictInvitations
+  findAllDistrictInvitations,
+  uploadOnboardingFile
 
 } = require('../components/edx/exchange');
 
@@ -102,6 +103,7 @@ router.post('/exchange/:secureExchangeID/notes', passport.authenticate('jwt', {s
 router.post('/exchange', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, createExchange);
 router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, uploadDocumentToExchange);
 router.get('/exchange/:secureExchangeID/documents/:documentId', permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), getExchangeDocumentById());
+router.post('/exchange/onboarding-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION),extendSession, uploadOnboardingFile);
 
 // Create School Saga
 router.post('/create-school', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddSchool(), createSchool);

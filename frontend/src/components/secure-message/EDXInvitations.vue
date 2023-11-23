@@ -158,8 +158,31 @@
                 </v-col>
               </v-row>
             </v-window-item>
-            <v-window-item value="sendInvites">
-              sendInvites
+            <v-window-item value="sendInvites" style="align-self: center" class="mt-8">
+              <v-row>
+                <v-col class="mb-3 d-flex justify-center">
+                  <h1>Upload User Onboarding Data</h1>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                <v-form
+                    ref="documentForm"
+                    v-model="validForm"
+                    class="h-80"
+                >
+                  <v-file-input
+                      id="selectFileInput"
+                      ref="uploader"
+                      v-model="uploadFileValue"
+                      accept=".csv"
+                      :clearable="true"
+                      :loading="uploadInProgress"
+                      :disabled="uploadInProgress"
+                  />
+                </v-form>
+                </v-col>
+              </v-row>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -173,17 +196,13 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import {getFileNameWithMaxNameLength} from "@/utils/file";
 import { deepCloneObject } from '../../utils/common';
 import {LocalDate} from '@js-joda/core';
   
 export default {
   name: 'EDXInvitations',
-  components: {
-  },
   mixins: [alertMixin],
-  props: {
-      
-  },
   data() {
     return {
       tab: null,
@@ -192,6 +211,10 @@ export default {
       pageNumber: 1,
       pageCount: 0,
       itemsPerPage: 10,
+      acceptableFileExtensions: 'CSV',
+      uploadInProgress: false,
+      uploadFileValue: null,
+      validForm: false,
       districtHeaders: [
         {title: 'District ID', value: 'district.districtNumber', align: 'start', tooltip: 'District ID', key: 'district.districtNumber'},
         {title: 'District Name', value: 'district.name', tooltip: 'District Name', key: 'district.name'},
@@ -280,11 +303,14 @@ export default {
     },
     schoolSearch() {
       this.applySchoolFilter();
-    }
+    },
+    uploadFileValue() {
+      if(this.uploadFileValue){
+        this.importFile();
+      }
+    },
   },
-  computed: {
-      
-
+  computed: {  
   },
   async mounted() {
     this.loadDistrictInvites();
@@ -368,7 +394,46 @@ export default {
           this.setFailureAlert('An error occurred while loading the District Invitations. Please try again later.');
         })
         .finally(() => (this.districtLoading = false));
-    }
+    },
+    async validateForm() {
+      await this.$nextTick();
+      await this.$refs.documentForm.validate();
+    },
+    async importFile() {
+      if(this.uploadFileValue) {
+        let data = null;
+
+        await this.validateForm();
+
+        if (!this.uploadFileValue[0] || !this.validForm) {
+          data = 'No File Chosen';
+        } else {
+          let reader = new FileReader();
+          reader.readAsText(this.uploadFileValue[0]);
+          reader.onload = () => {
+            data = reader.result;
+            this.uploadFile(data);
+          };
+        }
+      }
+    },
+    async uploadFile(fileAsString) {
+      try{
+        this.uploadInProgress = true;
+        let document = {
+          fileName: getFileNameWithMaxNameLength(this.uploadFileValue[0].name),
+          fileContents: btoa(unescape(encodeURIComponent(fileAsString)))
+        };
+        const response = await ApiService.apiAxios.post(Routes.edx.UPLOAD_ONBOARDING_FILE, document);
+        this.setSuccessAlert('Data for ' + response.data.processedCount + ' users uploaded');
+        this.uploadFileValue = null;
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('The file could not be processed due to the following issue: ' + e.data);
+      }
+
+      this.uploadInProgress = false;
+    },
   }
 };
 </script>
