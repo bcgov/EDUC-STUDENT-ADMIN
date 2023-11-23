@@ -125,21 +125,11 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import DocumentUpload from "@/components/common/DocumentUpload.vue";
-import {edxStore} from "@/store/modules/edx";
 import {getFileNameWithMaxNameLength} from "@/utils/file";
-import PrimaryButton from "@/components/util/PrimaryButton.vue";
   
 export default {
   name: 'EDXInvitations',
-  components: {
-    PrimaryButton,
-    DocumentUpload
-  },
   mixins: [alertMixin],
-  props: {
-      
-  },
   data() {
     return {
       tab: null,
