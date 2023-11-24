@@ -307,7 +307,6 @@ export default {
         || item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isUnarchivedBatchChanged(item) {
-      console.log('Item: ' + JSON.stringify(item));
       return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isRearchived(item) {
