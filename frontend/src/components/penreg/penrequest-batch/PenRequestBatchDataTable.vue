@@ -135,7 +135,7 @@
                     color="#2E8540"
                     class="ml-1"
                   >
-                    {{ isUnarchivedBatchChanged(item.item.raw) ? 'fa-sync-alt' : 'fa-unlock' }}
+                    {{ isUnarchivedBatchChanged(item.item.raw) ? 'mdi-sync' : 'mdi-lock-open-outline' }}
                   </v-icon>
                 </template>
                 <span>{{ getUpdateUser(item.item.raw) }}</span>
@@ -307,6 +307,7 @@ export default {
         || item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isUnarchivedBatchChanged(item) {
+      console.log('Item: ' + JSON.stringify(item));
       return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isRearchived(item) {
