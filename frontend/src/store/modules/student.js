@@ -73,35 +73,31 @@ export const studentStore = defineStore('student', {
       this.documentTypeCodes = codes;
     },
     async getCodes() {
-      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+      if (localStorage.getItem('jwtToken')) { // Don't call API if there is no token.
+        const apiCalls = [];
+
         if (!this.genders) {
-          const responseGender = await ApiService.getGenderCodes();
-          await this.setGenders(responseGender.data);
+          apiCalls.push(ApiService.getGenderCodes().then(response => this.setGenders(response.data)));
         }
         if (!this.demogCodeObjects) {
-          const responseDemog = await ApiService.getDemogCodes();
-          await this.setDemogCodeObjects(responseDemog.data);
+          apiCalls.push(ApiService.getDemogCodes().then(response => this.setDemogCodeObjects(response.data)));
         }
         if (!this.statusCodeObjects) {
-          const responseStatus = await ApiService.getStatusCodes();
-          await this.setStatusCodeObjects(responseStatus.data);
+          apiCalls.push(ApiService.getStatusCodes().then(response => this.setStatusCodeObjects(response.data)));
         }
         if (!this.gradeCodeObjects) {
-          const responseGrade = await ApiService.getGradeCodes();
-          await this.setGradeCodeObjects(responseGrade.data);
+          apiCalls.push(ApiService.getGradeCodes().then(response => this.setGradeCodeObjects(response.data)));
         }
         if (!this.possibleMatchReasons) {
-          const response = await ApiService.getPossibleMatchReasonCodes();
-          await this.setPossibleMatchReasons(response.data);
+          apiCalls.push(ApiService.getPossibleMatchReasonCodes().then(response => this.setPossibleMatchReasons(response.data)));
         }
         if (this.documentTypeCodes.length === 0) {
-          const res = await ApiService.getDocumentTypeCodesFromStudentApi();
-          await this.setDocumentTypeCodes(res.data);
+          apiCalls.push(ApiService.getDocumentTypeCodesFromStudentApi().then(response => this.setDocumentTypeCodes(response.data)));
         }
         if (!this.historyActivityCodes) {
-          const res = await ApiService.getHistoryActivityCodes();
-          await this.setHistoryActivityCodes(res.data);
+          apiCalls.push(ApiService.getHistoryActivityCodes().then(response => this.setHistoryActivityCodes(response.data)));
         }
+        await Promise.all(apiCalls);
       }
     },
     async getMacros() {

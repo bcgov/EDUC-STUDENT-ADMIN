@@ -78,24 +78,22 @@ export const penRequestBatchStore = defineStore('penRequestBatch', {
       this.currentBatchFileSearchParams = batchFileSearchParams;
     },
     async getCodes() {
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        await studentStore().getCodes();
+      if(localStorage.getItem('jwtToken')) { // DON'T Call api if there is no token.
+        const apiCalls = [];
+        apiCalls.push(studentStore().getCodes());
         if(this.prbStudentStatuses?.length === 0) {
-          const response = await ApiService.getPenRequestBatchStudentStatusCodes();
-          await this.setPrbStudentStatuses(response.data);
+          apiCalls.push(ApiService.getPenRequestBatchStudentStatusCodes().then(response => this.setPrbStudentStatuses(response.data)));
         }
         if(this.prbValidationFieldCodes?.length === 0) {
-          const response = await ApiService.getPrbValidationFieldCodes();
-          await this.setPrbValidationFieldCodes(response.data);
+          apiCalls.push(ApiService.getPrbValidationFieldCodes().then(response => this.setPrbValidationFieldCodes(response.data)));
         }
         if(this.prbValidationIssueSeverityCodes?.length === 0) {
-          const response = await ApiService.getPrbValidationIssueSeverityCodes();
-          await this.setPrbValidationIssueSeverityCodes(response.data);
+          apiCalls.push(ApiService.getPrbValidationIssueSeverityCodes().then(response => this.setPrbValidationIssueSeverityCodes(response.data)));
         }
         if(this.prbValidationIssueTypeCodes?.length === 0) {
-          const response = await ApiService.getPrbValidationIssueTypeCodes();
-          await this.setPrbValidationIssueTypeCodes(response.data);
+          apiCalls.push(ApiService.getPrbValidationIssueTypeCodes().then(response => this.setPrbValidationIssueTypeCodes(response.data)));
         }
+        await Promise.all(apiCalls);
       }
     },
     async getMacros() {
