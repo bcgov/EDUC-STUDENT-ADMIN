@@ -3,6 +3,7 @@
     fluid
     class="px-4"
     elevation="0"
+    style="overflow-y: auto;"
   >
     <MergeStudentsModal
       v-if="mergeStudentsModalOpen"
