@@ -60,6 +60,7 @@
                   label="Move Date"
                   :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
                   model-type="yyyy-MM-dd'T'00:00:00"
+                  :min-date="school.openedDate"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -633,7 +634,7 @@ export default {
     },
     canMoveOtherSchoolTypes() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
-    },
+    }
   },
   mounted() {
     this.validateForm();
@@ -783,6 +784,8 @@ export default {
       } else {
         this.isGradeOfferedDisabled = false;
       }
+
+      this.moveSchoolObject.facilityTypeCode = null;
 
       await this.fireFormValidate();
     },
