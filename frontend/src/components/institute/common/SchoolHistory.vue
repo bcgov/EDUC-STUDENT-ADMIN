@@ -3,6 +3,7 @@
     <v-col :cols="showRecordDetail ? 6 : 12">
       <v-data-table
         id="schoolHistoryTable"
+        v-model:items-per-page="schoolHistory.pageable.pageSize"
         v-model:items="schoolHistory.content"
         v-model="selectedSchoolHistory"
         :headers="getHeaders()"
