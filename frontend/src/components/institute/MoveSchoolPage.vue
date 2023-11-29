@@ -662,7 +662,7 @@ export default {
     this.sortNLC();
     this.getActiveDistrictDropDownItems();
     this.getActiveAuthorityDropDownItems();
-    this.schoolCategoryChanged();
+    this.schoolCategoryChanged(null, true);
   },
   methods: {
     hasRequiredPermission,
@@ -776,7 +776,7 @@ export default {
         this.constrainSchoolCategoryByDistrict(districtRegionCode);
       }
     },
-    async schoolCategoryChanged() {
+    async schoolCategoryChanged(_value, onCreate = false) {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)) {
         this.authorityDisabled = false;
       } else {
@@ -791,7 +791,7 @@ export default {
         this.isGradeOfferedDisabled = false;
       }
 
-      this.moveSchoolObject.facilityTypeCode = null;
+      if (!onCreate) this.moveSchoolObject.facilityTypeCode = null;
 
       await this.fireFormValidate();
     },
