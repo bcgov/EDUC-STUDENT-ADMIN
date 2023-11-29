@@ -498,7 +498,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate, LocalDateTime} from '@js-joda/core';
 import {isOpenNotClosingAuthority} from '@/utils/common';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
@@ -662,7 +662,7 @@ export default {
     this.sortNLC();
     this.getActiveDistrictDropDownItems();
     this.getActiveAuthorityDropDownItems();
-    this.schoolCategoryChanged();
+    this.schoolCategoryChanged(null, true);
   },
   methods: {
     hasRequiredPermission,
@@ -760,7 +760,13 @@ export default {
         });
     },
     calculateDefaultMoveDate() {
-      return (LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'))).toString();
+      const today = LocalDate.now().atStartOfDay();
+      const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+      if (this.school.openedDate) {
+        const openDate = LocalDateTime.parse(this.school.openedDate, formatter);
+        return openDate.isAfter(today) ? this.school.openedDate : today.format(formatter).toString();
+      }
+      return today.format(formatter).toString();
     },
     schoolDistrictChanged() {
       const districtRegionCode = this.activeDistricts
@@ -770,7 +776,7 @@ export default {
         this.constrainSchoolCategoryByDistrict(districtRegionCode);
       }
     },
-    async schoolCategoryChanged() {
+    async schoolCategoryChanged(_value, onCreate = false) {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)) {
         this.authorityDisabled = false;
       } else {
@@ -785,7 +791,7 @@ export default {
         this.isGradeOfferedDisabled = false;
       }
 
-      this.moveSchoolObject.facilityTypeCode = null;
+      if (!onCreate) this.moveSchoolObject.facilityTypeCode = null;
 
       await this.fireFormValidate();
     },
