@@ -383,7 +383,7 @@
                             <v-text-field
                               id="newSchoolPhysicalAddressLine2Input"
                               v-model="moveSchoolObject.physicalAddrLine2"
-                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              :rules="[rules.noSpecialCharactersAddress()]"
                               class="pt-0 pb-5"
                               variant="underlined"
                               :maxlength="255"
