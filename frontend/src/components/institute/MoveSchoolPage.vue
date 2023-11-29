@@ -815,8 +815,9 @@ export default {
     sortNLC() {
       this.moveSchoolObject.neighborhoodLearning = sortBy(this.moveSchoolObject.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
     },
-    validateForm() {
-      const isValid = this.$refs.moveSchoolForm.validate();
+    async validateForm() {
+      await this.$nextTick();
+      const isValid = await this.$refs.moveSchoolForm.validate();
       this.isMoveFormValid = isValid.valid;
     },
     resetAddressForms() {
