@@ -97,11 +97,22 @@ async function getAllCollectionsForSchool(req, res) {
   }
 }
 
+async function getActiveCollection(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:activeCollectionURL')}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'getActiveCollection', 'Error getting active collection');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getFundingGroupDataForSchool,
   deleteFundingDataForSchool,
   updateFundingDataForSchool,
   getSnapshotFundingDataForSchool,
   addNewFundingForSchool,
-  getAllCollectionsForSchool
+  getAllCollectionsForSchool,
+  getActiveCollection
 };

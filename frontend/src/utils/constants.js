@@ -175,7 +175,8 @@ let object = {
   },
   sdc: {
     FUNDING_DATA_URL: sdcRoot + '/funding-groups',
-    SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection'
+    SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection',
+    ACTIVE_COLLECTION: sdcRoot + '/collection/active'
   }
 };
 
