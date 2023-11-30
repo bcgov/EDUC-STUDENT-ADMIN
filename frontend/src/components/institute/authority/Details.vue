@@ -861,7 +861,7 @@ import router from '@/router';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
-import { isEmpty, omitBy } from 'lodash';
+import {isEmpty, omitBy, sortBy} from 'lodash';
 import { instituteStore } from '@/store/modules/institute';
 
 export default {
@@ -880,14 +880,14 @@ export default {
       type: Boolean,
       required: true
     },
-    canOnlyEditIndependentAuthority: {
+    canEditOffshoreAuthority: {
       type: Boolean,
       required: true
     },
-    canOnlyEditOffshoreAuthority: {
+    canEditIndependentAuthority: {
       type: Boolean,
       required: true
-    },
+    }
   },
   data() {
     return {
@@ -929,15 +929,15 @@ export default {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     },
     getAuthorityTypes() {
-      if(this.canOnlyEditIndependentAuthority && this.canOnlyEditOffshoreAuthority) {
+      if(this.canEditIndependentAuthority && this.canEditOffshoreAuthority) {
         return this.authorityTypes;
-      } else if(this.canOnlyEditIndependentAuthority && !this.canOnlyEditOffshoreAuthority) {
+      } else if((this.canEditIndependentAuthority && this.authority?.authorityTypeCode === 'INDEPENDNT') && !this.canEditOffshoreAuthority) {
         return this.authorityTypes.filter(type => this.independentArray.includes(type.authorityTypeCode));
-      } else if(this.canOnlyEditOffshoreAuthority && !this.canOnlyAddIndependentAuthority) {
+      } else if((this.canEditOffshoreAuthority && this.authority?.authorityTypeCode === 'OFFSHORE') && !this.canEditIndependentAuthority) {
         return this.authorityTypes.filter(type => this.offshoreArray.includes(type.authorityTypeCode));
       }
       return [];
-    }
+    },
   },
   created() {
     const instStore = instituteStore();
@@ -948,7 +948,7 @@ export default {
       this.countryCodeValues = this.countryCodes;
     });
     instStore.getAllAuthorityTypeCodes().then(() => {
-      this.authorityTypes = this.authorityTypeCodes;
+      this.authorityTypes = sortBy(this.authorityTypeCodes, ['label']);
     });
     this.getAuthority();
     this.determineIfAuthorityHasAnyOpenSchools();

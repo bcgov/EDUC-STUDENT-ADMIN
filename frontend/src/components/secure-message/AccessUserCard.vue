@@ -67,9 +67,13 @@
         </ConfirmationDialog>
         <ConfirmationDialog ref="confirmRelinkUser">
           <template #message>
-            <p class="mb-4">Re-linking an account will remove the current user and resend the activation code so
-              that the user can set up EDX access with their new credentials.</p>
-            <p class="font-weight-bold">Are you sure you want to re-link this account?</p>
+            <p class="mb-4">
+              Re-linking an account will remove the current user and resend the activation code so
+              that the user can set up EDX access with their new credentials.
+            </p>
+            <p class="font-weight-bold">
+              Are you sure you want to re-link this account?
+            </p>
           </template>
         </ConfirmationDialog>
         <v-spacer />
@@ -117,34 +121,34 @@
         id="editUserInviteVCardTitle"
         class="header pt-1 pb-1"
       >
-        Edit User for {{user.firstName}} {{user.lastName}}
+        Edit {{user.firstName}} {{user.lastName}}
       </v-card-title>
       <v-divider />
       <v-card-text>
         <v-alert
-            v-if="!minimumRolesSelected"
-            id="logoutAlert"
-            class="mt-4"
-            color="#003366"
-            density="compact"
-            type="info"
-            variant="tonal"
+          v-if="!minimumRolesSelected"
+          id="logoutAlert"
+          class="mt-4"
+          color="#003366"
+          density="compact"
+          type="info"
+          variant="tonal"
         >
           <span>Please select at least one role for {{ user.firstName }}.</span>
         </v-alert>
         <v-list
-            v-model:selected="selectedRoles"
-            lines="two"
-            return-object
-            select-strategy="classic"
+          v-model:selected="selectedRoles"
+          lines="two"
+          return-object
+          select-strategy="classic"
         >
           <div
-              v-for="newrole in instituteRoles"
-              :key="newrole.edxRoleCode"
-              :value="newrole.edxRoleCode"
+            v-for="newrole in instituteRoles"
+            :key="newrole.edxRoleCode"
+            :value="newrole.edxRoleCode"
           >
             <v-list-item
-                :value="newrole.edxRoleCode"
+              :value="newrole.edxRoleCode"
             >
               <template #prepend="{ isActive }">
                 <v-list-item-action>
@@ -161,29 +165,33 @@
         </v-list>
 
         <DatePicker
-            id="accessExpiryDate"
-            v-model="accessExpiryDate"
-            class="pl-7"
-            label="Access Expiry Date"
-            model-type="yyyy-MM-dd'T'00:00:00"
-            :min-date="minExpiryDate"
-            @clear-date="clearExpiryDate"
+          id="accessExpiryDate"
+          v-model="accessExpiryDate"
+          class="pl-7"
+          label="Access Expiry Date"
+          model-type="yyyy-MM-dd'T'00:00:00"
+          :min-date="minExpiryDate"
+          :allow-teleport="true"
+          @clear-date="clearExpiryDate"
         />
-        <v-row no-gutters class="py-4 justify-end">
+        <v-row
+          no-gutters
+          class="py-4 justify-end"
+        >
           <v-col class="mt-0 d-flex justify-end">
             <PrimaryButton
-                :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
-                width="5em"
-                text="Cancel"
-                class="mr-2"
-                secondary
-                @click-action="clickEditButton"
+              :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
+              width="5em"
+              text="Cancel"
+              class="mr-2"
+              secondary
+              @click-action="clickEditButton"
             />
             <PrimaryButton
-                :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
-                text="Save"
-                :disabled="!minimumRolesSelected"
-                @click-action="clickSaveButton"
+              :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
+              text="Save"
+              :disabled="!minimumRolesSelected"
+              @click-action="clickSaveButton"
             />
           </v-col>
         </v-row>
@@ -200,7 +208,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatDate} from '@/utils/format';
 import DatePicker from '../util/DatePicker.vue';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
-import ConfirmationDialog from "@/components/util/ConfirmationDialog.vue";
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 
 export default {
   name: 'AccessUserCard',
@@ -232,6 +240,7 @@ export default {
       required: true
     },
   },
+  emits: ['refresh'],
   data() {
     return {
       editUserSheet: false,

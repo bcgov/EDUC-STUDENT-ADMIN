@@ -121,21 +121,21 @@
                     <Details 
                       :authority-i-d="authorityID"
                       @updateAuthority="saveAuthority"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
-                      :canOnlyEditIndependentAuthority="canOnlyEditIndependentAuthority"
-                      :canOnlyEditOffshoreAuthority="canOnlyEditOffshoreAuthority"
+                      :has-access="hasEditAccess"
+                      :canEditIndependentAuthority="canEditIndependentAuthority"
+                      :canEditOffshoreAuthority="canEditOffshoreAuthority"
                     />
                   </v-window-item>
                   <v-window-item value="contacts">
                     <AuthorityContacts 
                       :authority-i-d="authorityID"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
+                      :has-access="hasEditAccess"
                     />
                   </v-window-item>
                   <v-window-item value="notes">
                     <InstituteNotes
                       :notes="notes ? notes : []"
-                      :has-access="canOnlyEditIndependentAuthority || canOnlyEditOffshoreAuthority"
+                      :has-access="hasEditAccess"
                       :loading="notesLoading"
                       @add-institute-note="saveNewAuthorityNote"
                       @edit-institute-note="saveChangesToAuthorityNote"
@@ -225,11 +225,15 @@ export default {
       }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority?.authorityTypeCode);
     },
-    canOnlyEditIndependentAuthority() {
-      return this.authority?.authorityTypeCode === 'INDEPENDNT' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
+    canEditIndependentAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_AUTHORITY_PERMISSION); 
     },
-    canOnlyEditOffshoreAuthority() {
-      return this.authority?.authorityTypeCode === 'OFFSHORE' && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
+    canEditOffshoreAuthority() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_AUTHORITY_PERMISSION);
+    },
+    hasEditAccess() {
+      return (this.authority?.authorityTypeCode === 'INDEPENDNT' && this.canEditIndependentAuthority) || 
+      (this.authority?.authorityTypeCode === 'OFFSHORE' && this.canEditOffshoreAuthority);
     }
   },
   created() {

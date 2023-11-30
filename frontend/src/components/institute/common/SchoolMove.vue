@@ -21,10 +21,12 @@
       no-gutters
     >
       <v-col>
-        <v-row>
-          <v-col class="d-flex justify-end">
+        <v-row
+          v-if="isMoveSchoolAllowed()"
+          class="mb-1"
+        >
+          <v-col class="text-right">
             <PrimaryButton
-              v-if="isMoveSchoolAllowed()"
               id="moveSchoolButton"
               class="mr-2"
               secondary

@@ -135,7 +135,7 @@
                     color="#2E8540"
                     class="ml-1"
                   >
-                    {{ isUnarchivedBatchChanged(item.item.raw) ? 'fa-sync-alt' : 'fa-unlock' }}
+                    {{ isUnarchivedBatchChanged(item.item.raw) ? 'mdi-sync' : 'mdi-lock-open-outline' }}
                   </v-icon>
                 </template>
                 <span>{{ getUpdateUser(item.item.raw) }}</span>
@@ -402,6 +402,10 @@ export default {
 
 :deep(.v-data-table-footer) {
     display: none;
+}
+
+:deep(.mdi-checkbox-marked){
+  color: initial;
 }
 
 :deep(.v-data-table__th) {

@@ -36,7 +36,6 @@ import StatsDashboard from '@/components/admin/stats/StatsDashboard.vue';
 import NewPENs from '@/components/admin/stats/NewPENs.vue';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding.vue';
 import Merges from '@/components/admin/stats/Merges.vue';
-import NewMessagePage from '@/components/secure-message/NewMessagePage.vue';
 import MessageDisplay from '@/components/secure-message/MessageDisplay.vue';
 import AccessUsersPage from '@/components/secure-message/AccessSchoolUsersPage.vue';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage.vue';
@@ -49,6 +48,7 @@ import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import ActiveCollectionPage from "@/components/data-collection/ActiveCollectionPage.vue";
+import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -345,29 +345,22 @@ const router = createRouter({
                 requiresAuth: true,
                 permission: PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION
               }
-            }
+            },
+            {
+              path: ':secureExchangeID',
+              name: 'viewExchange',
+              component: MessageDisplay,
+              props: (route) => ({
+                secureExchangeID: route.params.secureExchangeID,
+                ministryOwnershipGroupRoleID: 'MANAGE_EXCHANGE_PEN_INBOX_PERMISSION'
+              }),
+              meta: {
+                pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
+                requiresAuth: true,
+                permission: PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION
+              }
+            },
           ]
-        },
-        {
-          path: 'exchange/:secureExchangeID/:ministryOwnershipGroupRoleID',
-          name: 'viewExchange',
-          component: MessageDisplay,
-          props: true,
-          meta: {
-            pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
-            requiresAuth: true,
-            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
-          }
-        },
-        {
-          path: 'newExchange',
-          name: 'newExchange',
-          component: NewMessagePage,
-          meta: {
-            pageTitle: PAGE_TITLES.NEW_EXCHANGE,
-            requiresAuth: true,
-            permission: PERMISSION.MANAGE_EXCHANGE_INBOX_PERMISSION
-          }
         },
         {
           path: 'exchange/access',
@@ -417,6 +410,17 @@ const router = createRouter({
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
             permission: PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION
+          }
+        },
+        {
+          path: 'invitations',
+          name: 'edxInvitations',
+          component: EDXInvitations,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.INVITATIONS,
+            requiresAuth: true,
+            permission: (PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION || PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION)
           }
         }
       ]

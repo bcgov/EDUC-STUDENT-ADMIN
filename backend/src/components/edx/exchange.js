@@ -992,6 +992,7 @@ async function createSchool(req, res) {
       });
     }
 
+    const userInfo = utils.getUser(req);
     const payload = {
       school: {
         ...school,
@@ -1000,15 +1001,80 @@ async function createSchool(req, res) {
       initialEdxUser: allFieldsAreEmpty ? null : user
     };
     delete payload.school.districtID;
-    const userInfo = utils.getUser(req);
+    payload.school.createUser = userInfo.idir_username;
+    payload.school.updateUser = userInfo.idir_username;
 
-    const result = await utils
-      .postData(`${config.get('server:edx:createSchoolSagaURL')}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(`${config.get('server:edx:createSchoolSagaURL')}`, payload, null, null);
 
     return res.status(HttpStatus.ACCEPTED).json(result);
   } catch (e) {
     await logApiError(e, 'createSchool', 'Error occurred while starting a create school saga.');
     return errorResponse(res);
+  }
+}
+
+async function findAllDistrictInvitations(req, res) {
+  try {
+    
+    const instituteType =  {
+      params: {
+        instituteType :  'DISTRICT'
+      }
+    };
+
+    const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
+    result.forEach((element) => {
+      element.district = cacheService.getDistrictJSONByDistrictId(element?.districtID);
+      element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
+      element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';      
+    });
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'findAllDistrictInvitations', 'Error occurred while attempting to get all invitations for district.');
+    return errorResponse(res);
+  }
+}
+
+async function findAllSchoolInvitations(req, res) {
+  try {
+    
+    const instituteType =  {
+      params: {
+        instituteType :  'SCHOOL'
+      }
+    };
+    
+    const result = await utils.getData(`${config.get('server:edx:findAllInvitations')}`, instituteType);
+
+    result.forEach((element) => {
+      element.school = cacheService.getSchoolBySchoolID(element?.schoolID);
+      element.status = element?.linkedEdxUserId === null ? 'Pending' : 'Accepted';
+      element.invitationExpiry = element?.expiryDate ? LocalDateTime.parse(element?.expiryDate).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : '';  
+    });
+
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'findAllSchoolInvitations', 'Error occurred while attempting to get all invitations for school.');
+    return errorResponse(res);
+  }
+}
+
+async function uploadOnboardingFile(req, res){
+  try {
+    console.log("Upload file: ", JSON.stringify(req.body))
+    const user = utils.getUser(req);
+
+    const document = {
+      fileContents: req.body.fileContents,
+      createUser: user.idir_username
+    }
+
+    const result = await postData(config.get('server:edx:uploadOnboardingFile'), document, null, null);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'uploadOnboardingFile', 'Error occurred while uploading onboarding file.');
+
+    return errorResponse(res, e.data?.message, e.status);
   }
 }
 
@@ -1043,5 +1109,8 @@ module.exports = {
   getExchangeStats,
   removeSecureExchangeNote,
   districtUserActivationInvite,
-  createSchool
+  createSchool,
+  findAllDistrictInvitations,
+  findAllSchoolInvitations,
+  uploadOnboardingFile
 };

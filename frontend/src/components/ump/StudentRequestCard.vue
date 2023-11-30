@@ -63,7 +63,7 @@
           no-gutters
           class="request-title justify-center pb-4"
         >
-          <strong>Current</strong>
+          <strong class="text-decoration-underline">Current</strong>
           <PrimaryButton
             id="search"
             class="request-title-btn ml-4"
@@ -183,7 +183,7 @@
           no-gutters
           class="request-title justify-center pb-4"
         >
-          <strong>Requested Updates</strong>
+          <strong class="text-decoration-underline">Requested Updates</strong>
         </v-row>
         <v-row no-gutters>
           <p class="update-data mb-2">
@@ -311,7 +311,7 @@ export default {
         .then(response => {
           const studentID = response.data.studentID;
           const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
-          window.open(route.href, '_blank', 'location=yes'); //add location to open in new window
+          window.open(route.href, '_blank');
         })
         .catch(error => {
           console.log(error);
@@ -345,7 +345,6 @@ export default {
 
   .request-title {
     position: relative;
-    text-decoration: underline;
     font-size: 1.1rem;
   }
 

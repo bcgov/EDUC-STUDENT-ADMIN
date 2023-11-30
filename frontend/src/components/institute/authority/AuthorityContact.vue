@@ -37,7 +37,7 @@
     <v-card-text class="pb-0">
       <v-list class="pt-0">
         <v-list-item
-          v-if="!contact.email && !contact.phoneNumber && canEditSchoolContact"
+          v-if="!contact.email && !contact.phoneNumber && canEditAuthorityContact"
           min-height="inherit"
           class="pl-0"
         >

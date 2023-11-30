@@ -155,7 +155,7 @@ export default {
     },
     getRequestStore,
     returnToStudent() {
-      if (this.$refs.returnForm.validate()) {
+      if (this.$refs.returnForm.validate()?.valid) {
         this.beforeSubmit();
         this.request.reviewer = this.myself.name;
         let body = this.prepPut(this.requestId, this.request);

@@ -53,7 +53,7 @@
                       color="#2E8540"
                       class="mr-1"
                     >
-                      {{ isUnarchived ? 'fa-unlock' : 'mdi-package-up' }}
+                      {{ isUnarchived ? 'mdi-lock-open-outline' : 'mdi-package-up' }}
                     </v-icon>
                     <span class="mr-4 batch-title">
                       <strong>{{ seqNumberInBatch }} of {{

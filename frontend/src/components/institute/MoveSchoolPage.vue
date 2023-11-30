@@ -7,11 +7,16 @@
     <v-card-text>
       <v-row class="move-description">
         <v-col>
-          <p>
+          <v-alert
+            density="compact"
+            color="#003366"
+            type="info"
+            class="px-2"
+            variant="tonal"
+          >
             Moving the school will close the school in the current district and open it in a new district and/or
-            authority. If it is available, the school code will remain the same in the new district
-          </p>
-          <p>Any users associated with the closing school will be moved to the new school.</p>
+            authority. If it is available, the school code will remain the same in the new district. Any users associated with the closing school will be moved to the new school.
+          </v-alert>
         </v-col>
       </v-row>
 
@@ -55,6 +60,7 @@
                   label="Move Date"
                   :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
                   model-type="yyyy-MM-dd'T'00:00:00"
+                  :min-date="school.openedDate"
                   @update:model-value="validateForm"
                 />
               </v-col>
@@ -377,7 +383,7 @@
                             <v-text-field
                               id="newSchoolPhysicalAddressLine2Input"
                               v-model="moveSchoolObject.physicalAddrLine2"
-                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              :rules="[rules.noSpecialCharactersAddress()]"
                               class="pt-0 pb-5"
                               variant="underlined"
                               :maxlength="255"
@@ -492,7 +498,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate, LocalDateTime} from '@js-joda/core';
 import {isOpenNotClosingAuthority} from '@/utils/common';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
@@ -573,7 +579,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
-    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'gradeOptions', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.moveSchoolObject?.schoolCategoryCode) {
@@ -611,7 +617,7 @@ export default {
       return this.moveSchoolObject?.schoolCategoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
-      return this.activeGradeCodes ? this.activeGradeCodes : [];
+      return this.gradeOptions ? this.gradeOptions : [];
     },
     provincialCodes() {
       if (!this.activeProvinceCodes) {
@@ -628,7 +634,7 @@ export default {
     },
     canMoveOtherSchoolTypes() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
-    },
+    }
   },
   mounted() {
     this.validateForm();
@@ -656,7 +662,7 @@ export default {
     this.sortNLC();
     this.getActiveDistrictDropDownItems();
     this.getActiveAuthorityDropDownItems();
-    this.schoolCategoryChanged();
+    this.schoolCategoryChanged(null, true);
   },
   methods: {
     hasRequiredPermission,
@@ -699,7 +705,7 @@ export default {
     getActiveAuthorityDropDownItems() {
       ApiService.getActiveAuthorities().then((response) => {
         for (const authority of response.data) {
-          if (this.isOpenNotClosingAuthority(authority)) {
+          if (this.isOpenNotClosingAuthority(authority) && authority.authorityID !== this.school.independentAuthorityId) {
             let authorityItem = {
               authorityNumber: +authority.authorityNumber,
               authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
@@ -754,7 +760,13 @@ export default {
         });
     },
     calculateDefaultMoveDate() {
-      return (LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss'))).toString();
+      const today = LocalDate.now().atStartOfDay();
+      const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+      if (this.school.openedDate) {
+        const openDate = LocalDateTime.parse(this.school.openedDate, formatter);
+        return openDate.isAfter(today) ? this.school.openedDate : today.format(formatter).toString();
+      }
+      return today.format(formatter).toString();
     },
     schoolDistrictChanged() {
       const districtRegionCode = this.activeDistricts
@@ -764,7 +776,7 @@ export default {
         this.constrainSchoolCategoryByDistrict(districtRegionCode);
       }
     },
-    async schoolCategoryChanged() {
+    async schoolCategoryChanged(_value, onCreate = false) {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)) {
         this.authorityDisabled = false;
       } else {
@@ -778,6 +790,8 @@ export default {
       } else {
         this.isGradeOfferedDisabled = false;
       }
+
+      if (!onCreate) this.moveSchoolObject.facilityTypeCode = null;
 
       await this.fireFormValidate();
     },
@@ -801,8 +815,9 @@ export default {
     sortNLC() {
       this.moveSchoolObject.neighborhoodLearning = sortBy(this.moveSchoolObject.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
     },
-    validateForm() {
-      const isValid = this.$refs.moveSchoolForm.validate();
+    async validateForm() {
+      await this.$nextTick();
+      const isValid = await this.$refs.moveSchoolForm.validate();
       this.isMoveFormValid = isValid.valid;
     },
     resetAddressForms() {

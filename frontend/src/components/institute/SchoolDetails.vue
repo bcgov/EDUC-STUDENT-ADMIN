@@ -155,6 +155,7 @@
                   <Details
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
+                    :canEditAllSchools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -262,7 +263,12 @@ export default {
       return this.userInfo;
     },
     canEditSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION);
+      return ((this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION))) ||
+      (this.offshoreArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_OFFSHORE_SCHOOL_PERMISSION)) ||
+      ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.canEditAllSchools;
+    },
+    canEditAllSchools() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)
     }
   },
   watch: {},
@@ -361,7 +367,7 @@ export default {
         });
     },
     canViewFundingTab() {
-      return this.canOnlyEditIndependentSchools && !this.config.DISABLE_SDC_FUNCTIONALITY;
+      return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;

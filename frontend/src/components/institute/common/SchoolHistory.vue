@@ -4,14 +4,9 @@
       <v-data-table
         id="schoolHistoryTable"
         v-model:items-per-page="schoolHistory.pageable.pageSize"
-        v-model:page="pageNumber"
         v-model:items="schoolHistory.content"
         v-model="selectedSchoolHistory"
-        :items-length="5"
         :headers="getHeaders()"
-        :footer-props="{
-          'items-per-page-options': itemsPerPageOptions
-        }"
         :loading="loading"
         class="batch-file-table"
         mobile-breakpoint="0"
@@ -51,6 +46,7 @@
             v-model="pageNumber"
             color="#38598A"
             :length="schoolHistory.totalPages"
+            @update:model-value="getSchoolHistory"
           />
         </v-col>
         <v-col
@@ -157,13 +153,6 @@ export default {
     },
     showingEndNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + (this.schoolHistory.numberOfElements || 0));
-    },
-  },
-  watch: {
-    pageNumber: {
-      handler() {
-        this.getSchoolHistory();
-      }
     },
   },
   async beforeMount() {

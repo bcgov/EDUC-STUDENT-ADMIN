@@ -346,7 +346,7 @@
                 :value="genderLabel"
                 color="#000000"
                 density="compact"
-                style="margin-top: -10px; color: black"
+                style="margin-top: -0.3em"
                 variant="plain"
                 readonly
                 tabindex="-1"
@@ -498,14 +498,14 @@
                 :value="gradeLabel"
                 color="#000000"
                 density="compact"
-                style="margin-top: -10px"
+                style="margin-top: -0.3em"
                 variant="plain"
                 readonly
                 tabindex="-1"
                 :disabled="true"
               />
             </v-col>
-            <v-col class="py-2">
+            <v-col>
               <v-text-field
                 v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 id="revertGradeCode"
@@ -1016,13 +1016,12 @@ export default {
       digitalIdentity: {},
     };
   },
-  created() {
-    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
-    this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label) : [];
-    this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label) : [];
-    this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label) : [];
-    this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode) : [];
-    this.genderLabels = this.genders ? this.genders.map(a => a.label) : [];
+  async created() {
+    await Promise.all([penRequestBatchStore().getCodes(), this.refreshStudent()]);
+    //reset errors
+    Object.keys(this.err).forEach(key => {
+      this.err[key] = [];
+    });
   },
   computed: {
     ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
@@ -1074,13 +1073,12 @@ export default {
     }
   },
   mounted() {
-    studentStore().getCodes();
-    penRequestBatchStore().getCodes();
-    this.refreshStudent();
-    //reset errors
-    Object.keys(this.err).forEach(key => {
-      this.err[key] = [];
-    });
+    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
+    this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label) : [];
+    this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label) : [];
+    this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label) : [];
+    this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode) : [];
+    this.genderLabels = this.genders ? this.genders.map(a => a.label) : [];
   },
   beforeRouteLeave(to, from, next) {
     if (this.hasAnyEdits()) {
@@ -1258,7 +1256,7 @@ export default {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
       }
     },
-    refreshStudent() {
+    async refreshStudent() {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
       ApiService.apiAxios
