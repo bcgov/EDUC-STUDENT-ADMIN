@@ -76,7 +76,6 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
