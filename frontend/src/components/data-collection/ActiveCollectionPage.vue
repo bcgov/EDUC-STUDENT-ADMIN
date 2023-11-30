@@ -78,16 +78,9 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import Spinner from '@/components/common/Spinner.vue';
-import router from '@/router';
-import ClipboardButton from '@/components/util/ClipboardButton.vue';
-import {edxStore} from '@/store/modules/edx';
-import { ROLE } from '@/utils/constants/Roles';
-import {DateTimeFormatter, LocalDate} from "@js-joda/core";
 
 export default {
   name: 'ActiveCollectionPage',
-  components: {PrimaryButton},
   mixins: [alertMixin],
   props: {},
   data() {
