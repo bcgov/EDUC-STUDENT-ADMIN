@@ -314,6 +314,11 @@ export default {
               authorized: this.STUDENT_ANALYTICS_BATCH
             }
           ],
+        },
+        {
+          title: PAGE_TITLES.DATA_COLLECTIONS,
+          link: 'sdc-collections',
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.STUDENT_DATA_COLLECTION)
         }
       ];
     }
