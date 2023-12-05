@@ -421,7 +421,7 @@
                           {{ activity.displayDate }}
                         </span>
                       </v-card-subtitle>
-                      <v-card-text class="">
+                      <v-card-text style="min-width: 40em">
                         <v-row v-if="activity.studentPEN !== null">
                           <v-col
                             class="pt-0"
