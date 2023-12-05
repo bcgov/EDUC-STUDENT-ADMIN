@@ -14,12 +14,13 @@ async function claimAllExchanges(req, res) {
   try {
     const userInfo = utils.getUser(req);
 
-    const params = new URLSearchParams({
+    const params = {
       reviewer: userInfo.idir_username,
-      secureExchangeIDs: req.body.secureExchangeIDs
-    }).toString();
+      secureExchangeIDs: req.body.secureExchangeIDs,
+      updateUser: userInfo.idir_username
+    };
 
-    await utils.postData(config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
+    await utils.postData(config.get('server:edx:claimExchangesURL'), params, null, null);
     return res.status(HttpStatus.OK).json({});
   } catch (e) {
     logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
@@ -32,23 +33,25 @@ async function claimExchange(req, res) {
     let params;
     const userInfo = utils.getUser(req);
     if (!req.body.claimedStatus || req.body.currentlyClaimedBy !== userInfo.idir_username) {
-      params = new URLSearchParams({
+      params = {
         reviewer: userInfo.idir_username,
-        secureExchangeIDs: req.body.secureExchangeIDs
-      }).toString();
+        secureExchangeIDs: [req.body.secureExchangeIDs],
+        updateUser: userInfo.idir_username
+      };
     } else {
-      params = new URLSearchParams({
+      params = {
         reviewer: '',
-        secureExchangeIDs: req.body.secureExchangeIDs
-      }).toString();
+        secureExchangeIDs: [req.body.secureExchangeIDs],
+        updateUser: userInfo.idir_username
+      };
     }
-    await utils.postData( config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
+    await utils.postData( config.get('server:edx:claimExchangesURL'), params, null, null);
     const thisExchange = await getData( config.get('server:edx:exchangeURL') + `/${req.body.secureExchangeIDs}`);
 
     return res.status(HttpStatus.OK).json(thisExchange);
 
   } catch (e) {
-    logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
+    logApiError(e, 'claimExchange', 'Error occurred while attempting to claim an exchange.');
     return errorResponse(res);
   }
 }
