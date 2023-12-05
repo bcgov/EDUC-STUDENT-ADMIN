@@ -830,7 +830,7 @@ export default {
       this.headerSearchParams.ministryOwnershipTeamID = this.getMinistryTeamIDByGroupRoleID(this.ministryOwnershipGroupRoleID);
       this.headerSearchParams.createDate = this.messageDate === null ? null : [this.messageDate];
 
-      if (this.claimedByFilter !== '') {
+      if (this.claimedByFilter !== '' && this.claimedByFilter !== null) {
         this.headerSearchParams.reviewer = this.claimedByFilter;
       }
 
