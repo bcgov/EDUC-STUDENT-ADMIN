@@ -99,7 +99,7 @@
                   >
                     <div
                       v-for="(document, index) in secureExchangeDocuments"
-                      :key="index"
+                      :key="document.fileName + generateKey()"
                     >
                       <v-col
                         class="d-flex justify-start px-0 pb-2"
@@ -280,6 +280,7 @@ import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {edxStore} from '@/store/modules/edx';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'NewMessagePage',
@@ -509,6 +510,9 @@ export default {
     validateForm() {
       const isValid = this.$refs.newMessageForm.validate();
       this.isValidForm = isValid.valid;
+    },
+    generateKey() {
+      return uuidv4();
     },
     humanFileSize
   }
