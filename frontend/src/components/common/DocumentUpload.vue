@@ -137,16 +137,7 @@ export default {
       return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
     },
     closeForm() {
-      this.resetForm();
       this.$emit('close:form');
-    },
-    resetForm() {
-      this.$refs.form.reset();
-      this.fileInputError = [];
-      this.uploadFileValue = null;
-      this.alert = false;
-      this.active = false;
-      this.validateForm();
     },
     setSuccessAlert() {
       this.alertMessage = 'File upload successful.';
@@ -230,7 +221,6 @@ export default {
         documentData: btoa(env.target.result)
       };
       this.$emit('upload', document);
-      this.resetForm();
       this.$emit('close:form');
     }
   },

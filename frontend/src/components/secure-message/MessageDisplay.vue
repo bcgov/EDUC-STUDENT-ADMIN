@@ -352,7 +352,7 @@
               <v-col class="d-flex justify-center">
                 <v-expand-transition>
                   <DocumentUpload
-                    v-show="isNewAttachmentDisplayed"
+                    v-if="isNewAttachmentDisplayed"
                     style="min-width: 40em"
                     :small-file-extension="false"
                     :check-file-rules="true"

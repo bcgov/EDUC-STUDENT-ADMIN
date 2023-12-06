@@ -195,7 +195,7 @@
                         <v-row no-gutters>
                           <v-col class="d-flex justify-center">
                             <DocumentUpload
-                              v-show="expandAttachFile"
+                              v-if="expandAttachFile"
                               :small-file-extension="false"
                               :check-file-rules="true"
                               :allowed-file-format="formatMessage"
