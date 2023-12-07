@@ -51,6 +51,7 @@
           <v-hover v-slot="{ hover }">
             <v-btn
                 variant="text"
+                @click="goToCloseCollection()"
             >
               <span
                   class="ml-1 pr-2"
@@ -77,6 +78,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+
 
 export default {
   name: 'ActiveCollectionPage',
@@ -108,6 +110,9 @@ export default {
             this.submissionDueDate = response.data.submissionDueDate.replaceAll('-', '/')
 
           })
+    },
+    goToCloseCollection() {
+      this.$router.push({name: 'close-collection', params: {}});
     }
   }
 
@@ -126,10 +131,6 @@ export default {
   color: #003366;
   font-style: italic;
   padding-top: 1em;
-}
-
-#continueButton {
-  border: none
 }
 
 </style>

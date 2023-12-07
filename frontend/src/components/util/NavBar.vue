@@ -316,8 +316,8 @@ export default {
           ],
         },
         {
-          title: PAGE_TITLES.DATA_COLLECTIONS,
-          link: 'sdc-collections',
+          title: PAGE_TITLES.DATA_COLLECTION,
+          link: 'sdc-collection',
           authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.STUDENT_DATA_COLLECTION)
         }
       ];

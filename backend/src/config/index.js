@@ -186,7 +186,8 @@ nconf.defaults({
     schoolCollectionURL: process.env.SDC_API_URL + '/sdcSchoolCollection',
     fundingGroupsURL: process.env.SDC_API_URL + '/funding-group-codes',
     fundingGroupDataURL: process.env.SDC_API_URL + '/schoolFundingGroup',
-    activeCollectionURL: process.env.SDC_API_URL + '/collection/active'
+    activeCollectionURL: process.env.SDC_API_URL + '/collection/active',
+    collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes'
   }
 });
 module.exports = nconf;

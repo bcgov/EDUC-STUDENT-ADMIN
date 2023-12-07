@@ -112,6 +112,12 @@ if(!config.get('frontendConfig').disableSdcFunctionality) {
   }).catch((e) => {
     log.error('Error loading FUNDING_GROUPS data during boot .', e);
   });
+
+  cacheService.loadDataToCache( constants.CACHE_KEYS.COLLECTION_TYPE_CODES, 'sdc:collectionTypeCodesURL').then(() => {
+    log.info('Loaded COLLECTION_TYPE_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading COLLECTION_TYPE_CODES data during boot .', e);
+  });
 }
 
 cacheService.loadAllAuthoritiesToMap().then(() => {

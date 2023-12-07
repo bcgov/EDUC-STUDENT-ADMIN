@@ -26,7 +26,8 @@ export const appStore = defineStore('app', {
     alertNotification: false,
     config: '',
     fundingGroupsMap: new Map(),
-    fundingGroups: []
+    fundingGroups: [],
+    collectionTypeCodesMap: new Map()
   }),
   getters: {
     activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString()),
@@ -112,6 +113,12 @@ export const appStore = defineStore('app', {
         this.fundingGroupsMap.set(element.schoolFundingGroupCode, element);
       });
     },
+    async setCollectionTypeCodes(collectionTypes) {
+      this.collectionTypeCodesMap = new Map();
+      collectionTypes.forEach(element => {
+        this.collectionTypeCodesMap.set(element.collectionTypeCode, element)
+      })
+    },
     async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(this.mincodeSchoolNames.size === 0) {
@@ -137,6 +144,10 @@ export const appStore = defineStore('app', {
         if(this.fundingGroupsMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
           const response = await ApiService.getAllFundingGroups();
           await this.setFundingGroups(response.data);
+        }
+        if(this.collectionTypeCodesMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
+          const response = await ApiService.getAllCollectionTypeCodes();
+          await this.setCollectionTypeCodes(response.data);
         }
       }
     },
