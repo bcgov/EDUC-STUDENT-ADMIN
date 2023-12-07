@@ -78,14 +78,10 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import RouterView from '../RouterView.vue';
 
 
 export default {
   name: 'ActiveCollectionPage',
-  components: {
-    RouterView
-  },
   mixins: [alertMixin],
   props: {},
   data() {

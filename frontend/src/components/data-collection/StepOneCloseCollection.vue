@@ -54,7 +54,6 @@
               :rules="[rules.required()]"
               model-type="yyyy-MM-dd'T'00:00:00"
               @update:model-value="calculateAdminDates"
-              @clear-date=""
           />
         </v-col>
       </v-row>
@@ -102,7 +101,6 @@
 <script>
 import PrimaryButton from '../util/PrimaryButton.vue';
 import { mapState, mapActions } from 'pinia';
-import Spinner from '../common/Spinner.vue';
 import {collectionStore} from "@/store/modules/collection";
 import * as Rules from '@/utils/institute/formRules';
 import {appStore} from "@/store/modules/app";
@@ -115,7 +113,6 @@ export default {
   name: 'StepOneCloseCollection',
   components: {
     DatePicker,
-    Spinner,
     PrimaryButton
   },
   emits: ['next', 'refreshStore'],
