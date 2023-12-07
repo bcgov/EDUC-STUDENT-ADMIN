@@ -669,7 +669,7 @@ export default {
     copyNLCandGradesFromSchool() {
       //copies over the NLC and grades list from school without schoolId information.
       this.moveSchoolObject.neighborhoodLearning = this.school.neighborhoodLearning.map(nlc => this.activeSchoolNeighborhoodLearningCodes?.find(activeNLC => nlc.neighborhoodLearningTypeCode === activeNLC.neighborhoodLearningTypeCode));
-      this.moveSchoolObject.grades = this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode));
+      this.moveSchoolObject.grades = sortBy(this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode)), ['displayOrder']);
     },
     constrainSchoolCategoryByDistrict(districtRegionCode) {
       const schoolCategory = this.districtSchoolCategoryConstraints
@@ -807,7 +807,7 @@ export default {
       for (const grade of this.schoolGradeTypes) {
         let schoolGradeType = this.moveSchoolObject.grades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
         if (schoolGradeType) {
-          gradeList.push(grade);
+          gradeList.push(schoolGradeType);
         }
       }
       this.moveSchoolObject.grades = gradeList;
