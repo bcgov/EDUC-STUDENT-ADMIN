@@ -1,25 +1,26 @@
 let cacheKeys;
 
 cacheKeys = {
-  AUTHORITY_CONTACT_TYPES: 'authority-contact-types',
-  AUTHORITY_TYPES: 'authority-types',
-  COUNTRY_CODES: 'country-codes',
-  DISTRICT_CONTACT_TYPE_CODES: 'district-contact-types',
-  EDX_MINISTRY_TEAMS: 'ministry-teams',
-  EDX_ROLE_PERMISSIONS: 'role-permissions',
-  EDX_SECURE_EXCHANGE_DOCUMENT_TYPES: 'exchange-document-types',
-  EDX_SECURE_EXCHANGE_STATUS: 'exchange-statuses',
-  EDX_SECURE_EXCHANGE_FILE_REQUIREMENTS: 'exchange-file-requirements',
-  FACILITY_TYPES: 'facility-types',
-  GRADE_CODES: 'grade-codes',
-  PROVINCE_CODES: 'province-codes',
-  SCHOOL_CATEGORY_TYPES: 'school-category-types',
-  SCHOOL_CONTACT_TYPES: 'school-contact-types',
-  SCHOOL_FACILITY_TYPES: 'school_facilityTypes',
-  SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES: 'school-neighborhood-learning-types',
-  SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
-  SCHOOL_REPORTING_REQUIREMENT_CODES: 'school-reporting-requirement-codes',
-  SDC_FUNDING_GROUPS: 'sdc_funding_groups'
+    AUTHORITY_CONTACT_TYPES: 'authority-contact-types',
+    AUTHORITY_TYPES: 'authority-types',
+    COUNTRY_CODES: 'country-codes',
+    DISTRICT_CONTACT_TYPE_CODES: 'district-contact-types',
+    EDX_MINISTRY_TEAMS: 'ministry-teams',
+    EDX_ROLE_PERMISSIONS: 'role-permissions',
+    EDX_SECURE_EXCHANGE_DOCUMENT_TYPES: 'exchange-document-types',
+    EDX_SECURE_EXCHANGE_STATUS: 'exchange-statuses',
+    EDX_SECURE_EXCHANGE_FILE_REQUIREMENTS: 'exchange-file-requirements',
+    FACILITY_TYPES: 'facility-types',
+    GRADE_CODES: 'grade-codes',
+    PROVINCE_CODES: 'province-codes',
+    SCHOOL_CATEGORY_TYPES: 'school-category-types',
+    SCHOOL_CONTACT_TYPES: 'school-contact-types',
+    SCHOOL_FACILITY_TYPES: 'school_facilityTypes',
+    SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES: 'school-neighborhood-learning-types',
+    SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
+    SCHOOL_REPORTING_REQUIREMENT_CODES: 'school-reporting-requirement-codes',
+    SDC_FUNDING_GROUPS: 'sdc_funding_groups',
+    COLLECTION_TYPE_CODES: 'collection-type-codes'
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);

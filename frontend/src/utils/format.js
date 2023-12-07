@@ -100,3 +100,8 @@ export function formatDisplayDate(date) {
 export function formatContactName(contact) {
   return contact.firstName ? `${contact.firstName} ${contact.lastName}` : contact.lastName;
 }
+
+export function formatCollectionTypeCode(code) {
+  let lowercaseCollectionType = code.toLowerCase()
+  return lowercaseCollectionType.replace(lowercaseCollectionType[0], lowercaseCollectionType[0].toUpperCase());
+}
