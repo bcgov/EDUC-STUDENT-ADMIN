@@ -66,7 +66,6 @@
         <router-view
             :collection-object="activeCollectionObject"
             @next="next"
-            @refreshStore="refreshStore"
         />
       </v-col>
     </v-row>
@@ -75,9 +74,10 @@
 <script>
 import alertMixin from '../../mixins/alertMixin';
 import StepperComponent from '../common/StepperComponent.vue';
-import { mapState, mapActions } from 'pinia';
-import { collectionStore } from '@/store/modules/collection';
 import {formatCollectionTypeCode} from '@/utils/format';
+import {COLLECTION_CLOSURE_STEPS} from '@/utils/institute/collectionClosureSteps';
+import ApiService from "@/common/apiService";
+import {Routes} from "@/utils/constants";
 
 export default {
   name: 'collectionView',
@@ -88,45 +88,37 @@ export default {
   data() {
     return {
       steps: [],
+      currentStepInCollectionClosureProcess: {},
       registerNextEvent: false,
       activeCollectionObject: {},
       activeCollectionType: null,
       activeCollectionYear: null,
-      isLoading: false,
+      isLoading: true,
     };
   },
-  computed: {
-    ...mapState(collectionStore, ['stepsInCollectionClosureProcess', 'activeCollection'])
-  },
   async created() {
-    this.isLoading = !this.isLoading;
 
-    this.steps = [...this.stepsInCollectionClosureProcess];
+    this.steps = [...COLLECTION_CLOSURE_STEPS];
+
     //TODO: Replace the below with actual retrieval of collection closure status
-    collectionStore().setCurrentStepInCollectionClosureProcess(        {
-      label: 'STEP-1',
-      name: 'Close Collection',
-      id: 'step-1',
-      route: 'step-1',
-      next: 'step-2',
-      index: 0,
-      isStarted: false,
-      isComplete: false
-    });
+    this.setCurrentStepInCollectionClosureProcess(this.steps[0]);
 
-    await collectionStore().getActiveCollection().then(() => {
-      this.activeCollectionObject = this.activeCollection;
+    await this.getActiveCollection().then(() => {
       this.isLoading = !this.isLoading;
     });
-
-    this.activeCollectionType = formatCollectionTypeCode(this.activeCollectionObject.collectionTypeCode);
-    this.activeCollectionYear = this.activeCollectionObject.snapshotDate.slice(0, 4);
-
-
   },
   methods: {
     formatCollectionTypeCode,
-    ...mapActions(collectionStore, ['setCurrentStepInCollectionClosureProcess']),
+
+    async getActiveCollection() {
+      if(this.activeCollection == null) {
+        const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`)
+        this.activeCollectionObject = response.data;
+
+        this.activeCollectionType = formatCollectionTypeCode(this.activeCollectionObject.collectionTypeCode);
+        this.activeCollectionYear = this.activeCollectionObject.snapshotDate.slice(0, 4);
+      }
+    },
 
     next() {
       this.registerNextEvent = true;
@@ -136,11 +128,8 @@ export default {
       this.registerNextEvent = false;
     },
 
-    refreshStore() {
-      collectionStore().getActiveCollection().finally(() => {
-        this.activeCollectionObject = this.activeCollection;
-        this.steps = [...this.stepsInCollectionClosureProcess];
-      });
+    setCurrentStepInCollectionClosureProcess(currentStepInCollectionClosureProcess) {
+      this.currentStepInCollectionClosureProcess = currentStepInCollectionClosureProcess;
     },
 
     backToActiveCollection() {

@@ -4,6 +4,7 @@
       fluid
   >
     <v-form
+        v-if="!stepCompleted"
         ref="closeForm"
         v-model="validForm"
     >
@@ -20,6 +21,7 @@
               v-model="newCollection.collectionType"
               :rules="[rules.required()]"
               :items="collectionTypes"
+              :disabled="true"
               item-title="label"
               variant="underlined"
               class="pt-0"
@@ -91,23 +93,32 @@
             id="closeCollectionButton"
             text="Close Collection"
             :disabled="!validForm"
-            @click-action="next"
+            @click-action="markStepAsComplete"
         />
       </v-row>
     </v-form>
+    <v-row v-else id="successMessage">
+      <v-col>
+        <v-icon>
+          mdi-checkbox-marked-circle
+        </v-icon>
+        <span style="padding-left: 1em">The {{closingCollectionType}} Collection has been closed. The {{newCollection.collectionType}} Collection is now open.</span>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import PrimaryButton from '../util/PrimaryButton.vue';
-import { mapState, mapActions } from 'pinia';
-import {collectionStore} from "@/store/modules/collection";
+import { mapState } from 'pinia';
 import * as Rules from '@/utils/institute/formRules';
 import {appStore} from "@/store/modules/app";
 import {formatCollectionTypeCode} from "@/utils/format"
 import {findUpcomingDate} from "@/utils/dateHelpers.js"
 import DatePicker from "@/components/util/DatePicker.vue";
 import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from "@js-joda/core";
+import ApiService from "@/common/apiService";
+import {Routes} from "@/utils/constants";
 
 export default {
   name: 'StepOneCloseCollection',
@@ -120,12 +131,15 @@ export default {
     return {
       requiredRules: [v => !!v || 'Required'],
       datePattern: 'yyyy-MM-dd\'T\'HH:mm:ss',
+      isLoading: true,
       isDisabled: true,
       validForm: false,
+      stepCompleted: false,
       rules: Rules,
       collectionTypesMap: new Map(),
       collectionTypes: [],
       closingCollectionObject: {},
+      closingCollectionType: null,
       newCollection: {
         collectionType: null,
         snapshotDate: null,
@@ -137,7 +151,6 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['collectionTypeCodesMap']),
-    ...mapState(collectionStore, ['currentStepInCollectionClosureProcess', 'activeCollection']),
   },
   async created() {
     await appStore().getCodes().then(() => {
@@ -147,8 +160,7 @@ export default {
         });
       });
 
-    await collectionStore().getActiveCollection().then(() => {
-      this.closingCollectionObject = this.activeCollection;
+    await this.getActiveCollection().then(() => {
       this.isLoading = !this.isLoading;
     });
 
@@ -156,10 +168,9 @@ export default {
       let indexOfType = this.collectionTypes.indexOf(formattedClosingCollectionType);
       this.newCollection.collectionType = indexOfType === this.collectionTypes.length - 1 ? this.collectionTypes[0] : this.collectionTypes[indexOfType + 1];
 
-      await this.calculateSnapshotDate();
+    await this.calculateSnapshotDate();
   },
   methods: {
-    ...mapActions(collectionStore, ['setActiveCollection']),
 
     next() {
       if(this.currentStepInCollectionClosureProcess.isComplete) {
@@ -167,6 +178,12 @@ export default {
       } else {
         this.markStepAsComplete();
       }
+    },
+
+    async getActiveCollection() {
+        const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`);
+        this.closingCollectionObject = response.data;
+        this.closingCollectionType = formatCollectionTypeCode(response.data.collectionTypeCode)
     },
 
     async calculateSnapshotDate(){
@@ -198,11 +215,13 @@ export default {
 
     markStepAsComplete() {
       //TODO: insert API call to open new collection endpoint here
+      this.stepCompleted = true;
+      this.fireFormValidate();
     },
 
     async fireFormValidate() {
       await this.$nextTick();
-      this.validateForm();
+      await this.validateForm();
     },
 
     async validateForm() {
@@ -237,5 +256,13 @@ export default {
 
 :deep(.mdi-information){
   color: #003366;
+}
+
+#successMessage {
+  color: green;
+  border: solid green;
+  display: inline-block;
+  font-weight: bold;
+  border-radius: 5px;
 }
 </style>

@@ -40,8 +40,7 @@
 
 <script>
 import alertMixin from '../../mixins/alertMixin';
-import { mapActions, mapState } from 'pinia';
-import { collectionStore } from '@/store/modules/collection';
+import {COLLECTION_CLOSURE_STEPS} from '@/utils/institute/collectionClosureSteps';
 
 export default {
   name: 'StepperComponent',
@@ -63,10 +62,8 @@ export default {
   emits: ['on-navigation-complete'],
   data() {
     return {
+      currentStepInCollectionClosureProcess: COLLECTION_CLOSURE_STEPS[0]
     };
-  },
-  computed: {
-    ...mapState(collectionStore, ['currentStepInCollectionClosureProcess'])
   },
   watch: {
     nextEvent(value) {
@@ -79,7 +76,6 @@ export default {
     this.loadDefaultStep();
   },
   methods: {
-    ...mapActions(collectionStore, ['setCurrentStepInCollectionClosureProcess']),
     onStepClick(step) {
       if (step.index >= this.currentStepInCollectionClosureProcess.index) {
         return;
