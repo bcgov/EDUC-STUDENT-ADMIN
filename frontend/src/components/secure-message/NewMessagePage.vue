@@ -120,7 +120,7 @@
                     </div>
                     <div
                       v-for="(secureExchangeStudent, index) in secureExchangeStudents"
-                      :key="index"
+                      :key="secureExchangeStudent.studentID"
                     >
                       <v-col
                         class="d-flex justify-start px-0 pb-2"
