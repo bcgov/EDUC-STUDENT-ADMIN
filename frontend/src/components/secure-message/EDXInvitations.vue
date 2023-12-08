@@ -37,7 +37,7 @@
                 <v-col>
                   <v-data-table
                     id="dataTable"
-                    v-model:page="pageNumber"
+                    v-model:page="districtAccessPageNumber"
                     v-model:items="filteredDistrictInvites"
                     v-model:items-per-page="itemsPerPage"
                     :headers="districtHeaders"
@@ -101,7 +101,7 @@
                 <v-col>
                   <v-data-table
                     id="dataTable"
-                    v-model:page="pageNumber"
+                    v-model:page="schoolAccessPageNumber"
                     v-model:items="filteredSchoolInvites"
                     v-model:items-per-page="itemsPerPage"
                     :headers="schoolHeaders"
@@ -152,13 +152,16 @@
                           />
                         </v-col>
                       </v-row>
-                      
                     </template>
                   </v-data-table>
                 </v-col>
               </v-row>
             </v-window-item>
-            <v-window-item value="sendInvites" style="align-self: center" class="mt-8">
+            <v-window-item
+              value="sendInvites"
+              style="align-self: center"
+              class="mt-8"
+            >
               <v-row>
                 <v-col class="mb-3 d-flex justify-center">
                   <h1>Upload User Onboarding Data</h1>
@@ -166,12 +169,12 @@
               </v-row>
               <v-row>
                 <v-col>
-                <v-form
+                  <v-form
                     ref="documentForm"
                     v-model="validForm"
                     class="h-80"
-                >
-                  <v-file-input
+                  >
+                    <v-file-input
                       id="selectFileInput"
                       ref="uploader"
                       v-model="uploadFileValue"
@@ -179,8 +182,8 @@
                       :clearable="true"
                       :loading="uploadInProgress"
                       :disabled="uploadInProgress"
-                  />
-                </v-form>
+                    />
+                  </v-form>
                 </v-col>
               </v-row>
             </v-window-item>
@@ -196,8 +199,8 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import {getFileNameWithMaxNameLength} from "@/utils/file";
-import { deepCloneObject } from '../../utils/common';
+import {getFileNameWithMaxNameLength} from '@/utils/file';
+import { deepCloneObject } from '@/utils/common';
 import {LocalDate} from '@js-joda/core';
   
 export default {
@@ -208,8 +211,8 @@ export default {
       tab: null,
       schoolSearch: null,
       districtSearch: null,
-      pageNumber: 1,
-      pageCount: 0,
+      districtAccessPageNumber: 1,
+      schoolAccessPageNumber: 1,
       itemsPerPage: 10,
       acceptableFileExtensions: 'CSV',
       uploadInProgress: false,
@@ -297,6 +300,8 @@ export default {
       expiryType: ['Active', 'Expired']
     };
   },
+  computed: {  
+  },
   watch: {
     districtSearch() {
       this.applyDistrictFilter();
@@ -309,8 +314,6 @@ export default {
         this.importFile();
       }
     },
-  },
-  computed: {  
   },
   async mounted() {
     this.loadDistrictInvites();
@@ -359,6 +362,7 @@ export default {
     },
     loadSchoolInvites() {
       this.schoolLoading = true;
+      this.schoolAccessPageNumber = 1;
       ApiService.apiAxios
         .get(`${Routes.edx.FIND_SCHOOL_INVITATIONS}`)
         .then(response => {
@@ -378,6 +382,7 @@ export default {
     },
     loadDistrictInvites() {
       this.districtLoading = true;
+      this.districtAccessPageNumber = 1;
       ApiService.apiAxios
         .get(`${Routes.edx.FIND_DISTRICT_INVITATIONS}`)
         .then(response => {
