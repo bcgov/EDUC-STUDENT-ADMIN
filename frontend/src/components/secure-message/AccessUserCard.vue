@@ -9,7 +9,7 @@
             <v-col>
               <v-row no-gutters>
                 <v-col cols="10">
-                  <strong class="name">{{ `${user.firstName} ${user.lastName}` }}</strong>
+                  <strong class="name">{{ userDisplayName }}</strong>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -134,7 +134,7 @@
           type="info"
           variant="tonal"
         >
-          <span>Please select at least one role for {{ user.firstName }}.</span>
+          <span>Please select at least one role for {{ `${user.firstName} ${user.lastName}`.trim() }}.</span>
         </v-alert>
         <v-list
           v-model:selected="selectedRoles"
@@ -257,6 +257,9 @@ export default {
   computed: {
     minimumRolesSelected() {
       return this.selectedRoles.length > 0;
+    },
+    userDisplayName() {
+      return `${this.user.firstName} ${this.user.lastName}`.trim();
     }
   },
   methods: {
