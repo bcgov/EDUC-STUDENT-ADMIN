@@ -86,6 +86,7 @@ export default {
       default: null
     }
   },
+  emits: ['close:form', 'upload'],
   data() {
     return {
       fileAccept: 'xls, xlsx',
@@ -103,6 +104,13 @@ export default {
       alertType: null
     };
   },
+  computed: {
+    ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(edxStore, ['fileRequirements']),
+    dataReady() {
+      return this.validForm && this.uploadFileValue;
+    },
+  },
   watch: {
     dataReady() {
       //force re-renders of the button to solve the color issue
@@ -111,15 +119,8 @@ export default {
   },
   async created() {
     await edxStore().getFileRequirements();
-    await this.getFileRules();
+    this.getFileRules();
     await this.validateForm();
-  },
-  computed: {
-    ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),
-    ...mapState(edxStore, ['fileRequirements']),
-    dataReady() {
-      return this.validForm && this.uploadFileValue;
-    },
   },
   methods: {
     makefileFormatList(extensions) {
