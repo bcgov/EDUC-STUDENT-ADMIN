@@ -220,7 +220,7 @@
                         mdi-circle-medium
                       </v-icon>
                     </template>
-                    <template #selection="{ item, index }">
+                    <template #selection="{ item }">
                       {{
                         item.raw.label
                       }}
@@ -302,15 +302,15 @@
                     id="search-clear"
                     class="mr-3"
                     :secondary="true"
-                    @click-action="clearSearch"
                     text="Clear"
+                    @click-action="clearSearch"
                   />
                   <PrimaryButton
                     id="searchButton"
-                    @click-action="filterExchanges"
                     :loading="loadingTable"
                     :disabled="!searchEnabled"
                     text="Search"
+                    @click-action="filterExchanges"
                   />
                 </v-col>
               </v-row>
@@ -341,7 +341,7 @@
                 </v-row>
               </template>
               <template #headers />
-              <template #item="{ item, index }">
+              <template #item="{ item }">
                 <v-row
                   class="hoverTable pa-2"
                   no-gutters
@@ -502,7 +502,7 @@
         <v-divider />
         <v-card-text>
           <NewMessagePage
-            :ministryOwnershipGroupRoleID="ministryOwnershipGroupRoleID"
+            :ministry-ownership-group-role-i-d="ministryOwnershipGroupRoleID"
             @secure-exchange:message-sent="messageSent"
             @secure-exchange:cancel-message="newMessageSheet = false"
           />
@@ -758,7 +758,7 @@ export default {
       } else {
         this.setFilterStatusAll();
         this.statusRadioGroup = 'statusFilterAll';
-        this.filterText = 'Less Filters';
+        this.filterText = 'Fewer Filters';
         this.statusRadioGroupEnabled = false;
         this.clearSearch();
       }
@@ -802,16 +802,20 @@ export default {
       const payload = {
         secureExchangeIDs: selected,
       };
+      const pluralExchanges = this.selectedExchanges.length != 1;
       ApiService.apiAxios.post(`${Routes['edx'].CLAIM_URL}`, payload)
         .then(() => {
-          this.setSuccessAlert('Secure exchanges have been claimed successfully.');
+          this.setSuccessAlert(`Secure ${
+            pluralExchanges ? 'exchanges have' : 'exchange has'
+          } been claimed successfully.`);
           this.getExchanges();
           this.selectedExchanges = [];
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while claiming exchanges. Please try again later.');
-        })
+          this.setFailureAlert(`An error occurred while claiming ${
+            pluralExchanges ? 'exchanges' : 'exchange'
+          }. Please try again later.`);})
         .finally(() => {
           this.loadingTableCount -= 1;
         });

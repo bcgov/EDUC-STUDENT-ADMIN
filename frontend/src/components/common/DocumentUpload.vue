@@ -183,7 +183,7 @@ export default {
             reader.readAsBinaryString(this.uploadFileValue[0]);
           }else{
             this.active = false;
-            this.setErrorAlert('Please remove spaces and special characters from file name and try uploading again.');
+            this.setErrorAlert('Please remove special characters from file name and try uploading again.');
           }
         } catch (e) {
           this.handleFileReadErr();
