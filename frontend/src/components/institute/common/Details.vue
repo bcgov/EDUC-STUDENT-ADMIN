@@ -1278,7 +1278,7 @@ export default {
           try {
             const moveData = JSON.parse(notificationData.eventPayload);
             if (moveData.toSchool.schoolId) {
-              const warningMessage = `School moved successfully. <a style="font-weight: bold" href="/institute/school/${moveData.toSchool.schoolId}/details">Click here to go to new school</a>.`;
+              const warningMessage = `School moved successfully. <a style="font-weight: bold" target="_blank" href="/institute/school/${moveData.toSchool.schoolId}/details">Click here to go to new school</a>.`;
               this.setSuccessAlert(warningMessage);
             }
           } catch (e) {
