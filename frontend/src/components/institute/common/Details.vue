@@ -1365,7 +1365,7 @@ export default {
       this.schoolDetailsCopy.grades = gradeList;
     },
     sortNLC() {
-      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
+      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning, ['label']);
     },
     saveNewSchoolNote() {
       this.loading = true;
