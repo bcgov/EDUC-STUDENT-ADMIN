@@ -88,8 +88,8 @@
                   :disabled="!isValidRequestsSearchInput"
                   text="Search"
                   width="100%"
-                  @click-action="searchRequests"
                   minheight="40px"
+                  @click-action="searchRequests"
                 />
               </v-col>
             </v-row>
@@ -450,19 +450,20 @@ export default {
     authStore().getUserInfo().finally(() => {
       if (this.hasPermissiontoViewExchangeDashboard) {
         ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/MANAGE_EXCHANGE_PEN_INBOX_PERMISSION`).then(response => {
+          const { unreadMessages, openMessages } = response.data;
+          const makeLabel = (count, prefix) => count == 1 ? `${prefix} message` : `${prefix} messages`;
           this.exchangeData.push({
             title: 'PEN Team Inbox',
             button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_INBOX`, text: 'View Inbox'},
             authorized: this.hasPermissiontoViewExchangeDashboard,
-            unreadMessages: {data: response.data.unreadMessages, name: 'unread messages'},
-            openMessages: {data: response.data.openMessages, name: 'open messages'},
+            unreadMessages: {data: response.data.unreadMessages, name: makeLabel(unreadMessages, 'unread')},
+            openMessages: {data: response.data.openMessages, name: makeLabel(openMessages, 'open')},
           });
         }).finally(() => {
           this.isLoadingExchange = false;
         });
       }
-    })
-    
+    });
   },
   methods: {
     hasRequiredPermission,
