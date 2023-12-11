@@ -813,7 +813,7 @@ export default {
       this.moveSchoolObject.grades = gradeList;
     },
     sortNLC() {
-      this.moveSchoolObject.neighborhoodLearning = sortBy(this.moveSchoolObject.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
+      this.moveSchoolObject.neighborhoodLearning = sortBy(this.moveSchoolObject.neighborhoodLearning, ['label']);
     },
     async validateForm() {
       await this.$nextTick();
