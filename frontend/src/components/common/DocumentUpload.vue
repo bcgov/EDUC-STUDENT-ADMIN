@@ -31,7 +31,6 @@
         density="compact"
         outlined
         dismissible
-        color="#712024"
         style="background-color: #f7d8da !important;"
         :class="alertType"
         class="mb-3"
