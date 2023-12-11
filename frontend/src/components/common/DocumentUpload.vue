@@ -205,7 +205,7 @@ export default {
         },
         value => {
           const extension = `.${value[0]?.name.split('.').slice(-1)}`;
-          return !value?.length || this.fileRequirements.extensions.find(ext => ext.toUpperCase() === extension.toUpperCase()) !== undefined || this.fileRequirements.extensions.includes(value[0]?.type) || `File formats should be ${this.fileFormats}.`;
+          return !value?.length || this.fileRequirements.extensions.find(ext => ext.toUpperCase() === extension.toUpperCase()) !== undefined || this.fileRequirements.extensions.includes(value[0]?.type) || `File must be ${this.fileFormats}.`;
         }
       ];
       this.fileAccept = this.fileRequirements.extensions.join();
