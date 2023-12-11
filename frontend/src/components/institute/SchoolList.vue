@@ -524,7 +524,7 @@ export default {
           try {
             const schoolData = JSON.parse(notificationData.eventPayload);
             if (schoolData.schoolId) {
-              const message = `School created successfully. <a style="font-weight: bold" href="/institute/school/${schoolData.schoolId}/details">Click here to go to new school</a>.`;
+              const message = `School created successfully. <a style="font-weight: bold" target="_blank" href="/institute/school/${schoolData.schoolId}/details">Click here to go to new school</a>.`;
               this.setSuccessAlert(message);
             }
           } catch (e) {
