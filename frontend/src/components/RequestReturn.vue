@@ -154,8 +154,9 @@ export default {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },
     getRequestStore,
-    returnToStudent() {
-      if (this.$refs.returnForm.validate()?.valid) {
+    async returnToStudent() {
+      let isValid = await this.$refs.returnForm.validate();
+      if (isValid.valid) {
         this.beforeSubmit();
         this.request.reviewer = this.myself.name;
         let body = this.prepPut(this.requestId, this.request);

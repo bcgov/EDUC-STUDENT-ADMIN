@@ -159,9 +159,10 @@ export default {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },
     getRequestStore,
-    submitReject() {
+    async submitReject() {
       this.rejectOperationOutcomeMessage = null;
-      if (this.$refs.form.validate()?.valid) {
+      let isValid = await this.$refs.form.validate();
+      if (isValid.valid) {
         this.beforeSubmit();
         this.request.failureReason = this.rejectComment;
         this.request.reviewer = this.myself.name;
