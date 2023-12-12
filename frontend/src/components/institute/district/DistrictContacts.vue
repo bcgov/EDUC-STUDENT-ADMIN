@@ -61,6 +61,7 @@
             item-value="districtContactTypeCode"
             :menu-props="{closeOnContentClick:true}"
             label="Contact Type"
+            @update:model-value="searchButtonClicked"
           />
         </v-col>
         <v-col>
