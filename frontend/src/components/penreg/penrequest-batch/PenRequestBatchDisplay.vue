@@ -173,29 +173,12 @@
       </v-col>
     </v-row>
     <ConfirmationDialog ref="fixableConfirmationDialog">
-      <template #title="{cancel}">
-        <v-row
-          justify="space-between"
-          no-gutters
-        >
-          <v-col class="pl-4 pt-4">
-            {{ archiveAndReturnMessage }}<br><br>
-            {{ archiveAndReturnSubtext }}
-          </v-col>
-          <v-btn
-            id="closeBtn"
-            variant="flat"
-            icon
-            @click-action="cancel"
-          >
-            <v-icon color="#38598A">
-              mdi-close
-            </v-icon>
-          </v-btn>
-        </v-row>
+      <template #message>
+        {{ archiveAndReturnMessage }}<br><br>
+        {{ archiveAndReturnSubtext }}
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -398,7 +381,7 @@ export default {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
       this.archiveAndReturnSubtext = 'Note this action will not return any files to the submitting school if FIXABLE requests exist.';
-      const result = await this.$refs.fixableConfirmationDialog.open(null, null,
+      const result = await this.$refs.fixableConfirmationDialog.open('Please confirm your return submission', null,
         {
           width: '620px',
           messagePadding: 'px-4 pt-4',
@@ -445,7 +428,7 @@ export default {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
       this.archiveAndReturnSubtext = 'Note this action will return all files to the submitting school.';
-      const result = await this.$refs.fixableConfirmationDialog.open(null, null,
+      const result = await this.$refs.fixableConfirmationDialog.open('Please confirm your return submission', null,
         {
           width: '520px',
           messagePadding: 'px-4 pt-4',
