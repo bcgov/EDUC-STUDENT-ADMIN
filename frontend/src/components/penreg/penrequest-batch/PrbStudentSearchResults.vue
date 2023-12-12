@@ -71,7 +71,6 @@
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
-      v-model:page="pageNumber"
       :headers="headers"
       :items="prbStudentSearchResponse.content"
       :items-per-page="prbStudentSearchResponse.pageable.pageSize"
