@@ -51,7 +51,7 @@
         @keydown.enter="searchButtonClicked"
       >
         <v-col>
-          <v-select
+          <v-autocomplete
             id="status-select-field"
             v-model="searchFilter.districtContactTypeCode"
             clearable
