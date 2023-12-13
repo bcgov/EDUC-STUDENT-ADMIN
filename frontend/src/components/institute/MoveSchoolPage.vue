@@ -598,12 +598,22 @@ export default {
     },
     schoolCategoryTypeCodes() {
       let returnedCodes = [];
-      let publicOnlyTypes = this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode)  && cat.schoolCategoryCode !== 'YUKON') : [];
-      if(this.canMoveOtherSchoolTypes) {
+      let publicOnlyTypes = this.activeSchoolCategoryTypeCodes
+        ? this.activeSchoolCategoryTypeCodes
+          .filter(cat =>
+            !this.independentArray.includes(cat.schoolCategoryCode)
+            && !this.offshoreArray.includes(cat.schoolCategoryCode)
+            && cat.schoolCategoryCode !== 'YUKON'
+            && cat.schoolCategoryCode !== 'POST_SEC'
+          )
+        : [];
+      if (this.canMoveOtherSchoolTypes) {
         returnedCodes = publicOnlyTypes;
       }
       if (this.canMoveIndependentSchools) {
-        returnedCodes = returnedCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
+        returnedCodes = returnedCodes
+          .concat(this.activeSchoolCategoryTypeCodes
+            .filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
       }
       return sortBy(returnedCodes, ['displayOrder']);
     },
