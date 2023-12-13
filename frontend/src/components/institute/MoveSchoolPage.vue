@@ -352,14 +352,16 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-checkbox
-                        id="sameAsMailingCheckbox"
-                        v-model="sameAsMailingCheckbox"
-                        density="compact"
-                        label="Same as Mailing Address"
-                        class="mt-n3 pt-0"
-                        @update:model-value="fireFormValidate"
-                      />
+                      <v-col cols="4">
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          density="compact"
+                          label="Same as Mailing Address"
+                          class="mt-n3 pt-0"
+                          @update:model-value="fireFormValidate"
+                        />
+                      </v-col>
                     </v-row>
                     <v-row
                       v-else
@@ -450,7 +452,7 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-col>
+                      <v-col cols="4">
                         <v-checkbox
                           id="sameAsMailingCheckbox"
                           v-model="sameAsMailingCheckbox"
