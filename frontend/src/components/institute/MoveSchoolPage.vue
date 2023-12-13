@@ -604,6 +604,7 @@ export default {
             !this.independentArray.includes(cat.schoolCategoryCode)
             && !this.offshoreArray.includes(cat.schoolCategoryCode)
             && cat.schoolCategoryCode !== 'YUKON'
+            && cat.schoolCategoryCode !== 'POST_SEC'
           )
         : [];
       if (this.canMoveOtherSchoolTypes) {
