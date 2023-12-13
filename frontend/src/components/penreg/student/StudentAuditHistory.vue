@@ -20,11 +20,12 @@
     </v-row>
     <v-row>
       <v-col :cols="listDetailMode? 6 : 12">
-        <v-data-table
+        <v-data-table-server
           id="dataTable"
           :key="selectedStudentHistoryId"
           v-model="selectedRecords"
           v-model:page="pageNumber"
+          v-model:items-length="studentHistoryResp.totalElements"
           class="batch-file-table"
           :headers="getHeaders()"
           :items="studentHistoryResp.content"
@@ -75,7 +76,7 @@
               </td>
             </tr>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
       <v-col v-if="listDetailMode">
         <StudentAuditHistoryDetail
