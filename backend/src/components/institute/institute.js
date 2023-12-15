@@ -1026,7 +1026,19 @@ async function getSchoolHistoryPaginated(req, res) {
         searchCriteriaList: JSON.stringify(historySearchCriteria)
       }
     };
+
+    let edxUsers = await getData(config.get('server:edx:edxUsersURL'));
     let response = await getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
+
+    response.content.forEach((element) => {
+      if(element.updateUser?.length > 10){
+        let val = edxUsers.find(user => user.edxUserID === element.updateUser.replace('EDX/', ''));
+        if(val){
+          element.updateUser = (val.firstName + ' ' + val.lastName).trim();
+        }
+      }
+    });
+
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
