@@ -23,6 +23,7 @@
               class="pt-0"
               item-value="schoolContactTypeCode"
               label="School Contact Type"
+              @update:model-value="validateForm"
             />
             <v-text-field
               id="editSchoolContactFirstNameInput"
@@ -63,7 +64,7 @@
                 <v-text-field
                   id="editSchoolContactPhoneNumberInput"
                   v-model="editContact.phoneNumber"
-                  :rules="[rules.required(), rules.phoneNumber()]"
+                  :rules="[rules.requiredIf(isOffshoreContact), rules.phoneNumber()]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="10"
@@ -188,6 +189,10 @@ export default {
     schoolID: {
       type: String,
       required: true
+    },
+    school: {
+      type: Object,
+      required: true
     }
   },
   emits: ['editSchoolContact:editSchoolContactSuccess', 'editSchoolContact:cancelEditSchoolContactPage'],
@@ -195,6 +200,7 @@ export default {
     let clonedContact = _.cloneDeep(this.contact);
     return {
       isFormValid: false,
+      offshoreContactTypes: ['PRINCIPAL','VPRINCIPAL','STUDREGIS'],
       processing: false,
       editContact: clonedContact,
       rules: Rules
@@ -202,6 +208,9 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
+    isOffshoreContact(){
+      return !(this.offshoreContactTypes.includes(this.editContact?.schoolContactTypeCode) && this.school.schoolCategoryCode === 'OFFSHORE');
+    }
   },
 
   mounted() {
