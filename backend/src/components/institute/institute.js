@@ -1,8 +1,8 @@
 'use strict';
-const { logApiError, getData, errorResponse, getCodeTable, putData} = require('../utils');
+const { logApiError, getData, errorResponse} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
-const {FILTER_OPERATION, VALUE_TYPE, CONDITION, CACHE_KEYS} = require('../../util/constants');
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
