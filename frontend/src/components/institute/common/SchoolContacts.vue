@@ -121,6 +121,7 @@
         v-if="newContactSheet"
         :school-contact-types="schoolContactTypes"
         :school-i-d="$route.params.schoolID"
+        :school="school"
         @newSchoolContact:closeNewSchoolContactPage="newContactSheet = !newContactSheet"
         @newSchoolContact:addNewSchoolContact="newSchoolContactAdded"
       />
@@ -137,6 +138,7 @@
         :contact="editContact"
         :school-contact-types="schoolContactTypes"
         :school-i-d="$route.params.schoolID"
+        :school="school"
         @editSchoolContact:cancelEditSchoolContactPage="editContactSheet = !editContactSheet"
         @editSchoolContact:editSchoolContactSuccess="contactEditSuccess"
       />

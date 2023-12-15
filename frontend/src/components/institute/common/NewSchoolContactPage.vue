@@ -23,6 +23,7 @@
               class="pt-0"
               item-value="schoolContactTypeCode"
               label="School Contact Type"
+              @update:model-value="validateForm"
             />
             <v-text-field
               id="newContactFirstNameInput"
@@ -63,7 +64,7 @@
                 <v-text-field
                   id="newContactPhoneNumberInput"
                   v-model="newContact.phoneNumber"
-                  :rules="[rules.required(), rules.phoneNumber()]"
+                  :rules="[rules.requiredIf(isOffshoreContact), rules.phoneNumber()]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="10"
@@ -182,12 +183,17 @@ export default {
     schoolID: {
       type: String,
       required: true
+    },
+    school: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
       isFormValid: false,
       processing: false,
+      offshoreContactTypes: ['PRINCIPAL','VPRINCIPAL','STUDREGIS'],
       newContact: {
         schoolContactTypeCode: null,
         firstName: null,
@@ -206,6 +212,9 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo']),
+    isOffshoreContact(){
+      return !(this.offshoreContactTypes.includes(this.newContact?.schoolContactTypeCode) && this.school.schoolCategoryCode === 'OFFSHORE');
+    }
   },
   mounted() {
     this.validateForm();
