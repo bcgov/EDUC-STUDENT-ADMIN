@@ -1,8 +1,8 @@
 'use strict';
-const { logApiError, getData, errorResponse } = require('../utils');
+const { logApiError, getData, errorResponse, getCodeTable, putData} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
-const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION, CACHE_KEYS} = require('../../util/constants');
 const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
@@ -1027,19 +1027,27 @@ async function getSchoolHistoryPaginated(req, res) {
       }
     };
 
-    let edxUsers = await getData(config.get('server:edx:edxUsersURL'));
-    let response = await getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
+    Promise.all([
+      getData(config.get('server:edx:edxUsersURL')),
+      getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam)
+    ])
+      .then(async ([edxUserResponse, schoolHistoryResponse]) => {
+        if (edxUserResponse && schoolHistoryResponse) {
+          schoolHistoryResponse.content.forEach((element) => {
+            if(element.updateUser?.length > 10){
+              let val = edxUserResponse.find(user => user.edxUserID === element.updateUser.replace('EDX/', ''));
+              if(val){
+                element.updateUser = (val.firstName + ' ' + val.lastName).trim();
+              }
+            }
+          });
 
-    response.content.forEach((element) => {
-      if(element.updateUser?.length > 10){
-        let val = edxUsers.find(user => user.edxUserID === element.updateUser.replace('EDX/', ''));
-        if(val){
-          element.updateUser = (val.firstName + ' ' + val.lastName).trim();
+          return res.status(HttpStatus.OK).json(schoolHistoryResponse);
         }
-      }
-    });
-
-    return res.status(HttpStatus.OK).json(response);
+      }).catch(async e => {
+        await logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
+        return errorResponse(res);
+      });
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
     return errorResponse(res);
