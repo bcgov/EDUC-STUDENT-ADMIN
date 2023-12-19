@@ -355,14 +355,16 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-checkbox
-                        id="sameAsMailingCheckbox"
-                        v-model="sameAsMailingCheckbox"
-                        dense
-                        label="Same as Mailing Address"
-                        class="mt-n3 pt-0"
-                        @update:model-value="combobulatePhysicalAddress"
-                      />
+                      <v-col cols="4">
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          dense
+                          label="Same as Mailing Address"
+                          class="mt-n3 pt-0"
+                          @update:model-value="combobulatePhysicalAddress"
+                        />
+                      </v-col>
                     </v-row>
                     <div v-else>
                       <v-row>
@@ -447,7 +449,7 @@
                         no-gutters
                         class="pt-4"
                       >
-                        <v-col>
+                        <v-col cols="4">
                           <v-checkbox
                             id="sameAsMailingCheckbox"
                             v-model="sameAsMailingCheckbox"

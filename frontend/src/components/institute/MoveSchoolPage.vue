@@ -352,14 +352,16 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-checkbox
-                        id="sameAsMailingCheckbox"
-                        v-model="sameAsMailingCheckbox"
-                        density="compact"
-                        label="Same as Mailing Address"
-                        class="mt-n3 pt-0"
-                        @update:model-value="fireFormValidate"
-                      />
+                      <v-col cols="4">
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          density="compact"
+                          label="Same as Mailing Address"
+                          class="mt-n3 pt-0"
+                          @update:model-value="fireFormValidate"
+                        />
+                      </v-col>
                     </v-row>
                     <v-row
                       v-else
@@ -450,7 +452,7 @@
                       no-gutters
                       class="pt-4"
                     >
-                      <v-col>
+                      <v-col cols="4">
                         <v-checkbox
                           id="sameAsMailingCheckbox"
                           v-model="sameAsMailingCheckbox"
@@ -598,12 +600,22 @@ export default {
     },
     schoolCategoryTypeCodes() {
       let returnedCodes = [];
-      let publicOnlyTypes = this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode)  && cat.schoolCategoryCode !== 'YUKON') : [];
-      if(this.canMoveOtherSchoolTypes) {
+      let publicOnlyTypes = this.activeSchoolCategoryTypeCodes
+        ? this.activeSchoolCategoryTypeCodes
+          .filter(cat =>
+            !this.independentArray.includes(cat.schoolCategoryCode)
+            && !this.offshoreArray.includes(cat.schoolCategoryCode)
+            && cat.schoolCategoryCode !== 'YUKON'
+            && cat.schoolCategoryCode !== 'POST_SEC'
+          )
+        : [];
+      if (this.canMoveOtherSchoolTypes) {
         returnedCodes = publicOnlyTypes;
       }
       if (this.canMoveIndependentSchools) {
-        returnedCodes = returnedCodes.concat(this.activeSchoolCategoryTypeCodes.filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
+        returnedCodes = returnedCodes
+          .concat(this.activeSchoolCategoryTypeCodes
+            .filter(cat => this.independentArray.includes(cat.schoolCategoryCode)));
       }
       return sortBy(returnedCodes, ['displayOrder']);
     },

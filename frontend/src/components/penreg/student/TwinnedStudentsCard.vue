@@ -64,7 +64,6 @@
       </v-row>
       <v-data-table
         id="details-table"
-        v-model:page="pageNumber"
         v-model="selectedTwins"
         return-object
         :headers="headers"

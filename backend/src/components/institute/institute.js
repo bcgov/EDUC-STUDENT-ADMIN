@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse } = require('../utils');
+const { logApiError, getData, errorResponse} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
@@ -1026,8 +1026,28 @@ async function getSchoolHistoryPaginated(req, res) {
         searchCriteriaList: JSON.stringify(historySearchCriteria)
       }
     };
-    let response = await getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
-    return res.status(HttpStatus.OK).json(response);
+
+    Promise.all([
+      getData(config.get('server:edx:edxUsersURL')),
+      getData(config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam)
+    ])
+      .then(async ([edxUserResponse, schoolHistoryResponse]) => {
+        if (edxUserResponse && schoolHistoryResponse) {
+          schoolHistoryResponse.content.forEach((element) => {
+            if(element.updateUser?.length > 10){
+              let val = edxUserResponse.find(user => user.edxUserID === element.updateUser.replace('EDX/', ''));
+              if(val){
+                element.updateUser = (val.firstName + ' ' + val.lastName).trim();
+              }
+            }
+          });
+
+          return res.status(HttpStatus.OK).json(schoolHistoryResponse);
+        }
+      }).catch(async e => {
+        await logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
+        return errorResponse(res);
+      });
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
     return errorResponse(res);
