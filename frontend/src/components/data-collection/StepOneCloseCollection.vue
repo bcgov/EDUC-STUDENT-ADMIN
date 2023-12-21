@@ -16,18 +16,7 @@
       </v-row>
       <v-row class="justify-center">
         <v-col cols="6">
-          <v-select
-              id="collectionTypeField"
-              v-model="newCollection.collectionType"
-              :rules="[rules.required()]"
-              :items="collectionTypes"
-              :disabled="true"
-              item-title="label"
-              variant="underlined"
-              class="pt-0"
-              label="Next Collection"
-              @update:model-value="calculateSnapshotDate"
-          />
+          <h3 class="subHeading">{{newCollection.collectionType}} {{newCollection.collectionYear}} Collection</h3>
         </v-col>
       </v-row>
       <v-row class="justify-center">
@@ -142,6 +131,7 @@ export default {
       closingCollectionType: null,
       newCollection: {
         collectionType: null,
+        collectionYear: null,
         snapshotDate: null,
         submissionDueDate: null,
         duplicationResolutionDueDate: null,
@@ -189,6 +179,7 @@ export default {
     async calculateSnapshotDate(){
       let newSnapshotDate = LocalDate.parse(this.collectionTypeCodesMap.get(this.newCollection.collectionType.toUpperCase()).snapshotDate);
       this.newCollection.snapshotDate = findUpcomingDate(newSnapshotDate.month(), newSnapshotDate.dayOfMonth()).toString();
+      this.newCollection.collectionYear = this.newCollection.snapshotDate.slice(0, 4);
 
       await this.calculateSubmissionDate();
     },
@@ -264,5 +255,9 @@ export default {
   display: inline-block;
   font-weight: bold;
   border-radius: 5px;
+}
+
+.subHeading {
+  color: #38598a;
 }
 </style>
