@@ -62,7 +62,7 @@
           </v-col>
         </v-row>
         <v-row
-          v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)"
+          v-if="!['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(school.schoolCategoryCode)"
           no-gutters
           class="d-flex justify-start"
         >

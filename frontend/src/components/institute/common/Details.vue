@@ -95,6 +95,27 @@
               />
             </v-col>
           </v-row>
+          <v-row
+              v-if="editing"
+              class="d-flex justify-start"
+          >
+            <v-col
+                cols="5"
+                class="pb-0 pt-0"
+            >
+              <v-autocomplete
+                  id="authority-text-field"
+                  v-model="schoolDetailsCopy.independentAuthorityId"
+                  label="Authority"
+                  item-value="authorityID"
+                  item-title="authorityCodeName"
+                  :items="activeAuthorities"
+                  variant="underlined"
+                  class="pt-0"
+                  clearable
+              />
+            </v-col>
+          </v-row>
           <v-row class="d-flex justify-start mb-2">
             <v-col
               cols="4"
@@ -1153,7 +1174,7 @@ import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
-import {deepCloneObject} from '@/utils/common';
+import {deepCloneObject, isOpenNotClosingAuthority} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus.vue';
@@ -1201,6 +1222,7 @@ export default {
       schoolReportingRequirementTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
+      activeAuthorities: [],
       loading: true,
       schoolDetailsFormValid: true,
       editing: false,
@@ -1319,11 +1341,33 @@ export default {
     });
     instStore.getSchoolCategoryFacilityTypesMap();
     this.getThisSchoolsDetails();
+    this.getActiveAuthorityDropDownItems();
   },
   methods: {
     ...mapActions(instituteStore, ['schoolMovedNotification']),
     isOffshoreSchoolSelected() {
       return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
+    },
+    isOpenNotClosingAuthority,
+    getActiveAuthorityDropDownItems() {
+      ApiService.getActiveAuthorities().then((response) => {
+        for (const authority of response.data) {
+          if (this.isOpenNotClosingAuthority(authority)) {
+            let authorityItem = {
+              authorityNumber: +authority.authorityNumber,
+              authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
+              authorityID: authority.authorityID,
+            };
+            this.activeAuthorities.push(authorityItem);
+          }
+        }
+        this.activeAuthorities = this.activeAuthorities.sort(function (a, b) {
+          return a.authorityNumber - b.authorityNumber;
+        });
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while getting active authorities. Please try again later.');
+      });
     },
     async toggleAddressForm() {
       this.showAddress = !this.showAddress;
