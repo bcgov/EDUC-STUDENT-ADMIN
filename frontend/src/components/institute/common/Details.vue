@@ -96,7 +96,7 @@
             </v-col>
           </v-row>
           <v-row
-              v-if="editing"
+              v-if="editing && schoolDetailsCopy.independentAuthorityId"
               class="d-flex justify-start"
           >
             <v-col
