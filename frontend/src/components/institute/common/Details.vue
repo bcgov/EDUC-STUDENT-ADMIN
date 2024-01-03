@@ -96,7 +96,7 @@
             </v-col>
           </v-row>
           <v-row
-              v-if="editing && schoolDetailsCopy.independentAuthorityId"
+              v-if="editing && ['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(schoolDetailsCopy.schoolCategoryCode)"
               class="d-flex justify-start"
           >
             <v-col
@@ -110,6 +110,7 @@
                   item-value="authorityID"
                   item-title="authorityCodeName"
                   :items="activeAuthorities"
+                  :rules="[rules.required()]"
                   variant="underlined"
                   class="pt-0"
                   clearable
@@ -288,6 +289,7 @@
                     item-title="label"
                     variant="underlined"
                     label="School Category"
+                    @update:model-value="validateForm"
                     class="mt-n5"
                     single
                     required
