@@ -893,6 +893,11 @@ async function updateSchool(req, res) {
     }
     payload.neighborhoodLearning = nlcObjectsArray;
     payload.grades=gradesObjectArray;
+
+    if(!['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
+      payload.independentAuthorityId = null;
+    }
+
     const result = await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
 
