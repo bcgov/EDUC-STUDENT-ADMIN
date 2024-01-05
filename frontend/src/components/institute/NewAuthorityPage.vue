@@ -226,8 +226,11 @@
                     />
                   </v-col>
                 </v-row>
-                <v-row class="ml-lg-1 pt-4">
-                  <v-col cols="6">
+                <v-row class="ml-lg-1 pt-0">
+                  <v-col
+                    class="pt-0"
+                    cols="6"
+                  >
                     <v-checkbox
                       id="sameAsMailingCheckbox"
                       v-model="sameAsMailingCheckbox"
