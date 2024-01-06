@@ -159,7 +159,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
   let userToken;
   try {
     userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-    if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined) {
+    if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined || userToken.idir_username === undefined) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
     thisSession.roles = userToken.realm_access.roles;
