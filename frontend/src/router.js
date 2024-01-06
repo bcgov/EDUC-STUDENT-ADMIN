@@ -689,11 +689,13 @@ router.beforeEach((to, _from, next) => {
         next(nextRouteInError);
         return;
       }
-      if (!to.meta.role && !to.meta.permission) {
-        next();
-        return;
-      }
+
       aStore.getUserInfo().then(() => {
+        if (!to.meta.role && !to.meta.permission) {
+          next();
+          return;
+        }
+
         if (!aStore.isAuthorizedUser) {
           next('/unauthorized');
           return;
