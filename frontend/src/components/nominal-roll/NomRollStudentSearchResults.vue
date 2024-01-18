@@ -495,7 +495,7 @@ export default {
     if (!this.gradeCodeObjects || !this.genders) {
       await studentStore().getCodes();
     }
-    await appStore().getCodes();
+    await appStore().getInstituteCodes();
   },
   computed: {
     ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),

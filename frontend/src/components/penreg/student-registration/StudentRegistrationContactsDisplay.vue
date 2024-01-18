@@ -92,7 +92,7 @@ export default {
     };
   },
   created() {
-    appStore().getCodes();
+    appStore().getInstituteCodes();
   },
   mounted() {
     this.loadPenCoords();

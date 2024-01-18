@@ -141,7 +141,7 @@ export default {
     },
   },
   created() {
-    appStore().getCodes().then(() => this.getSchoolDetails());
+    appStore().getInstituteCodes().then(() => this.getSchoolDetails());
   },
   methods: {
     hasRequiredPermission,

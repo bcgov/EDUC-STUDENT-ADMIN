@@ -6,7 +6,7 @@ import {appStore} from '@/store/modules/app';
 
 export default {
   mounted() {
-    appStore().getCodes();
+    appStore().getInstituteCodes();
     edxStore().getCodes();
   },
   computed: {

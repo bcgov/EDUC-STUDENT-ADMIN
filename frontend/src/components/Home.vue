@@ -380,7 +380,7 @@ export default {
     }
   },
   async beforeMount() {
-    await appStore().getCodes();
+    await appStore().getInstituteCodes();
   },
   mounted() {
     if (this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE) {

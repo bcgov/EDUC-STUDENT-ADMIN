@@ -301,7 +301,7 @@ export default {
     };
   },
   async beforeMount() {
-    await appStore().getCodes();
+    await appStore().getInstituteCodes();
   },
   computed: {
     ...mapState(studentStore, ['demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects','documentTypeCodes']),

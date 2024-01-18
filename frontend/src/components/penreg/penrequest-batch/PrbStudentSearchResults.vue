@@ -238,7 +238,7 @@ export default {
     };
   },
   async beforeMount() {
-    await appStore().getCodes();
+    await appStore().getInstituteCodes();
   },
   computed: {
     ...mapState(penRequestBatchStudentSearchStore, ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),

@@ -156,7 +156,7 @@ export default {
     },
   },
   async beforeMount() {
-    await appStore().getCodes();
+    await appStore().getInstituteCodes();
   },
   mounted() {
     this.getSchoolHistory();

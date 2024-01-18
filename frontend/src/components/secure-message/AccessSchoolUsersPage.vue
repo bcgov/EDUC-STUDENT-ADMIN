@@ -333,7 +333,7 @@ export default {
       await edxStore().getSchoolExchangeRoles();
     }
     if (this.schoolMap.size === 0) {
-      await appStore().getCodes();
+      await appStore().getInstituteCodes();
     }
   },
   created() {
