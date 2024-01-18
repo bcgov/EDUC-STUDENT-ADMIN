@@ -260,7 +260,7 @@ export default {
   },
   mounted() {
     instituteStore().getAllGradeCodes();
-    appStore().getCodes().then(() => {
+    appStore().getSdcCodes().then(() => {
       this.schoolFundingGroups = this.activeFundingGroups;
       this.getHistoricalCollectionsForSchool();
       this.loadSchoolsFundingData();

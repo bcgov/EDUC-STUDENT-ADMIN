@@ -648,7 +648,7 @@ export default {
     }
   },
   created() {
-    appStore().getCodes();
+    appStore().getInstituteCodes();
     edxStore().getCodes();
     edxStore().getMinistryTeams().then(() => {
       this.getExchanges();

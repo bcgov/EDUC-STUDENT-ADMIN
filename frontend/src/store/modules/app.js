@@ -119,36 +119,25 @@ export const appStore = defineStore('app', {
         this.collectionTypeCodesMap.set(element.collectionTypeCode, element)
       })
     },
-    async getCodes() {
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(this.mincodeSchoolNames.size === 0) {
-          const response = await ApiService.getAllSchools();
-          await this.setMincodeSchoolNameAndDistrictCodes(response.data);
-        }
-        if (this.activeSchools.length === 0) {
-          const response = await ApiService.getActiveSchools();
-          await this.setActiveSchools(response.data);
-        }
-        if(this.districtMap.size === 0) {
-          const response = await ApiService.getDistricts();
-          await this.setDistricts(response.data);
-        }
-        if (this.activeDistricts.length === 0) {
-          const response = await ApiService.getActiveDistricts();
-          await this.setActiveDistricts(response.data);
-        }
-        if(this.independentAuthorityMap.size === 0) {
-          const response = await ApiService.getAuthorities();
-          await this.setIndependentAuthorities(response.data);
-        }
-        if(this.fundingGroupsMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
-          const response = await ApiService.getAllFundingGroups();
-          await this.setFundingGroups(response.data);
-        }
-        if(this.collectionTypeCodesMap.size === 0 && !this.config.DISABLE_SDC_FUNCTIONALITY) {
-          const response = await ApiService.getAllCollectionTypeCodes();
-          await this.setCollectionTypeCodes(response.data);
-        }
+    async getInstituteCodes() {
+      if(localStorage.getItem('jwtToken')) {// DONT Call api if there is not token.
+        const promises = [
+            ... this.mincodeSchoolNames.size === 0 ? [ApiService.getAllSchools().then((res) => this.setMincodeSchoolNameAndDistrictCodes(res.data))] : [],
+            ... this.activeSchools.length === 0 ? [ApiService.getActiveSchools().then((res) => this.setActiveSchools(res.data))] : [],
+            ... this.districtMap.size === 0 ? [ApiService.getDistricts().then((res) => this.setDistricts(res.data))] : [],
+            ... this.activeDistricts.length === 0 ? [ApiService.getActiveDistricts().then((res) => this.setActiveDistricts(res.data))] : [],
+            ... this.independentAuthorityMap.size === 0 ? [ApiService.getAuthorities().then((res) => this.setIndependentAuthorities(res.data))] : []
+        ]
+        return Promise.all(promises)
+      }
+    },
+    async getSdcCodes(){
+      if(localStorage.getItem('jwtToken')){
+        const promises = [
+            ... this.fundingGroupsMap.size === 0 ? [ApiService.getAllFundingGroups().then((res)=> this.setFundingGroups(res.data))] : [],
+            ... this.collectionTypeCodesMap.size === 0 ? [ApiService.getAllCollectionTypeCodes().then((res) => this.setCollectionTypeCodes(res.data))]: []
+        ];
+        return Promise.all(promises)
       }
     },
     async getConfig() {

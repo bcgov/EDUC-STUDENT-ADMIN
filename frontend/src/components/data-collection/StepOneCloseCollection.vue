@@ -143,7 +143,7 @@ export default {
     ...mapState(appStore, ['collectionTypeCodesMap']),
   },
   async created() {
-    await appStore().getCodes().then(() => {
+    await appStore().getSdcCodes().then(() => {
         this.collectionTypesMap = this.collectionTypeCodesMap;
         this.collectionTypesMap.forEach((type) => {
           this.collectionTypes.push(type['label']);
