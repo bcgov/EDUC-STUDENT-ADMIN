@@ -597,7 +597,7 @@ elif [ "$envValue" = "test" ]; then
   bannerEnvironment="TEST"
   bannerColor="#58fe01"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
-  disableSdcFunctionality=true
+  disableSdcFunctionality=false
 else
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
   disableSdcFunctionality=true
