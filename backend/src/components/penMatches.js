@@ -21,7 +21,7 @@ async function getPenMatch(req, res) {
       eventType: 'PROCESS_PEN_MATCH',
       eventPayload: JSON.stringify(req.body)
     };
-    logInfo('calling pen match via NATS', event);
+    logInfo('Calling pen match via NATS', event);
     // since router times out at 30 seconds on vue side, lets timeout at 29 seconds here.
     const result = await NATS.requestMessage('PEN_MATCH_API_TOPIC', JSON.stringify(event), 29000);
     const parsedEvent = JSON.parse(result);
