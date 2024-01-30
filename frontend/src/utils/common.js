@@ -262,7 +262,7 @@ export function isOpenNotClosingAuthority(authority) {
   const currentTime = LocalDate.now();
   const openedDate = authority?.openedDate;
   const closedDate = authority?.closedDate;
-  return authority?.name && openedDate && currentTime.isAfter(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && !closedDate;
+  return authority?.name && openedDate && !LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(currentTime) && !closedDate;
 }
 
 export function getRequestStore(requestType) {
