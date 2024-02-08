@@ -113,7 +113,7 @@ function isValidLoggedInUser(req, res, next) {
     try {
       jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
     } catch (e) {
-      log.debug('error is from verify', e);
+      log.debug('Error is from verify', e);
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
     return next();
