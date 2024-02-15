@@ -1,9 +1,5 @@
 FROM artifacts.developer.gov.bc.ca/docker-remote/node:18.16.0-alpine3.18
 
-ENV npm_config_cache /tmp/npm
-RUN mkdir -p /tmp/npm \
-    && chmod -R 777 /tmp/npm
-
 RUN mkdir -p /logs
 RUN chmod 755 /logs
 
@@ -15,4 +11,4 @@ RUN npm ci
 
 COPY . /opt/app-root/src
 EXPOSE 443 8080
-CMD ["npm", "start"]
+CMD ["node", "--max-old-space-size=150", "./src/server.js"]
