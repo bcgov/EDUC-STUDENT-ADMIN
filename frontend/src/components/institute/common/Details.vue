@@ -1210,7 +1210,11 @@ export default {
   data() {
     return {
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      nonIndependentArray: ['FED_BAND'],
       offshoreArray: ['OFFSHORE'],
+      publicSchoolReqCodes: ['REGULAR', 'CSF'],
+      independentSchoolReqCodes: ['REGULAR'],
+      nonIndependentFNSchoolReqCodes: ['REGULAR','RT', 'NONE'],
       newNoteSheet: false,
       newNoteText: '',
       school: '',
@@ -1221,7 +1225,7 @@ export default {
       activeSchoolCategoryTypes: [],
       schoolCategoryTypes: [],
       schoolOrganizationTypes: [],
-      schoolReportingRequirementTypes: [],
+      schoolReportingRequirementTypesLoaded: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
       activeAuthorities: [],
@@ -1270,6 +1274,14 @@ export default {
         this.resetSchoolDetailsCopyFacilityType();
         return [];
       }
+    },
+    schoolReportingRequirementTypes() {
+      if(this.independentArray.includes(this.school.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.independentSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }else if(this.nonIndependentArray.includes(this.school.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.nonIndependentFNSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }
+      return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.publicSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
     },
     schoolCategorySchoolEditOptions() {
       if (this.canEditAllSchools && ['INDP_FNS', 'FED_BAND'].includes(this.school.schoolCategoryCode)) {
@@ -1327,7 +1339,7 @@ export default {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
     });
     instStore.getSchoolReportingRequirementTypeCodes().then(() => {
-      this.schoolReportingRequirementTypes = this.schoolReportingRequirementTypeCodes;
+      this.schoolReportingRequirementTypesLoaded = this.schoolReportingRequirementTypeCodes;
     });
     instStore.getAllSchoolNeighborhoodLearningCodes().then(() => {
       this.schoolNeighborhoodLearningTypes = sortBy(this.schoolNeighborhoodLearningCodes, ['neighborhoodLearningTypeCode']);
