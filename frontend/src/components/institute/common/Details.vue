@@ -1210,11 +1210,13 @@ export default {
   data() {
     return {
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      psiEarlyLearnYukon: ['EAR_LEARN', 'POST_SEC', 'YUKON'],
       nonIndependentArray: ['FED_BAND'],
       offshoreArray: ['OFFSHORE'],
       publicSchoolReqCodes: ['REGULAR', 'CSF'],
-      independentSchoolReqCodes: ['REGULAR'],
+      independentOrOffshoreSchoolReqCodes: ['REGULAR'],
       nonIndependentFNSchoolReqCodes: ['REGULAR','RT', 'NONE'],
+      noneReqCodes: ['NONE'],
       newNoteSheet: false,
       newNoteText: '',
       school: '',
@@ -1276,10 +1278,12 @@ export default {
       }
     },
     schoolReportingRequirementTypes() {
-      if(this.independentArray.includes(this.school.schoolCategoryCode)) {
-        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.independentSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      if(this.independentArray.includes(this.school.schoolCategoryCode) || this.offshoreArray.includes(this.school.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.independentOrOffshoreSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
       }else if(this.nonIndependentArray.includes(this.school.schoolCategoryCode)) {
         return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.nonIndependentFNSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }else if(this.psiEarlyLearnYukon.includes(this.school.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.noneReqCodes.includes(reqCode.schoolReportingRequirementCode));
       }
       return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.publicSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
     },
