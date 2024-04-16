@@ -58,6 +58,7 @@
                       v-model="student.legalLastName"
                       variant="outlined"
                       density="compact"
+                      maxlength="25"
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                       :rules="validateLegalLastName()"
                       :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
@@ -84,6 +85,7 @@
                     <v-text-field
                       id="searchDemogModalLegalFirstNameTxtField"
                       v-model="student.legalFirstName"
+                      maxlength="25"
                       variant="outlined"
                       density="compact"
                       filled
@@ -115,6 +117,7 @@
                       id="searchDemogModalLegalMiddleNameTxtField"
                       v-model="student.legalMiddleNames"
                       variant="outlined"
+                      maxlength="25"
                       density="compact"
                       @update:model-value="validateForm"
                       filled
@@ -146,6 +149,7 @@
                       v-model="student.usualLastName"
                       variant="outlined"
                       density="compact"
+                      maxlength="25"
                       @update:model-value="validateForm"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -177,6 +181,7 @@
                       variant="outlined"
                       @update:model-value="validateForm"
                       density="compact"
+                      maxlength="25"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                       tabindex="5"
@@ -207,6 +212,7 @@
                       variant="outlined"
                       @update:model-value="validateForm"
                       density="compact"
+                      maxlength="25"
                       filled
                       :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                       tabindex="6"

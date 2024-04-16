@@ -760,8 +760,8 @@ async function getSchoolByMincode(req, res) {
 async function getStudentRegistrationContacts(req, res) {
   let contactsList = [];
   try {
-    const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
-    const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"AND"}]}]`;
+    const schoolContactURL = `${config.get('server:institute:instituteSchoolURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"condition":"AND","searchCriteriaList":[{"key":"expiryDate","operation":"gte","value":"2024-04-15T15:14:10.852","valueType":"DATE_TIME","condition":"OR"},{"key":"expiryDate","operation":"eq","value":null,"valueType":"STRING","condition":"OR"}]}, {"condition":"AND","searchCriteriaList":[{"key":"schoolContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"OR"}]}]`;
+    const districtContactURL = `${config.get('server:institute:instituteDistrictURL')}/contact/paginated?pageNumber=0&pageSize=10000&searchCriteriaList=[{"condition":"AND","searchCriteriaList":[{"key":"expiryDate","operation":"gte","value":"2024-04-15T15:14:10.852","valueType":"DATE_TIME","condition":"OR"},{"key":"expiryDate","operation":"eq","value":null,"valueType":"STRING","condition":"OR"}]}, {"condition":"AND","searchCriteriaList":[{"key":"districtContactTypeCode","operation":"eq","value":"STUDREGIS","valueType":"STRING","condition":"OR"}]}]`;
     Promise.all([
       getData(schoolContactURL),
       getData(districtContactURL),
