@@ -394,7 +394,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -415,7 +415,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -436,7 +436,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @input="[searchHasValues(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
           />
@@ -457,7 +457,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -478,7 +478,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -499,7 +499,7 @@
             density="compact"
             bg-color="#efefef"
             variant="outlined"
-            maxlength="255"
+            maxlength="25"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
