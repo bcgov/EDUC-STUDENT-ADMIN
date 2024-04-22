@@ -26,12 +26,12 @@ env:
   NAMESPACE_TOOLS: ${{ secrets.PEN_NAMESPACE_NO_ENV }}-tools
   COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
   EDX_NAMESPACE: ${{ secrets.EDX_NAMESPACE_NO_ENV }}
-  MIN_CPU: "50m"
-  MAX_CPU: "100m"
-  MIN_MEM: "200Mi"
-  MAX_MEM: "250Mi"
-  MIN_REPLICAS: "2"
-  MAX_REPLICAS: "3"
+  MIN_CPU: "300m"
+  MAX_CPU: "600m"
+  MIN_MEM: "250Mi"
+  MAX_MEM: "500Mi"
+  MIN_REPLICAS: "3"
+  MAX_REPLICAS: "4"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
