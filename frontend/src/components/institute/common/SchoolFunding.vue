@@ -268,7 +268,7 @@ export default {
   },
   methods: {
     loadSchoolsFundingData() {
-      ApiService.apiAxios.get(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}`)
+      ApiService.apiAxios.get(`${Routes.institute.FUNDING_DATA_URL}/${this.schoolID}`)
         .then(response => {
           this.funding = response.data;
           this.funding.forEach(elem => {
@@ -325,7 +325,7 @@ export default {
       this.loading = true;
       const schoolFundingGroupID = item.item.raw.schoolFundingGroupID;
 
-      ApiService.apiAxios.put(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}/funding/${schoolFundingGroupID}`, item.item.raw)
+      ApiService.apiAxios.put(`${Routes.institute.FUNDING_DATA_URL}/${this.schoolID}/funding/${schoolFundingGroupID}`, item.item.raw)
         .then(() => {
           this.setSuccessAlert('Success! The funding data has been updated for the school.');
         }).catch(error => {
@@ -357,7 +357,7 @@ export default {
           }
           this.loading = true;
           const schoolFundingGroupID = item.item.raw.schoolFundingGroupID;
-          ApiService.apiAxios.delete(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}/funding/${schoolFundingGroupID}`)
+          ApiService.apiAxios.delete(`${Routes.institute.FUNDING_DATA_URL}/${this.schoolID}/funding/${schoolFundingGroupID}`)
             .then(() => {
               this.setSuccessAlert('Success! The funding data has been removed for the school.');
             }).catch(error => {
@@ -372,7 +372,7 @@ export default {
     getSnapshotData(collectionId){
       this.loading = true;
       this.showSnapshotData = true;
-      ApiService.apiAxios.get(`${Routes.sdc.FUNDING_DATA_URL}/snapshot/${this.schoolID}/${collectionId}`)
+      ApiService.apiAxios.get(`${Routes.sdc.FUNDING_DATA_SNAPSHOT_URL}/${this.schoolID}/${collectionId}`)
         .then(response => {
           this.snapshotData = response.data;
           this.snapshotData.forEach(elem => {

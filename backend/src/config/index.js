@@ -132,12 +132,13 @@ nconf.defaults({
       categoryCodesURL: process.env.INSTITUTE_API_URL + '/category-codes',
       organizationCodeURL: process.env.INSTITUTE_API_URL + '/organization-codes',
       neighbourhoodLearningURL: process.env.INSTITUTE_API_URL + '/neighborhood-learning-codes',
+      schoolFundingGroupsURL: process.env.INSTITUTE_API_URL + '/school-funding-group',
+      schoolFundingGroupCodesURL: process.env.INSTITUTE_API_URL + '/funding-group-codes',
       authorityTypeCodesURL: process.env.INSTITUTE_API_URL + '/authority-type-codes',
       gradeCodeURL: process.env.INSTITUTE_API_URL + '/grade-codes',
       provinceCodesURL: process.env.INSTITUTE_API_URL + '/province-codes',
       countryCodesURL: process.env.INSTITUTE_API_URL + '/country-codes',
-      reportingRequirementCodesURL: process.env.INSTITUTE_API_URL +
-        '/reporting-requirement-codes',
+      reportingRequirementCodesURL: process.env.INSTITUTE_API_URL + '/reporting-requirement-codes',
       schoolContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/school-contact-type-codes',
       authorityContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/authority-contact-type-codes'
     },
@@ -183,9 +184,18 @@ nconf.defaults({
   },
   sdc: {
     rootURL: process.env.SDC_API_URL,
+    schoolCollectionStudentURL: process.env.SDC_API_URL + '/sdcSchoolCollectionStudent',
     schoolCollectionURL: process.env.SDC_API_URL + '/sdcSchoolCollection',
-    fundingGroupsURL: process.env.SDC_API_URL + '/funding-group-codes',
-    fundingGroupDataURL: process.env.SDC_API_URL + '/schoolFundingGroup',
+    collectionURL: process.env.SDC_API_URL + '/collection',
+    genderCodesURL: process.env.SDC_API_URL + '/gender-codes',
+    bandCodesURL: process.env.SDC_API_URL + '/band-codes',
+    careerProgramCodesURL: process.env.SDC_API_URL + '/career-program-codes',
+    enrolledGradeCodesURL: process.env.SDC_API_URL + '/grade-codes',
+    enrolledProgramCodesURL: process.env.SDC_API_URL + '/enrolled-program-codes',
+    homeLanguageSpokenCodesURL: process.env.SDC_API_URL + '/home-language-codes',
+    schoolFundingCodesSnapshotURL: process.env.SDC_API_URL + '/schoolFundingGroupSnapshot',
+    specialEdCodesURL: process.env.SDC_API_URL + '/specialEducation-codes',
+    validationIssueTypeCodesURL: process.env.SDC_API_URL + '/validation-issue-type-codes',
     activeCollectionURL: process.env.SDC_API_URL + '/collection/active',
     collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes'
   }
