@@ -9,7 +9,6 @@ const connectRedis = require('connect-redis');
 const express = require('express');
 const passport = require('passport');
 const helmet = require('helmet');
-const cors = require('cors');
 const auth = require('./components/auth');
 const bodyParser = require('body-parser');
 dotenv.config();
