@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse} = require('../utils');
+const { logApiError, getData, errorResponse, deleteData, putData} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
@@ -1237,6 +1237,78 @@ async function getAuthoritiesPaginated(req, res){
   return res.status(HttpStatus.OK).json(response);
 }
 
+async function getFundingGroupDataForSchool(req, res) {
+  try {
+    const data = await getData(`${config.get('server:institute:schoolFundingGroupsURL')}/search/${req.params.schoolID}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
+    return errorResponse(res);
+  }
+}
+
+async function deleteFundingDataForSchool(req, res) {
+  try {
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
+    if(!school){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School not found'
+      });
+    }
+
+    const data = await deleteData(`${config.get('server:institute:schoolFundingGroupsURL')}/${req.params.schoolFundingGroupID}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'deleteFundingDataForSchool', 'Error removing funding data for this school');
+    return errorResponse(res);
+  }
+}
+
+async function updateFundingDataForSchool(req, res) {
+  try {
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
+
+    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to update funding code for this school category'
+      });
+    }
+
+    const payload = req.body;
+    payload.updateDate = null;
+    payload.createDate = null;
+    payload.updateUser = utils.getUser(req).idir_username;
+
+    const data = await putData(`${config.get('server:institute:schoolFundingGroupsURL')}/${req.params.schoolFundingGroupID}`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
+    return errorResponse(res);
+  }
+}
+
+async function addNewFundingForSchool(req, res) {
+  try {
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
+
+    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add funding code for this school category'
+      });
+    }
+
+    const payload = req.body;
+    payload.createUser = utils.getUser(req).idir_username;
+    payload.schoolID = req.params.schoolID;
+
+    const data = await utils.postData(`${config.get('server:institute:schoolFundingGroupsURL')}`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
+    return errorResponse(res);
+  }
+}
+
 function createAuthoritySearchCriteria(searchParams){
   let searchCriteriaList = [];
 
@@ -1304,8 +1376,12 @@ module.exports = {
   updateDistrictNote,
   deleteDistrictNote,
   addDistrictContact,
+  addNewFundingForSchool,
   deleteDistrictContact,
+  deleteFundingDataForSchool,
   getSchoolHistoryPaginated,
+  updateFundingDataForSchool,
+  getFundingGroupDataForSchool,
   moveSchool,
   getStudentRegistrationContacts,
   getStudentRegistrationContactByMincode,

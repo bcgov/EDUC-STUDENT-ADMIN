@@ -9,7 +9,6 @@ const connectRedis = require('connect-redis');
 const express = require('express');
 const passport = require('passport');
 const helmet = require('helmet');
-const cors = require('cors');
 const auth = require('./components/auth');
 const bodyParser = require('body-parser');
 dotenv.config();
@@ -61,7 +60,7 @@ const nocache = require('nocache');
 app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 // NOSONAR
-app.use(cors());
+// app.use(cors());
 app.use(helmet());
 app.use(nocache());
 app.use(promMid({

@@ -102,6 +102,7 @@ let object = {
     SCHOOL_NOTE_URL: instituteRoot + '/school/note',
     SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
+    FUNDING_DATA_URL: instituteRoot + '/funding-groups',
     SCHOOL_HISTORY_PAGINATED_DATA_URL: instituteRoot + '/schoolHistoryPaginated',
     SCHOOL_MOVE_URL: instituteRoot + '/school/moveSchool',
     DISTRICT_DATA_URL: instituteRoot + '/district',
@@ -177,9 +178,9 @@ let object = {
     UPLOAD_ONBOARDING_FILE: edxRoot + '/exchange/onboarding-file'
   },
   sdc: {
-    FUNDING_DATA_URL: sdcRoot + '/funding-groups',
     SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection',
     ACTIVE_COLLECTION: sdcRoot + '/collection/active',
+    FUNDING_DATA_SNAPSHOT_URL: sdcRoot + '/funding-groups-snapshot',
     COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes'
   }
 };

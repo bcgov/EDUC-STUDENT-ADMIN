@@ -116,7 +116,7 @@ export default {
   getAllActiveInstituteGradeCodes: getCodes(`${Routes.cache.GRADE_TYPES_URL}?active=true`),
   getAllActiveInstituteProvinceCodes: getCodes(`${Routes.cache.PROVINCES_URL}?active=true`),
   getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
-  getAllFundingGroups: getCodes(`${Routes.sdc.FUNDING_DATA_URL}`),
+  getAllFundingGroups: getCodes(`${Routes.institute.FUNDING_DATA_URL}`),
   getAllCollectionTypeCodes: getCodes(`${Routes.sdc.COLLECTION_TYPE_CODES_URL}`),
   async getConfig() {
     try {
