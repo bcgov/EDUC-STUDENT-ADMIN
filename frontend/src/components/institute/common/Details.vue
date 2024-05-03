@@ -64,8 +64,7 @@
             class="d-flex justify-start"
           >
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-text-field
@@ -75,13 +74,12 @@
                 variant="underlined"
                 class="pr-13"
                 :rules="[rules.required()]"
-                @update:model-value="validateForm"
                 required
+                @update:model-value="validateForm"
               />
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-text-field
@@ -96,31 +94,30 @@
             </v-col>
           </v-row>
           <v-row
-              v-if="editing && ['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(schoolDetailsCopy.schoolCategoryCode)"
-              class="d-flex justify-start"
+            v-if="editing && ['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(schoolDetailsCopy.schoolCategoryCode)"
+            class="d-flex justify-start"
           >
             <v-col
-                cols="5"
-                class="pb-0 pt-0"
+              cols="5"
+              class="pb-0 pt-0"
             >
               <v-autocomplete
-                  id="authority-text-field"
-                  v-model="schoolDetailsCopy.independentAuthorityId"
-                  label="Authority"
-                  item-value="authorityID"
-                  item-title="authorityCodeName"
-                  :items="activeAuthorities"
-                  :rules="[rules.required()]"
-                  variant="underlined"
-                  class="pt-0"
-                  clearable
+                id="authority-text-field"
+                v-model="schoolDetailsCopy.independentAuthorityId"
+                label="Authority"
+                item-value="authorityID"
+                item-title="authorityCodeName"
+                :items="activeAuthorities"
+                :rules="[rules.required()]"
+                variant="underlined"
+                class="pt-0"
+                clearable
               />
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start mb-2">
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -179,8 +176,7 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -213,8 +209,7 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -250,11 +245,51 @@
                 </v-col>
               </v-row>
             </v-col>
+            <v-col
+              cols="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Issue Transcripts?</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="pb-1 pr-0"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                    school.canIssueTranscripts === true ? 'Yes' : 'No'
+                  }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.canIssueTranscripts"
+                    :items="canIssueTypes"
+                    item-value="canIssueTypeCode"
+                    item-title="label"
+                    class="mt-n5"
+                    variant="underlined"
+                    label="Can Issue Transcripts?"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
           </v-row>
           <v-row class="d-flex justify-start mb-3">
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -289,17 +324,16 @@
                     item-title="label"
                     variant="underlined"
                     label="School Category"
-                    @update:model-value="validateForm"
                     class="mt-n5"
                     single
                     required
+                    @update:model-value="validateForm"
                   />
                 </v-col>
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -343,8 +377,7 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -388,11 +421,51 @@
                 </v-col>
               </v-row>
             </v-col>
+            <v-col
+              cols="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Issue Certificates?</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="pb-1 pr-0"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                    school.canIssueCertificates === true ? 'Yes' : 'No'
+                  }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.canIssueCertificates"
+                    :items="canIssueTypes"
+                    item-value="canIssueTypeCode"
+                    item-title="label"
+                    class="mt-n5"
+                    variant="underlined"
+                    label="Can Issue Certificates?"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
           </v-row>
           <v-row class="d-flex justify-start mt-3">
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -435,8 +508,7 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -479,8 +551,7 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
-              lg="3"
+              cols="3"
               class="pb-0 pt-0"
             >
               <v-row
@@ -1231,6 +1302,14 @@ export default {
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
       activeAuthorities: [],
+      canIssueTypes: [{
+        'canIssueTypeCode': true,
+        'label': 'Yes'
+      },
+      {
+        'canIssueTypeCode': false,
+        'label': 'No'
+      },],
       loading: true,
       schoolDetailsFormValid: true,
       editing: false,

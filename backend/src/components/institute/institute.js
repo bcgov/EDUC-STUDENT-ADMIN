@@ -744,6 +744,16 @@ async function getSchoolByID(req, res) {
   }
 }
 
+async function getSchoolBySchoolID(schoolID) {
+  try {
+    const url = `${config.get('server:institute:rootURL')}/school/${schoolID}`;
+    const data = await getData(url);
+    return data;
+  } catch (e) {
+    logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
+  }
+}
+
 async function getSchoolByMincode(req, res) {
   try {
     let school = cacheService.getSchoolJSONByMincode(req.params.mincode);
@@ -842,71 +852,72 @@ async function getStudentRegistrationContactByMincode(req, res) {
 
 async function updateSchool(req, res) {
   try {
-    const payload = req.body;
-
-    payload.addresses?.forEach(function(addy) {
-      addy.updateDate = null;
-      addy.createDate = null;
-    });
-
-    payload.contacts?.forEach(function(contact) {
-      contact.updateDate = null;
-      contact.createDate = null;
-    });
-
-    payload.createDate = null;
-    payload.updateDate = null;
-    payload.updateUser = utils.getUser(req).idir_username;
-    const nlcObjectsArray = [];
-    const gradesObjectArray = [];
-
-    for (const nlcCode of payload.neighborhoodLearning) {
-      //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
-      if (_.isString(nlcCode)) {
-        nlcObjectsArray.push({
-          neighborhoodLearningTypeCode: nlcCode,
-          schoolId: payload.schoolId
-        });
-      } else {
-        //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
-        nlcObjectsArray.push({
-          neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
-          schoolId: payload.schoolId
-        });
-      }
-    }
-    for (const gradeCode of payload.grades) {
-      //when there is an update in frontend to grades system adds array of codes to the payload
-      if (_.isString(gradeCode)) {
-        gradesObjectArray.push({
-          schoolGradeCode: gradeCode,
-          schoolId: payload.schoolId
-        });
-      } else {
-        //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
-        gradesObjectArray.push({
-          schoolGradeCode: gradeCode.schoolGradeCode,
-          schoolId: payload.schoolId
-        });
-      }
-
-    }
-    payload.neighborhoodLearning = nlcObjectsArray;
-    payload.grades=gradesObjectArray;
-
-    if(!['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
-      payload.independentAuthorityId = null;
-    }
-
-    const result = await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, utils.getUser(req).idir_username);
-    return res.status(HttpStatus.OK).json(result);
-
+    return res.status(HttpStatus.OK).json(updateSchoolDetails(req.body, utils.getUser(req).idir_username));
   }catch(e)
   {
     await logApiError(e, 'updateSchool', 'Error occurred while attempting to update a school.');
     return errorResponse(res);
   }
-  
+}
+
+async function updateSchoolDetails(school, idirUsername){
+  const payload = school;
+
+  payload.addresses?.forEach(function(addy) {
+    addy.updateDate = null;
+    addy.createDate = null;
+  });
+
+  payload.contacts?.forEach(function(contact) {
+    contact.updateDate = null;
+    contact.createDate = null;
+  });
+
+  payload.createDate = null;
+  payload.updateDate = null;
+  payload.updateUser = idirUsername;
+  const nlcObjectsArray = [];
+  const gradesObjectArray = [];
+
+  for (const nlcCode of payload.neighborhoodLearning) {
+    //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
+    if (_.isString(nlcCode)) {
+      nlcObjectsArray.push({
+        neighborhoodLearningTypeCode: nlcCode,
+        schoolId: payload.schoolId
+      });
+    } else {
+      //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
+      nlcObjectsArray.push({
+        neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
+        schoolId: payload.schoolId
+      });
+    }
+  }
+  for (const gradeCode of payload.grades) {
+    //when there is an update in frontend to grades system adds array of codes to the payload
+    if (_.isString(gradeCode)) {
+      gradesObjectArray.push({
+        schoolGradeCode: gradeCode,
+        schoolId: payload.schoolId
+      });
+    } else {
+      //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
+      gradesObjectArray.push({
+        schoolGradeCode: gradeCode.schoolGradeCode,
+        schoolId: payload.schoolId
+      });
+    }
+
+  }
+  payload.neighborhoodLearning = nlcObjectsArray;
+  payload.grades=gradesObjectArray;
+
+  if(!['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
+    payload.independentAuthorityId = null;
+  }
+
+  return await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, idirUsername);
 }
 
 async function getSchoolsPaginated(req, res){
@@ -1266,7 +1277,7 @@ async function deleteFundingDataForSchool(req, res) {
 
 async function updateFundingDataForSchool(req, res) {
   try {
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
+    let school = await getSchoolBySchoolID(req.params.schoolID);
 
     if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -1279,12 +1290,57 @@ async function updateFundingDataForSchool(req, res) {
     payload.createDate = null;
     payload.updateUser = utils.getUser(req).idir_username;
 
+    await setIssueTranscriptAndCertificatesFlags(school, req.params.schoolID, utils.getUser(req).idir_username);
+
     const data = await putData(`${config.get('server:institute:schoolFundingGroupsURL')}/${req.params.schoolFundingGroupID}`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
     return errorResponse(res);
   }
+}
+
+async function setIssueTranscriptAndCertificatesFlags(school, schoolID, idirUsername){
+  let gradesArray = ['GRADE10','GRADE11','GRADE12','SECUNGR'];
+  let groupsArray = ['GROUP1','GROUP2','GROUP4'];
+  let canIssueTranscripts = false;
+  let canIssueCertificates = false;
+  const fundingData = await getData(`${config.get('server:institute:schoolFundingGroupsURL')}/search/${schoolID}`);
+  let grade10toSUFundingCodes = fundingData.filter(group => gradesArray.includes(group.schoolGradeCode));
+  let schoolHas10toSUGrades = school.grades.some(grade => gradesArray.includes(grade.schoolGradeCode));
+  let hasGroup1or2or4 = grade10toSUFundingCodes.some(group => groupsArray.includes(group.schoolFundingGroupCode));
+
+  switch(school.schoolCategoryCode) {
+  case 'PUBLIC':
+    if(school.facilityTypeCode !== 'SHORT_PRP' && schoolHas10toSUGrades){
+      canIssueTranscripts = true;
+      canIssueCertificates = true;
+    }
+    break;
+  case 'INDEPEND':
+  case 'INDP_FNS':
+    if(schoolHas10toSUGrades && hasGroup1or2or4){
+      canIssueTranscripts = true;
+      canIssueCertificates = true;
+    }
+    break;
+  case 'YUKON':
+    if(schoolHas10toSUGrades){
+      canIssueTranscripts = true;
+      canIssueCertificates = false;
+    }
+    break;
+  case 'OFFSHORE':
+    if(schoolHas10toSUGrades){
+      canIssueTranscripts = true;
+      canIssueCertificates = true;
+    }
+    break;
+  }
+
+  school.canIssueTranscripts = canIssueTranscripts;
+  school.canIssueCertificates = canIssueCertificates;
+  await updateSchoolDetails(school, idirUsername);
 }
 
 async function addNewFundingForSchool(req, res) {

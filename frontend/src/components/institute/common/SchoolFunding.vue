@@ -395,7 +395,7 @@ export default {
       this.addFundingSheet = !this.addFundingSheet;
       this.loading = true;
 
-      ApiService.apiAxios.post(`${Routes.sdc.FUNDING_DATA_URL}/${this.schoolID}`, fundingData)
+      ApiService.apiAxios.post(`${Routes.institute.FUNDING_DATA_URL}/${this.schoolID}`, fundingData)
         .then(() => {
           this.setSuccessAlert('Success! The funding data has been added for the school.');
         }).catch(error => {
