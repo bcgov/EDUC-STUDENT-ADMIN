@@ -19,12 +19,12 @@ export default {
       routes: Routes
     };
   },
+  computed: {
+    ...mapState(authStore, ['isAuthenticated']),
+  },
   async mounted() {
     await this.checkAndLogoutUserOnSessionExpiry();
 
-  },
-  computed: {
-    ...mapState(authStore, ['isAuthenticated']),
   },
   methods: {
 

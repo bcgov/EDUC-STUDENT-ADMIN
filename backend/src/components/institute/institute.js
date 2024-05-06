@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, deleteData, putData} = require('../utils');
+const { logApiError, getData, errorResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');

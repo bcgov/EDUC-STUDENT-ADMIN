@@ -245,17 +245,14 @@ export default {
       comboboxKey: 0,
     };
   },
-  mounted() {
-    this.runInit();
-  },
   computed: {
     ...mapState(notificationsStore, ['notification']),
     filteredResults() {
       if (
         !Array.isArray(this.selectedStatuses) ||
-        !this.selectedStatuses.length ||
-        !Array.isArray(this.requests) ||
-        !this.requests.length
+          !this.selectedStatuses.length ||
+          !Array.isArray(this.requests) ||
+          !this.requests.length
       ) {
         return this.requests;
       }
@@ -388,6 +385,9 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    this.runInit();
   },
   methods: {
     ...mapActions(appStore, ['setSelectedRequest', 'setRequest']),

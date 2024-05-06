@@ -12,7 +12,7 @@
         :dialog="imageRendererDialog"
         :request-id="requestId"
         :image-id="imageId"
-        @closeDialog="closeDialog"
+        @close-dialog="closeDialog"
       />
       <v-row class="flex-grow-0 pb-5">
         <v-card
@@ -138,8 +138,9 @@
                 </p>
               </v-col>
             </v-row>
-            <v-row no-gutters
-                   class="mb-5"
+            <v-row
+              no-gutters
+              class="mb-5"
             >
               <v-col
                 cols="12"
@@ -212,8 +213,8 @@
                 class="ml-2"
                 :disabled="isReleaseDisabled"
                 :short="true"
-                @click-action="claimRequest"
                 text="Release"
+                @click-action="claimRequest"
               />
             </v-row>
             <v-row
@@ -253,8 +254,8 @@
                 class="ml-2"
                 :disabled="isClaimDisabled"
                 :short="true"
-                @click-action="claimRequest"
                 text="Claim"
+                @click-action="claimRequest"
               />
             </v-row>
             <v-row
@@ -266,8 +267,8 @@
                 id="back-to-list"
                 class="mt-2"
                 :short="true"
-                @click-action="backToList"
                 text="Back to List"
+                @click-action="backToList"
               />
             </v-row>
           </v-card>
@@ -373,8 +374,9 @@
                 v-if="actionsEnabled"
                 #item.documentTypeLabel="{item: document}"
               >
-                <span style="cursor: pointer"
-                      @click="docChangeDialog = true"
+                <span
+                  style="cursor: pointer"
+                  @click="docChangeDialog = true"
                 >{{ document.raw.documentTypeLabel }}</span>
                 <v-dialog
                   v-model="docChangeDialog"
@@ -583,6 +585,21 @@ export default {
       }
     }
   },
+  watch: {
+    notification(val) {
+      if (val) {
+        let notificationData = val;
+        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
+          this.beforeSubmit();
+        } else if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && (notificationData.sagaStatus === 'COMPLETED' || notificationData.sagaStatus === 'FORCE_STOPPED')) {
+          this.refreshRequestDetailsAndComments()
+            .finally(() => {
+              this.submitted();
+            });
+        }
+      }
+    }
+  },
   beforeUnmount() {
     Mousetrap.reset();
   },
@@ -760,21 +777,6 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }
-  },
-  watch: {
-    notification(val) {
-      if (val) {
-        let notificationData = val;
-        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
-          this.beforeSubmit();
-        } else if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && (notificationData.sagaStatus === 'COMPLETED' || notificationData.sagaStatus === 'FORCE_STOPPED')) {
-          this.refreshRequestDetailsAndComments()
-            .finally(() => {
-              this.submitted();
-            });
-        }
-      }
     }
   }
 };
