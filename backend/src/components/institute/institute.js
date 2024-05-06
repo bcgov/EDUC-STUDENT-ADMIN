@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, deleteData, putData} = require('../utils');
+const { logApiError, getData, errorResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
@@ -852,7 +852,7 @@ async function getStudentRegistrationContactByMincode(req, res) {
 
 async function updateSchool(req, res) {
   try {
-    return res.status(HttpStatus.OK).json(updateSchoolDetails(req.body, utils.getUser(req).idir_username));
+    return res.status(HttpStatus.OK).json(await updateSchoolDetails(req.body, utils.getUser(req).idir_username));
   }catch(e)
   {
     await logApiError(e, 'updateSchool', 'Error occurred while attempting to update a school.');
@@ -866,6 +866,11 @@ async function updateSchoolDetails(school, idirUsername){
   payload.addresses?.forEach(function(addy) {
     addy.updateDate = null;
     addy.createDate = null;
+  });
+
+  payload.schoolFundingGroups?.forEach(function(group) {
+    group.updateDate = null;
+    group.createDate = null;
   });
 
   payload.contacts?.forEach(function(contact) {
@@ -1250,27 +1255,30 @@ async function getAuthoritiesPaginated(req, res){
 
 async function getFundingGroupDataForSchool(req, res) {
   try {
-    const data = await getData(`${config.get('server:institute:schoolFundingGroupsURL')}/search/${req.params.schoolID}`);
-    return res.status(HttpStatus.OK).json(data);
+    let school = await getSchoolBySchoolID(req.params.schoolID);
+    return res.status(HttpStatus.OK).json(school.schoolFundingGroups);
   } catch (e) {
-    logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
+    await logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
     return errorResponse(res);
   }
 }
 
 async function deleteFundingDataForSchool(req, res) {
   try {
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
+    let school = await getSchoolBySchoolID(req.params.schoolID);
     if(!school){
       return res.status(HttpStatus.NOT_FOUND).json({
         message: 'School not found'
       });
     }
 
-    const data = await deleteData(`${config.get('server:institute:schoolFundingGroupsURL')}/${req.params.schoolFundingGroupID}`);
-    return res.status(HttpStatus.OK).json(data);
+    school.schoolFundingGroups = school.schoolFundingGroups.filter(group => group.schoolFundingGroupID !== req.params.schoolFundingGroupID);
+    res.body = school;
+    await setIssueTranscriptAndCertificatesFlags(school);
+    await updateSchoolDetails(school,utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
-    logApiError(e, 'deleteFundingDataForSchool', 'Error removing funding data for this school');
+    await logApiError(e, 'deleteFundingDataForSchool', 'Error removing funding data for this school');
     return errorResponse(res);
   }
 }
@@ -1285,28 +1293,58 @@ async function updateFundingDataForSchool(req, res) {
       });
     }
 
+    let user = utils.getUser(req).idir_username;
     const payload = req.body;
     payload.updateDate = null;
     payload.createDate = null;
-    payload.updateUser = utils.getUser(req).idir_username;
+    payload.createUser = null;
+    payload.updateUser = user;
 
-    await setIssueTranscriptAndCertificatesFlags(school, req.params.schoolID, utils.getUser(req).idir_username);
+    school.schoolFundingGroups = school.schoolFundingGroups.filter(group => group.schoolFundingGroupID !== req.body.schoolFundingGroupID);
+    school.schoolFundingGroups.push(payload);
 
-    const data = await putData(`${config.get('server:institute:schoolFundingGroupsURL')}/${req.params.schoolFundingGroupID}`, payload);
-    return res.status(HttpStatus.OK).json(data);
+    await setIssueTranscriptAndCertificatesFlags(school);
+
+    await updateSchoolDetails(school, user);
+    return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
-    logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
+    await logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
     return errorResponse(res);
   }
 }
 
-async function setIssueTranscriptAndCertificatesFlags(school, schoolID, idirUsername){
+async function addNewFundingForSchool(req, res) {
+  try {
+    let school = await getSchoolBySchoolID(req.params.schoolID);
+    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Unable to add funding code for this school category'
+      });
+    }
+    const payload = req.body;
+    let user = utils.getUser(req).idir_username;
+    payload.createUser = user;
+    payload.updateUser = user;
+    payload.schoolID = req.params.schoolID;
+    school.schoolFundingGroups.push(payload);
+
+    await setIssueTranscriptAndCertificatesFlags(school);
+
+    await updateSchoolDetails(school, user);
+    return res.status(HttpStatus.OK).json('{}');
+  } catch (e) {
+    await logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
+    return errorResponse(res);
+  }
+}
+
+async function setIssueTranscriptAndCertificatesFlags(school){
   let gradesArray = ['GRADE10','GRADE11','GRADE12','SECUNGR'];
   let groupsArray = ['GROUP1','GROUP2','GROUP4'];
   let canIssueTranscripts = false;
   let canIssueCertificates = false;
-  const fundingData = await getData(`${config.get('server:institute:schoolFundingGroupsURL')}/search/${schoolID}`);
-  let grade10toSUFundingCodes = fundingData.filter(group => gradesArray.includes(group.schoolGradeCode));
+
+  let grade10toSUFundingCodes = school.schoolFundingGroups.filter(group => gradesArray.includes(group.schoolGradeCode));
   let schoolHas10toSUGrades = school.grades.some(grade => gradesArray.includes(grade.schoolGradeCode));
   let hasGroup1or2or4 = grade10toSUFundingCodes.some(group => groupsArray.includes(group.schoolFundingGroupCode));
 
@@ -1340,29 +1378,6 @@ async function setIssueTranscriptAndCertificatesFlags(school, schoolID, idirUser
 
   school.canIssueTranscripts = canIssueTranscripts;
   school.canIssueCertificates = canIssueCertificates;
-  await updateSchoolDetails(school, idirUsername);
-}
-
-async function addNewFundingForSchool(req, res) {
-  try {
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
-
-    if(school?.schoolCategoryCode !== 'INDEPEND' && school?.schoolCategoryCode !== 'INDP_FNS') {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Unable to add funding code for this school category'
-      });
-    }
-
-    const payload = req.body;
-    payload.createUser = utils.getUser(req).idir_username;
-    payload.schoolID = req.params.schoolID;
-
-    const data = await utils.postData(`${config.get('server:institute:schoolFundingGroupsURL')}`, payload);
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
-    return errorResponse(res);
-  }
 }
 
 function createAuthoritySearchCriteria(searchParams){

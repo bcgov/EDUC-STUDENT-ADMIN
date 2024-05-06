@@ -165,6 +165,9 @@ export default {
     MacroEditor
   },
   mixins: [alertMixin],
+  beforeRouteLeave(to, from, next) {
+    this.openConfirmation(() => next(), () => next(false));
+  },
   data() {
     return {
       gmpMacros: [],
@@ -293,9 +296,6 @@ export default {
         }
       }
     },
-  },
-  beforeRouteLeave(to, from, next) {
-    this.openConfirmation(() => next(), () => next(false));
   },
   methods: {
     saveMacrosInStore(store, macros){

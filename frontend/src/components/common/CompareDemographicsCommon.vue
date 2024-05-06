@@ -10,7 +10,7 @@
       :merge-students-modal-open="mergeStudentsModalOpen"
       :merged-to-student-i-d="mergedToStudentID"
       :merged-from-student-i-d="mergedFromStudentID"
-      @mergeStudentsModalOpenEmit="mergeStudentsModalOpenEmit"
+      @merge-students-modal-open-emit="mergeStudentsModalOpenEmit"
     />
     <v-card-title class="px-0 py-5">
       <v-row>

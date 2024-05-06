@@ -63,11 +63,13 @@ export default {
     },
     spanContent:{
       type: String,
-      required: false
+      required: false,
+      default: null
     },
     url:{
       type: String,
-      required: false
+      required: false,
+      default: null
     },
     completionStates:{
       type: Array,

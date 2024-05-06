@@ -36,6 +36,7 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 
 export default {
   name: 'MacroEditor',
+  emits: ['save'],
   components: {
     PrimaryButton,
   },

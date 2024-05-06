@@ -78,10 +78,13 @@ export default {
     },
     title: {
       type: String,
-      required: false
+      required: false,
+      default: ''
     },
     colour: {
-      type: String
+      type: String,
+      required: false,
+      default: ''
     }
   },
   methods: {
