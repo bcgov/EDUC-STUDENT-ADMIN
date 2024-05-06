@@ -100,6 +100,7 @@ import {appStore} from '@/store/modules/app';
 export default {
   components: {PrimaryButton},
   mixins: [alertMixin],
+  emits: ['updateAdditionalStudentAddWarning','close:form', 'addStudent'],
   props: {
     eager: {
       type: Boolean,

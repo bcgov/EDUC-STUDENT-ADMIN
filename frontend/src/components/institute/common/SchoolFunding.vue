@@ -229,7 +229,7 @@ export default {
         {title: 'Funding Group', sortable: false, key: 'fundingGroupLabel', value: 'schoolFundingGroupCode', editable: true, maxLength: '40', rules: [v => v?.trim().length >= 1 || 'Required']},
         {title: 'Last Updated', sortable: false, key: 'updateDate', value: 'updateDate'},
         {title: 'Last Update User', sortable: false, key: 'updateUser', value: 'updateUser'},
-        {value: 'actions', sortable: false},
+        {value: 'actions', sortable: false, key: 'actions'},
       ],
       historicFundingHeaders: [
         {title: 'Grade', sortable: false, key: 'gradeLabel', value: 'gradeLabel'},
@@ -334,6 +334,7 @@ export default {
         }).finally(() => {
           this.loading = false;
           this.isEditing = false;
+          this.$emit('refreshSchool');
           this.loadSchoolsFundingData();
         });
     },
@@ -365,6 +366,7 @@ export default {
               this.setFailureAlert(error.response?.data?.message || error.message);
             }).finally(() => {
               this.loading = false;
+              this.$emit('refreshSchool');
               this.loadSchoolsFundingData();
             });
         });
@@ -403,6 +405,7 @@ export default {
           this.setFailureAlert(error.response?.data?.message || error.message);
         }).finally(() => {
           this.loading = false;
+          this.$emit('refreshSchool');
           this.loadSchoolsFundingData();
         });
     }

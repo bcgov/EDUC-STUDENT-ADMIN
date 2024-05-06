@@ -246,13 +246,14 @@ function hasPermissionToAddOrUpdateFundingData() {
         log.debug('error is from verify', e);
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
-  
-      let school = cacheService.getSchoolBySchoolID(_.isEmpty(req.body)? (req.params.schoolId || req.params.schoolID) : (req.body.schoolId || req.body.schoolID));
+
+      let school = cacheService.getSchoolBySchoolID(req.params.schoolID);
       let independentArr = ['INDEPEND', 'INDP_FNS'];
-  
+
       if(independentArr.includes(school?.schoolCategoryCode) && userToken['realm_access'].roles.includes(perm.PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION)) {
         return next();
       }
+
       return res.status(HttpStatus.FORBIDDEN).json({
         message: 'User is missing role'
       });

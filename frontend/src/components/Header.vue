@@ -87,13 +87,13 @@ export default {
       user: null
     };
   },
+  computed: {
+    ...mapState(authStore, ['userInfo', 'isAuthenticated']),
+  },
   created() {
     authStore().getUserInfo().then(()=> {
       this.user = this.userInfo;
     });
-  },
-  computed: {
-    ...mapState(authStore, ['userInfo', 'isAuthenticated']),
   },
   methods: {
     authStore

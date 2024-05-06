@@ -186,6 +186,7 @@
                 <v-window-item value="funding">
                   <SchoolFunding
                     :school-i-d="schoolID"
+                    @refreshSchool="getThisSchoolsDetails"
                   />
                 </v-window-item>
               </v-window>
