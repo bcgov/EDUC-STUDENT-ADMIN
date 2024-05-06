@@ -144,14 +144,14 @@ export default {
       position: 'relative'
     }
   }),
+  computed: {
+    ...mapState(authStore, ['STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
+  },
   mounted() {
     if(this.STUDENT_ANALYTICS_BATCH) {
       this.fillNewPenData();
       this.fillMergeData();
     }
-  },
-  computed: {
-    ...mapState(authStore, ['STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
   },
   methods: {
     fillNewPenData() {
