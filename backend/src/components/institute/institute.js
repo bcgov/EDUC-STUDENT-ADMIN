@@ -1293,17 +1293,19 @@ async function updateFundingDataForSchool(req, res) {
       });
     }
 
+    let user = utils.getUser(req).idir_username;
     const payload = req.body;
     payload.updateDate = null;
     payload.createDate = null;
-    payload.updateUser = utils.getUser(req).idir_username;
+    payload.createUser = null;
+    payload.updateUser = user;
 
     school.schoolFundingGroups = school.schoolFundingGroups.filter(group => group.schoolFundingGroupID !== req.body.schoolFundingGroupID);
     school.schoolFundingGroups.push(payload);
 
     await setIssueTranscriptAndCertificatesFlags(school);
 
-    await updateSchoolDetails(school,utils.getUser(req).idir_username);
+    await updateSchoolDetails(school, user);
     return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
     await logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
@@ -1320,13 +1322,15 @@ async function addNewFundingForSchool(req, res) {
       });
     }
     const payload = req.body;
-    payload.createUser = utils.getUser(req).idir_username;
+    let user = utils.getUser(req).idir_username;
+    payload.createUser = user;
+    payload.updateUser = user;
     payload.schoolID = req.params.schoolID;
     school.schoolFundingGroups.push(payload);
 
     await setIssueTranscriptAndCertificatesFlags(school);
 
-    await updateSchoolDetails(school,utils.getUser(req).idir_username);
+    await updateSchoolDetails(school, user);
     return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
     await logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
