@@ -15,7 +15,7 @@ async function getSnapshotFundingDataForSchool(req, res) {
 
 async function getAllCollectionsForSchool(req, res) {
   try {
-    const data = await getData(`${config.get('sdc:schoolCollectionURL')}/searchAll/${req.params.schoolID}`);
+    const data = await getData(`${config.get('sdc:schoolCollectionURL')}/searchAll?schoolID=${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     await logApiError(e, 'getAllCollectionsForSchool', 'Error getting collections for this school');
