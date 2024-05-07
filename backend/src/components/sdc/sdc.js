@@ -10,7 +10,7 @@ async function getFundingGroupDataForSchool(req, res) {
     const data = await getData(`${config.get('sdc:fundingGroupDataURL')}/search/${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
+    await logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
     return errorResponse(res);
   }
 }
@@ -20,7 +20,7 @@ async function getSnapshotFundingDataForSchool(req, res) {
     const data = await getData(`${config.get('sdc:fundingGroupDataURL')}/snapshot/${req.params.schoolID}/${req.params.collectionID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'getSnapshotFundingDataForSchool', 'Error getting funding snapshot data for this school');
+    await logApiError(e, 'getSnapshotFundingDataForSchool', 'Error getting funding snapshot data for this school');
     return errorResponse(res);
   }
 }
@@ -37,7 +37,7 @@ async function deleteFundingDataForSchool(req, res) {
     const data = await deleteData(`${config.get('sdc:fundingGroupDataURL')}/${req.params.schoolFundingGroupID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'deleteFundingDataForSchool', 'Error removing funding data for this school');
+    await logApiError(e, 'deleteFundingDataForSchool', 'Error removing funding data for this school');
     return errorResponse(res);
   }
 }
@@ -60,7 +60,7 @@ async function updateFundingDataForSchool(req, res) {
     const data = await putData(`${config.get('sdc:fundingGroupDataURL')}/${req.params.schoolFundingGroupID}`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
+    await logApiError(e, 'updateFundingDataForSchool', 'Error updating funding data for this school');
     return errorResponse(res);
   }
 }
@@ -82,7 +82,7 @@ async function addNewFundingForSchool(req, res) {
     const data = await utils.postData(`${config.get('sdc:fundingGroupDataURL')}`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
+    await logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
     return errorResponse(res);
   }
 }
@@ -92,7 +92,7 @@ async function getAllCollectionsForSchool(req, res) {
     const data = await getData(`${config.get('sdc:schoolCollectionURL')}/searchAll/${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
+    await logApiError(e, 'getAllCollectionsForSchool', 'Error getting all collections for school');
     return errorResponse(res);
   }
 }
@@ -102,7 +102,7 @@ async function getActiveCollection(req, res) {
     const data = await getData(`${config.get('sdc:activeCollectionURL')}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    logApiError(e, 'getActiveCollection', 'Error getting active collection');
+    await logApiError(e, 'getActiveCollection', 'Error getting active collection');
     return errorResponse(res);
   }
 }
