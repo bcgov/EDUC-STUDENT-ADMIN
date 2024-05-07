@@ -18,7 +18,7 @@ async function getAllCollectionsForSchool(req, res) {
     const data = await getData(`${config.get('sdc:schoolCollectionURL')}/searchAll/${req.params.schoolID}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    await logApiError(e, 'getFundingGroupDataForSchool', 'Error getting funding data for this school');
+    await logApiError(e, 'getAllCollectionsForSchool', 'Error getting collections for this school');
     return errorResponse(res);
   }
 }
