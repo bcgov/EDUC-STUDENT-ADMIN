@@ -4,6 +4,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE_DEV: ${{ secrets.PEN_NAMESPACE_NO_ENV }}-dev
+  OPENSHIFT_NAMESPACE_TEST: ${{ secrets.PEN_NAMESPACE_NO_ENV }}-test
 
   SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
@@ -33,6 +34,8 @@ env:
   MAX_CPU: "600m"
   MIN_MEM: "250Mi"
   MAX_MEM: "500Mi"
+  MIN_REPLICAS_TEST: "2"
+  MAX_REPLICAS_TEST: "3"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
