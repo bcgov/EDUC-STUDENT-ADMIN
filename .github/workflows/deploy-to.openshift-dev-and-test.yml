@@ -1,4 +1,4 @@
-name: Build & Deploy to DEV
+name: Build & Deploy to DEV and Test
 
 env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
