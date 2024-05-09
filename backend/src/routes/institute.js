@@ -10,7 +10,8 @@ const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   addNewFundingForSchool,
   getFundingGroupDataForSchool,
   deleteFundingDataForSchool,
-  updateFundingDataForSchool
+  updateFundingDataForSchool,
+  getCachedInstituteData
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -19,8 +20,7 @@ const {getCodes} = require('../components/utils');
 const {CACHE_KEYS} = require('../util/constants');
 const PERMISSION = perm.PERMISSION;
 const permUtils = require('../components/permissionUtils');
-const {getCachedSDCData} = require("../components/sdc/sdc-cache");
-const constants = require("../util/constants");
+const constants = require('../util/constants');
 
 router.get('/district', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistricts);
 
@@ -56,7 +56,7 @@ router.delete('/funding-groups/:schoolID/funding/:schoolFundingGroupID', passpor
 
 router.put('/funding-groups/:schoolID/funding/:schoolFundingGroupID', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddOrUpdateFundingData(), extendSession, updateFundingDataForSchool);
 
-router.get('/funding-groups', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'institute:fundingGroupsURL'));
+router.get('/funding-groups', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getCachedInstituteData(constants.CACHE_KEYS.FUNDING_GROUPS, 'server:institute:schoolFundingGroupCodesURL'));
 
 router.delete('/authority/contact/:independentAuthorityId/:contactId', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToUpdateAuthority(), extendSession, deleteAuthorityContact);
 

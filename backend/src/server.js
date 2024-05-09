@@ -107,7 +107,7 @@ cacheService.loadDataToCache( constants.CACHE_KEYS.AUTHORITY_CONTACT_TYPES, 'ser
   log.error('Error loading AUTHORITY_CONTACT_TYPES data during boot .', e);
 });
 if(!config.get('frontendConfig').disableSdcFunctionality) {
-  cacheService.loadDataToCache( constants.CACHE_KEYS.SDC_FUNDING_GROUPS, 'sdc:fundingGroupsURL').then(() => {
+  cacheService.loadDataToCache( constants.CACHE_KEYS.FUNDING_GROUPS, 'server:institute:schoolFundingGroupCodesURL').then(() => {
     log.info('Loaded FUNDING_GROUPS data to memory');
   }).catch((e) => {
     log.error('Error loading FUNDING_GROUPS data during boot .', e);
