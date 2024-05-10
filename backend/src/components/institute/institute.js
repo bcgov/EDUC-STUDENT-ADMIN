@@ -913,13 +913,26 @@ async function updateSchoolDetails(school, idirUsername){
         schoolId: payload.schoolId
       });
     }
-
   }
+
   payload.neighborhoodLearning = nlcObjectsArray;
   payload.grades=gradesObjectArray;
 
   if(!['OFFSHORE', 'INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
     payload.independentAuthorityId = null;
+  }
+
+  let currentSchool = await getSchoolBySchoolID(payload.schoolId);
+
+  let currentSchoolGradeCodes = currentSchool.grades.map(grade => grade.schoolGradeCode);
+  let incomingSchoolGradeCodes = payload.grades.map(grade => grade.schoolGradeCode);
+
+  let all = _.union(currentSchoolGradeCodes, incomingSchoolGradeCodes);
+  let common = _.intersection(currentSchoolGradeCodes, incomingSchoolGradeCodes);
+  let offset = _.difference(all, common); _.difference(currentSchoolGradeCodes, incomingSchoolGradeCodes);
+
+  if(offset.length !== 0){
+    await setIssueTranscriptAndCertificatesFlags(payload);
   }
 
   return await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, idirUsername);
@@ -1365,7 +1378,6 @@ async function setIssueTranscriptAndCertificatesFlags(school){
   case 'YUKON':
     if(schoolHas10toSUGrades){
       canIssueTranscripts = true;
-      canIssueCertificates = false;
     }
     break;
   case 'OFFSHORE':
