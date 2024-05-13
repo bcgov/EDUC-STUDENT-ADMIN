@@ -1354,6 +1354,7 @@ async function addNewFundingForSchool(req, res) {
 async function setIssueTranscriptAndCertificatesFlags(school){
   let gradesArray = ['GRADE10','GRADE11','GRADE12','SECUNGR'];
   let groupsArray = ['GROUP1','GROUP2','GROUP4'];
+  let summerShortPRPArray = ['SHORT_PRP','SUMMER'];
   let canIssueTranscripts = false;
   let canIssueCertificates = false;
 
@@ -1363,7 +1364,7 @@ async function setIssueTranscriptAndCertificatesFlags(school){
 
   switch(school.schoolCategoryCode) {
   case 'PUBLIC':
-    if(school.facilityTypeCode !== 'SHORT_PRP' && schoolHas10toSUGrades){
+    if(!summerShortPRPArray.includes(school.facilityTypeCode) && schoolHas10toSUGrades){
       canIssueTranscripts = true;
       canIssueCertificates = true;
     }
