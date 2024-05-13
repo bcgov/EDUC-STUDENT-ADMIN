@@ -41,7 +41,7 @@
                 :short="true"
                 class="mt-1"
                 :model="copyTxt"
-                @click-action="copyPen"
+                @click-action="copyPen()"
               />
             </v-col>
           </v-row>
@@ -754,7 +754,7 @@
       <v-col cols="1">
         <TertiaryButton
           text="Copy"
-          @click-action="copyInfo"
+          @click-action="copyInfo()"
         />
       </v-col>
     </v-row>
