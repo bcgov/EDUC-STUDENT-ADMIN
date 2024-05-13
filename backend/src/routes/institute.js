@@ -50,7 +50,7 @@ router.put('/authority/contact/:contactId', passport.authenticate('jwt', {sessio
 
 router.post('/funding-groups/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddOrUpdateFundingData(), extendSession, addNewFundingForSchool);
 
-router.get('/funding-groups/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddOrUpdateFundingData(), extendSession, getFundingGroupDataForSchool);
+router.get('/funding-groups/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getFundingGroupDataForSchool);
 
 router.delete('/funding-groups/:schoolID/funding/:schoolFundingGroupID', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToAddOrUpdateFundingData(), extendSession, deleteFundingDataForSchool);
 

@@ -29,7 +29,7 @@
           </v-col>
         </v-row>
 
-        <v-row no-gutters>
+        <v-row no-gutters v-if="canEditFunding()">
           <v-col class="justify-end d-flex">
             <PrimaryButton
               id="add-action"
@@ -42,7 +42,11 @@
             />
           </v-col>
         </v-row>
-
+        <v-row no-gutters v-else>
+          <v-col class="justify-end d-flex">
+            <div class="pt-9"></div>
+          </v-col>
+        </v-row>
         <v-form
           v-model="isValidFundingForm"
           class="mt-6 pb-1 pl-1"
@@ -77,7 +81,7 @@
                     </v-col>
                   </v-row>
                   <v-row
-                    v-else-if="header.value === 'actions' && !isEditing"
+                    v-else-if="header.value === 'actions' && !isEditing && canEditFunding()"
                     no-gutters
                     class="flex-nowrap"
                   >
@@ -205,6 +209,8 @@ import {instituteStore} from '@/store/modules/institute';
 import AddSchoolFunding from '@/components/institute/common/AddSchoolFunding.vue';
 import {sortBy, orderBy} from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import {hasRequiredPermission, PERMISSION} from "@/utils/constants/Permission";
+import {authStore} from "@/store/modules/auth";
 
 export default {
   name: 'SchoolFunding',
@@ -255,6 +261,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['activeFundingGroups']),
     ...mapState(instituteStore, ['gradeCodes']),
   },
@@ -291,6 +298,10 @@ export default {
       incomingFundingData.displayOrder = this.gradeCodes?.find(grade => grade?.schoolGradeCode === incomingFundingData?.schoolGradeCode)?.displayOrder;
       incomingFundingData.fundingGroupLabel = this.schoolFundingGroups?.find(group => group.schoolFundingGroupCode === incomingFundingData.schoolFundingGroupCode)?.label;
       incomingFundingData.updateDate = this.formatDate(incomingFundingData.updateDate);
+    },
+    hasRequiredPermission,
+    canEditFunding() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
     },
     getHistoricalCollectionsForSchool() {
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION}/${this.schoolID}`)
