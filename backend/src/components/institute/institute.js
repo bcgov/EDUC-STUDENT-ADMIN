@@ -395,6 +395,8 @@ async function addSchool(req, res) {
       payload.grades = req.body.grades;
     }
 
+    await setIssueTranscriptAndCertificatesFlags(payload);
+
     const data = await utils.postData(config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -1358,9 +1360,9 @@ async function setIssueTranscriptAndCertificatesFlags(school){
   let canIssueTranscripts = false;
   let canIssueCertificates = false;
 
-  let grade10toSUFundingCodes = school.schoolFundingGroups.filter(group => gradesArray.includes(group.schoolGradeCode));
-  let schoolHas10toSUGrades = school.grades.some(grade => gradesArray.includes(grade.schoolGradeCode));
-  let hasGroup1or2or4 = grade10toSUFundingCodes.some(group => groupsArray.includes(group.schoolFundingGroupCode));
+  let grade10toSUFundingCodes = school.schoolFundingGroups?.filter(group => gradesArray.includes(group.schoolGradeCode));
+  let schoolHas10toSUGrades = school.grades?.some(grade => gradesArray.includes(grade.schoolGradeCode));
+  let hasGroup1or2or4 = grade10toSUFundingCodes?.some(group => groupsArray.includes(group.schoolFundingGroupCode));
 
   switch(school.schoolCategoryCode) {
   case 'PUBLIC':
@@ -1467,6 +1469,7 @@ module.exports = {
   updateFundingDataForSchool,
   getFundingGroupDataForSchool,
   moveSchool,
+  setIssueTranscriptAndCertificatesFlags,
   getStudentRegistrationContacts,
   getStudentRegistrationContactByMincode,
   getSchoolByMincode,

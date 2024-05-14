@@ -9,6 +9,7 @@ const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
 const log = require('../logger');
+const {setIssueTranscriptAndCertificatesFlags} = require('../institute/institute');
 
 async function claimAllExchanges(req, res) {
   try {
@@ -995,6 +996,7 @@ async function createSchool(req, res) {
       });
     }
 
+    await setIssueTranscriptAndCertificatesFlags(school);
     const userInfo = utils.getUser(req);
     const payload = {
       school: {
@@ -1064,13 +1066,12 @@ async function findAllSchoolInvitations(req, res) {
 
 async function uploadOnboardingFile(req, res){
   try {
-    console.log("Upload file: ", JSON.stringify(req.body))
     const user = utils.getUser(req);
 
     const document = {
       fileContents: req.body.fileContents,
       createUser: user.idir_username
-    }
+    };
 
     const result = await postData(config.get('server:edx:uploadOnboardingFile'), document, null, null);
     return res.status(HttpStatus.OK).json(result);
