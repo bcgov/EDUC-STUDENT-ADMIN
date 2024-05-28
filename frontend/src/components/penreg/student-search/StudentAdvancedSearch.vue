@@ -390,11 +390,12 @@
           </v-col>
           <v-text-field
             id="legalLastName"
-            v-model.trim="studentSearchParams.legalLastName"
+            v-model="studentSearchParams.legalLastName"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.legalLastName = trimNameField($event)"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -411,11 +412,12 @@
           </v-col>
           <v-text-field
             id="legalFirstName"
-            v-model.trim="studentSearchParams.legalFirstName"
+            v-model="studentSearchParams.legalFirstName"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.legalFirstName = trimNameField($event)"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -432,11 +434,12 @@
           </v-col>
           <v-text-field
             id="legalMiddleNames"
-            v-model.trim="studentSearchParams.legalMiddleNames"
+            v-model="studentSearchParams.legalMiddleNames"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.legalMiddleNames = trimNameField($event)"
             @input="[searchHasValues(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
           />
@@ -453,11 +456,12 @@
           </v-col>
           <v-text-field
             id="usualLastName"
-            v-model.trim="studentSearchParams.usualLastName"
+            v-model="studentSearchParams.usualLastName"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.usualLastName = trimNameField($event)"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -474,11 +478,12 @@
           </v-col>
           <v-text-field
             id="usualFirstName"
-            v-model.trim="studentSearchParams.usualFirstName"
+            v-model="studentSearchParams.usualFirstName"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.usualFirstName = trimNameField($event)"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -495,11 +500,12 @@
           </v-col>
           <v-text-field
             id="usualMiddleNames"
-            v-model.trim="studentSearchParams.usualMiddleNames"
+            v-model="studentSearchParams.usualMiddleNames"
             density="compact"
             bg-color="#efefef"
             variant="outlined"
             maxlength="25"
+            @blur="studentSearchParams.usualMiddleNames = trimNameField($event)"
             @keyup.enter="enterPushed()"
             @input="[searchHasValues(), $emit('valueChange')]"
           />
@@ -820,6 +826,9 @@ export default {
         this.advancedSearchCriteria.startDate.month = tempStartDates[1];
         this.advancedSearchCriteria.startDate.day = tempStartDates[2];
       }
+    },
+    trimNameField(event) {
+      return event.target.value.trim().replace(/\s\s+/, ' ');
     }
   }
 };
