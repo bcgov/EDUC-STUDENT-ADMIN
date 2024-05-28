@@ -359,8 +359,7 @@
                   color="#FCBA19"
                   icon="mdi-alert-circle"
                   style="margin-top: 0.3em"
-                >
-                </v-icon>
+                />
               </template>
               <span>
                 Searching by name variant cannot be used in conjunction with wildcards on Legal and Usual Given names<br>
@@ -521,10 +520,10 @@
             Status
           </v-col>
           <v-col
-            cols="auto"
-            class="px-2"
             v-for="status in statusCodes"
             :key="status.label"
+            cols="auto"
+            class="px-2"
           >
             <v-checkbox
               v-model="advancedSearchCriteria.statusCode"
@@ -535,7 +534,6 @@
               :value="status.value"
             />
           </v-col>
-
         </v-row>
       </v-card>
     </v-col>
@@ -604,6 +602,10 @@ export default {
       default: false
     }
   },
+  emits: [
+    'update:useDOB',
+    'valueChange'
+  ],
   data() {
     return {
       isValidStartDOB: {
@@ -617,27 +619,6 @@ export default {
         day: false
       }
     };
-  },
-  watch: {
-    formattedStartDOB: {
-      handler() {
-        studentSearchStore().studentSearchParams.dob.startDate = this.formattedStartDOB;
-      }
-    },
-    formattedEndDOB: {
-      handler() {
-        studentSearchStore().studentSearchParams.dob.endDate = this.formattedEndDOB;
-      }
-    },
-    initialSearch: {
-      handler() {
-        this.setStartDateInAdvancedSearchCriteria();
-      }
-    }
-  },
-  mounted() {
-    this.setStartDateInAdvancedSearchCriteria();
-    this.setIsAdvancedSearch(true);
   },
   computed: {
     useDOBValue: {
@@ -685,6 +666,27 @@ export default {
         {label: 'Deceased', value: STUDENT_CODES.DECEASED}
       ];
     },
+  },
+  watch: {
+    formattedStartDOB: {
+      handler() {
+        studentSearchStore().studentSearchParams.dob.startDate = this.formattedStartDOB;
+      }
+    },
+    formattedEndDOB: {
+      handler() {
+        studentSearchStore().studentSearchParams.dob.endDate = this.formattedEndDOB;
+      }
+    },
+    initialSearch: {
+      handler() {
+        this.setStartDateInAdvancedSearchCriteria();
+      }
+    }
+  },
+  mounted() {
+    this.setStartDateInAdvancedSearchCriteria();
+    this.setIsAdvancedSearch(true);
   },
   methods: {
     ...mapActions(studentSearchStore, ['setIsAdvancedSearch']),
