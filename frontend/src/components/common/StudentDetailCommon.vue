@@ -1125,11 +1125,21 @@ export default {
         'Legal Middle: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalMiddleNames || '') + '\n' +
         'Birth Date: '.replace(/[A-Za-z]/g, this.boldFormatter) + (dobCopy || '') + '\n' +
         'Gender: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.genderCode || '');
-      this.$copyText(this.copyTxt);
+
+      navigator.clipboard.writeText(this.copyTxt)
+        .then(() => this.setSuccessAlert('Student info copied to clipboard'))
+        .catch(() => {
+          this.setFailureAlert('Unable to copy student information to clipboard');
+        });
     },
     copyPen() {
       this.copyTxt = this.studentCopy.pen || '';
-      this.$copyText(this.copyTxt);
+      console.log(this.copyTxt);
+      navigator.clipboard.writeText(this.copyTxt)
+        .then(() => this.setSuccessAlert('PEN copied to clipboard'))
+        .catch(() => {
+          this.setFailureAlert('Unable to copy PEN to clipboard');
+        });
     },
     onError(e) {
       console.log(e);
