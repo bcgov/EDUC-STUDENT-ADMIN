@@ -1134,7 +1134,6 @@ export default {
     },
     copyPen() {
       this.copyTxt = this.studentCopy.pen || '';
-      console.log(this.copyTxt);
       navigator.clipboard.writeText(this.copyTxt)
         .then(() => this.setSuccessAlert('PEN copied to clipboard'))
         .catch(() => {
