@@ -492,7 +492,7 @@
                 <v-text-field
                   v-model="initialUser.lastName"
                   class="pt-0 pb-5"
-                  :rules="[userFieldRules().lastName, requiredForOffshoreOrIndependentSchool]"
+                  :rules="[userFieldRules().lastName]"
                   variant="underlined"
                   :maxlength="255"
                   label="Last Name"
@@ -504,7 +504,7 @@
                 <v-text-field
                   v-model="initialUser.email"
                   class="pt-0 pb-5"
-                  :rules="[userFieldRules().email, requiredForOffshoreOrIndependentSchool]"
+                  :rules="[userFieldRules().email]"
                   variant="underlined"
                   :maxlength="255"
                   label="Email"
@@ -754,10 +754,6 @@ export default {
           return this.rules.email()(v);
         }
       };
-    },
-    requiredForOffshoreOrIndependentSchool(formValue) {
-      const categories = [...this.offshoreArray, ...this.independentArray];
-      return this.rules.requiredIf(categories.includes(this.newSchool.schoolCategoryCode))(formValue);
     },
     preselectSchoolDistrict() {
       if (this.filteredDistrictNames?.length !== 1) {
