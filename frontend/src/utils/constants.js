@@ -178,10 +178,13 @@ let object = {
     UPLOAD_ONBOARDING_FILE: edxRoot + '/exchange/onboarding-file'
   },
   sdc: {
+    BASE_URL: sdcRoot,
     SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection',
     ACTIVE_COLLECTION: sdcRoot + '/collection/active',
     FUNDING_DATA_SNAPSHOT_URL: sdcRoot + '/funding-groups-snapshot',
-    COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes'
+    COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes',
+    SDC_DISTRICT_COLLECTION_STATUS_CODES: sdcRoot + '/district-collection-status-codes',
+    SDC_SCHOOL_COLLECTION_STATUS_CODES: sdcRoot + '/school-collection-status-codes',
   }
 };
 
@@ -472,7 +475,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_CONTACTS: 'School Contacts',
     SCHOOL_HISTORY: 'School History',
     SCHOOL_MOVE: 'School Move',
-    DATA_COLLECTION: "Data Collection",
+    DATA_COLLECTION: 'Data Collection',
     INVITATIONS: 'EDX Invitations',
     CLOSE_COLLECTION: 'Close Collection'
   }

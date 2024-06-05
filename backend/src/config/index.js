@@ -180,7 +180,8 @@ nconf.defaults({
     bannerEnvironment: process.env.BANNER_ENVIRONMENT,
     bannerColor: process.env.BANNER_COLOR,
     webSocketURL: process.env.WEB_SOCKET_URL,
-    disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true'
+    disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
+    edxURL: process.env.EDX_URL
   },
   sdc: {
     rootURL: process.env.SDC_API_URL,
@@ -197,7 +198,9 @@ nconf.defaults({
     specialEdCodesURL: process.env.SDC_API_URL + '/specialEducation-codes',
     validationIssueTypeCodesURL: process.env.SDC_API_URL + '/validation-issue-type-codes',
     activeCollectionURL: process.env.SDC_API_URL + '/collection/active',
-    collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes'
+    collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes',
+    districtCollectionStatusCodesURL: process.env.SDC_API_ENDPOINT + '/district-collection-status-codes',
+    schoolCollectionStatusCodesURL: process.env.SDC_API_ENDPOINT + '/school-collection-status-codes'
   }
 });
 module.exports = nconf;

@@ -13,7 +13,8 @@ async function getConfig(req, res) {
     BANNER_ENVIRONMENT: frontendConfig.bannerEnvironment,
     BANNER_COLOR: frontendConfig.bannerColor,
     WEB_SOCKET_URL: frontendConfig.webSocketURL,
-    DISABLE_SDC_FUNCTIONALITY: frontendConfig.disableSdcFunctionality
+    DISABLE_SDC_FUNCTIONALITY: frontendConfig.disableSdcFunctionality,
+    EDX_URL: frontendConfig.edxURL
   };
   return res.status(HttpStatus.OK).json(frontConfig);
 }
