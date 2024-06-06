@@ -338,7 +338,7 @@
                   </v-col>
                 </v-row>
                 <v-row
-                  v-if="displayPhysicalAddress"
+                  v-if="isNotOffshoreSchool"
                   no-gutters
                 >
                   <v-col>
@@ -682,7 +682,7 @@ export default {
     schoolNeighborhoodLearningCodes() {
       return this.activeSchoolNeighborhoodLearningCodes ? sortBy(this.activeSchoolNeighborhoodLearningCodes, ['neighborhoodLearningTypeCode']) : [];
     },
-    displayPhysicalAddress() {
+    isNotOffshoreSchool() {
       return this.newSchool?.schoolCategoryCode !== 'OFFSHORE';
     },
     filteredGradeOptions() {
@@ -788,9 +788,13 @@ export default {
     prepareAddressPayload() {
       if (!this.showAddress) return [];
 
-      const addresses = cloneDeep(this.addresses);
+      let addresses = cloneDeep(this.addresses);
       if (this.sameAsMailingCheckbox) {
         addresses[1] = {...addresses[0], addressTypeCode: 'PHYSICAL'};
+      }
+
+      if(!this.isNotOffshoreSchool){
+        addresses = addresses.slice(0,-1);
       }
       return addresses;
     },
