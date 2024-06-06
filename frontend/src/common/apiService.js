@@ -118,6 +118,8 @@ export default {
   getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
   getAllFundingGroups: getCodes(`${Routes.institute.FUNDING_DATA_URL}`),
   getAllCollectionTypeCodes: getCodes(`${Routes.sdc.COLLECTION_TYPE_CODES_URL}`),
+  getAllDistrictCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_DISTRICT_COLLECTION_STATUS_CODES}`),
+  getAllSchoolCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STATUS_CODES}`),
   async getConfig() {
     try {
       const response = await apiAxios.get(Routes.CONFIG);

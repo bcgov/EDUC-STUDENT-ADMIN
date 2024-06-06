@@ -33,8 +33,30 @@ async function getActiveCollection(req, res) {
   }
 }
 
+async function getSdcDistrictCollectionMonitoringByCollectionId(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/monitorSdcDistrictCollections`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error retrieving the district collection monitoring stats');
+    return errorResponse(res);
+  }
+}
+
+async function getIndySdcSchoolCollectionMonitoringByCollectionId(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/monitorIndySdcSchoolCollections`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error retrieving the district collection monitoring stats');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
-  getActiveCollection
+  getActiveCollection,
+  getSdcDistrictCollectionMonitoringByCollectionId,
+  getIndySdcSchoolCollectionMonitoringByCollectionId
 };

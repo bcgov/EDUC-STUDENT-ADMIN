@@ -20,7 +20,9 @@ cacheKeys = {
   SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
   SCHOOL_REPORTING_REQUIREMENT_CODES: 'school-reporting-requirement-codes',
   FUNDING_GROUPS: 'funding_groups',
-  COLLECTION_TYPE_CODES: 'collection-type-codes'
+  COLLECTION_TYPE_CODES: 'collection-type-codes',
+  SDC_DISTRICT_COLLECTION_STATUS_CODES: 'sdc_district_collection_status_codes',
+  SDC_SCHOOL_COLLECTION_STATUS_CODES: 'sdc_school_collection_status_codes',
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);
