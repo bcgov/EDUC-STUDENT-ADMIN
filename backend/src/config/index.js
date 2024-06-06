@@ -199,8 +199,8 @@ nconf.defaults({
     validationIssueTypeCodesURL: process.env.SDC_API_URL + '/validation-issue-type-codes',
     activeCollectionURL: process.env.SDC_API_URL + '/collection/active',
     collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes',
-    districtCollectionStatusCodesURL: process.env.SDC_API_ENDPOINT + '/district-collection-status-codes',
-    schoolCollectionStatusCodesURL: process.env.SDC_API_ENDPOINT + '/school-collection-status-codes'
+    districtCollectionStatusCodesURL: process.env.SDC_API_URL + '/district-collection-status-codes',
+    schoolCollectionStatusCodesURL: process.env.SDC_API_URL + '/school-collection-status-codes'
   }
 });
 module.exports = nconf;
