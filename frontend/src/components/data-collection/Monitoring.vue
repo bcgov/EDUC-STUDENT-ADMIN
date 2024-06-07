@@ -73,6 +73,16 @@
                   {{ item.raw.districtTitle }}
                 </a>
               </template>
+              <template #item.unsubmit="{ item }">
+                <v-btn
+                  :id="'unsubmitBtn' + item.raw.sdcDistrictCollectionId"
+                  color="primary"
+                  icon="mdi-lock-open"
+                  variant="text"
+                  :disabled="item.raw.sdcDistrictCollectionStatusCode !== 'SUBMITTED'"
+                  @click="unsubmitSdcDistrictCollection(item.raw.sdcDistrictCollectionId)"
+                />
+              </template>
               <template #bottom />
             </v-data-table-virtual>
           </v-col>
@@ -96,6 +106,11 @@
       </v-window-item>
     </v-window>
   </v-col>
+  <ConfirmationDialog ref="confirmRemovalOfCollection">
+    <template #message>
+      <p>Are you sure that you would like to unsubmit the selected SDC District Collection?</p>
+    </template>
+  </ConfirmationDialog>
 </template>
 
 <script>
@@ -109,11 +124,12 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import IndySchoolMonitoring from '../data-collection/IndySchoolMonitoring.vue';
-
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 
 export default defineComponent({
   name: 'Monitoring',
   components: {
+    ConfirmationDialog,
     IndySchoolMonitoring,
     Spinner
   },
@@ -184,10 +200,10 @@ export default defineComponent({
       this.edxURL = this.config.EDX_URL;
     });
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
-    await this.getSdcSchoolCollections();
+    await this.getSdcDistrictCollectionMonitoring();
   },
   methods: {
-    async getSdcSchoolCollections(){
+    async getSdcDistrictCollectionMonitoring() {
       this.isLoading = true;
       await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcDistrictCollectionMonitoring`, {
       }).then(response => {
@@ -198,6 +214,21 @@ export default defineComponent({
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    async unsubmitSdcDistrictCollection(sdcDistrictCollectionId) {
+      const confirmation = await this.$refs.confirmRemovalOfCollection.open('Confirm Unsubmit of SDC District Collection', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Yes', rejectText: 'No'});
+      if (!confirmation) {
+        return;
+      }
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/sdcDistrictCollection/${sdcDistrictCollectionId}/unsubmit`)
+        .then(() => {
+          this.setSuccessAlert('Sdc district collection has been unsubmitted');
+          this.getSdcDistrictCollectionMonitoring();
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while unsubmitting district collection. Please try again later.');
+        });
     }
   }
 });

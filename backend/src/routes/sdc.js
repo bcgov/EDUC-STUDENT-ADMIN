@@ -5,7 +5,7 @@ const utils = require('../components/utils');
 const perm = require('../util/Permission');
 const extendSession = utils.extendSession();
 const { getSnapshotFundingDataForSchool, getAllCollectionsForSchool, getActiveCollection, getSdcDistrictCollectionMonitoringByCollectionId,
-  getIndySdcSchoolCollectionMonitoringByCollectionId
+  getIndySdcSchoolCollectionMonitoringByCollectionId, unsubmitSdcDistrictCollection, unsubmitSdcSchoolCollection
 } = require('../components/sdc/sdc');
 const {getCachedSDCData} = require('../components/sdc/sdc-cache');
 const constants = require('../util/constants');
@@ -22,5 +22,7 @@ router.get('/collection/active', passport.authenticate('jwt', {session: false}, 
 router.get('/collection/:collectionID/sdcDistrictCollectionMonitoring', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getSdcDistrictCollectionMonitoringByCollectionId);
 router.get('/collection/:collectionID/indySdcSchoolCollectionMonitoring', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getIndySdcSchoolCollectionMonitoringByCollectionId);
 
+router.post('/sdcDistrictCollection/:sdcDistrictCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, unsubmitSdcDistrictCollection);
+router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, unsubmitSdcSchoolCollection);
 module.exports = router;
 
