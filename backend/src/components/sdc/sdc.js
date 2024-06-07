@@ -59,7 +59,7 @@ async function unsubmitSdcDistrictCollection(req, res) {
     const userInfo = utils.getUser(req);
     const payload = {
       'updateUser': userInfo.idir_username,
-      'districtOrSchoolCollectionID': req.params.sdcDistrictCollectionID
+      'sdcDistrictCollectionID': req.params.sdcDistrictCollectionID
     };
     const data = await postData(`${config.get('sdc:districtCollectionURL')}/unsubmit`, payload);
     return res.status(HttpStatus.OK).json(data);
@@ -74,7 +74,7 @@ async function unsubmitSdcSchoolCollection(req, res) {
     const userInfo = utils.getUser(req);
     const payload = {
       'updateUser': userInfo.idir_username,
-      'districtOrSchoolCollectionID': req.params.sdcSchoolCollectionID
+      'sdcSchoolCollectionID': req.params.sdcSchoolCollectionID
     };
     const data = await postData(`${config.get('sdc:schoolCollectionURL')}/unsubmit`, payload);
     return res.status(HttpStatus.OK).json(data);
