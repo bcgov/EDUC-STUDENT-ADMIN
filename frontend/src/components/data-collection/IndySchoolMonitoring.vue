@@ -243,6 +243,16 @@
             -
           </span>
         </template>
+        <template #item.unsubmit="{ item }">
+          <v-btn
+            :id="'unsubmitBtn' + item.raw.sdcSchoolCollectionId"
+            color="primary"
+            icon="mdi-lock-open"
+            variant="text"
+            :disabled="item.raw.schoolStatus !== 'SUBMITTED'"
+            @click="unsubmitSdcSchoolCollection(item.raw.sdcSchoolCollectionId)"
+          />
+        </template>
         <template #bottom />
       </v-data-table-virtual>
     </v-col>
@@ -266,10 +276,12 @@ import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
+import alertMixin from '@/mixins/alertMixin';
 
 export default defineComponent({
   name: 'IndySchoolMonitoring',
   components: {ConfirmationDialog, Spinner, Filters},
+  mixins: [alertMixin],
   props: {
     collectionObject: {
       type: Object,
@@ -457,6 +469,21 @@ export default defineComponent({
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    async unsubmitSdcSchoolCollection(sdcSchoolCollectionId) {
+      const confirmation = await this.$refs.confirmRemovalOfCollection.open('Confirm Unsubmit of SDC School Collection', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Yes', rejectText: 'No'});
+      if (!confirmation) {
+        return;
+      }
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/sdcSchoolCollection/${sdcSchoolCollectionId}/unsubmit`)
+        .then(() => {
+          this.setSuccessAlert('Sdc school collection has been unsubmitted');
+          this.getSdcSchoolCollections();
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while unsubmitting school collection. Please try again later.');
+        });
     },
     toggleFilters() {
       this.showFilters = !this.showFilters;

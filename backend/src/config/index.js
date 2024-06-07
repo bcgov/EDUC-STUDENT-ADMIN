@@ -200,7 +200,8 @@ nconf.defaults({
     activeCollectionURL: process.env.SDC_API_URL + '/collection/active',
     collectionTypeCodesURL: process.env.SDC_API_URL + '/collection-type-codes',
     districtCollectionStatusCodesURL: process.env.SDC_API_URL + '/district-collection-status-codes',
-    schoolCollectionStatusCodesURL: process.env.SDC_API_URL + '/school-collection-status-codes'
+    schoolCollectionStatusCodesURL: process.env.SDC_API_URL + '/school-collection-status-codes',
+    districtCollectionURL: process.env.SDC_API_URL + '/sdcDistrictCollection'
   }
 });
 module.exports = nconf;
