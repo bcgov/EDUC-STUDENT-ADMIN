@@ -120,6 +120,14 @@ export default {
   getAllCollectionTypeCodes: getCodes(`${Routes.sdc.COLLECTION_TYPE_CODES_URL}`),
   getAllDistrictCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_DISTRICT_COLLECTION_STATUS_CODES}`),
   getAllSchoolCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STATUS_CODES}`),
+  getAllActiveBandCodes:getCodes(`${Routes.sdc.SDC_BAND_CODES}?active=true`),
+  getAllActiveCareerProgramCodes:getCodes(`${Routes.sdc.SDC_CAREER_PROGRAM_CODES}?active=true`),
+  getAllActiveEnrolledProgramCodes:getCodes(`${Routes.sdc.SDC_ENROLLED_PROGRAM_CODES}?active=true`),
+  getAllActiveGenderCodes:getCodes(`${Routes.sdc.SDC_GENDER_CODES}?active=true`),
+  getAllActiveEnrolledGradeCodes:getCodes(`${Routes.sdc.SDC_ENROLLED_GRADE_CODES}?active=true`),
+  getAllActiveHomeLanguageSpokenCodes:getCodes(`${Routes.sdc.SDC_HOME_LANGUAGE_SPOKEN_CODES}?active=true`),
+  getAllActiveSchoolFundingCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_FUNDING_CODES}?active=true`),
+  getAllActiveSpecialEdCodes:getCodes(`${Routes.sdc.SDC_SPECIAL_ED_CODES}?active=true`),
   async getConfig() {
     try {
       const response = await apiAxios.get(Routes.CONFIG);

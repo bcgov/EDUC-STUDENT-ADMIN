@@ -23,6 +23,14 @@ cacheKeys = {
   COLLECTION_TYPE_CODES: 'collection-type-codes',
   SDC_DISTRICT_COLLECTION_STATUS_CODES: 'sdc_district_collection_status_codes',
   SDC_SCHOOL_COLLECTION_STATUS_CODES: 'sdc_school_collection_status_codes',
+  SDC_BAND_CODES: 'sdc_band_codes',
+  SDC_CAREER_PROGRAM_CODES: 'sdc_career_program_codes',
+  SDC_ENROLLED_GRADE_CODES: 'sdc_enrolled_grade_codes',
+  SDC_ENROLLED_PROGRAM_CODES: 'sdc_enrolled_program_codes',
+  SDC_GENDER_CODES: 'sdc_gender_codes',
+  SDC_HOME_LANGUAGE_SPOKEN_CODES: 'sdc_home_language_spoken_codes',
+  SDC_SCHOOL_FUNDING_CODES: 'sdc_school_funding_code',
+  SDC_SPECIAL_ED_CODES: 'sdc_special_ed_codes',
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);
@@ -172,6 +180,14 @@ const INSTITUTE_CACHE_REFRESH_TOPIC = 'INSTITUTE_CACHE_REFRESH_TOPIC';
 const WS_MOVE_SCHOOL_TOPIC = 'WS_MOVE_SCHOOL_TOPIC';
 const WS_CREATE_SCHOOL_TOPIC = 'WS_CREATE_SCHOOL_TOPIC';
 const WS_NEW_SECURE_MESSAGE_TOPIC = 'WS_NEW_SECURE_MESSAGE_TOPIC';
+
+const ENROLLED_PROGRAM_TYPE_CODE_MAP = Object.freeze({
+  FRENCH_ENROLLED_PROGRAM_CODES: ['11', '08', '14', '05'],
+  CAREER_ENROLLED_PROGRAM_CODES: ['40', '41', '42', '43'],
+  INDIGENOUS_ENROLLED_PROGRAM_CODES: ['29', '33', '36'],
+  ENGLISH_ENROLLED_PROGRAM_CODES: ['17'],
+});
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -184,5 +200,6 @@ module.exports = {
   CACHE_KEYS,
   WS_MOVE_SCHOOL_TOPIC,
   WS_CREATE_SCHOOL_TOPIC,
-  WS_NEW_SECURE_MESSAGE_TOPIC
+  WS_NEW_SECURE_MESSAGE_TOPIC,
+  ENROLLED_PROGRAM_TYPE_CODE_MAP,
 };

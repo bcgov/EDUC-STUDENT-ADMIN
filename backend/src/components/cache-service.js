@@ -6,6 +6,7 @@ const retry = require('async-retry');
 const {generateDistrictObject, isDistrictActive, generateSchoolObject, isSchoolActive, isAuthorityActive,
   generateAuthorityObject, isActiveRecord
 } = require('./institute/instituteUtils');
+const constants = require('../util/constants');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
@@ -21,6 +22,13 @@ const cachedData = {};
 
 let documentTypeCodesMap = new Map();
 let documentTypeCodes = [];
+let bandCodesMap = new Map();
+let enrolledProgramCodesMap = new Map();
+let careerProgramCodesMap = new Map();
+let homeLanguageSpokenCodesMap = new Map();
+let schoolFundingCodesMap = new Map();
+let schoolCollectionStatusCodesMap = new Map();
+let specialEducationCodesMap = new Map();
 
 const cacheService = {
 
@@ -247,6 +255,98 @@ const cacheService = {
   },
   getCachedData(){
     return cachedData;
+  },
+  getAllActiveBandCodesMap() {
+    let bandCodesRaw = cachedData[constants.CACHE_KEYS.SDC_BAND_CODES].activeRecords;
+    let bandCodes = bandCodesRaw.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.bandCode})`};
+    });
+
+    bandCodes.unshift({'bandCode': '', 'dropdownText': 'No Band Code'});
+    bandCodes.forEach(bandCode => {
+      bandCodesMap.set(bandCode.bandCode, bandCode);
+    });
+    return bandCodesMap;
+  },
+  getActiveCareerProgramCodesMap() {
+    let careerProgramCodesRaw = cachedData[constants.CACHE_KEYS.SDC_CAREER_PROGRAM_CODES].activeRecords;
+    let careerProgramCodes = careerProgramCodesRaw.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.careerProgramCode})`};
+    });
+    careerProgramCodes.unshift({'careerProgramCode': '', 'dropdownText': 'No Career Code'});
+    careerProgramCodes.forEach(careerProgramCode => {
+      careerProgramCodesMap.set(careerProgramCode.careerProgramCode, careerProgramCode);
+    });
+    return careerProgramCodesMap;
+  },
+  getHomeLanguageSpokenCodesMap() {
+    let homeLanguageSpokenCodeList = cachedData[constants.CACHE_KEYS.SDC_HOME_LANGUAGE_SPOKEN_CODES].activeRecords;
+    let homeLanguageSpokenCodes = homeLanguageSpokenCodeList.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.homeLanguageSpokenCode})`};
+    });
+    homeLanguageSpokenCodes.unshift({'homeLanguageSpokenCode': null, 'dropdownText': 'No Home Language Code'});
+    homeLanguageSpokenCodes.forEach(homeLanguageSpokenCode => {
+      homeLanguageSpokenCodesMap.set(homeLanguageSpokenCode.homeLanguageSpokenCode, homeLanguageSpokenCode);
+    });
+    return homeLanguageSpokenCodesMap;
+  },
+  getEnrolledProgramCodesMap() {
+    let enrolledProgramCodesRaw = cachedData[constants.CACHE_KEYS.SDC_ENROLLED_PROGRAM_CODES].activeRecords;
+    let enrolledProgramCodes = enrolledProgramCodesRaw.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.enrolledProgramCode})`};
+    });
+    enrolledProgramCodes.forEach(enrolledProgramCode => {
+      enrolledProgramCodesMap.set(enrolledProgramCode.enrolledProgramCode, enrolledProgramCode);
+    });
+    return enrolledProgramCodesMap;
+  },
+  getActiveSchoolFundingCodesMap() {
+    let schoolFundingCodesRaw = cachedData[constants.CACHE_KEYS.SDC_SCHOOL_FUNDING_CODES].activeRecords;
+    let schoolFundingCodes = schoolFundingCodesRaw.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.schoolFundingCode})`};
+    });
+    schoolFundingCodes.unshift({'schoolFundingCode': '', 'dropdownText': 'No Funding Code'});
+    schoolFundingCodes.forEach(schoolFundingCode => {
+      schoolFundingCodesMap.set(schoolFundingCode.schoolFundingCode, schoolFundingCode);
+    });
+    return schoolFundingCodesMap;
+  },
+  getActiveSpecialEducationCodesMap() {
+    let specialEducationCodesRaw = cachedData[constants.CACHE_KEYS.SDC_SPECIAL_ED_CODES].activeRecords;
+    let specialEducationCodes = specialEducationCodesRaw.map(item => {
+      return {...item, dropdownText: `${item.description} (${item.specialEducationCategoryCode})`};
+    });
+    specialEducationCodesMap = new Map();
+    specialEducationCodes.unshift({'specialEducationCategoryCode': '', 'dropdownText': 'No Special Ed Category Code'});
+    specialEducationCodes.forEach(specialEducationCategoryCode => {
+      specialEducationCodesMap.set(specialEducationCategoryCode.specialEducationCategoryCode, specialEducationCategoryCode);
+    });
+    return specialEducationCodesMap;
+  },
+  getActiveSchoolCollectionStatusCodesMap(){
+    let schoolCollectionStatusCodesRaw = cachedData[constants.CACHE_KEYS.SDC_SCHOOL_COLLECTION_STATUS_CODES].records;
+    let schoolCollectionStatusCodes = schoolCollectionStatusCodesRaw.map(item => {
+      return {...item, dropdownText:`${item.label}`};
+    });
+    schoolCollectionStatusCodes.forEach((statusCode => {
+      schoolCollectionStatusCodesMap.set(statusCode, statusCode.label);
+    }));
+    return schoolCollectionStatusCodesMap;
+  },
+  getActiveEnrolledGradeCodes() {
+    return cachedData[constants.CACHE_KEYS.SDC_ENROLLED_GRADE_CODES].activeRecords;
+  },
+  getActiveSchoolFundingCodes() {
+    return cachedData[constants.CACHE_KEYS.SDC_SCHOOL_FUNDING_CODES].activeRecords;
+  },
+  getActiveCareerProgramCodes() {
+    return cachedData[constants.CACHE_KEYS.SDC_CAREER_PROGRAM_CODES].activeRecords;
+  },
+  getActiveEnrolledProgramCodes() {
+    return cachedData[constants.CACHE_KEYS.SDC_ENROLLED_PROGRAM_CODES].activeRecords;
+  },
+  getActiveSpecialEducationCodes() {
+    return cachedData[constants.CACHE_KEYS.SDC_SPECIAL_ED_CODES].activeRecords;
   }
 };
 
