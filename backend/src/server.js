@@ -128,6 +128,41 @@ if(!config.get('frontendConfig').disableSdcFunctionality) {
   }).catch((e) => {
     log.error('Error loading SDC_SCHOOL_COLLECTION_STATUS_CODES data during boot.', e);
   });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_BAND_CODES, 'sdc:bandCodesURL').then(() => {
+    log.info('Loaded SDC_BAND_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_BAND_CODES data during boot .', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_CAREER_PROGRAM_CODES, 'sdc:careerProgramCodesURL').then(() => {
+    log.info('Loaded SDC_CAREER_PROGRAM_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_CAREER_PROGRAM_CODES data during boot.', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_ENROLLED_GRADE_CODES, 'sdc:enrolledGradeCodesURL').then(() => {
+    log.info('Loaded SDC_ENROLLED_GRADE_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_ENROLLED_GRADE_CODES data during boot.', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_ENROLLED_PROGRAM_CODES, 'sdc:enrolledProgramCodesURL').then(() => {
+    log.info('Loaded SDC_ENROLLED_PROGRAM_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_ENROLLED_PROGRAM_CODES data during boot.', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_HOME_LANGUAGE_SPOKEN_CODES, 'sdc:homeLanguageSpokenCodesURL').then(() => {
+    log.info('Loaded SDC_HOME_LANGUAGE_SPOKEN_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_HOME_LANGUAGE_SPOKEN_CODES data during boot.', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_SCHOOL_FUNDING_CODES, 'sdc:schoolFundingCodesURL').then(() => {
+    log.info('Loaded SDC_SCHOOL_FUNDING_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_SCHOOL_FUNDING_CODES data during boot.', e);
+  });
+  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_SPECIAL_ED_CODES, 'sdc:specialEdCodesURL').then(() => {
+    log.info('Loaded SDC_SPECIAL_ED_CODES data to memory');
+  }).catch((e) => {
+    log.error('Error loading SDC_SPECIAL_ED_CODES data during boot.', e);
+  });
 }
 
 cacheService.loadAllAuthoritiesToMap().then(() => {

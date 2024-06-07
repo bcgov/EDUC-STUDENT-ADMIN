@@ -185,6 +185,15 @@ let object = {
     COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes',
     SDC_DISTRICT_COLLECTION_STATUS_CODES: sdcRoot + '/district-collection-status-codes',
     SDC_SCHOOL_COLLECTION_STATUS_CODES: sdcRoot + '/school-collection-status-codes',
+    SDC_BAND_CODES: sdcRoot + '/band-codes',
+    SDC_CAREER_PROGRAM_CODES: sdcRoot + '/career-program-codes',
+    SDC_ENROLLED_GRADE_CODES: sdcRoot + '/enrolled-grade-codes',
+    SDC_ENROLLED_PROGRAM_CODES: sdcRoot + '/enrolled-program-codes',
+    SDC_GENDER_CODES: sdcRoot + '/gender-codes',
+    SDC_HOME_LANGUAGE_SPOKEN_CODES: sdcRoot + '/home-language-spoken-codes',
+    SDC_SCHOOL_FUNDING_CODES: sdcRoot + '/school-funding-codes',
+    SDC_SPECIAL_ED_CODES: sdcRoot + '/specialEducation-codes',
+    SDC_SCHOOL_COLLECTION_STUDENT: sdcRoot + '/sdcSchoolCollectionStudent',
   }
 };
 

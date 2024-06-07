@@ -102,6 +102,27 @@ export function formatContactName(contact) {
 }
 
 export function formatCollectionTypeCode(code) {
-  let lowercaseCollectionType = code.toLowerCase()
+  let lowercaseCollectionType = code.toLowerCase();
   return lowercaseCollectionType.replace(lowercaseCollectionType[0], lowercaseCollectionType[0].toUpperCase());
+}
+
+export function displayName(first, middle, last) {
+  let name = '';
+  if (last) {
+    name += last;
+  }
+
+  if (first && last) {
+    name +=  `, ${first}` ;
+  } else if (first) {
+    name += first;
+  }
+
+  if ((first && middle) || (last && middle)) {
+    name += ` (${middle})`;
+  } else if (middle) {
+    name += `(${middle})`;
+  }
+
+  return name;
 }
