@@ -267,16 +267,13 @@ async function getInDistrictDuplicates(req, res) {
       if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT && sdcDuplicate.duplicateResolutionCode) {
         setStudentResolvedMessage(sdcDuplicate);
         result.enrollmentDuplicates.RESOLVED.push(sdcDuplicate);
-      }
-      else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT) {
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT) {
         setIfOnlineStudentAndCanChangeGrade(sdcDuplicate, school1, school2);
         setCanMoveToCrossEnrollment(sdcDuplicate);
         result.enrollmentDuplicates[sdcDuplicate.duplicateSeverityCode].push(sdcDuplicate);
-      }
-      else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM && sdcDuplicate.duplicateResolutionCode) {
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM && sdcDuplicate.duplicateResolutionCode) {
         result.programDuplicates.RESOLVED.push(sdcDuplicate);
-      }
-      else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM) {
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM) {
         setProgramDuplicateTypeMessage(sdcDuplicate);
         result.programDuplicates.NON_ALLOW.push(sdcDuplicate);
       }
@@ -284,6 +281,8 @@ async function getInDistrictDuplicates(req, res) {
     res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'Error retrieving the in district duplicates');
+  }
+}
     
 async function updateStudentPEN(req, res) {
   try {
@@ -362,7 +361,7 @@ module.exports = {
   unsubmitSdcSchoolCollection,
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
-  getInDistrictDuplicates
+  getInDistrictDuplicates,
   updateStudentPEN,
   checkDuplicatesInCollection
 };
