@@ -47,11 +47,11 @@ import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
-import ActiveCollectionPage from "@/components/data-collection/ActiveCollectionPage.vue";
+import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionPage.vue';
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
-import CollectionView from "@/components/data-collection/CollectionView.vue";
-import StepOneCloseCollection from "@/components/data-collection/StepOneCloseCollection.vue";
-import PenMatchStudentDetails from "@/components/data-collection/PenMatchStudentDetails.vue";
+import CollectionView from '@/components/data-collection/CollectionView.vue';
+import StepOneCloseCollection from '@/components/data-collection/StepOneCloseCollection.vue';
+import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
 
 const router = createRouter({
   history: createWebHistory(),
