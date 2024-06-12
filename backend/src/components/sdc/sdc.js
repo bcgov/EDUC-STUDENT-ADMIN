@@ -128,15 +128,6 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       value.schoolName = getSchoolName(school);
       value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
     });
-    data?.content.sort((a,b) =>  {
-      if (a.schoolName > b.schoolName) {
-        return 1;
-      } else if (a.schoolName < b.schoolName) {
-        return -1;
-      }
-      return 0;
-    });
-
 
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -226,6 +217,8 @@ function createAssignedPENSearchCriteria(searchParams) {
 
   if(searchParams.label === 'REVIEW_PEN') {
     searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'MULTI,INREVIEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  } else if(searchParams.label === 'NEW_PEN') {
+    searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'NEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }
   return searchCriteriaList;
 }
@@ -237,9 +230,9 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
       sdcSchoolCollectionStudentData.enrolledProgramCodes = sdcSchoolCollectionStudentData?.enrolledProgramCodes.match(/.{1,2}/g);
     }
 
-    // if (sdcSchoolCollectionStudentData?.numberOfCourses) {
-    //   sdcSchoolCollectionStudentData.numberOfCourses = formatNumberOfCourses(sdcSchoolCollectionStudentData?.numberOfCourses);
-    // }
+      let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
+      sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
+      sdcSchoolCollectionStudentData.mincode = school.mincode;
 
     return res.status(HttpStatus.OK).json(sdcSchoolCollectionStudentData);
   } catch (e) {
@@ -291,6 +284,21 @@ async function getInDistrictDuplicates(req, res) {
     res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'Error retrieving the in district duplicates');
+    
+async function updateStudentPEN(req, res) {
+  try {
+    const payload = req.body;
+    payload.createDate = null;
+    payload.createUser = null;
+    payload.updateDate = null;
+    payload.updateUser = utils.getUser(req).idir_username;
+    payload.enrolledProgramCodes = null;
+    payload.penMatchResult = null;
+
+    const data = await postData(`${config.get('sdc:schoolCollectionStudentURL')}/update-pen/type/${req.params.penCode}`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'Error updating student PEN');
     return errorResponse(res);
   }
 }
@@ -329,6 +337,21 @@ function setProgramDuplicateTypeMessage(sdcDuplicate) {
   sdcDuplicate.programDuplicateTypeCodeDescription = programDuplicateTypeCodes.get(sdcDuplicate.programDuplicateTypeCode)?.label;
 }
 
+async function checkDuplicatesInCollection(req, res) {
+  try {
+    const params = {
+      params: {
+        matchedAssignedIDs: req.query.matchedAssignedIDs
+      }
+    };
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/duplicates`, params);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'Error finding duplicates in the collection');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
@@ -340,4 +363,6 @@ module.exports = {
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
   getInDistrictDuplicates
+  updateStudentPEN,
+  checkDuplicatesInCollection
 };
