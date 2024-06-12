@@ -253,7 +253,7 @@ async function updateStudentPEN(req, res) {
     payload.enrolledProgramCodes = null;
     payload.penMatchResult = null;
 
-    const data = await postData(`{config.get('sdc:schoolCollectionStudentURL')}/update-pen/type/${req.params.penCode}`, payload);
+    const data = await postData(`${config.get('sdc:schoolCollectionStudentURL')}/update-pen/type/${req.params.penCode}`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'Error updating student PEN');
