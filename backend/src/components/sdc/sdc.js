@@ -230,9 +230,9 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
       sdcSchoolCollectionStudentData.enrolledProgramCodes = sdcSchoolCollectionStudentData?.enrolledProgramCodes.match(/.{1,2}/g);
     }
 
-      let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
-      sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
-      sdcSchoolCollectionStudentData.mincode = school.mincode;
+    let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
+    sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
+    sdcSchoolCollectionStudentData.mincode = school.mincode;
 
     return res.status(HttpStatus.OK).json(sdcSchoolCollectionStudentData);
   } catch (e) {
