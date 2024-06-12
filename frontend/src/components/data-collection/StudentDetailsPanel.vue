@@ -135,7 +135,7 @@
 
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import SearchDemographicModal from '../../components/common/SearchDemographicModal.vue';
-
+import {partialRight} from 'lodash';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import {
   deepCloneObject

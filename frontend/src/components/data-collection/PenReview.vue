@@ -52,14 +52,12 @@ import {omitBy, isEmpty} from 'lodash';
 import {PEN_MATCHING} from '@/utils/sdc/collectionTableConfiguration';
 import CustomTable from '../common/CustomTable.vue';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
-import PenMatchStudentDetails from './PenMatchStudentDetails.vue';
 import {mapState, mapActions} from 'pinia';
 
 export default {
   name: 'PenReview',
   components: {
-    CustomTable,
-    PenMatchStudentDetails
+    CustomTable
   },
   mixins: [alertMixin],
   props: {
