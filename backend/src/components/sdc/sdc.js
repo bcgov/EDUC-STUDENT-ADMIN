@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
-const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP } = require('../../util/constants');
+const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
 
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
@@ -88,7 +88,7 @@ async function unsubmitSdcSchoolCollection(req, res) {
 async function getSDCSchoolCollectionStudentPaginated(req, res) {
   try {
     const search = [];
-   
+
     search.push({
       condition: null,
       searchCriteriaList: [{ key: 'sdcSchoolCollection.collectionEntity.collectionID', value: req.params.collectionID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
@@ -122,14 +122,12 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       data.content = data?.content.map(toTableRow);
     }
 
-    
+
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
       value.schoolName = getSchoolName(school);
       value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
     });
-    
-    
 
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -165,7 +163,7 @@ function toTableRow(student) {
   student.spedProgramEligible = student.specialEducationNonEligReasonCode !== null ? 'No' : 'Yes';
   student.mappedNoOfCourses = student.numberOfCoursesDec ? student.numberOfCoursesDec.toFixed(2) : '0';
   student.mappedHomelanguageCode = student.homeLanguageSpokenCode !== '' && homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode) !== undefined ? `${homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode)?.description} (${homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode)?.homeLanguageSpokenCode})` : null;
-  
+
   return student;
 }
 
@@ -186,7 +184,7 @@ function enrolledProgramMapping(student, enrolledProgramFilter) {
 
 function nativeAncestryInd(student) {
   return student.nativeAncestryInd === 'Y' ? 'Yes' : 'No';
-} 
+}
 
 function getSchoolName(school) {
   return school.mincode + ' - ' + school.schoolName;
@@ -204,7 +202,7 @@ function getDistrictName(district) {
  */
 function createSearchCriteria(searchParams = []) {
   let searchCriteriaList = [];
- 
+
   Object.keys(searchParams).forEach(function(key) {
     let pValue = searchParams[key];
     if (key === 'sdcSchoolCollectionStudentStatusCode') {
@@ -216,7 +214,7 @@ function createSearchCriteria(searchParams = []) {
 
 function createAssignedPENSearchCriteria(searchParams) {
   let searchCriteriaList = [];
- 
+
   if(searchParams.label === 'REVIEW_PEN') {
     searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'MULTI,INREVIEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   } else if(searchParams.label === 'NEW_PEN') {
@@ -232,9 +230,9 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
       sdcSchoolCollectionStudentData.enrolledProgramCodes = sdcSchoolCollectionStudentData?.enrolledProgramCodes.match(/.{1,2}/g);
     }
 
-      let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
-      sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
-      sdcSchoolCollectionStudentData.mincode = school.mincode;
+    let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
+    sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
+    sdcSchoolCollectionStudentData.mincode = school.mincode;
 
     return res.status(HttpStatus.OK).json(sdcSchoolCollectionStudentData);
   } catch (e) {
@@ -243,6 +241,49 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
   }
 }
 
+async function getInDistrictDuplicates(req, res) {
+  try {
+    let sdcDuplicates = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/in-province-duplicates`);
+
+    const result = {
+      enrollmentDuplicates: {
+        NON_ALLOW: [],
+        ALLOWABLE: [],
+        RESOLVED: []
+      },
+      programDuplicates: {
+        NON_ALLOW: [],
+        RESOLVED: []
+      }
+    };
+    sdcDuplicates.forEach(sdcDuplicate => {
+      const school1 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent1Entity?.schoolID);
+      sdcDuplicate.sdcSchoolCollectionStudent1Entity.schoolName = getSchoolName(school1);
+      toTableRow(sdcDuplicate.sdcSchoolCollectionStudent1Entity);
+      const school2 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent2Entity?.schoolID);
+      sdcDuplicate.sdcSchoolCollectionStudent2Entity.schoolName = getSchoolName(school2);
+      toTableRow(sdcDuplicate.sdcSchoolCollectionStudent2Entity);
+
+      if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT && sdcDuplicate.duplicateResolutionCode) {
+        setStudentResolvedMessage(sdcDuplicate);
+        result.enrollmentDuplicates.RESOLVED.push(sdcDuplicate);
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT) {
+        setIfOnlineStudentAndCanChangeGrade(sdcDuplicate, school1, school2);
+        setCanMoveToCrossEnrollment(sdcDuplicate);
+        result.enrollmentDuplicates[sdcDuplicate.duplicateSeverityCode].push(sdcDuplicate);
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM && sdcDuplicate.duplicateResolutionCode) {
+        result.programDuplicates.RESOLVED.push(sdcDuplicate);
+      } else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM) {
+        setProgramDuplicateTypeMessage(sdcDuplicate);
+        result.programDuplicates.NON_ALLOW.push(sdcDuplicate);
+      }
+    });
+    res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'Error retrieving the in district duplicates');
+  }
+}
+    
 async function updateStudentPEN(req, res) {
   try {
     const payload = req.body;
@@ -259,6 +300,40 @@ async function updateStudentPEN(req, res) {
     logApiError(e, 'Error updating student PEN');
     return errorResponse(res);
   }
+}
+
+function setStudentResolvedMessage(sdcDuplicate) {
+  const resolutionCodes = cacheService.getAllDuplicateResolutionCodesMap();
+  const retainedId = sdcDuplicate.retainedSdcSchoolCollectionStudentEntity?.sdcSchoolCollectionStudentID;
+  if (sdcDuplicate.sdcSchoolCollectionStudent1Entity.sdcSchoolCollectionStudentID === retainedId) {
+    sdcDuplicate.sdcSchoolCollectionStudent1Entity.resolution = resolutionCodes.get(sdcDuplicate.duplicateResolutionCode) !== undefined ? resolutionCodes.get(sdcDuplicate.duplicateResolutionCode)?.message : null;
+  }
+  else if (sdcDuplicate.sdcSchoolCollectionStudent2Entity.sdcSchoolCollectionStudentID === retainedId) {
+    sdcDuplicate.sdcSchoolCollectionStudent2Entity.resolution = resolutionCodes.get(sdcDuplicate.duplicateResolutionCode) !== undefined ? resolutionCodes.get(sdcDuplicate.duplicateResolutionCode)?.message : null;
+  }
+}
+
+function setIfOnlineStudentAndCanChangeGrade(sdcDuplicate, school1, school2) {
+  if(['DIST_LEARN', 'DISTONLINE'].includes(school1.facilityTypeCode) && ['08', '09'].includes(sdcDuplicate.sdcSchoolCollectionStudent1Entity.enrolledGradeCode)) {
+    sdcDuplicate.sdcSchoolCollectionStudent1Entity.canChangeGrade = true;
+  }
+  if(['DIST_LEARN', 'DISTONLINE'].includes(school2.facilityTypeCode) && ['08', '09'].includes(sdcDuplicate.sdcSchoolCollectionStudent2Entity.enrolledGradeCode)) {
+    sdcDuplicate.sdcSchoolCollectionStudent2Entity.canChangeGrade = true;
+  }
+}
+
+function setCanMoveToCrossEnrollment(sdcDuplicate) {
+  if (['08', '09'].includes(sdcDuplicate.sdcSchoolCollectionStudent1Entity.enrolledGradeCode)) {
+    sdcDuplicate.sdcSchoolCollectionStudent1Entity.canMoveToCrossEnrollment = true;
+  }
+  if (['08', '09'].includes(sdcDuplicate.sdcSchoolCollectionStudent2Entity.enrolledGradeCode)) {
+    sdcDuplicate.sdcSchoolCollectionStudent1Entity.canMoveToCrossEnrollment = true;
+  }
+}
+
+function setProgramDuplicateTypeMessage(sdcDuplicate) {
+  const programDuplicateTypeCodes = cacheService.getAllProgramDuplicateTypeCodesMap();
+  sdcDuplicate.programDuplicateTypeCodeDescription = programDuplicateTypeCodes.get(sdcDuplicate.programDuplicateTypeCode)?.label;
 }
 
 async function checkDuplicatesInCollection(req, res) {
@@ -286,6 +361,7 @@ module.exports = {
   unsubmitSdcSchoolCollection,
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
+  getInDistrictDuplicates,
   updateStudentPEN,
   checkDuplicatesInCollection
 };

@@ -89,6 +89,7 @@ export default {
   data() {
     return {
       year: null,
+      collectionID: null,
       collectionType: null,
       snapshotDate: null,
       submissionDueDate: null
@@ -107,13 +108,13 @@ export default {
 
           let lowercaseCollectionType = response.data.collectionTypeCode.toLowerCase();
           this.collectionType = lowercaseCollectionType.replace(lowercaseCollectionType[0], lowercaseCollectionType[0].toUpperCase());
-
+          this.collectionID = response.data.collectionID;
           this.snapshotDate = response.data.snapshotDate.replaceAll('-', '/');
           this.submissionDueDate = response.data.submissionDueDate.replaceAll('-', '/');
         });
     },
     goToCloseCollection() {
-      this.$router.push({name: 'close-collection', params: {}});
+      this.$router.push({name: 'collection-view', params: {'collectionID': this.collectionID}});
     }
   }
 };

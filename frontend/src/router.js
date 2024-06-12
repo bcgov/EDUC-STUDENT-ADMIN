@@ -631,9 +631,10 @@ const router = createRouter({
       }
     },
     {
-      path: '/sdc-collection/new',
-      name: 'close-collection',
+      path: '/sdc-collection/:collectionID',
+      name: 'collection-view',
       component: CollectionView,
+      props:  true,
       meta: {
         pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
         requiresAuth: true,
