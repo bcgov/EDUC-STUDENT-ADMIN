@@ -29,6 +29,7 @@ let homeLanguageSpokenCodesMap = new Map();
 let schoolFundingCodesMap = new Map();
 let schoolCollectionStatusCodesMap = new Map();
 let specialEducationCodesMap = new Map();
+let duplicateResolutionCodesMap = new Map();
 
 const cacheService = {
 
@@ -322,6 +323,13 @@ const cacheService = {
       specialEducationCodesMap.set(specialEducationCategoryCode.specialEducationCategoryCode, specialEducationCategoryCode);
     });
     return specialEducationCodesMap;
+  },
+  getAllDuplicateResolutionCodesMap() {
+    let duplicateResolutionCodes = cachedData[constants.CACHE_KEYS.SDC_DUPLICATE_RESOLUTION_CODES].records;
+    duplicateResolutionCodes.forEach(duplicateResolutionCode => {
+      duplicateResolutionCodesMap.set(duplicateResolutionCode.duplicateResolutionCode, duplicateResolutionCode);
+    });
+    return duplicateResolutionCodesMap;
   },
   getActiveSchoolCollectionStatusCodesMap(){
     let schoolCollectionStatusCodesRaw = cachedData[constants.CACHE_KEYS.SDC_SCHOOL_COLLECTION_STATUS_CODES].records;

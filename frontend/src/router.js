@@ -47,10 +47,9 @@ import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
-import ActiveCollectionPage from "@/components/data-collection/ActiveCollectionPage.vue";
+import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionPage.vue';
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
-import CollectionView from "@/components/data-collection/CollectionView.vue";
-import StepOneCloseCollection from "@/components/data-collection/StepOneCloseCollection.vue";
+import CollectionView from '@/components/data-collection/CollectionView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -630,27 +629,15 @@ const router = createRouter({
       }
     },
     {
-      path: '/sdc-collection/new',
-      name: 'close-collection',
+      path: '/sdc-collection/:collectionID',
+      name: 'collection-view',
       component: CollectionView,
+      props:  true,
       meta: {
         pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
         requiresAuth: true,
         permission: PERMISSION.STUDENT_DATA_COLLECTION
-      },
-      children: [
-        {
-          path: 'step-1',
-          name: 'step-1',
-          component: StepOneCloseCollection,
-          meta: {
-            pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
-            requiresAuth: true,
-            permission: PERMISSION.STUDENT_DATA_COLLECTION
-          }
-        }
-
-      ]
+      }
     }
   ]
 });

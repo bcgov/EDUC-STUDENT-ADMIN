@@ -27,6 +27,12 @@
       >
         PEN Fixes
       </v-tab>
+      <v-tab
+        class="divider"
+        :value="4"
+      >
+        Resolve Provincial Duplicates
+      </v-tab>
     </v-tabs>
     <v-window v-model="tab">
       <v-window-item
@@ -104,6 +110,13 @@
       >
         Hot new PEN Fixes feature coming to you this sprint by the talented Avisha!
       </v-window-item>
+      <v-window-item
+        :value="4"
+        transition="false"
+        reverse-transition="false"
+      >
+        <ProvincialDuplicates :collection-object="collectionObject" />
+      </v-window-item>
     </v-window>
   </v-col>
   <ConfirmationDialog ref="confirmRemovalOfCollection">
@@ -125,12 +138,14 @@ import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import IndySchoolMonitoring from '../data-collection/IndySchoolMonitoring.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
 
 export default defineComponent({
   name: 'Monitoring',
   components: {
     ConfirmationDialog,
     IndySchoolMonitoring,
+    ProvincialDuplicates,
     Spinner
   },
   mixins: [ alertMixin ],
@@ -140,7 +155,6 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['next'],
   data() {
     return {
       allowedFilters: MONITORING.allowedFilters,

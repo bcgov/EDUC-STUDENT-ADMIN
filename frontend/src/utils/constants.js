@@ -194,6 +194,7 @@ let object = {
     SDC_SCHOOL_FUNDING_CODES: sdcRoot + '/school-funding-codes',
     SDC_SPECIAL_ED_CODES: sdcRoot + '/specialEducation-codes',
     SDC_SCHOOL_COLLECTION_STUDENT: sdcRoot + '/sdcSchoolCollectionStudent',
+    SDC_DUPLICATE_RESOLUTION_CODES: sdcRoot + '/duplicate-resolution-codes'
   }
 };
 

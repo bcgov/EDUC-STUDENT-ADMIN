@@ -31,6 +31,7 @@ cacheKeys = {
   SDC_HOME_LANGUAGE_SPOKEN_CODES: 'sdc_home_language_spoken_codes',
   SDC_SCHOOL_FUNDING_CODES: 'sdc_school_funding_code',
   SDC_SPECIAL_ED_CODES: 'sdc_special_ed_codes',
+  SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes'
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);
@@ -188,6 +189,11 @@ const ENROLLED_PROGRAM_TYPE_CODE_MAP = Object.freeze({
   ENGLISH_ENROLLED_PROGRAM_CODES: ['17'],
 });
 
+const DUPLICATE_TYPE_CODES = Object.freeze({
+  ENROLLMENT: 'ENROLLMENT',
+  PROGRAM: 'PROGRAM'
+});
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -202,4 +208,5 @@ module.exports = {
   WS_CREATE_SCHOOL_TOPIC,
   WS_NEW_SECURE_MESSAGE_TOPIC,
   ENROLLED_PROGRAM_TYPE_CODE_MAP,
+  DUPLICATE_TYPE_CODES
 };
