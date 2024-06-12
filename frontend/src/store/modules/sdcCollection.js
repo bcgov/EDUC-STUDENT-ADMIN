@@ -23,6 +23,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     specialEducationCodesMap: new Map(),
     specialEducationCodes: [],
     ancestryItems: [{code:'Y', dropdownText:'Yes'}, {code:'N', dropdownText:'No'}],
+    selectedIDs: [],
+    page: 0
   }),
   actions: {
     setDistrictCollectionStatusCodes(districtCollectionStatusCodes){
@@ -111,6 +113,12 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
       specialEducationCodes.forEach(specialEducationCategoryCode => {
         this.specialEducationCodesMap.set(specialEducationCategoryCode.specialEducationCategoryCode, specialEducationCategoryCode);
       });
+    },
+    setSelectedIDs(selectedIDs) {
+      this.selectedIDs = selectedIDs;
+    },
+    setNavigationPage(page) {
+      this.page = page;
     },
     async getDistrictCollectionStatusCodeMap() {
       if(this.districtCollectionStatusCodesMap.size === 0) {
