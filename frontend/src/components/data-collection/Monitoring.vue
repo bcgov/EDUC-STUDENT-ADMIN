@@ -102,7 +102,9 @@
         transition="false"
         reverse-transition="false"
       >
-        Hot new PEN Fixes feature coming to you this sprint by the talented Avisha!
+        <PenMatch 
+          :collection-object="collectionObject"
+        />
       </v-window-item>
     </v-window>
   </v-col>
@@ -125,13 +127,15 @@ import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import IndySchoolMonitoring from '../data-collection/IndySchoolMonitoring.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import PenMatch from '../data-collection/PenMatch.vue';
 
 export default defineComponent({
   name: 'Monitoring',
   components: {
     ConfirmationDialog,
     IndySchoolMonitoring,
-    Spinner
+    Spinner,
+    PenMatch
   },
   mixins: [ alertMixin ],
   props: {
