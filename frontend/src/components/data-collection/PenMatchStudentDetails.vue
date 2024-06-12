@@ -299,10 +299,6 @@ export default {
       this.clonedStudentDetail.assignedStudentId = matchedStudent.studentID;
       this.updatePEN('MATCH').finally(() => {
         this.isMatchingToStudentRecord = false;
-        if(!this.nextDisabled) {
-          this.clickNextBtn();
-        }
-          
       });
     },
     async issueNewPen() {
@@ -311,9 +307,6 @@ export default {
       this.clonedStudentDetail.assignedStudentId = null;
       this.updatePEN('NEW').finally(() => {
         this.isIssuingNewPen = false;
-        if(!this.nextDisabled) {
-          this.clickNextBtn();
-        }
       });
     },
     async updatePEN(type) {
@@ -321,6 +314,9 @@ export default {
         .then(response => {
           if (response.data) {
             this.setSuccessAlert('PEN updated sucessfully');
+            if(!this.nextDisabled) {
+              this.clickNextBtn();
+            }
           }
         })
         .catch(error => {
