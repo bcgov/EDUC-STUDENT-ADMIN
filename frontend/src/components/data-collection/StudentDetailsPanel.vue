@@ -3,7 +3,7 @@
     ref="stickyInfoPanel"
     class="sticky default-container pt-5 px-8"
   >
-  <slot
+    <slot
       name="headerPanel"
       :open-search-demographics-modal="openSearchDemographicsModal"
     />
@@ -137,7 +137,6 @@ import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/for
 import SearchDemographicModal from '../../components/common/SearchDemographicModal.vue';
 
 import PrimaryButton from '../util/PrimaryButton.vue';
-import _, {partialRight} from 'lodash';
 import {
   deepCloneObject
 } from '@/utils/common';
@@ -188,9 +187,6 @@ export default {
       dialog: false,
     };
   },
-  mounted() {
-
-  },
   computed: {
     studentDetails: {
       get: function() {
@@ -200,6 +196,9 @@ export default {
         this.$emit('update:student', value);
       }
     },
+  },
+  mounted() {
+
   },
   methods: {
     openSearchDemographicsModal() {

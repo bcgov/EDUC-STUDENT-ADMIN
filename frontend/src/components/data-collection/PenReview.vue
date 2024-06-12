@@ -29,7 +29,7 @@
         <v-row>
           <v-col cols="12">
             <CustomTable
-            class="table"
+              class="table"
               :headers="headers"
               :data="studentList"
               :total-elements="totalElements"

@@ -25,12 +25,13 @@
 
     <div v-if="view === 'review'">
       <PenReview 
-       :collection-object="collectionObject"
+        :collection-object="collectionObject"
       />
     </div>
     <div v-if="view === 'new'">
       <NewPen 
-      :collection-object="collectionObject"/>
+        :collection-object="collectionObject"
+      />
     </div>
   </v-container>
 </template>

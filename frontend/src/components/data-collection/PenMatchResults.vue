@@ -36,9 +36,9 @@
         >
           <v-col class="d-flex justify-end">
             <CompareDemographicModal
-              @close-compare="closeCompare"
               v-model:selected-records="selectedRecords"
               :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+              @close-compare="closeCompare"
             />
             <TertiaryButton
               v-if="isRefreshRequired"
@@ -60,7 +60,7 @@
           key="results"
           class="pa-0"
         >
-          <v-divider/>
+          <v-divider />
           <v-data-table
             id="penMatchResultsDataTable"
             v-model="selectedRecords"
@@ -79,7 +79,7 @@
                          hoveredOveredRowStudentID === item.item.raw.studentID?'hovered-record-match-unmatch':'' ,
                          item.item.raw.isSelected?'selected-record':'',
                          isMatchedToStudent(item.item.raw)?'matchedStudentRow':'',
-                         ]"
+                ]"
                 @mouseover="enableMatchOrUnMatch(item.item.raw)"
                 @mouseleave="disableMatchOrUnMatch(item.item.raw)"
               >
@@ -89,19 +89,22 @@
                   :class="header.id"
                 >
                   <div :class="[item.item.raw[header.doubleValue] ? 'value-half-width':'','tableCell']">
-                    <span class="value-half-width" v-if="header.type === 'warningCode' && item.item.raw['warningCode'] ==='Y'">
-                            <v-tooltip>
-                    <template #activator="{ props: tooltipProps }">
-                      <v-icon
-                        v-bind="tooltipProps"
-                        size="25"
-                        :color="'#ff9800'"
-                      >
-                      mdi-alert-outline
-                      </v-icon>
-                    </template>
-                    This student will result into a duplicate
-                  </v-tooltip>
+                    <span
+                      v-if="header.type === 'warningCode' && item.item.raw['warningCode'] ==='Y'"
+                      class="value-half-width"
+                    >
+                      <v-tooltip>
+                        <template #activator="{ props: tooltipProps }">
+                          <v-icon
+                            v-bind="tooltipProps"
+                            size="25"
+                            :color="'#ff9800'"
+                          >
+                            mdi-alert-outline
+                          </v-icon>
+                        </template>
+                        This student will result into a duplicate
+                      </v-tooltip>
 
                     </span>
                     <span v-if="header.type === 'select'">
@@ -203,7 +206,7 @@
                         v-else
                         :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
                       >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue] : ''
-                        }}</span>
+                      }}</span>
                     </span>
                   </div>
                 </td>

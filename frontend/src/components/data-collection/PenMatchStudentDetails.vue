@@ -1,133 +1,143 @@
 <template>
-    <v-container fluid>
-        <v-row class="mt-0">
-            <v-col class="pt-0">
-                <v-row v-if="isLoading()">
-                    <v-col class="d-flex justify-center">
-                        <Spinner :flat="true" style="margin-bottom: 80rem" />
-                    </v-col>
-                </v-row>
+  <v-container fluid>
+    <v-row class="mt-0">
+      <v-col class="pt-0">
+        <v-row v-if="isLoading()">
+          <v-col class="d-flex justify-center">
+            <Spinner
+              :flat="true"
+              style="margin-bottom: 80rem"
+            />
+          </v-col>
+        </v-row>
 
-                <div v-else>
-                    <StudentDetailsPanel key="info-panel" v-model:student="studentDetails"
-                    @modifySearchParams="modifySearchParams"
-                    :hidden-search-fields="hiddenSearchFields"
-                        
-                        >
-                        <template #headerPanel="{openSearchDemographicsModal}">
-                  
-                            <v-row no-gutters
-                                class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
-                                style="background-color:white;">
-                               
-    <v-btn 
-      id="preRecord"
-      icon="mdi-arrow-left"
-      size="small"
-      color="rgb(0, 51, 102)"
-      :disabled="preDisabled"
-      @click="clickPrevBtn()"
-    >
-    </v-btn>
-    <span class="mr-6 ml-6">{{ page + 1}} of {{ selectedIDs.length }}</span>
-    <v-btn 
-      id="nextRecord"
-      size="small"
-      color="rgb(0, 51, 102)"
-      icon="mdi-arrow-right"
-      :disabled="nextDisabled"
-      @click="clickNextBtn()"
-    >
-    </v-btn>
-
-                                <v-spacer />
-                                <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
-                                    text="Modify search"
-                                    @click-action="[clickOpenSearch(), openSearchDemographicsModal()]" />
-                                <PrimaryButton id="issue-pen-action" class="mr-2"
-                                    :loading="isIssuingNewPen" text="Issue new PEN" @click-action="issueNewPen" />
-
-                            </v-row>
-                            <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
-                                style="background-color:white">
-                                <span style="font-size: 1.25rem">
-                                    <strong>{{studentDetails?.schoolName }}</strong>
-                                </span>
-                                <v-spacer />
-                                <span class="mr-6">
-                                    <span class="mr-3">Submitted PEN</span>
-                                    <span><strong>{{
-                                        studentDetails?.studentPen
-                                            }}</strong></span>
-                                </span>
-                                <span>
-                                    <span class="mr-3">Assigned PEN</span>
-                                    <span><strong>{{
-                                        studentDetails?.assignedPen
-                                            }}</strong></span>
-                                </span>
-                            </v-row>
-                        </template>
-                    </StudentDetailsPanel>
-                    <v-row v-if="isLoadingMatches">
-                <v-container
-                  fluid
-                  class="full-height"
-                >
-                  <article
-                    id="match-results-container"
-                    class="top-banner full-height"
-                  >
-                    <v-row
-                      align="center"
-                      justify="center"
-                    >
-                      <v-progress-circular
-                        :size="70"
-                        :width="7"
-                        color="primary"
-                        indeterminate
-                      />
-                    </v-row>
-                  </article>
-                </v-container>
-              </v-row>
-
+        <div v-else>
+          <StudentDetailsPanel
+            key="info-panel"
+            v-model:student="studentDetails"
+            :hidden-search-fields="hiddenSearchFields"
+            @modifySearchParams="modifySearchParams"
+          >
+            <template #headerPanel="{openSearchDemographicsModal}">
               <v-row
-                v-if="showPossibleMatch"
-                class="full-width"
+                no-gutters
+                class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
+                style="background-color:white;"
               >
-                <PenMatchResults
-                  :student="studentDetails"
-                  :is-comparison-required="true"
-                  :is-pen-link="true"
-                  :is-refresh-required="true"
-                  :is-match-un-match="true"
-                  :disable-match-unmatch="isMatchingToStudentRecord"
-                  :disable-refresh="false"
-                  :title="title"
-                  :show-match-button="true"
-                  :show-unmatch-button="false"
-                  :possible-match="possibleMatches"
-                  @match-student="matchStudent"
-                  @refresh-match-results="refreshMatchResults"
+                <v-btn 
+                  id="preRecord"
+                  icon="mdi-arrow-left"
+                  size="small"
+                  color="rgb(0, 51, 102)"
+                  :disabled="preDisabled"
+                  @click="clickPrevBtn()"
+                />
+                <span class="mr-6 ml-6">{{ page + 1 }} of {{ selectedIDs.length }}</span>
+                <v-btn 
+                  id="nextRecord"
+                  size="small"
+                  color="rgb(0, 51, 102)"
+                  icon="mdi-arrow-right"
+                  :disabled="nextDisabled"
+                  @click="clickNextBtn()"
+                />
+
+                <v-spacer />
+                <PrimaryButton
+                  id="modify-search-action"
+                  :secondary="true"
+                  class="mx-2"
+                  text="Modify search"
+                  @click-action="[clickOpenSearch(), openSearchDemographicsModal()]"
+                />
+                <PrimaryButton
+                  id="issue-pen-action"
+                  class="mr-2"
+                  :loading="isIssuingNewPen"
+                  text="Issue new PEN"
+                  @click-action="issueNewPen"
                 />
               </v-row>
+              <v-row
+                no-gutters
+                class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                style="background-color:white"
+              >
+                <span style="font-size: 1.25rem">
+                  <strong>{{ studentDetails?.schoolName }}</strong>
+                </span>
+                <v-spacer />
+                <span class="mr-6">
+                  <span class="mr-3">Submitted PEN</span>
+                  <span><strong>{{
+                    studentDetails?.studentPen
+                  }}</strong></span>
+                </span>
+                <span>
+                  <span class="mr-3">Assigned PEN</span>
+                  <span><strong>{{
+                    studentDetails?.assignedPen
+                  }}</strong></span>
+                </span>
+              </v-row>
+            </template>
+          </StudentDetailsPanel>
+          <v-row v-if="isLoadingMatches">
+            <v-container
+              fluid
+              class="full-height"
+            >
+              <article
+                id="match-results-container"
+                class="top-banner full-height"
+              >
+                <v-row
+                  align="center"
+                  justify="center"
+                >
+                  <v-progress-circular
+                    :size="70"
+                    :width="7"
+                    color="primary"
+                    indeterminate
+                  />
+                </v-row>
+              </article>
+            </v-container>
+          </v-row>
 
-
-                </div>
-            </v-col>
-        </v-row>
-    </v-container>
-
+          <v-row
+            v-if="showPossibleMatch"
+            class="full-width"
+          >
+            <PenMatchResults
+              :student="studentDetails"
+              :is-comparison-required="true"
+              :is-pen-link="true"
+              :is-refresh-required="true"
+              :is-match-un-match="true"
+              :disable-match-unmatch="isMatchingToStudentRecord"
+              :disable-refresh="false"
+              :title="title"
+              :show-match-button="true"
+              :show-unmatch-button="false"
+              :possible-match="possibleMatches"
+              @match-student="matchStudent"
+              @refresh-match-results="refreshMatchResults"
+            />
+          </v-row>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
 
 import Spinner from '../common/Spinner.vue';
-import ApiService from "@/common/apiService";
-import { STUDENT_DETAILS_FIELDS, Routes } from "@/utils/constants";
+import ApiService from '@/common/apiService';
+import { STUDENT_DETAILS_FIELDS, Routes } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import StudentDetailsPanel from "./StudentDetailsPanel.vue";
+import StudentDetailsPanel from './StudentDetailsPanel.vue';
 import {
   getPossibleMatches,
   deepCloneObject
@@ -138,205 +148,205 @@ import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import PrimaryButton from '../util/PrimaryButton.vue';
 
 export default {
-    name: 'PenMatchStudentDetails',
-    components: {
-        Spinner,
-        StudentDetailsPanel,
-        PenMatchResults,
-        PrimaryButton
-    },
-    mixins: [alertMixin],
-    props: {
-        studentID: {
+  name: 'PenMatchStudentDetails',
+  components: {
+    Spinner,
+    StudentDetailsPanel,
+    PenMatchResults,
+    PrimaryButton
+  },
+  mixins: [alertMixin],
+  async beforeRouteUpdate(to, from) {
+    if (to.params.studentID !== from.params.studentID) {
+      await this.getSdcSchoolCollectionStudentDetail(to.params.studentID);
+    }
+  },
+  props: {
+    studentID: {
       type: String,
       required: true
     }
-    },
+  },
 
-    data() {
-        return {
-            loadingCount: 0,
-            selectedSdcStudentID: null,
-            studentDetails: {},
-            clonedStudentDetail: {},
-            isLoadingMatches: false,
-            showPossibleMatch: false,
-            possibleMatches: [],
-            title:'',
-            isIssuingNewPen: false,
-            modifySearchDialog: false,
-            hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
-            isMatchingToStudentRecord: false,
-            activeCollection: null
-             };
-    },
-    async beforeRouteUpdate(to, from) {
-        if (to.params.studentID !== from.params.studentID) {
-            await this.getSdcSchoolCollectionStudentDetail(to.params.studentID);
-        }
-    },
-    beforeUnmount() {
-        this.setSelectedIDs([]);
-    },
-    computed: {
-        ...mapState(sdcCollectionStore, ['selectedIDs', 'page']),
+  data() {
+    return {
+      loadingCount: 0,
+      selectedSdcStudentID: null,
+      studentDetails: {},
+      clonedStudentDetail: {},
+      isLoadingMatches: false,
+      showPossibleMatch: false,
+      possibleMatches: [],
+      title:'',
+      isIssuingNewPen: false,
+      modifySearchDialog: false,
+      hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
+      isMatchingToStudentRecord: false,
+      activeCollection: null
+    };
+  },
+  beforeUnmount() {
+    this.setSelectedIDs([]);
+  },
+  computed: {
+    ...mapState(sdcCollectionStore, ['selectedIDs', 'page']),
     preDisabled() {
       return this.page <= 0;
     },
     nextDisabled() {
       return this.page >= this.selectedIDs.length -1;
     }
-    },
-    async created() {
+  },
+  async created() {
 
-        if(Object.keys(this.selectedIDs).length > 0) {
-            await this.getActiveCollection()
-            await this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
+    if(Object.keys(this.selectedIDs).length > 0) {
+      await this.getActiveCollection();
+      await this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
     } else {
-        this.$router.push({name: 'close-collection', params: {}});
+      this.$router.push({name: 'close-collection', params: {}});
     }
-    },
-    methods: {
-        ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
-        async getActiveCollection() {
+  },
+  methods: {
+    ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
+    async getActiveCollection() {
       if(this.activeCollection == null) {
         const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`);
         this.activeCollection = response.data;
       }
     },
-        clickNextBtn() {
-            let currPage = this.page;
-            let index = this.page >= this.selectedIDs.length - 1 ? currPage : currPage + 1;
-        this.setNavigationPage(index);
+    clickNextBtn() {
+      let currPage = this.page;
+      let index = this.page >= this.selectedIDs.length - 1 ? currPage : currPage + 1;
+      this.setNavigationPage(index);
       this.$router.push({name: 'student-detail', params: {studentID: this.selectedIDs[index]}});
     },
     clickPrevBtn() {
-            let currPage = this.page;
-            let index = this.page <=0 ? currPage : currPage - 1;
-        this.setNavigationPage(index);
+      let currPage = this.page;
+      let index = this.page <=0 ? currPage : currPage - 1;
+      this.setNavigationPage(index);
       this.$router.push({name: 'student-detail', params: {studentID: this.selectedIDs[index]}});
     },
-        navigate() {
-            this.getSdcSchoolCollectionStudentDetail(this.selectedIDs[this.page - 1]);
-        },
-        isLoading() {
-            return this.loadingCount > 0;
-        },
-        async getSdcSchoolCollectionStudentDetail(sdcSchoolCollectionStudentID) {
-            this.loadingCount += 1;
-            this.selectedSdcStudentID = sdcSchoolCollectionStudentID;
-            ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${sdcSchoolCollectionStudentID}`)
-                .then(response => {
-                    this.studentDetails = response.data;
-                    this.clonedStudentDetail = deepCloneObject(this.studentDetails);
-                }).catch(error => {
-                    console.error(error);
-                    setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
-                }).finally(() => {
-                    this.runPenMatch();
-                    this.loadingCount -= 1;
-                });
-        },
-        async runPenMatch() {
-            this.isLoadingMatches = true;
-            this.showPossibleMatch = false;
-            this.possibleMatches = [];
-            try {
-                const result = await getPossibleMatches(this.constructPenMatchObjectFromStudent());
-                this.isIssuePenDisabled = false;
-                this.showPossibleMatch = true;
-                this.possibleMatches = result.data ?? [];
-                if(this.prbStudent?.bestMatchPEN){ // rearrange the array and if there is a best match pen then put that record on top.
-                const bestMatchPen = this.prbStudent?.bestMatchPEN;
-                this.possibleMatches.sort(function (a, b) {
-                    return (a.pen !== bestMatchPen) - (b.pen !== bestMatchPen);
-                });
-                }
-                this.title = `${this.possibleMatches.length || 0} Matches`;
-                this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
-            } catch (error) {
-                console.log(error);
-                this.setFailureAlert('PEN Match API call failed, please try again.');
-            } finally {
-                await this.checkForDuplicates()
-                this.isLoadingMatches = false;
-            }
+    navigate() {
+      this.getSdcSchoolCollectionStudentDetail(this.selectedIDs[this.page - 1]);
+    },
+    isLoading() {
+      return this.loadingCount > 0;
+    },
+    async getSdcSchoolCollectionStudentDetail(sdcSchoolCollectionStudentID) {
+      this.loadingCount += 1;
+      this.selectedSdcStudentID = sdcSchoolCollectionStudentID;
+      ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${sdcSchoolCollectionStudentID}`)
+        .then(response => {
+          this.studentDetails = response.data;
+          this.clonedStudentDetail = deepCloneObject(this.studentDetails);
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
+        }).finally(() => {
+          this.runPenMatch();
+          this.loadingCount -= 1;
+        });
+    },
+    async runPenMatch() {
+      this.isLoadingMatches = true;
+      this.showPossibleMatch = false;
+      this.possibleMatches = [];
+      try {
+        const result = await getPossibleMatches(this.constructPenMatchObjectFromStudent());
+        this.isIssuePenDisabled = false;
+        this.showPossibleMatch = true;
+        this.possibleMatches = result.data ?? [];
+        if(this.prbStudent?.bestMatchPEN){ // rearrange the array and if there is a best match pen then put that record on top.
+          const bestMatchPen = this.prbStudent?.bestMatchPEN;
+          this.possibleMatches.sort(function (a, b) {
+            return (a.pen !== bestMatchPen) - (b.pen !== bestMatchPen);
+          });
+        }
+        this.title = `${this.possibleMatches.length || 0} Matches`;
+        this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('PEN Match API call failed, please try again.');
+      } finally {
+        await this.checkForDuplicates();
+        this.isLoadingMatches = false;
+      }
     },
     async checkForDuplicates() {
-        if(this.possibleMatches.length > 0) {
-            let matchedPenIds =  this.possibleMatches.map(match => match.studentID).join(',');
-            const response = await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.activeCollection.collectionID}/duplicates`, {
-                params: {
-                    matchedAssignedIDs: matchedPenIds
-                }
-            });
-          if (response.data) {
-            if(response.data.length > 0) {
-                this.possibleMatches.map(m => {
-                    if(response.data.includes(m.studentID)) {
-                        m.warningCode = 'Y'
-                    }
-                })
-            }
-          } else {
-            this.setFailureAlert('An error occurred while checking for duplicates. Please try again later.');
+      if(this.possibleMatches.length > 0) {
+        let matchedPenIds =  this.possibleMatches.map(match => match.studentID).join(',');
+        const response = await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.activeCollection.collectionID}/duplicates`, {
+          params: {
+            matchedAssignedIDs: matchedPenIds
           }
+        });
+        if (response.data) {
+          if(response.data.length > 0) {
+            this.possibleMatches.map(m => {
+              if(response.data.includes(m.studentID)) {
+                m.warningCode = 'Y';
+              }
+            });
+          }
+        } else {
+          this.setFailureAlert('An error occurred while checking for duplicates. Please try again later.');
         }
+      }
     },
     async matchStudent(matchedStudent) {
-        this.isMatchingToStudentRecord = true;
-        this.clonedStudentDetail.assignedPen = matchedStudent.pen;
+      this.isMatchingToStudentRecord = true;
+      this.clonedStudentDetail.assignedPen = matchedStudent.pen;
       this.clonedStudentDetail.assignedStudentId = matchedStudent.studentID;
       this.updatePEN('MATCH').finally(() => {
-          this.isMatchingToStudentRecord = false;
-          if(!this.nextDisabled()) {
-            this.clickNextBtn();
-          }
+        this.isMatchingToStudentRecord = false;
+        if(!this.nextDisabled) {
+          this.clickNextBtn();
+        }
           
-        });
+      });
     },
     async issueNewPen() {
       this.isIssuingNewPen = true;
       this.clonedStudentDetail.assignedPen = null;
       this.clonedStudentDetail.assignedStudentId = null;
       this.updatePEN('NEW').finally(() => {
-          this.isIssuingNewPen = false;
-          if(!this.nextDisabled()) {
+        this.isIssuingNewPen = false;
+        if(!this.nextDisabled) {
           this.clickNextBtn();
-          }
-        });
+        }
+      });
     },
     async updatePEN(type) {
-       return ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${this.clonedStudentDetail.sdcSchoolCollectionStudentID}/update-pen/${type}`, this.clonedStudentDetail)
+      return ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${this.clonedStudentDetail.sdcSchoolCollectionStudentID}/update-pen/${type}`, this.clonedStudentDetail)
         .then(response => {
           if (response.data) {
             this.setSuccessAlert('PEN updated sucessfully');
           }
         })
         .catch(error => {
-            this.setFailureAlert('An error occurred while updating PEN. Please try again later.');
+          this.setFailureAlert('An error occurred while updating PEN. Please try again later.');
           console.log(error);
-        })
+        });
     },
     clickOpenSearch(){
       this.modifySearchDialog = true;
     },
     constructPenMatchObjectFromStudent() {
-        return {
-            pen: this.studentDetails.studentPen,
-    localID: this.studentDetails.localID,
-    surname: this.studentDetails.legalLastName,
-    givenName: this.studentDetails.legalFirstName,
-    middleName: this.studentDetails.legalMiddleNames,
-    usualSurname: this.studentDetails.usualLastName,
-    usualGiven: this.studentDetails.usualFirstName,
-    usualMiddleName: this.studentDetails.usualMiddleNames,
-    dob: this.studentDetails.dob,
-    sex: this.studentDetails.gender,
-    enrolledGradeCode: this.studentDetails.enrolledGradeCode,
-    mincode: '00807005',
-    postal: this.studentDetails.postalCode
-        }
+      return {
+        pen: this.studentDetails.studentPen,
+        localID: this.studentDetails.localID,
+        surname: this.studentDetails.legalLastName,
+        givenName: this.studentDetails.legalFirstName,
+        middleName: this.studentDetails.legalMiddleNames,
+        usualSurname: this.studentDetails.usualLastName,
+        usualGiven: this.studentDetails.usualFirstName,
+        usualMiddleName: this.studentDetails.usualMiddleNames,
+        dob: this.studentDetails.dob,
+        sex: this.studentDetails.gender,
+        enrolledGradeCode: this.studentDetails.enrolledGradeCode,
+        mincode: '00807005',
+        postal: this.studentDetails.postalCode
+      };
     },
     async modifySearchParams(updatedStudent) {
       if(updatedStudent) {
@@ -344,7 +354,7 @@ export default {
           this.setFailureAlert('Modify search failed, please try again.');
           return;
         } 
-          await this.runPenMatch();
+        await this.runPenMatch();
 
       }
       this.modifySearchDialog = false;
@@ -352,7 +362,7 @@ export default {
     async refreshMatchResults() {
       await this.runPenMatch();
     },
-    }
+  }
 };
 </script>
 
