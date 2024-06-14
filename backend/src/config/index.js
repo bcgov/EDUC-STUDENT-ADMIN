@@ -202,7 +202,7 @@ nconf.defaults({
     districtCollectionStatusCodesURL: process.env.SDC_API_URL + '/district-collection-status-codes',
     schoolCollectionStatusCodesURL: process.env.SDC_API_URL + '/school-collection-status-codes',
     districtCollectionURL: process.env.SDC_API_URL + '/sdcDistrictCollection',
-    duplicateResolutionCodesURL: process.env.SDC_API_ENDPOINT + '/duplicate-resolution-codes',
+    duplicateResolutionCodesURL: process.env.SDC_API_URL + '/duplicate-resolution-codes',
   }
 });
 module.exports = nconf;
