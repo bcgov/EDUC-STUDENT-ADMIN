@@ -258,10 +258,16 @@ async function getInDistrictDuplicates(req, res) {
     };
     sdcDuplicates.forEach(sdcDuplicate => {
       const school1 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent1Entity?.schoolID);
-      sdcDuplicate.sdcSchoolCollectionStudent1Entity.schoolName = getSchoolName(school1);
-      toTableRow(sdcDuplicate.sdcSchoolCollectionStudent1Entity);
       const school2 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent2Entity?.schoolID);
+      sdcDuplicate.sdcSchoolCollectionStudent1Entity.schoolName = getSchoolName(school1);
       sdcDuplicate.sdcSchoolCollectionStudent2Entity.schoolName = getSchoolName(school2);
+
+      const district1 = cacheService.getDistrictJSONByDistrictId(school1.districtID);
+      const district2 = cacheService.getDistrictJSONByDistrictId(school2.districtID);
+      sdcDuplicate.sdcSchoolCollectionStudent1Entity.districtName = getDistrictName(district1);
+      sdcDuplicate.sdcSchoolCollectionStudent2Entity.districtName = getDistrictName(district2);
+
+      toTableRow(sdcDuplicate.sdcSchoolCollectionStudent1Entity);
       toTableRow(sdcDuplicate.sdcSchoolCollectionStudent2Entity);
 
       if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT && sdcDuplicate.duplicateResolutionCode) {

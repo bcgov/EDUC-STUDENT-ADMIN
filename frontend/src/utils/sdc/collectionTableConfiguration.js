@@ -67,6 +67,7 @@ export const MONITORING = Object.freeze(
 export const PROVINCIAL_DUPLICATES = Object.freeze(
   {
     nonAllowableTableHeaders: [
+      { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Local ID', key: 'localID', subHeader: { title: 'Birthdate', key: 'dob' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
@@ -77,9 +78,11 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
       { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'FTE', key: 'fte' },
       { title: 'Resolution', key: 'resolution' },
     ],
     allowableTableHeaders: [
+      { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Local ID', key: 'localID', subHeader: { title: 'Birthdate', key: 'dob' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
@@ -90,8 +93,10 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
       { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'FTE', key: 'fte' },
     ],
     resolvedTableHeaders: [
+      { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Local ID', key: 'localID', subHeader: { title: 'Birthdate', key: 'dob' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
@@ -102,6 +107,7 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
       { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'FTE', key: 'fte' },
       { title: 'Resolution', key: 'resolution' },
     ],
   }
