@@ -80,7 +80,7 @@
 
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  href="`${edxURL}/open-district-collection-details/${item.raw.sdcSchoolCollectionID}`"
+                  :href="`${edxURL}/open-district-collection-details/${props.item.raw['sdcSchoolCollectionID']}`"
                   target="_link"
                 >
                   {{ props.item.raw['schoolName'] }}
@@ -88,7 +88,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  href="`${edxURL}/open-district-collection-details/${item.raw.sdcDistrictCollectionId}`"
+                  :href="`${edxURL}/open-district-collection-details/${props.item.raw['sdcDistrictCollectionID']}`"
                   target="_link"
                 >
                   {{ props.item.raw['districtName'] }}
@@ -160,7 +160,9 @@
 
 <script>
 
-import {displayName} from '../../utils/format';
+import {displayName} from '@/utils/format';
+import {appStore} from '@/store/modules/app';
+import {mapState} from 'pinia';
 
 export default {
   name: 'CustomTable',
@@ -201,10 +203,12 @@ export default {
       selected: [],
       pageNumber: 1,
       pageSize: 15,
-      loading: true
+      loading: true,
+      edxURL: null
     };
   },
   computed: {
+    ...mapState(appStore, ['config']),
   },
   watch: {
     pageNumber: {
@@ -234,7 +238,9 @@ export default {
     }
   },
   created() {
-
+    appStore().getConfig().then(() => {
+      this.edxURL = this.config.EDX_URL;
+    });
   },
   methods: {
     // rowclicked(props) {
