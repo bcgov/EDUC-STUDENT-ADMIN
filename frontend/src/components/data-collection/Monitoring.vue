@@ -69,7 +69,6 @@
               :items="monitorSdcDistrictCollectionsResponse"
               items-per-page="-1"
               :search="search"
-              height="700"
             >
               <template #item.districtTitle="{ item }">
                 <a
