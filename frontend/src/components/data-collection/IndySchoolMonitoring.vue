@@ -209,7 +209,7 @@
       >
         <template #item.schoolTitle="{ item }">
           <a
-            :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${item.raw.schoolId}&sdcSchoolCollectionID=${item.raw.sdcSchoolCollectionId}`"
+            :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${item.raw.schoolId}&sdcSchoolCollectionID=${item.raw.sdcSchoolCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
             target="_link"
           >
             {{ item.raw.schoolTitle }}
@@ -276,6 +276,7 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import alertMixin from '@/mixins/alertMixin';
+import {authStore} from "@/store/modules/auth";
 
 export default defineComponent({
   name: 'IndySchoolMonitoring',
@@ -364,10 +365,12 @@ export default defineComponent({
       monitorSdcSchoolCollectionsResponse: [],
       showFilters: false,
       school: {},
+      user: null,
       schoolCollectionStatusCodes: null
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config', 'schoolMap']),
     ...mapState(sdcCollectionStore, ['schoolCollectionStatusCodesMap']),
     filterCount() {
@@ -393,6 +396,9 @@ export default defineComponent({
   async created() {
     appStore().getConfig().then(() => {
       this.edxURL = this.config.EDX_URL;
+    });
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
     });
     await appStore().getInstituteCodes().then(() => {
       this.school = this.schoolMap.get(this.collectionObject.schoolID);

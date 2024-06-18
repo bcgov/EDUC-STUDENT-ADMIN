@@ -80,7 +80,7 @@
 
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionId}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
                   target="_link"
                 >
                   {{ props.item.raw['schoolName'] }}
@@ -88,7 +88,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolId}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionId}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolId}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
                   target="_link"
                 >
                   {{ props.item.raw['districtName'] }}
@@ -163,6 +163,7 @@
 import {displayName} from '@/utils/format';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'CustomTable',
@@ -204,10 +205,12 @@ export default {
       pageNumber: 1,
       pageSize: 15,
       loading: true,
-      edxURL: null
+      edxURL: null,
+      user: null
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
   },
   watch: {
@@ -240,6 +243,9 @@ export default {
   created() {
     appStore().getConfig().then(() => {
       this.edxURL = this.config.EDX_URL;
+    });
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
     });
   },
   methods: {

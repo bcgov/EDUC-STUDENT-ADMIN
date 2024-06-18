@@ -72,7 +72,7 @@
             >
               <template #item.districtTitle="{ item }">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${item.raw.districtID}&sdcDistrictCollectionID=${item.raw.sdcDistrictCollectionId}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${item.raw.districtID}&sdcDistrictCollectionID=${item.raw.sdcDistrictCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
                   target="_link"
                 >
                   {{ item.raw.districtTitle }}
@@ -141,6 +141,7 @@ import IndySchoolMonitoring from '../data-collection/IndySchoolMonitoring.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
 import PenMatch from '../data-collection/PenMatch.vue';
+import {authStore} from "@/store/modules/auth";
 
 export default defineComponent({
   name: 'Monitoring',
@@ -205,16 +206,21 @@ export default defineComponent({
       monitorSdcDistrictCollectionsResponse: [],
       search: '',
       showFilters: false,
-      tab: null
+      tab: null,
+      user: null
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
     ...mapState(sdcCollectionStore, ['districtCollectionStatusCodesMap']),
   },
   async created() {
     appStore().getConfig().then(() => {
       this.edxURL = this.config.EDX_URL;
+    });
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
     });
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
     await this.getSdcDistrictCollectionMonitoring();
