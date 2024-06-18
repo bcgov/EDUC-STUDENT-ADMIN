@@ -205,12 +205,11 @@
         id="monitoring-table"
         :headers="headers"
         :items="filteredItems"
-        height="600"
         items-per-page="-1"
       >
         <template #item.schoolTitle="{ item }">
           <a
-            :href="`${edxURL}/open-collection-details/${item.raw.sdcSchoolCollectionId}`"
+            :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${item.raw.schoolId}&sdcSchoolCollectionID=${item.raw.sdcSchoolCollectionId}`"
             target="_link"
           >
             {{ item.raw.schoolTitle }}

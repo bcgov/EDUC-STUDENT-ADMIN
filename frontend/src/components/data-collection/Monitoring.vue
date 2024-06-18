@@ -72,7 +72,7 @@
             >
               <template #item.districtTitle="{ item }">
                 <a
-                  :href="`${edxURL}/open-district-collection-details/${item.raw.sdcDistrictCollectionId}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${item.raw.districtID}&sdcDistrictCollectionID=${item.raw.sdcDistrictCollectionId}`"
                   target="_link"
                 >
                   {{ item.raw.districtTitle }}
