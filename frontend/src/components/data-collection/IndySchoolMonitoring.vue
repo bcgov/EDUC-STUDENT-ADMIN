@@ -201,11 +201,10 @@
       cols="12"
       class="pt-0"
     >
-      <v-data-table-virtual
+      <v-data-table
         id="monitoring-table"
         :headers="headers"
         :items="filteredItems"
-        items-per-page="-1"
       >
         <template #item.schoolTitle="{ item }">
           <a
@@ -252,8 +251,7 @@
             @click="unsubmitSdcSchoolCollection(item.raw.sdcSchoolCollectionId)"
           />
         </template>
-        <template #bottom />
-      </v-data-table-virtual>
+      </v-data-table>
     </v-col>
   </v-row>
   <ConfirmationDialog ref="confirmRemovalOfCollection">
@@ -276,7 +274,7 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import alertMixin from '@/mixins/alertMixin';
-import {authStore} from "@/store/modules/auth";
+import {authStore} from '@/store/modules/auth';
 
 export default defineComponent({
   name: 'IndySchoolMonitoring',
@@ -361,7 +359,7 @@ export default defineComponent({
         }
       ],
       edxURL: '',
-      isLoading: false,
+      isLoading: true,
       monitorSdcSchoolCollectionsResponse: [],
       showFilters: false,
       school: {},
