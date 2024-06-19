@@ -44,21 +44,72 @@
       v-if="isLoading"
       class="mt-0"
     >
-      <v-col class="d-flex justify center">
-        <v-progress-circular
-          class="mt-16"
-          :size="70"
-          :width="7"
-          color="primary"
-          indeterminate
-          :active="isLoading"
-        />
+      <v-col>
+        <Spinner />
       </v-col>
     </v-row>
     <v-row v-else>
-      <Monitoring
-        :collection-object="activeCollectionObject"
-      />
+      <v-col class="border">
+        <v-tabs
+          v-model="tab"
+          color="#38598a"
+        >
+          <v-tab
+            :value="1"
+          >
+            District Submissions
+          </v-tab>
+          <v-tab
+            :value="2"
+          >
+            Independent School Data Submissions
+          </v-tab>
+          <v-tab
+            :value="3"
+          >
+            PEN Fixes
+          </v-tab>
+          <v-tab
+            :value="4"
+          >
+            Resolve Provincial Duplicates
+          </v-tab>
+        </v-tabs>
+        <v-window v-model="tab">
+          <v-window-item
+            :value="1"
+            transition="false"
+            reverse-transition="false"
+          >
+            <DistrictMonitoring :collection-object="activeCollectionObject" />
+          </v-window-item>
+          <v-window-item
+            :value="2"
+            transition="false"
+            reverse-transition="false"
+          >
+            <IndySchoolMonitoring
+              :collection-object="activeCollectionObject"
+            />
+          </v-window-item>
+          <v-window-item
+            :value="3"
+            transition="false"
+            reverse-transition="false"
+          >
+            <PenMatch
+              :collection-object="activeCollectionObject"
+            />
+          </v-window-item>
+          <v-window-item
+            :value="4"
+            transition="false"
+            reverse-transition="false"
+          >
+            <ProvincialDuplicates :collection-object="activeCollectionObject" />
+          </v-window-item>
+        </v-window>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -68,12 +119,20 @@ import {formatCollectionTypeCode} from '@/utils/format';
 import {COLLECTION_CLOSURE_STEPS} from '@/utils/institute/collectionClosureSteps';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import Monitoring from '@/components/data-collection/Monitoring.vue';
+import IndySchoolMonitoring from '@/components/data-collection/IndySchoolMonitoring.vue';
+import PenMatch from '@/components/data-collection/PenMatch.vue';
+import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
+import DistrictMonitoring from '@/components/data-collection/DistrictMonitoring.vue';
+import Spinner from '@/components/common/Spinner.vue';
 
 export default {
   name: 'CollectionView',
   components: {
-    Monitoring
+    Spinner,
+    DistrictMonitoring,
+    ProvincialDuplicates,
+    PenMatch,
+    IndySchoolMonitoring,
   },
   mixins: [alertMixin],
   data() {
@@ -85,6 +144,7 @@ export default {
       activeCollectionType: null,
       activeCollectionYear: null,
       isLoading: true,
+      tab: ''
     };
   },
   async created() {
@@ -131,6 +191,12 @@ export default {
 </script>
 
 <style scoped>
+.border {
+  border: 2px solid grey;
+  border-radius: 5px;
+  padding: 35px;
+  margin-bottom: 2em;
+}
 .divider {
   border-color: #FCBA19;
   border-width: 3px;
