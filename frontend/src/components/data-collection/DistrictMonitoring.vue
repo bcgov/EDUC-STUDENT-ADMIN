@@ -37,7 +37,7 @@
       >
         <template #item.districtTitle="{ item }">
           <a
-            :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${item.raw.districtID}&sdcDistrictCollectionID=${item.raw.sdcDistrictCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
+            :href="safeURL(item.raw.districtID, item.raw.sdcDistrictCollectionId)"
             target="_link"
           >
             {{ item.raw.districtTitle }}
@@ -73,6 +73,7 @@ import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import alertMixin from '@/mixins/alertMixin';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
+import {sanitizeUrl} from '@braintree/sanitize-url';
 
 export default defineComponent({
   name: 'DistrictMonitoring',
@@ -172,6 +173,9 @@ export default defineComponent({
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while unsubmitting district collection. Please try again later.');
         });
+    },
+    safeURL(districtID, sdcDistrictCollectionId) {
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
     }
   }
 });
@@ -180,11 +184,5 @@ export default defineComponent({
 <style scoped>
 .bold {
   font-weight: bold ;
-}
-.border {
-  border: 2px solid grey;
-  border-radius: 5px;
-  padding: 35px;
-  margin-bottom: 2em;
 }
 </style>
