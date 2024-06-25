@@ -123,7 +123,7 @@ export const PEN_MATCHING = Object.freeze(
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
       { title: 'Birthdate', key: 'dob', subHeader: { title: 'Gender', key: 'gender' } },
       { title: 'Grade', key: 'enrolledGradeCode' },
-      { title: 'Status', key: 'penMatchResult' },
+      { title: 'Status', key: 'mappedPenMatchResult' },
     ]
   }
 );

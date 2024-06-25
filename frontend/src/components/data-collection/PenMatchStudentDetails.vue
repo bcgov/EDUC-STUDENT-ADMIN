@@ -2,6 +2,21 @@
   <v-container fluid>
     <v-row class="mt-0">
       <v-col class="pt-0">
+        <v-row>
+          <v-col class="mt-1 d-flex justify-start">
+            <v-icon
+              small
+              color="#1976d2"
+            >
+              mdi-arrow-left
+            </v-icon>
+            <a
+              class="ml-1"
+              @click="backButtonClick"
+            >Return to PEN fixes List</a>
+          </v-col>   
+        </v-row>
+
         <v-row v-if="isLoading()">
           <v-col class="d-flex justify-center">
             <Spinner
@@ -48,12 +63,14 @@
                   :secondary="true"
                   class="mx-2"
                   text="Modify search"
+                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
                   @click-action="[clickOpenSearch(), openSearchDemographicsModal()]"
                 />
                 <PrimaryButton
                   id="issue-pen-action"
                   class="mr-2"
                   :loading="isIssuingNewPen"
+                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
                   text="Issue new PEN"
                   @click-action="issueNewPen"
                 />
@@ -108,7 +125,7 @@
 
           <v-row
             v-if="showPossibleMatch"
-            class="full-width"
+            class="full-width mt-5"
           >
             <PenMatchResults
               :student="studentDetails"
@@ -198,16 +215,18 @@ export default {
     }
   },
   async created() {
-
+    await this.getActiveCollection();
     if(Object.keys(this.selectedIDs).length > 0) {
-      await this.getActiveCollection();
       await this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
     } else {
-      this.$router.push({name: 'close-collection', params: {}});
+      this.$router.push({name: 'collection-view', params: {collectionID: this.activeCollection?.collectionID}});
     }
   },
   methods: {
     ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
+    backButtonClick() {
+      this.$router.push({name: 'collection-view', params: {collectionID: this.activeCollection?.collectionID}});
+    },
     async getActiveCollection() {
       if(this.activeCollection == null) {
         const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`);
@@ -299,6 +318,7 @@ export default {
       this.clonedStudentDetail.assignedStudentId = matchedStudent.studentID;
       this.updatePEN('MATCH').finally(() => {
         this.isMatchingToStudentRecord = false;
+        this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
       });
     },
     async issueNewPen() {
@@ -307,16 +327,20 @@ export default {
       this.clonedStudentDetail.assignedStudentId = null;
       this.updatePEN('NEW').finally(() => {
         this.isIssuingNewPen = false;
+        this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
       });
     },
     async updatePEN(type) {
       return ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${this.clonedStudentDetail.sdcSchoolCollectionStudentID}/update-pen/${type}`, this.clonedStudentDetail)
-        .then(response => {
-          if (response.data) {
-            this.setSuccessAlert('PEN updated sucessfully');
-            if(!this.nextDisabled) {
+        .then(() => {
+          if(type === 'NEW') {
+            this.setSuccessAlert('Your request to issue new PEN is accepted.');
+          } else {
+            this.setSuccessAlert('PEN has been MATCHED successfully');
+          }
+          
+          if(!this.nextDisabled) {
               this.clickNextBtn();
-            }
           }
         })
         .catch(error => {

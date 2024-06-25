@@ -163,8 +163,19 @@ function toTableRow(student) {
   student.spedProgramEligible = student.specialEducationNonEligReasonCode !== null ? 'No' : 'Yes';
   student.mappedNoOfCourses = student.numberOfCoursesDec ? student.numberOfCoursesDec.toFixed(2) : '0';
   student.mappedHomelanguageCode = student.homeLanguageSpokenCode !== '' && homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode) !== undefined ? `${homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode)?.description} (${homeLanguageSpokenCodesMap.get(student.homeLanguageSpokenCode)?.homeLanguageSpokenCode})` : null;
-
+  student.mappedPenMatchResult = mapPenMatchResult(student?.penMatchResult);
   return student;
+}
+
+function mapPenMatchResult(penMatchResult) {
+  switch(penMatchResult) {
+    case 'INREVIEW':
+      return 'Review Requested';
+    case 'MULTI':
+      return 'Multiple PEN Matches';
+    default:
+      return penMatchResult;
+  }
 }
 
 function enrolledProgramMapping(student, enrolledProgramFilter) {
