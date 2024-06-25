@@ -14,7 +14,7 @@
               class="ml-1"
               @click="backButtonClick"
             >Return to PEN fixes List</a>
-          </v-col>   
+          </v-col>
         </v-row>
 
         <v-row v-if="isLoading()">
@@ -133,7 +133,7 @@
               :is-pen-link="true"
               :is-refresh-required="true"
               :is-match-un-match="true"
-              :disable-match-unmatch="isMatchingToStudentRecord"
+              :disable-match-unmatch="isMatchingToStudentRecord || studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
               :disable-refresh="false"
               :title="title"
               :show-match-button="true"
