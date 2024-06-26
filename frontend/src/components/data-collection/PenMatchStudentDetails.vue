@@ -275,7 +275,7 @@ export default {
         const result = await getPossibleMatches(this.constructPenMatchObjectFromStudent());
         this.isIssuePenDisabled = false;
         this.possibleMatches = result.data ?? [];
-        const duperRes = await this.checkForDuplicates();
+        await this.checkForDuplicates();
         this.showPossibleMatch = true;
         if(this.prbStudent?.bestMatchPEN){ // rearrange the array and if there is a best match pen then put that record on top.
           const bestMatchPen = this.prbStudent?.bestMatchPEN;
