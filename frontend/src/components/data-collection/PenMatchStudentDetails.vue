@@ -163,6 +163,7 @@ import {mapState, mapActions} from 'pinia';
 import PenMatchResults from './PenMatchResults.vue';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import PrimaryButton from '../util/PrimaryButton.vue';
+import _ from 'lodash';
 
 export default {
   name: 'PenMatchStudentDetails',
@@ -273,8 +274,9 @@ export default {
       try {
         const result = await getPossibleMatches(this.constructPenMatchObjectFromStudent());
         this.isIssuePenDisabled = false;
-        this.showPossibleMatch = true;
         this.possibleMatches = result.data ?? [];
+        const duperRes = await this.checkForDuplicates();
+        this.showPossibleMatch = true;
         if(this.prbStudent?.bestMatchPEN){ // rearrange the array and if there is a best match pen then put that record on top.
           const bestMatchPen = this.prbStudent?.bestMatchPEN;
           this.possibleMatches.sort(function (a, b) {
@@ -287,7 +289,6 @@ export default {
         console.log(error);
         this.setFailureAlert('PEN Match API call failed, please try again.');
       } finally {
-        await this.checkForDuplicates();
         this.isLoadingMatches = false;
       }
     },

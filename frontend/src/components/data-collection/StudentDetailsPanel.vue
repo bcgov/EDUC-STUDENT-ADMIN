@@ -7,9 +7,8 @@
       name="headerPanel"
       :open-search-demographics-modal="openSearchDemographicsModal"
     />
-    <SearchDemographicModal
+    <SdcSearchDemographicModal
       :dialog="dialog"
-      :is-field-read-only="() => {return false}"
       :hidden-fields="hiddenSearchFields"
       :student-data="modalStudent"
       @closeDialog="closeDialog"
@@ -37,7 +36,7 @@
           @click-action="searchStudent"
         />
       </template>
-    </SearchDemographicModal>
+    </SdcSearchDemographicModal>
     <v-divider class="mb-1 subheader-divider" />
     <v-row
       no-gutters
@@ -134,7 +133,7 @@
 <script>
 
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import SearchDemographicModal from '../../components/common/SearchDemographicModal.vue';
+import SdcSearchDemographicModal from '../../components/common/SdcSearchDemographicModal.vue';
 import {partialRight} from 'lodash';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import {
@@ -145,7 +144,7 @@ export default {
   name: 'StudentDetailsPanel',
   components: {
     PrimaryButton,
-    SearchDemographicModal
+    SdcSearchDemographicModal
   },
   props: {
     student: {
