@@ -494,7 +494,6 @@ export default {
       }
     },
     validateGradeCode() {
-      console.log(this.enrolledGradeCodes)
       if (this.student.enrolledGradeCode && this.enrolledGradeCodes.find(val => val.enrolledGradeCode === this.student.enrolledGradeCode) === undefined) {
         return ['Invalid Grade Code.'];
       }
