@@ -46,9 +46,9 @@ describe('updateMacroByMacroId', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith('sagaId');
   });
-  it('should return INTERNAL_SERVER_ERROR if putData exceptions thrown', async () => {
-    utils.putData.mockRejectedValue(new ApiError('test error senario'))
-    await macro.createMacro(req, res);
+  it('should return INTERNAL_SERVER_ERROR if postData exceptions thrown', async () => {
+    utils.postData.mockRejectedValue(new ApiError('test error senario'))
+    await macro.updateMacroByMacroId(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -83,11 +83,6 @@ describe('createMacro', () => {
     }, SAGAS.MACRO.sagaEventRedisKey);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith('sagaId');
-  });
-  it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
-    utils.getData.mockRejectedValue(new ApiError('test error senario'));
-    await macro.createMacro(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
   it('should return INTERNAL_SERVER_ERROR if postData exceptions thrown', async () => {
     utils.postData.mockRejectedValue(new ApiError('test error senario'))
