@@ -74,6 +74,11 @@
           >
             Resolve Provincial Duplicates
           </v-tab>
+          <v-tab
+            :value="5"
+          >
+            All Students
+          </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
@@ -108,6 +113,13 @@
           >
             <ProvincialDuplicates :collection-object="activeCollectionObject" />
           </v-window-item>
+          <v-window-item
+            :value="5"
+            transition="false"
+            reverse-transition="false"
+          >
+            <AllStudentsComponent />
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -124,6 +136,7 @@ import PenMatch from '@/components/data-collection/PenMatch.vue';
 import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
 import DistrictMonitoring from '@/components/data-collection/DistrictMonitoring.vue';
 import Spinner from '@/components/common/Spinner.vue';
+import AllStudentsComponent from '@/components/data-collection/AllStudents/AllStudentsComponent.vue';
 
 export default {
   name: 'CollectionView',
@@ -131,6 +144,7 @@ export default {
     Spinner,
     DistrictMonitoring,
     ProvincialDuplicates,
+    AllStudentsComponent,
     PenMatch,
     IndySchoolMonitoring,
   },
