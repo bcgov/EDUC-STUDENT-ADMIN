@@ -33,6 +33,7 @@ cacheKeys = {
   SDC_SPECIAL_ED_CODES: 'sdc_special_ed_codes',
   SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes',
   SDC_PROGRAM_ELIGIBILITY_TYPE_CODES: 'sdc_program_eligibility_issue_codes',
+  SDC_VALIDATION_ISSUE_TYPE_CODES: 'sdc_validation_issue_type_codes',
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);

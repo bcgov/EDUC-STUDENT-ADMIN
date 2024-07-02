@@ -121,6 +121,7 @@ export default {
   getAllCollectionTypeCodes: getCodes(`${Routes.sdc.COLLECTION_TYPE_CODES_URL}`),
   getAllDistrictCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_DISTRICT_COLLECTION_STATUS_CODES}`),
   getAllSchoolCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STATUS_CODES}`),
+  getAllValidationIssueTypeCodes:getCodes(`${Routes.sdc.SDC_VALIDATION_ISSUE_TYPE_CODES}`),
   getAllActiveBandCodes:getCodes(`${Routes.sdc.SDC_BAND_CODES}?active=true`),
   getAllActiveCareerProgramCodes:getCodes(`${Routes.sdc.SDC_CAREER_PROGRAM_CODES}?active=true`),
   getAllActiveEnrolledProgramCodes:getCodes(`${Routes.sdc.SDC_ENROLLED_PROGRAM_CODES}?active=true`),

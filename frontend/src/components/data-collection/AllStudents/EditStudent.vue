@@ -731,6 +731,8 @@ export default {
       }
       ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}`, this.sdcSchoolCollectionStudentDetailCopy)
         .then((res) => {
+          console.log('status code');
+          console.log(res.data.sdcSchoolCollectionStudentStatusCode);
           if (res.data.sdcSchoolCollectionStudentStatusCode === 'ERROR') {
             setWarningAlert('Warning! Updates to student details will not be saved until all errors are fixed.');
             this.filterSdcSchoolCollectionStudentAndPopulateProperties(res.data);

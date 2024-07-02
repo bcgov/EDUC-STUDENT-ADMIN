@@ -20,6 +20,7 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     homeLanguageSpokenCodesMap: new Map(),
     homeLanguageSpokenCodes: [],
     programEligibilityCodesMap: new Map(),
+    validationIssueTypeCodesMap: new Map(),
     schoolFundingCodesMap: new Map(),
     schoolFundingCodes: [],
     specialEducationCodesMap: new Map(),
@@ -121,6 +122,12 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
         this.specialEducationCodesMap.set(specialEducationCategoryCode.specialEducationCategoryCode, specialEducationCategoryCode);
       });
     },
+    setValidationIssueTypeCodes(validationIssueTypeCodes) {
+      this.validationIssueTypeCodesMap = new Map();
+      validationIssueTypeCodes.forEach(validationIssue => {
+        this.validationIssueTypeCodesMap.set(validationIssue.validationIssueTypeCode, validationIssue);
+      });
+    },
     setProgramEligibilityCodesMap(programEligibilityCodesMap) {
       programEligibilityCodesMap.forEach(issue => {
         this.programEligibilityCodesMap.set(issue.programEligibilityIssueTypeCode, issue);
@@ -162,6 +169,7 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
           ... this.schoolFundingCodesMap.size === 0 ? [ApiService.getAllActiveSchoolFundingCodes().then((res) => this.setSchoolFundingCodes(res.data))] : [],
           ... this.specialEducationCodesMap.size === 0 ? [ApiService.getAllActiveSpecialEdCodes().then((res) => this.setSpecialEducationCodes(res.data))] : [],
           ... this.programEligibilityCodesMap.size === 0 ? [ApiService.getAllProgramEligibilityTypeCodes().then((res) => this.setProgramEligibilityCodesMap(res.data))]: [],
+          ... this.validationIssueTypeCodesMap.size === 0 ? [ApiService.getAllValidationIssueTypeCodes().then((res) => this.setValidationIssueTypeCodes(res.data))] : [],
         ];
         return Promise.all(promises);
       }
