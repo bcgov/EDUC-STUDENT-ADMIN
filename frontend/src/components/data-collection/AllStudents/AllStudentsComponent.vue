@@ -7,7 +7,7 @@
       <DetailComponent
         :config="config"
         :collection-object="collectionObject"
-        :show-export-btn="true"
+        :show-export-btn="false"
       />
     </div>
   </v-container>
