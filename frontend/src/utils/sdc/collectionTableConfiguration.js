@@ -844,12 +844,11 @@ export const NEW_PEN = Object.freeze(
 export const FTE = Object.freeze(
   {
     tableHeaders: [
-      { title: 'select', key: 'select' },
-      { key: 'sdcSchoolCollectionStudentStatusCode' },
+      { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
-      { title: 'FTE', key: 'fte', align: 'start' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
+      { title: 'Birthdate', key: 'dob', subHeader: { title: 'Gender', key: 'gender' } },
       { title: 'Adult', key: 'isAdult', subHeader: { title: 'Grad', key: 'isGraduated' } },
       { title: 'Grade', key: 'enrolledGradeCode', subHeader: { title: 'Funding Code', key: 'mappedSchoolFunding' } },
       { title: 'Courses For Grad', key: 'mappedNoOfCourses', subHeader: { title: 'Support Blocks', key: 'supportBlocks' } },
