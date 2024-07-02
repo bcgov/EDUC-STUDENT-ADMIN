@@ -6,6 +6,7 @@ const utils = require('../utils');
 const cacheService = require('../cache-service');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
 const {lockSdcStudentBeingProcessedInRedis, unlockSdcStudentBeingProcessedInRedis} = require('../../util/redis/redis-utils');
+const {createMoreFiltersSearchCriteria} = require('../studentFilters');
 
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
@@ -100,6 +101,33 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       searchCriteriaList: createSearchCriteria(req.query.searchParams)
     });
 
+    if(req.query.searchParams['tabFilter']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createTabFilter(req.query.searchParams['tabFilter'])
+      });
+    }
+
+    if (req.query.searchParams['multiFieldName']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createMultiFieldNameSearchCriteria(req.query.searchParams['multiFieldName'])
+      });
+    }
+    if (req.query.searchParams['penLocalIdNumber']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createLocalIdPenSearchCriteria(req.query.searchParams['penLocalIdNumber'])
+      });
+    }
+
+    if (req.query.searchParams['moreFilters']) {
+      let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
+      criteriaArray.forEach(criteria => {
+        search.push(criteria);
+      });
+    }
+
     if(req.query.searchParams['assignedPen']) {
       search.push({
         condition: CONDITION.AND,
@@ -118,6 +146,10 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
     };
 
     let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated`, params);
+    if (req?.query?.returnKey) {
+      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      return res.status(HttpStatus.OK).json(result);
+    }
 
     if(req?.query?.tableFormat){
       data.content = data?.content.map(toTableRow);
@@ -139,6 +171,80 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       return errorResponse(res);
     }
   }
+}
+
+function createTabFilter(searchParams) {
+  let searchCriteriaList = [];
+  let tableKey = 'sdcStudentEnrolledProgramEntities.enrolledProgramCode';
+
+  if (searchParams.label === 'FRENCH_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '05,08,11,14', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'CAREER_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '40,41,42,43', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'ELL_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '17', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if(searchParams.label === 'INDSUPPORT_PR') {
+    searchCriteriaList.push({ key: 'bandCode', value: null, operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+    searchCriteriaList.push({ key: 'nativeAncestryInd', value: 'Y', operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN_LEFT_JOIN, value: '29,33,36', valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+  }
+  if (searchParams.label === 'SPECIALED_PR') {
+    searchCriteriaList.push({ key: 'specialEducationCategoryCode', operation: FILTER_OPERATION.IN, value: 'A,B,C,D,E,F,G,H,K,P,Q,R', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'REFUGEE') {
+    searchCriteriaList.push({ key: 'schoolFundingCode', operation: FILTER_OPERATION.IN, value: '16', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+
+  return searchCriteriaList;
+
+}
+
+function createMultiFieldNameSearchCriteria(nameString) {
+  const nameParts = nameString.split(/\s+/);
+  const fieldNames = [
+    'legalFirstName',
+    'legalMiddleNames',
+    'legalLastName',
+    'usualFirstName',
+    'usualMiddleNames',
+    'usualLastName'
+  ];
+
+  const searchCriteriaList = [];
+  for (const part of nameParts) {
+    for (const fieldName of fieldNames) {
+      searchCriteriaList.push({
+        key: fieldName,
+        operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+        value: `%${part}%`,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.OR
+      });
+    }
+  }
+  return searchCriteriaList;
+}
+
+function createLocalIdPenSearchCriteria(value) {
+  let searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: 'studentPen',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
+  searchCriteriaList.push({
+    key: 'localID',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
+  return searchCriteriaList;
 }
 
 function toTableRow(student) {

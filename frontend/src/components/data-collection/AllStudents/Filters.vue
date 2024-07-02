@@ -41,8 +41,8 @@
             </slot>
           </v-row>
           <v-row>
-            <slot
-              v-if="district || collectionObject"
+            <slot 
+              v-if="district"
               name="text-search"
             >
               <v-autocomplete
