@@ -90,7 +90,7 @@
 <script>
 import alertMixin from '../../../mixins/alertMixin';
 import EditStudent from './EditStudent.vue';
-import {sdcCollectionStore} from '@/store/modules/sdcCollection';
+import { sdcCollectionStore } from '../../../store/modules/sdcCollection';
 import {mapState} from 'pinia';
 
 export default {

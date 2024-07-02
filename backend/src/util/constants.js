@@ -31,7 +31,8 @@ cacheKeys = {
   SDC_HOME_LANGUAGE_SPOKEN_CODES: 'sdc_home_language_spoken_codes',
   SDC_SCHOOL_FUNDING_CODES: 'sdc_school_funding_code',
   SDC_SPECIAL_ED_CODES: 'sdc_special_ed_codes',
-  SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes'
+  SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes',
+  SDC_PROGRAM_ELIGIBILITY_TYPE_CODES: 'sdc_program_eligibility_issue_codes',
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);
