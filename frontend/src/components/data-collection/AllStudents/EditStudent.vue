@@ -1,36 +1,36 @@
 <template>
   <v-row
-      class="mt-0"
-      :class="functionType !== 'add' ? 'mb-12' : 'mb-2'"
+    class="mt-0"
+    :class="functionType !== 'add' ? 'mb-12' : 'mb-2'"
   >
     <v-col class="pt-0">
       <v-row v-if="isLoading()">
         <v-col class="d-flex justify-center">
           <Spinner
-              :flat="true"
-              style="margin-bottom: 80rem"
+            :flat="true"
+            style="margin-bottom: 80rem"
           />
         </v-col>
       </v-row>
       <div
-          v-else
-          ref="topDiv"
+        v-else
+        ref="topDiv"
       >
         <v-row>
           <v-col class="pt-2 mb-1">
             <v-card
-                v-if="functionType !== 'add'"
-                variant="tonal"
-                class="pa-2 mt-0"
+              v-if="functionType !== 'add'"
+              variant="tonal"
+              class="pa-2 mt-0"
             >
               <v-row no-gutters>
                 <v-col cols="4">
                   <span id="eligible-fte-banner">
                     <b>Eligible FTE:</b> {{ sdcSchoolCollectionStudentDetailCopy?.fte }}
                     <a
-                        v-if="showFundingEligibilityDetail"
-                        style="text-decoration: underline"
-                        @click="scrollToEligibility"
+                      v-if="showFundingEligibilityDetail"
+                      style="text-decoration: underline"
+                      @click="scrollToEligibility"
                     >(Details)</a>
                   </span>
                 </v-col>
@@ -48,10 +48,10 @@
                     <v-tooltip content-class="customTooltip">
                       <template #activator="{ props: tooltipProps }">
                         <v-icon
-                            v-bind="tooltipProps"
-                            size="25"
-                            color="#003366"
-                            style="padding-left: .5rem;"
+                          v-bind="tooltipProps"
+                          size="25"
+                          color="#003366"
+                          style="padding-left: .5rem;"
                         >
                           mdi-help-circle
                         </v-icon>
@@ -71,303 +71,303 @@
         </v-row>
         <v-row>
           <v-col
-              class="pt-0"
-              cols="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues === undefined ? 12 : 6"
+            class="pt-0"
+            cols="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues === undefined ? 12 : 6"
           >
             <v-form
-                ref="studentDetailsForm"
-                v-model="studentDetailsFormValid"
+              ref="studentDetailsForm"
+              v-model="studentDetailsFormValid"
             >
               <v-row>
                 <v-col cols="12">
                   <v-row>
                     <v-col>
                       <v-text-field
-                          id="studentPen"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.studentPen"
-                          label="Submitted PEN"
-                          variant="underlined"
-                          :maxlength="9"
-                          :rules="penRules"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="studentPen"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.studentPen"
+                        label="Submitted PEN"
+                        variant="underlined"
+                        :maxlength="9"
+                        :rules="penRules"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-text-field
-                          id="localID"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.localID"
-                          label="Local ID"
-                          variant="underlined"
-                          :maxlength="12"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="localID"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.localID"
+                        label="Local ID"
+                        variant="underlined"
+                        :maxlength="12"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <DatePicker
-                          id="dobPicker"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.dob"
-                          label="Birthdate"
-                          :rules="[rules.required()]"
-                          model-type="yyyyMMdd"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="dobPicker"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.dob"
+                        label="Birthdate"
+                        :rules="[rules.required()]"
+                        model-type="yyyyMMdd"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-select
-                          id="gender"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.gender"
-                          :items="sdcCollection.genderCodes"
-                          item-value="genderCode"
-                          item-title="dropdownText"
-                          label="Gender"
-                          variant="underlined"
-                          :rules="[rules.required()]"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="gender"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.gender"
+                        :items="sdcCollection.genderCodes"
+                        item-value="genderCode"
+                        item-title="dropdownText"
+                        label="Gender"
+                        variant="underlined"
+                        :rules="[rules.required()]"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-text-field
-                          id="legalLastName"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.legalLastName"
-                          label="Legal Surname"
-                          variant="underlined"
-                          :rules="[rules.required()]"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="legalLastName"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.legalLastName"
+                        label="Legal Surname"
+                        variant="underlined"
+                        :rules="[rules.required()]"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-text-field
-                          id="usualLastName"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.usualLastName"
-                          label="Usual Surname"
-                          variant="underlined"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n4">
-                    <v-col>
-                      <v-text-field
-                          id="legalFirstName"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.legalFirstName"
-                          label="Legal Given"
-                          variant="underlined"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
-                      />
-                    </v-col>
-                    <v-col>
-                      <v-text-field
-                          id="usualFirstName"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.usualFirstName"
-                          label="Usual Given"
-                          variant="underlined"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="usualLastName"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.usualLastName"
+                        label="Usual Surname"
+                        variant="underlined"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-text-field
-                          id="legalMiddleNames"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.legalMiddleNames"
-                          label="Legal Middle"
-                          variant="underlined"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="legalFirstName"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.legalFirstName"
+                        label="Legal Given"
+                        variant="underlined"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-text-field
-                          id="usualMiddleNames"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.usualMiddleNames"
-                          label="Usual Middle"
-                          variant="underlined"
-                          :maxlength="25"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="usualFirstName"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.usualFirstName"
+                        label="Usual Given"
+                        variant="underlined"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row class="mt-n4">
+                    <v-col>
+                      <v-text-field
+                        id="legalMiddleNames"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.legalMiddleNames"
+                        label="Legal Middle"
+                        variant="underlined"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-text-field
+                        id="usualMiddleNames"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.usualMiddleNames"
+                        label="Usual Middle"
+                        variant="underlined"
+                        :maxlength="25"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-select
-                          id="enrolledGradeCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.enrolledGradeCode"
-                          label="Grade"
-                          variant="underlined"
-                          :items="sdcCollection.enrolledGradeCodes"
-                          item-value="enrolledGradeCode"
-                          item-title="dropdownText"
-                          :rules="[rules.required()]"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="enrolledGradeCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.enrolledGradeCode"
+                        label="Grade"
+                        variant="underlined"
+                        :items="sdcCollection.enrolledGradeCodes"
+                        item-value="enrolledGradeCode"
+                        item-title="dropdownText"
+                        :rules="[rules.required()]"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-select
-                          id="schoolFundingCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.schoolFundingCode"
-                          label="Funding Code"
-                          variant="underlined"
-                          :items="sdcCollection.schoolFundingCodes"
-                          item-value="schoolFundingCode"
-                          item-title="dropdownText"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="schoolFundingCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.schoolFundingCode"
+                        label="Funding Code"
+                        variant="underlined"
+                        :items="sdcCollection.schoolFundingCodes"
+                        item-value="schoolFundingCode"
+                        item-title="dropdownText"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-autocomplete
-                          id="numberOfCourses"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.numberOfCourses"
-                          :items="courseOptions"
-                          label="Number of Courses"
-                          variant="underlined"
-                          density="compact"
-                          autocomplete="off"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="numberOfCourses"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.numberOfCourses"
+                        :items="courseOptions"
+                        label="Number of Courses"
+                        variant="underlined"
+                        density="compact"
+                        autocomplete="off"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-select
-                          id="otherCourses"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.otherCourses"
-                          label="Other Courses"
-                          variant="underlined"
-                          :items="sdcCollection.otherCoursesValidNumbers"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n4">
-                    <v-col>
-                      <v-select
-                          id="supportBlocks"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.supportBlocks"
-                          label="Support Blocks"
-                          variant="underlined"
-                          :items="sdcCollection.supportBlocksValidNumbers"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
-                      />
-                    </v-col>
-                    <v-col>
-                      <v-select
-                          id="specialEducationCategoryCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.specialEducationCategoryCode"
-                          label="Special Ed. Category"
-                          variant="underlined"
-                          :items="sdcCollection.specialEducationCodes"
-                          item-value="specialEducationCategoryCode"
-                          item-title="dropdownText"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="otherCourses"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.otherCourses"
+                        label="Other Courses"
+                        variant="underlined"
+                        :items="sdcCollection.otherCoursesValidNumbers"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-select
-                          id="nativeAncestryInd"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.nativeAncestryInd"
-                          label="Indigenous Ancestry"
-                          variant="underlined"
-                          :items="sdcCollection.ancestryItems"
-                          item-value="code"
-                          item-title="dropdownText"
-                          density="compact"
-                          :rules="[rules.required()]"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="supportBlocks"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.supportBlocks"
+                        label="Support Blocks"
+                        variant="underlined"
+                        :items="sdcCollection.supportBlocksValidNumbers"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-select
-                          id="bandCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.bandCode"
-                          label="Band of Residence"
-                          variant="underlined"
-                          :items="sdcCollection.bandCodes"
-                          item-value="bandCode"
-                          item-title="dropdownText"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="specialEducationCategoryCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.specialEducationCategoryCode"
+                        label="Special Ed. Category"
+                        variant="underlined"
+                        :items="sdcCollection.specialEducationCodes"
+                        item-value="specialEducationCategoryCode"
+                        item-title="dropdownText"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-select
-                          id="homeLanguageSpokenCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.homeLanguageSpokenCode"
-                          label="Home Language"
-                          variant="underlined"
-                          :items="sdcCollection.homeLanguageSpokenCodes"
-                          item-value="homeLanguageSpokenCode"
-                          item-title="dropdownText"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="nativeAncestryInd"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.nativeAncestryInd"
+                        label="Indigenous Ancestry"
+                        variant="underlined"
+                        :items="sdcCollection.ancestryItems"
+                        item-value="code"
+                        item-title="dropdownText"
+                        density="compact"
+                        :rules="[rules.required()]"
+                        :disabled="isSchoolCollectionSubmitted()"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-select
+                        id="bandCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.bandCode"
+                        label="Band of Residence"
+                        variant="underlined"
+                        :items="sdcCollection.bandCodes"
+                        item-value="bandCode"
+                        item-title="dropdownText"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row class="mt-n4">
+                    <v-col>
+                      <v-select
+                        id="homeLanguageSpokenCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.homeLanguageSpokenCode"
+                        label="Home Language"
+                        variant="underlined"
+                        :items="sdcCollection.homeLanguageSpokenCodes"
+                        item-value="homeLanguageSpokenCode"
+                        item-title="dropdownText"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-text-field
-                          id="postalCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.postalCode"
-                          label="Postal Code"
-                          variant="underlined"
-                          :maxlength="6"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="postalCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.postalCode"
+                        label="Postal Code"
+                        variant="underlined"
+                        :maxlength="6"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                   </v-row>
                   <v-row class="mt-n4">
                     <v-col>
                       <v-select
-                          id="careerProgramCode"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.careerProgramCode"
-                          label="Career Code"
-                          variant="underlined"
-                          :items="sdcCollection.careerProgramCodes"
-                          item-value="careerProgramCode"
-                          item-title="dropdownText"
-                          density="compact"
-                          :disabled="isSchoolCollectionSubmitted()"
+                        id="careerProgramCode"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.careerProgramCode"
+                        label="Career Code"
+                        variant="underlined"
+                        :items="sdcCollection.careerProgramCodes"
+                        item-value="careerProgramCode"
+                        item-title="dropdownText"
+                        density="compact"
+                        :disabled="isSchoolCollectionSubmitted()"
                       />
                     </v-col>
                     <v-col>
                       <v-select
-                          id="filteredEnrolledProgramCodes"
-                          v-model="sdcSchoolCollectionStudentDetailCopy.filteredEnrolledProgramCodes"
-                          label="Program Codes"
-                          variant="underlined"
-                          :items="sdcCollection.enrolledProgramCodes"
-                          item-value="enrolledProgramCode"
-                          item-title="dropdownText"
-                          multiple
-                          density="compact"
-                          :rules="enrolledProgramRules"
-                          :disabled="isSchoolCollectionSubmitted()"
-                          @update:model-value="syncWithEnrolledProgramCodeOnUserInput"
+                        id="filteredEnrolledProgramCodes"
+                        v-model="sdcSchoolCollectionStudentDetailCopy.filteredEnrolledProgramCodes"
+                        label="Program Codes"
+                        variant="underlined"
+                        :items="sdcCollection.enrolledProgramCodes"
+                        item-value="enrolledProgramCode"
+                        item-title="dropdownText"
+                        multiple
+                        density="compact"
+                        :rules="enrolledProgramRules"
+                        :disabled="isSchoolCollectionSubmitted()"
+                        @update:model-value="syncWithEnrolledProgramCodeOnUserInput"
                       />
                     </v-col>
                   </v-row>
@@ -376,42 +376,42 @@
             </v-form>
           </v-col>
           <v-divider
-              v-if="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues !== undefined"
-              :thickness="1"
-              inset
-              color="#b3b0b0"
-              class="border-opacity-75"
-              vertical
+            v-if="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues !== undefined"
+            :thickness="1"
+            inset
+            color="#b3b0b0"
+            class="border-opacity-75"
+            vertical
           />
           <v-col v-if="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues?.length > 0">
             <v-row v-if="hasError">
               <v-col>
                 <v-alert
-                    type="warning"
-                    variant="tonal"
-                    text="Warning! Updates to student details will not be saved until all errors are fixed."
+                  type="warning"
+                  variant="tonal"
+                  text="Warning! Updates to student details will not be saved until all errors are fixed."
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col class="pl-0 pr-6 scroll">
                 <v-timeline
-                    v-if="sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionStudentValidationIssues"
-                    side="end"
-                    density="compact"
-                    style="margin-left: 1em"
-                    align="start"
-                    truncate-line="start"
+                  v-if="sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionStudentValidationIssues"
+                  side="end"
+                  density="compact"
+                  style="margin-left: 1em"
+                  align="start"
+                  truncate-line="start"
                 >
                   <v-timeline-item
-                      v-for="(issue) in formatAndSortValidationIssues(sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionStudentValidationIssues)"
-                      :key="issue.sdcSchoolCollectionStudentValidationIssueID"
-                      dot-color="white"
-                      fill-dot
-                      :icon-color="getIssueIconColor(issue.validationIssueSeverityCode)"
-                      :icon="getIssueIcon(issue.validationIssueSeverityCode)"
-                      size="large"
-                      width="100%"
+                    v-for="(issue) in formatAndSortValidationIssues(sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionStudentValidationIssues)"
+                    :key="issue.sdcSchoolCollectionStudentValidationIssueID"
+                    dot-color="white"
+                    fill-dot
+                    :icon-color="getIssueIconColor(issue.validationIssueSeverityCode)"
+                    :icon="getIssueIcon(issue.validationIssueSeverityCode)"
+                    size="large"
+                    width="100%"
                   >
                     <v-row class="mt-n1">
                       <v-col>
@@ -426,67 +426,67 @@
                       </v-col>
                     </v-row>
                     <v-form
-                        ref="form"
-                        v-model="isValid"
+                      ref="form"
+                      v-model="isValid"
                     >
                       <v-row>
                         <v-col>
                           <div
-                              v-for="(field) in issue.validationIssueFieldCode"
-                              :key="field"
+                            v-for="(field) in issue.validationIssueFieldCode"
+                            :key="field"
                           >
                             <v-text-field
-                                v-if="sdcFieldMappings[field]?.type === 'input'"
-                                :id="`${sdcFieldMappings[field]?.key}ValidationTextInput`"
-                                v-model:model-value="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field]?.key]"
-                                :label="sdcFieldMappings[field]?.label"
-                                :rules="sdcFieldMappings[field]?.options.rules"
-                                :maxlength="sdcFieldMappings[field]?.options.maxlength"
-                                density="compact"
-                                variant="underlined"
+                              v-if="sdcFieldMappings[field]?.type === 'input'"
+                              :id="`${sdcFieldMappings[field]?.key}ValidationTextInput`"
+                              v-model:model-value="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field]?.key]"
+                              :label="sdcFieldMappings[field]?.label"
+                              :rules="sdcFieldMappings[field]?.options.rules"
+                              :maxlength="sdcFieldMappings[field]?.options.maxlength"
+                              density="compact"
+                              variant="underlined"
                             />
                             <v-autocomplete
-                                v-else-if="sdcFieldMappings[field]?.key === 'numberOfCourses'"
-                                :id="`${sdcFieldMappings[field].key}ValidationDropdown`"
-                                v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
-                                :rules="sdcFieldMappings[field].options.rules"
-                                :items="courseOptions"
-                                item-title="dropdownText"
-                                :label="sdcFieldMappings[field].label"
-                                autocomplete="off"
+                              v-else-if="sdcFieldMappings[field]?.key === 'numberOfCourses'"
+                              :id="`${sdcFieldMappings[field].key}ValidationDropdown`"
+                              v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
+                              :rules="sdcFieldMappings[field].options.rules"
+                              :items="courseOptions"
+                              item-title="dropdownText"
+                              :label="sdcFieldMappings[field].label"
+                              autocomplete="off"
                             />
                             <v-autocomplete
-                                v-else-if="sdcFieldMappings[field]?.type === 'select'"
-                                :id="`${sdcFieldMappings[field].key}ValidationDropdown`"
-                                v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
-                                :rules="sdcFieldMappings[field].options.rules"
-                                :items="sdcCollection[sdcFieldMappings[field].options.items]"
-                                :item-value="sdcFieldMappings[field].options.itemValue"
-                                item-title="dropdownText"
-                                :label="sdcFieldMappings[field].label"
+                              v-else-if="sdcFieldMappings[field]?.type === 'select'"
+                              :id="`${sdcFieldMappings[field].key}ValidationDropdown`"
+                              v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
+                              :rules="sdcFieldMappings[field].options.rules"
+                              :items="sdcCollection[sdcFieldMappings[field].options.items]"
+                              :item-value="sdcFieldMappings[field].options.itemValue"
+                              item-title="dropdownText"
+                              :label="sdcFieldMappings[field].label"
                             />
                             <v-autocomplete
-                                v-else-if="sdcFieldMappings[field]?.type === 'multiselect'"
-                                :id="`${sdcFieldMappings[field].key}ValidationMultiSelect`"
-                                v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
-                                :rules="sdcFieldMappings[field].options.rules"
-                                :items="sdcCollection[sdcFieldMappings[field].options.items]"
-                                :item-value="sdcFieldMappings[field].options.itemValue"
-                                item-title="dropdownText"
-                                :label="sdcFieldMappings[field].label"
-                                multiple
-                                placeholder="No Program Codes"
-                                :persistent-placeholder="true"
-                                :selectable="() => sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key].length < 8"
-                                @update:model-value="syncWithEnrolledProgramCodeOnUserInput"
+                              v-else-if="sdcFieldMappings[field]?.type === 'multiselect'"
+                              :id="`${sdcFieldMappings[field].key}ValidationMultiSelect`"
+                              v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
+                              :rules="sdcFieldMappings[field].options.rules"
+                              :items="sdcCollection[sdcFieldMappings[field].options.items]"
+                              :item-value="sdcFieldMappings[field].options.itemValue"
+                              item-title="dropdownText"
+                              :label="sdcFieldMappings[field].label"
+                              multiple
+                              placeholder="No Program Codes"
+                              :persistent-placeholder="true"
+                              :selectable="() => sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key].length < 8"
+                              @update:model-value="syncWithEnrolledProgramCodeOnUserInput"
                             />
                             <div v-else-if="sdcFieldMappings[field]?.type === 'datePicker'">
                               <DatePicker
-                                  :id="`${sdcFieldMappings[field].key}DatePicker`"
-                                  v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
-                                  :label="sdcFieldMappings[field]?.label"
-                                  :rules="sdcFieldMappings[field].options.rules"
-                                  model-type="yyyyMMdd"
+                                :id="`${sdcFieldMappings[field].key}DatePicker`"
+                                v-model="sdcSchoolCollectionStudentDetailCopy[sdcFieldMappings[field].key]"
+                                :label="sdcFieldMappings[field]?.label"
+                                :rules="sdcFieldMappings[field].options.rules"
+                                model-type="yyyyMMdd"
                               />
                             </div>
                           </div>
@@ -500,10 +500,10 @@
           </v-col>
           <v-col v-else-if="sdcSchoolCollectionStudentDetailCopy?.sdcSchoolCollectionStudentValidationIssues?.length === 0">
             <v-alert
-                :closable="true"
-                type="success"
-                variant="tonal"
-                text="There are no errors or warnings on this student record."
+              :closable="true"
+              type="success"
+              variant="tonal"
+              text="There are no errors or warnings on this student record."
             />
           </v-col>
         </v-row>
@@ -511,38 +511,38 @@
       <div ref="eligibility" />
       <slot name="eligibility" />
       <v-row
-          :class="functionType !== 'add' ? 'footer' : ''"
-          no-gutters
+        :class="functionType !== 'add' ? 'footer' : ''"
+        no-gutters
       >
         <v-col class="d-flex justify-end mr-3 mt-3">
           <v-pagination
-              v-if="functionType !== 'add' && selectedStudents.length !== 1"
-              v-model="page"
-              :length="selectedStudents.length"
-              :total-visible="2"
-              rounded="circle"
-              class="mt-n3"
-              @update:model-value="navigate"
+            v-if="functionType !== 'add' && selectedStudents.length !== 1"
+            v-model="page"
+            :length="selectedStudents.length"
+            :total-visible="2"
+            rounded="circle"
+            class="mt-n3"
+            @update:model-value="navigate"
           />
           <v-btn
-              v-if="functionType !== 'add'"
-              id="removeRecord"
-              color="#003366"
-              large-icon
-              prepend-icon="mdi-delete"
-              text="Remove"
-              variant="outlined"
-              class="mr-1"
-              :disabled="isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
-              @click="deleteStudent"
+            v-if="functionType !== 'add'"
+            id="removeRecord"
+            color="#003366"
+            large-icon
+            prepend-icon="mdi-delete"
+            text="Remove"
+            variant="outlined"
+            class="mr-1"
+            :disabled="isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
+            @click="deleteStudent"
           />
           <v-btn
-              id="saveRecord"
-              color="#003366"
-              text="Validate & Save"
-              class="mr-1"
-              :disabled="!studentDetailsFormValid || isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
-              @click="save"
+            id="saveRecord"
+            color="#003366"
+            text="Validate & Save"
+            class="mr-1"
+            :disabled="!studentDetailsFormValid || isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
+            @click="save"
           />
         </v-col>
       </v-row>
@@ -708,19 +708,19 @@ export default {
       this.loadingCount += 1;
       this.selectedSdcStudentID=sdcSchoolCollectionStudentID;
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${sdcSchoolCollectionStudentID}`)
-          .then(response => {
-            this.filterSdcSchoolCollectionStudentAndPopulateProperties(response.data);
-          }).catch(error => {
-        console.error(error);
-        setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
-      }).finally(() => {
-        this.removeIndex = null;
-        this.loadingCount -= 1;
-        if (!this.isLoading()) {
-          this.$nextTick().then(this.validateForm);
-        }
-        this.$emit('student-object', this.sdcSchoolCollectionStudentDetailCopy);
-      });
+        .then(response => {
+          this.filterSdcSchoolCollectionStudentAndPopulateProperties(response.data);
+        }).catch(error => {
+          console.error(error);
+          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
+        }).finally(() => {
+          this.removeIndex = null;
+          this.loadingCount -= 1;
+          if (!this.isLoading()) {
+            this.$nextTick().then(this.validateForm);
+          }
+          this.$emit('student-object', this.sdcSchoolCollectionStudentDetailCopy);
+        });
     },
     save(){
       this.loadingCount += 1;
@@ -730,28 +730,28 @@ export default {
         this.sdcSchoolCollectionStudentDetailCopy.sdcDistrictCollectionID = this.sdcCollection.schoolCollection.sdcDistrictCollectionID;
       }
       ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}`, this.sdcSchoolCollectionStudentDetailCopy)
-          .then((res) => {
-            if (res.data.sdcSchoolCollectionStudentStatusCode === 'ERROR') {
-              setWarningAlert('Warning! Updates to student details will not be saved until all errors are fixed.');
-              this.filterSdcSchoolCollectionStudentAndPopulateProperties(res.data);
-              this.hasError = true;
+        .then((res) => {
+          if (res.data.sdcSchoolCollectionStudentStatusCode === 'ERROR') {
+            setWarningAlert('Warning! Updates to student details will not be saved until all errors are fixed.');
+            this.filterSdcSchoolCollectionStudentAndPopulateProperties(res.data);
+            this.hasError = true;
+          } else {
+            setSuccessAlert('Success! The student details have been updated.');
+            if(this.functionType === 'add'){
+              this.$emit('close-success', res.data);
+            } else if((this.page < this.selectedStudents.length)  && res.data.sdcSchoolCollectionStudentValidationIssues?.length === 0){
+              this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[this.page++]);
             } else {
-              setSuccessAlert('Success! The student details have been updated.');
-              if(this.functionType === 'add'){
-                this.$emit('close-success', res.data);
-              } else if((this.page < this.selectedStudents.length)  && res.data.sdcSchoolCollectionStudentValidationIssues?.length === 0){
-                this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[this.page++]);
-              } else {
-                this.getSdcSchoolCollectionStudentDetail(this.selectedSdcStudentID);
-              }
+              this.getSdcSchoolCollectionStudentDetail(this.selectedSdcStudentID);
             }
-          }).catch(error => {
-        console.error(error);
-        setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
-      }).finally(() => {
-        this.loadingCount -= 1;
-        this.$emit('reset-parent');
-      });
+          }
+        }).catch(error => {
+          console.error(error);
+          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
+        }).finally(() => {
+          this.loadingCount -= 1;
+          this.$emit('reset-parent');
+        });
     },
     scrollToEligibility() {
       const eligibility = this.$refs.eligibility;
@@ -770,25 +770,25 @@ export default {
       this.loadingCount += 1;
       this.hasError = false;
       ApiService.apiAxios.delete(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${this.selectedSdcStudentID}`, this.sdcSchoolCollectionStudentDetailCopy)
-          .then(() => {
-            this.removeIndex = this.selectedStudents.findIndex(value => value === this.selectedSdcStudentID);
-            this.selectedStudents.splice(this.removeIndex, 1);
-            setSuccessAlert('Success! The student details have been deleted.');
-            this.$emit('reset-pagination');
-          }).catch(error => {
-        console.error(error);
-        setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
-      }).finally(() => {
-        this.loadingCount -= 1;
-        if(this.selectedStudents.length > 0) {
-          this.page = (this.page  === 1 ? 1 : this.page - 1);
-          this.removeIndex === 0 ? this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[0]) :this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[this.removeIndex - 1]);
-        }
-        else {
-          this.$emit('show-issues');
-        }
-        this.$emit('reset-parent');
-      });
+        .then(() => {
+          this.removeIndex = this.selectedStudents.findIndex(value => value === this.selectedSdcStudentID);
+          this.selectedStudents.splice(this.removeIndex, 1);
+          setSuccessAlert('Success! The student details have been deleted.');
+          this.$emit('reset-pagination');
+        }).catch(error => {
+          console.error(error);
+          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
+        }).finally(() => {
+          this.loadingCount -= 1;
+          if(this.selectedStudents.length > 0) {
+            this.page = (this.page  === 1 ? 1 : this.page - 1);
+            this.removeIndex === 0 ? this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[0]) :this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[this.removeIndex - 1]);
+          }
+          else {
+            this.$emit('show-issues');
+          }
+          this.$emit('reset-parent');
+        });
     },
     filterEnrolledProgramCodes(enrolledProgramCodes = []){
       if(enrolledProgramCodes) {
@@ -872,26 +872,26 @@ export default {
     },
     getIssueIcon(issue){
       switch (issue) {
-        case 'ERROR':
-          return 'mdi-alert-circle-outline';
-        case 'INFO_WARNING':
-          return 'mdi-alert-circle-outline';
-        case 'FUNDING_WARNING':
-          return 'mdi-alert-outline';
-        default:
-          return '';
+      case 'ERROR':
+        return 'mdi-alert-circle-outline';
+      case 'INFO_WARNING':
+        return 'mdi-alert-circle-outline';
+      case 'FUNDING_WARNING':
+        return 'mdi-alert-outline';
+      default:
+        return '';
       }
     },
     getIssueIconColor(issue){
       switch (issue) {
-        case 'ERROR':
-          return '#d90606';
-        case 'INFO_WARNING':
-          return '#2196F3';
-        case 'FUNDING_WARNING':
-          return '#ff9800';
-        default:
-          return '';
+      case 'ERROR':
+        return '#d90606';
+      case 'INFO_WARNING':
+        return '#2196F3';
+      case 'FUNDING_WARNING':
+        return '#ff9800';
+      default:
+        return '';
       }
     },
     getAssignedPenDetails(assignedPen, studentPen, penMatchResult) {
@@ -901,25 +901,25 @@ export default {
       };
 
       switch (penMatchResult) {
-        case 'MATCH':
-          result.assignedPen = assignedPen;
-          if (studentPen && studentPen !== assignedPen) {
-            result.tooltip = 'Differences between the Assigned PEN and Submitted PEN indicate an existing student file has been matched to the submitted details. The Assigned PEN will be used to prevent duplication.';
-          } else if (!studentPen) {
-            result.tooltip = 'No submitted PEN was provided. The submitted details has been matched to an existing student file and assigned a PEN. The Assigned PEN will be used to prevent duplication.';
-          } else {
-            result.tooltip = 'Same Assigned PEN and Submitted PEN indicate that the submitted details have been matched to an existing student file.';
-          }
-          break;
-        case 'MULTI':
-        case 'NEW':
-          result.assignedPen = 'Under Review';
-          result.tooltip = 'The submitted PEN and student details are similar to multiple student files. Upon file submission, this record will be sent to a PEN Coordinator for review to prevent duplication.';
-          break;
-        default:
-          result.assignedPen = 'Waiting on fixes';
-          result.tooltip = 'The submitted student details have errors or incomplete information. Confirm the submitted student name and date of birth.';
-          break;
+      case 'MATCH':
+        result.assignedPen = assignedPen;
+        if (studentPen && studentPen !== assignedPen) {
+          result.tooltip = 'Differences between the Assigned PEN and Submitted PEN indicate an existing student file has been matched to the submitted details. The Assigned PEN will be used to prevent duplication.';
+        } else if (!studentPen) {
+          result.tooltip = 'No submitted PEN was provided. The submitted details has been matched to an existing student file and assigned a PEN. The Assigned PEN will be used to prevent duplication.';
+        } else {
+          result.tooltip = 'Same Assigned PEN and Submitted PEN indicate that the submitted details have been matched to an existing student file.';
+        }
+        break;
+      case 'MULTI':
+      case 'NEW':
+        result.assignedPen = 'Under Review';
+        result.tooltip = 'The submitted PEN and student details are similar to multiple student files. Upon file submission, this record will be sent to a PEN Coordinator for review to prevent duplication.';
+        break;
+      default:
+        result.assignedPen = 'Waiting on fixes';
+        result.tooltip = 'The submitted student details have errors or incomplete information. Confirm the submitted student name and date of birth.';
+        break;
       }
 
       return result;

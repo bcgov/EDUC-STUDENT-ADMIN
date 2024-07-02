@@ -1,10 +1,10 @@
 <template>
   <v-card
-      id="viewStudentCard"
+    id="viewStudentCard"
   >
     <v-card-title
-        id="viewStudentCardTitle"
-        class="sheetHeader pt-1 pb-1"
+      id="viewStudentCardTitle"
+      class="sheetHeader pt-1 pb-1"
     >
       <v-row no-gutters>
         <v-col class="d-flex justify-start">
@@ -12,13 +12,13 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <v-btn
-              id="cancel"
-              color="white"
-              text="Close"
-              size="30"
-              icon="mdi-close"
-              variant="tonal"
-              @click="cancel"
+            id="cancel"
+            color="white"
+            text="Close"
+            size="30"
+            icon="mdi-close"
+            variant="tonal"
+            @click="cancel"
           />
         </v-col>
       </v-row>
@@ -26,14 +26,14 @@
     <v-divider />
     <v-card-text>
       <EditStudent
-          :selected-students="selectedStudent"
-          :total-students="1"
-          :save-event="saveStudent"
-          :show-funding-eligibility-detail="showFundingEligibilitySection()"
-          @form-validity="isValid"
-          @show-issues="cancel"
-          @reset-parent="reset()"
-          @student-object="setStudentContext"
+        :selected-students="selectedStudent"
+        :total-students="1"
+        :save-event="saveStudent"
+        :show-funding-eligibility-detail="showFundingEligibilitySection()"
+        @form-validity="isValid"
+        @show-issues="cancel"
+        @reset-parent="reset()"
+        @student-object="setStudentContext"
       >
         <template #eligibility>
           <v-row v-if="studentForEdit?.fte === 0">
@@ -47,36 +47,36 @@
               <br>
               <v-table>
                 <thead>
-                <tr>
-                  <th
+                  <tr>
+                    <th
                       id="program"
                       class="text-left"
-                  >
-                    Program
-                  </th>
-                  <th
+                    >
+                      Program
+                    </th>
+                    <th
                       id="funding"
                       class="text-left"
-                  >
-                    Funding Eligible
-                  </th>
-                  <th
+                    >
+                      Funding Eligible
+                    </th>
+                    <th
                       id="reasonCode"
                       class="text-left"
-                  >
-                    Non-Eligibility Reason
-                  </th>
-                </tr>
+                    >
+                      Non-Eligibility Reason
+                    </th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr
+                  <tr
                     v-for="item in programEligibilityData"
                     :key="item.program"
-                >
-                  <td>{{ item.program }}</td>
-                  <td>{{ item.fundingEligible }}</td>
-                  <td>{{ item.nonEligibilityReason }}</td>
-                </tr>
+                  >
+                    <td>{{ item.program }}</td>
+                    <td>{{ item.fundingEligible }}</td>
+                    <td>{{ item.nonEligibilityReason }}</td>
+                  </tr>
                 </tbody>
               </v-table>
             </v-col>
