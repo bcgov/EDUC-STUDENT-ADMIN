@@ -175,6 +175,20 @@ const website = (message = 'Website must be valid and secure (i.e., https)') => 
   return v => !v || /^https:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/.test(v) || message;
 };
 
+/**
+ * Rule to check minimum length
+ * @param {Number} length
+ * @param {String} message
+ * @returns Function
+ */
+const minLength = ( length, message = 'Must be at least ${length} characters') => {
+  if (!message.includes('${length}')) {
+    console.warn('missing ${length} string in message for minLength rule');
+  }
+  message = message.replace('${length}', length.toString());
+  return v => !v || v.length === length || message;
+};
+
 export {
   email,
   endDateRule,
@@ -185,6 +199,7 @@ export {
   noSpecialCharactersContactName,
   noSpecialCharactersContactTitle,
   noSpecialCharactersAddress,
+  minLength,
   specialCharactersInSchDisName,
   phoneNumber,
   postalCode,
