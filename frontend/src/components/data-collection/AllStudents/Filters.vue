@@ -42,7 +42,7 @@
           </v-row>
           <v-row>
             <slot
-              v-if="district"
+              v-if="district || collectionObject"
               name="text-search"
             >
               <v-autocomplete
@@ -241,17 +241,12 @@ export default {
     ...mapState(authStore, ['userInfo']),
   },
   async beforeMount() {
-    if (this.schoolRoles.length === 0) {
-      await edxStore().getSchoolExchangeRoles();
-    }
-    if(this.schoolsMap.size === 0) {
-      await appStore().getInstitutesData();
-    }
+
   },
   created() {
     authStore().getUserInfo().then(() => {
       this.isDistrictUser = true;
-      appStore().getInstitutesData().then(() => {
+      appStore().getInstituteCodes().then(() => {
         this.setupSchoolList();
         this.loading = false;
       });
@@ -263,6 +258,8 @@ export default {
   methods: {
     setupSchoolList(){
       this.schoolSearchNames = [];
+      // TODO school name or number filter dropdown population
+      /*
       ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.$route.params.sdcDistrictCollectionID}/sdcSchoolCollections`)
         .then((res) => {
           res.data.forEach(schoolCollection => {
@@ -279,6 +276,7 @@ export default {
         .catch(error => {
           console.error(error);
         });
+       */
     },
     close() {
       this.$emit('close');
