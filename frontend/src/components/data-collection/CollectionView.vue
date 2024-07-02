@@ -118,7 +118,7 @@
             transition="false"
             reverse-transition="false"
           >
-            <AllStudentsComponent />
+            <AllStudentsComponent :collection-object="activeCollectionObject" />
           </v-window-item>
         </v-window>
       </v-col>

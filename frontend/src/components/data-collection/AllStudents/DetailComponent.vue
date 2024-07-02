@@ -3,24 +3,24 @@
     <v-col cols="12">
       <v-row justify="space-between">
         <v-col
-            cols="4"
-            class="found-align"
+          cols="4"
+          class="found-align"
         >
           <span
-              id="studentsFound"
-              class="bold"
+            id="studentsFound"
+            class="bold"
           >Students Found:  {{ totalElements }}
           </span>
           <router-link
-              v-if="showExportBtn"
-              class="ml-2"
-              :to="{ path: downloadReportURL() }"
-              target="_blank"
+            v-if="showExportBtn"
+            class="ml-2"
+            :to="{ path: downloadReportURL() }"
+            target="_blank"
           >
             <v-icon
-                small
-                class="ml-1"
-                color="#003366"
+              small
+              class="ml-1"
+              color="#003366"
             >
               mdi-tray-arrow-down
             </v-icon>
@@ -28,24 +28,24 @@
           </router-link>
         </v-col>
         <v-col
-            cols="8"
-            class="d-flex justify-end"
+          cols="8"
+          class="d-flex justify-end"
         >
           <v-btn
-              id="filters"
-              color="#003366"
-              text="Filter"
-              class="mr-1 mb-1"
-              prepend-icon="mdi-filter-multiple-outline"
-              variant="outlined"
-              @click="toggleFilters"
+            id="filters"
+            color="#003366"
+            text="Filter"
+            class="mr-1 mb-1"
+            prepend-icon="mdi-filter-multiple-outline"
+            variant="outlined"
+            @click="toggleFilters"
           >
             <template #append>
               <v-badge
-                  color="error"
-                  :content="filterCount"
-                  floating
-                  offset-y="-10"
+                color="error"
+                :content="filterCount"
+                floating
+                offset-y="-10"
               />
             </template>
           </v-btn>
@@ -55,48 +55,48 @@
       <v-row>
         <v-col cols="12">
           <CustomTable
-              :headers="config.tableHeaders"
-              :data="studentList"
-              :total-elements="totalElements"
-              :is-loading="isLoading"
-              :reset="resetFlag"
-              @reload="reload"
-              @editSelectedRow="editStudent"
-              @selections="selectedStudents = $event"
+            :headers="config.tableHeaders"
+            :data="studentList"
+            :total-elements="totalElements"
+            :is-loading="isLoading"
+            :reset="resetFlag"
+            @reload="reload"
+            @editSelectedRow="editStudent"
+            @selections="selectedStudents = $event"
           />
         </v-col>
       </v-row>
     </v-col>
     <v-navigation-drawer
-        v-model="showFilters"
-        location="right"
-        :temporary="true"
-        width="700"
-        :persistent="true"
-        scrim="transparent"
-        :border="true"
-        style="top:0; height: 100%;"
-        rounded="true"
+      v-model="showFilters"
+      location="right"
+      :temporary="true"
+      width="700"
+      :persistent="true"
+      scrim="transparent"
+      :border="true"
+      style="top:0; height: 100%;"
+      rounded="true"
     >
       <Filters
-          :filters="config.allowedFilters"
-          :district="district"
-          @apply-filters="applyFilters"
-          @clear-filters="clearFilters"
-          @close="showFilters= !showFilters"
+        :filters="config.allowedFilters"
+        :collection-object="collectionObject"
+        @apply-filters="applyFilters"
+        @clear-filters="clearFilters"
+        @close="showFilters= !showFilters"
       />
     </v-navigation-drawer>
   </v-row>
   <v-bottom-sheet
-      v-model="editStudentSheet"
-      :inset="true"
-      :no-click-animation="true"
-      :scrollable="true"
-      :persistent="true"
+    v-model="editStudentSheet"
+    :inset="true"
+    :no-click-animation="true"
+    :scrollable="true"
+    :persistent="true"
   >
     <ViewStudentDetailsComponent
-        :selected-student-ids="studentForEdit"
-        @close="closeAndLoadStudents"
+      :selected-student-ids="studentForEdit"
+      @close="closeAndLoadStudents"
     />
   </v-bottom-sheet>
 </template>
@@ -127,7 +127,7 @@ export default {
       type: Object,
       default: null
     },
-    district: {
+    collectionObject: {
       type: Object,
       required: true,
       default: null
@@ -194,7 +194,7 @@ export default {
     },
     loadStudents() {
       this.isLoading= true;
-      ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.$route.params.sdcDistrictCollectionID}/paginated?tableFormat=true`, {
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,

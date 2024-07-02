@@ -7,13 +7,13 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <v-btn
-              id="cancel"
-              color="white"
-              text="Close"
-              size="30"
-              icon="mdi-close"
-              variant="tonal"
-              @click="close()"
+            id="cancel"
+            color="white"
+            text="Close"
+            size="30"
+            icon="mdi-close"
+            variant="tonal"
+            @click="close()"
           />
         </v-col>
       </v-row>
@@ -22,87 +22,87 @@
     <v-card-text>
       <v-row>
         <v-col
-            cols="6"
-            class="ml-2"
+          cols="6"
+          class="ml-2"
         >
           <v-row>
             <slot
-                v-if="showStudentSearch"
-                name="text-search"
+              v-if="showStudentSearch"
+              name="text-search"
             >
               <v-text-field
-                  id="searchInput"
-                  v-model="penLocalIdNameFilter"
-                  label="PEN or Local ID or Name"
-                  color="primary"
-                  variant="underlined"
-                  @update:model-value="setPenLocalIdNameFilter('penLocalIdName', $event)"
+                id="searchInput"
+                v-model="penLocalIdNameFilter"
+                label="PEN or Local ID or Name"
+                color="primary"
+                variant="underlined"
+                @update:model-value="setPenLocalIdNameFilter('penLocalIdName', $event)"
               />
             </slot>
           </v-row>
           <v-row>
             <slot
-                v-if="district"
-                name="text-search"
+              v-if="district"
+              name="text-search"
             >
               <v-autocomplete
-                  id="selectSchool"
-                  v-model="schoolNameNumberFilter"
-                  variant="underlined"
-                  :items="schoolSearchNames"
-                  color="#003366"
-                  label="School Name or Number"
-                  single-line
-                  clearable
-                  item-title="schoolCodeName"
-                  item-value="schoolID"
-                  autocomplete="off"
-                  @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
+                id="selectSchool"
+                v-model="schoolNameNumberFilter"
+                variant="underlined"
+                :items="schoolSearchNames"
+                color="#003366"
+                label="School Name or Number"
+                single-line
+                clearable
+                item-title="schoolCodeName"
+                item-value="schoolID"
+                autocomplete="off"
+                @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
               />
             </slot>
           </v-row>
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
-              id="clear-filter"
-              secondary
-              large-icon
-              icon="mdi-filter-off-outline"
-              text="Clear All"
-              :click-action="clear"
+            id="clear-filter"
+            secondary
+            large-icon
+            icon="mdi-filter-off-outline"
+            text="Clear All"
+            :click-action="clear"
           />
         </v-col>
       </v-row>
       <div
-          v-for="(filter, key) in filters"
-          :key="key"
+        v-for="(filter, key) in filters"
+        :key="key"
       >
         <v-row>
           <v-col
-              :id="filter.id"
-              class="filter-heading"
+            :id="filter.id"
+            class="filter-heading"
           >
             {{ filter?.heading }}
           </v-col>
         </v-row>
         <v-row>
           <v-btn-toggle
-              v-model="selected[key]"
-              color="#003366"
-              rounded="0"
-              :multiple="filter?.multiple"
-              class="filter-toggle"
-              @update:model-value="setFilter(selected[key], key)"
+            v-model="selected[key]"
+            color="#003366"
+            rounded="0"
+            :multiple="filter?.multiple"
+            class="filter-toggle"
+            @update:model-value="setFilter(selected[key], key)"
           >
             <div
-                v-for="(option, i) in filter?.filterOptions"
-                :key="i"
+              v-for="(option, i) in filter?.filterOptions"
+              :key="i"
             >
               <v-btn
-                  :id="option?.id"
-                  :value="option"
-                  class="filter-button"
-                  rounded="lg"
+                :id="option?.id"
+                :value="option"
+                class="filter-button"
+                rounded="lg"
               >
                 {{ option?.title }}
               </v-btn>
@@ -110,61 +110,61 @@
           </v-btn-toggle>
           <v-col v-if="key === 'bandCode'">
             <v-autocomplete
-                id="bandCode"
-                v-model="bandCodeValue"
-                label="Band of Residence"
-                variant="underlined"
-                :items="sdcCollection.bandCodes"
-                item-value="bandCode"
-                item-title="dropdownText"
-                class="mt-n7 mb-n8"
-                clearable
-                @update:model-value="setBandCodeFilter('bandResidence', $event)"
+              id="bandCode"
+              v-model="bandCodeValue"
+              label="Band of Residence"
+              variant="underlined"
+              :items="sdcCollection.bandCodes"
+              item-value="bandCode"
+              item-title="dropdownText"
+              class="mt-n7 mb-n8"
+              clearable
+              @update:model-value="setBandCodeFilter('bandResidence', $event)"
             />
           </v-col>
           <v-col v-if="key === 'courses'">
             <v-range-slider
-                id="courses-slider"
-                v-model="courseRange"
-                :min="courseRangeDefault[0]"
-                :max="courseRangeDefault[1]"
-                :step="1"
-                color="#003366"
-                hide-details
-                strict
-                thumb-size="15"
-                class="align-center"
-                @end="setCourseRangeFilter('numberOfCoursesDec', $event)"
+              id="courses-slider"
+              v-model="courseRange"
+              :min="courseRangeDefault[0]"
+              :max="courseRangeDefault[1]"
+              :step="1"
+              color="#003366"
+              hide-details
+              strict
+              thumb-size="15"
+              class="align-center"
+              @end="setCourseRangeFilter('numberOfCoursesDec', $event)"
             >
               <template #prepend>
                 <v-text-field
-                    v-model="courseRange[0]"
-                    hide-details
-                    single-line
-                    type="number"
-                    :step="1"
-                    :min="courseRangeDefault[0]"
-                    :max="courseRange[1]"
-                    variant="outlined"
-                    density="compact"
-                    class="slider-text"
-                    :readonly="true"
-                    @update:model-value="setCourseRangeFilter('numberOfCoursesDec', courseRange)"
+                  v-model="courseRange[0]"
+                  hide-details
+                  single-line
+                  type="number"
+                  :step="1"
+                  :min="courseRangeDefault[0]"
+                  :max="courseRange[1]"
+                  variant="outlined"
+                  density="compact"
+                  class="slider-text"
+                  :readonly="true"
+                  @update:model-value="setCourseRangeFilter('numberOfCoursesDec', courseRange)"
                 />
               </template>
               <template #append>
                 <v-text-field
-                    v-model="courseRange[1]"
-                    hide-details
-                    single-line
-                    type="number"
-                    :min="courseRange[0]"
-                    :max="courseRangeDefault[1]"
-                    variant="outlined"
-                    density="compact"
-                    class="slider-text"
-                    :readonly="true"
-                    @update:model-value="setCourseRangeFilter('numberOfCoursesDec', courseRange)"
+                  v-model="courseRange[1]"
+                  hide-details
+                  single-line
+                  type="number"
+                  :min="courseRange[0]"
+                  :max="courseRangeDefault[1]"
+                  variant="outlined"
+                  density="compact"
+                  class="slider-text"
+                  :readonly="true"
+                  @update:model-value="setCourseRangeFilter('numberOfCoursesDec', courseRange)"
                 />
               </template>
             </v-range-slider>
@@ -207,6 +207,11 @@ export default {
     district: {
       type: Object,
       required: false,
+      default: null
+    },
+    collectionObject: {
+      type: Object,
+      required: true,
       default: null
     },
     showStudentSearch: {
@@ -259,21 +264,21 @@ export default {
     setupSchoolList(){
       this.schoolSearchNames = [];
       ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.$route.params.sdcDistrictCollectionID}/sdcSchoolCollections`)
-          .then((res) => {
-            res.data.forEach(schoolCollection => {
-              const school = this.notClosedSchoolsMap.get(schoolCollection.schoolID);
-              let schoolItem = {
-                schoolCodeName: school.schoolName + ' - ' + school.mincode,
-                schoolID: school.schoolID,
-                districtID: school.districtID
-              };
-              this.schoolSearchNames.push(schoolItem);
-            });
-            this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
-          })
-          .catch(error => {
-            console.error(error);
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.notClosedSchoolsMap.get(schoolCollection.schoolID);
+            let schoolItem = {
+              schoolCodeName: school.schoolName + ' - ' + school.mincode,
+              schoolID: school.schoolID,
+              districtID: school.districtID
+            };
+            this.schoolSearchNames.push(schoolItem);
           });
+          this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
     close() {
       this.$emit('close');

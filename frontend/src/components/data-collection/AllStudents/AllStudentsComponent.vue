@@ -1,27 +1,13 @@
 <template>
   <v-container
-      id="enrollmentTab"
-      fluid
+    id="enrollmentTab"
+    fluid
   >
-    <v-row class="mt-3 mb-3">
-      <v-btn-toggle rounded="0">
-        <v-btn
-            id="detailButton"
-            size="large"
-            class="detail-button"
-            :class="{ 'active-button': reportView === 'detail' }"
-            @click="showDetail"
-        >
-          Detail View
-        </v-btn>
-      </v-btn-toggle>
-    </v-row>
-
-    <div v-if="reportView === 'detail'">
+    <div>
       <DetailComponent
-          :config="config"
-          :district="district"
-          :show-export-btn="true"
+        :config="config"
+        :collection-object="collectionObject"
+        :show-export-btn="true"
       />
     </div>
   </v-container>
@@ -39,7 +25,7 @@ export default {
   },
   mixins: [alertMixin],
   props: {
-    district: {
+    collectionObject: {
       type: Object,
       required: true,
       default: null
@@ -59,10 +45,6 @@ export default {
   created() {
   },
   methods: {
-    showDetail() {
-      this.reportView = 'detail';
-
-    },
 
   }
 };
