@@ -1,10 +1,9 @@
 'use strict';
 const config = require('../config/index');
-const {getData, postData, getUser, logApiError, errorResponse, stripAuditColumns, addSagaStatusToRecords} = require('./utils');
+const { postData, getUser, logApiError, errorResponse, stripAuditColumns, addSagaStatusToRecords} = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
 const SAGAS = require('./saga');
-const { randomInt } = require('crypto');
 
 async function updateMacroByMacroId(req, res) {
   try {
@@ -21,32 +20,12 @@ async function updateMacroByMacroId(req, res) {
   }
 }
 
-function genRandomMacroCode(length = 3) {
-  let result = '';
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const charsLength = chars.length;
-  for ( let i = 0; i < length; i++ ) {
-    result += chars.charAt(randomInt(charsLength));
-  }
-  return result;
-}
-
-function createMacroCode(macros) {
-  let macroCode;
-  do {
-    macroCode = genRandomMacroCode();
-  } while(macros.some(macro => macro.macroCode === macroCode));
-  return macroCode;
-}
-
 async function createMacro(req, res) {
   try {
     const newMacro = req.body;
     stripAuditColumns(newMacro);
 
     const penMacroURL = config.get('server:macro:penMacroURL');
-    const currentMacros = await getData(`${penMacroURL}?businessUseTypeCode=${newMacro.businessUseTypeCode}&macroTypeCode=${newMacro.macroTypeCode}`);
-    newMacro.macroCode = createMacroCode(currentMacros);
     
     const sagaId = await postData(`${penMacroURL}/create-macro`, newMacro, null, getUser(req).idir_username);
 

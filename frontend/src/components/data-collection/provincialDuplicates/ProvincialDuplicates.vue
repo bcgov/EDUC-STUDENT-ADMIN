@@ -33,7 +33,7 @@
         class="divider"
         :value="name"
       >
-        {{ name }}
+        {{ name }} {{ name === 'Enrollment Duplicates' ? '(' + nonAllowableDuplicates.length + ')': '(' + nonAllowableProgramDuplicates.length + ')' }}
       </v-tab>
     </v-tabs>
     <v-window v-model="tab">

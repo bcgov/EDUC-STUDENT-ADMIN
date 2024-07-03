@@ -80,7 +80,7 @@
 
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionId}&idir_guid=${user?.userGuid?.toLowerCase()}`"
                   target="_link"
                 >
                   {{ props.item.raw['schoolName'] }}
@@ -88,7 +88,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolId}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
+                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolId}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionId}&idir_guid=${user?.userGuid?.toLowerCase()}`"
                   target="_link"
                 >
                   {{ props.item.raw['districtName'] }}

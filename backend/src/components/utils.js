@@ -385,7 +385,6 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
-
 const utils = {
   getUser(req) {
     const thisSession = req.session;

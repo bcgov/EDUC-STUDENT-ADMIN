@@ -43,13 +43,13 @@
           cols="6"
         >
           <StudentDetail
-            :student="selectedProgramDuplicate?.sdcSchoolCollectionStudent1Entity"
+            :student="sdcStudentOneDetailCopy"
             :duplicate-type-code="selectedProgramDuplicate?.programDuplicateTypeCode"
           />
-        </v-col>           
+        </v-col>
         <v-col class="border ml-1">
           <StudentDetail
-            :student="selectedProgramDuplicate?.sdcSchoolCollectionStudent2Entity"
+            :student="sdcStudentTwoDetailCopy"
             :duplicate-type-code="selectedProgramDuplicate?.programDuplicateTypeCode"
           />
         </v-col>
@@ -113,7 +113,6 @@
           />
         </v-col>
       </v-row>
-   
       <ConfirmationDialog ref="confirmReleaseProgram">
         <template #message>
           <p>Are you sure you want to release selected program from school?</p>
@@ -124,14 +123,14 @@
 </template>
 <script>
 
-import StudentDetail from '../../../common/StudentDetail.vue';
-import ApiService from '../../../../common/apiService';
-import {ApiRoutes} from '../../../../utils/constants';
-import {setSuccessAlert, setFailureAlert, setWarningAlert} from '../../../composable/alertComposable';
+import StudentDetail from '../common/StudentDetail.vue';
+import ApiService from '../../../common/apiService';
+import {Routes} from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
 import {cloneDeep} from 'lodash';
-import {sdcCollectionStore} from '../../../../store/modules/sdcCollection';
-import {enrolledProgram}  from '../../../../utils/sdc/enrolledProgram';
-import ConfirmationDialog from '../../../util/ConfirmationDialog.vue';
+import {sdcCollectionStore} from '@/store/modules/sdcCollection';
+import {enrolledProgram} from '@/utils/sdc/enrolledProgram';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 
 export default {
   name: 'ProgramDuplicateResolution',
@@ -139,6 +138,7 @@ export default {
     StudentDetail,
     ConfirmationDialog
   },
+  mixins: [alertMixin],
   props: {
     selectedProgramDuplicate: {
       type: Object,
@@ -176,7 +176,7 @@ export default {
     this.validateForm();
   },
   async created() {
-  
+
   },
   methods: {
     validateForm() {
@@ -196,22 +196,25 @@ export default {
       for(let value of this.selected) {
         this.updateStudentObject(value.dupeCode, value.studentId);
       }
-
       this.saveAndResolve();
     },
     saveAndResolve() {
       this.loadingCount += 1;
-      ApiService.apiAxios.post(ApiRoutes.sdc.SDC_DISTRICT_COLLECTION + '/'+ this.$route.params.sdcDistrictCollectionID + '/resolve-district-duplicates' + '/'+ this.selectedProgramDuplicate?.sdcDuplicateID +'/' +this.type, this.duplicateStudents)
+      let payload = {
+        students: this.duplicateStudents,
+        duplicate: this.selectedProgramDuplicate
+      };
+      ApiService.apiAxios.post(Routes.sdc.SDC_DISTRICT_COLLECTION + '/resolve-district-duplicates' + '/'+ this.selectedProgramDuplicate?.sdcDuplicateID +'/' +this.type, payload)
         .then((res) => {
           if (res.data.sdcDuplicateID === this.selectedProgramDuplicate?.sdcDuplicateID && res.data.duplicateResolutionCode !== 'RESOLVED') {
-            setWarningAlert('Warning! This update has created an error on the student record. Duplicate resolution will not be saved until all errors are resolved.');
+            this.setWarningAlert('Warning! This update has created an error on the student record. Duplicate resolution will not be saved until all errors are resolved.');
           } else {
-            setSuccessAlert('Success! The student details have been updated.');
+            this.setSuccessAlert('Success! The student details have been updated.');
             this.cancel();
           }
         }).catch(error => {
           console.error(error);
-          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
           this.cancel();
         }).finally(() => {
           this.loadingCount -= 1;
@@ -265,49 +268,55 @@ export default {
     mapEnrolledProgram(enrolledProgramFilter) {
       return this.sdcStudentOneDetailCopy?.enrolledProgramCodes
         .match(/.{1,2}/g)
-        .filter(programCode => enrolledProgramFilter.includes(programCode))
+        .filter(programCode => enrolledProgramFilter.includes(programCode) &&
+          this.sdcStudentTwoDetailCopy?.enrolledProgramCodes.includes(programCode))
         .map(programCode => {
           const enrolledProgram = sdcCollectionStore().enrolledProgramCodesMap.get(programCode);
-          return {code: programCode, description: `${programCode} - ${enrolledProgram.description}`, studentOne: this.sdcStudentOneDetailCopy, studentTwo: this.sdcStudentTwoDetailCopy};
+          return {
+            code: programCode,
+            description: `${programCode} - ${enrolledProgram.description}`,
+            studentOne: this.sdcStudentOneDetailCopy,
+            studentTwo: this.sdcStudentTwoDetailCopy
+          };
         });
     },
   }
 };
 </script>
-  
-  <style scoped>
-   .containerSetup{
-      padding-right: 0em !important;
-      padding-left: 0em !important;
-    }
-  
 
-  
-    @media screen and (max-width: 1200px) {
-      .containerSetup{
-        padding-right: 3em !important;
-        padding-left: 3em !important;
-      }
-    }
+<style scoped>
+.containerSetup{
+  padding-right: 0em !important;
+  padding-left: 0em !important;
+}
 
-  
-    .success-message{
-      vertical-align: sub;
-     }
-  
-    .sheetHeader {
-      background-color: #003366;
-      color: white;
-      font-size: medium !important;
-      font-weight: bolder !important;
-    }
 
-    .label {
-      font-weight: bold;
-   }
-   .border {
-    border: 1px thin lightgrey;
-   }
-  
-  </style>
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 3em !important;
+    padding-left: 3em !important;
+  }
+}
+
+
+.success-message{
+  vertical-align: sub;
+}
+
+.sheetHeader {
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
+
+.label {
+  font-weight: bold;
+}
+.border {
+  border: 1px thin lightgrey;
+}
+
+</style>
   

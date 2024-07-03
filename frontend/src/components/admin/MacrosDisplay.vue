@@ -105,6 +105,7 @@
           density="compact"
           color="#FFF"
           flat
+          title="Add Macro"
         >
           <v-spacer />
           <v-btn
@@ -118,7 +119,7 @@
             </v-icon>
           </v-btn>
         </v-toolbar>
-        <MacroEditor
+        <AddMacro
           class="pb-4 px-4"
           :macro="newMacro"
           rows="10"
@@ -149,6 +150,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {deepCloneObject} from '@/utils/common';
 import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import MacroEditor from './MacroEditor.vue';
+import AddMacro from './AddMacro.vue';
 import _ from 'lodash';
 import {notificationsStore} from '@/store/modules/notifications';
 import {edxStore} from '@/store/modules/edx';
@@ -162,7 +164,8 @@ export default {
   components: {
     PrimaryButton,
     ConfirmationDialog,
-    MacroEditor
+    MacroEditor,
+    AddMacro
   },
   mixins: [alertMixin],
   beforeRouteLeave(to, from, next) {
