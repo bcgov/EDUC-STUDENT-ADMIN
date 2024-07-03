@@ -247,11 +247,11 @@
     :scrollable="true"
     :persistent="true"
   >
-<!--    <ProgramDuplicateResolution
+    <ProgramDuplicateResolution
       :selected-program-duplicate="selectedDuplicate"
       @close="openProgramResolutionView = !openProgramResolutionView"
       @close-refresh="closeAndRefreshDuplicates()"
-    />-->
+    />
   </v-bottom-sheet>
 
   <v-bottom-sheet
@@ -287,7 +287,7 @@
 import {defineComponent} from 'vue';
 import CustomTable from '../../common/CustomTable.vue';
 import {PROVINCIAL_DUPLICATES} from '@/utils/sdc/collectionTableConfiguration';
-/*import ProgramDuplicateResolution from './ProgramDuplicateResolution.vue';*/
+import ProgramDuplicateResolution from './ProgramDuplicateResolution.vue';
 /*import EnrollmentDuplicateResolveViaRemove from './EnrollmentDuplicateResolveViaRemove.vue';*/
 /*import ChangeGrade from './ChangeGrade.vue';*/
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
@@ -297,7 +297,7 @@ export default defineComponent({
   components: {
     /*EnrollmentDuplicateResolveViaRemove,*/
     CustomTable,
-    /*ProgramDuplicateResolution,*/
+    ProgramDuplicateResolution,
     /*ChangeGrade*/
   },
   props: {
@@ -340,6 +340,9 @@ export default defineComponent({
     PROVINCIAL_DUPLICATES() {
       return PROVINCIAL_DUPLICATES;
     }
+  },
+  async created() {
+    await sdcCollectionStore().getCodes();
   },
   methods: {
     resolveProgramDuplicate(duplicate) {
