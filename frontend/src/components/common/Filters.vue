@@ -240,6 +240,15 @@ export default {
     close() {
       this.$emit('close');
     },
+    setPenLocalIdNameFilter(key, $event) {
+      if($event) {
+        this.selected[key] = [{title: 'PenOrLocalIdOrName', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
     setSchoolNameNumberFilter(key, $event) {
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
