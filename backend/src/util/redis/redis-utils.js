@@ -77,25 +77,30 @@ function getSagaEventsByRedisKey(redisKey) {
   }
 }
 
+async function lockSdcStudentBeingProcessedInRedis(sdcSchoolStudentID) {
+  try {
+    console.log(this.getRedLock());
+    return await this.getRedLockNoRetry().acquire(`locks:edx-sdc-student:${sdcSchoolStudentID}`, 6000);
+  } catch (e) {
+    log.info(`This pod could not acquire lock for locks:edx-sdc-student:${sdcSchoolStudentID}, check other pods. ${e}`);
+    throw new Error(HttpStatus.CONFLICT.toString());
+  }
+}
+
+async function unlockSdcStudentBeingProcessedInRedis(lock) {
+  try {
+    await this.getRedLockNoRetry().unlock(lock);
+  } catch (e) {
+    log.info(`This pod could not release lock for: ${lock}, check other pods. ${e}`);
+  }
+}
+
 const redisUtil = {
   createSagaRecord,
   removeEventRecordFromRedis,
   getSagaEventsByRedisKey,
-  async lockSdcStudentBeingProcessedInRedis(sdcSchoolStudentID) {
-    try {
-      return await this.getRedLockNoRetry().acquire(`locks:edx-sdc-student:${sdcSchoolStudentID}`, 6000);
-    } catch (e) {
-      log.info(`This pod could not acquire lock for locks:edx-sdc-student:${sdcSchoolStudentID}, check other pods. ${e}`);
-      throw new Error(HttpStatus.CONFLICT.toString());
-    }
-  },
-  async unlockSdcStudentBeingProcessedInRedis(lock) {
-    try {
-      await this.getRedLockNoRetry().unlock(lock);
-    } catch (e) {
-      log.info(`This pod could not release lock for: ${lock}, check other pods. ${e}`);
-    }
-  },
+  lockSdcStudentBeingProcessedInRedis,
+  unlockSdcStudentBeingProcessedInRedis,
   getRedLock() {
     if (redLock) {
       return redLock; // reusable red lock object.

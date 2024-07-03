@@ -65,14 +65,6 @@ function addTokenToHeader(params, token) {
   return params;
 }
 
-function getCreateOrUpdateUserValue(req){
-  if(req.session.passport.user._json.idir_username){
-    return req.session.passport.user._json.idir_username;
-  }else{
-    return 'EDX/' + req.session.edxUserData.edxUserID;
-  }
-}
-
 function stripNumberFormattingNumberOfCourses(value) {
   if (!value) return '0000';
   return value.replace('.', '');
@@ -588,7 +580,6 @@ const utils = {
   forwardGet,
   isPdf,
   isImage,
-  getCreateOrUpdateUserValue,
   stripNumberFormattingNumberOfCourses,
   formatNumberOfCourses,
   handleExceptionResponse

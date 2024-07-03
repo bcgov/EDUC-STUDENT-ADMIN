@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, postData, getCreateOrUpdateUserValue, stripNumberFormattingNumberOfCourses, formatNumberOfCourses, handleExceptionResponse} = require('../utils');
+const { logApiError, getData, errorResponse, postData, stripNumberFormattingNumberOfCourses, formatNumberOfCourses, handleExceptionResponse} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const utils = require('../utils');
@@ -484,17 +484,15 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
       if (req.body.updateDate !== currentStudent.updateDate) {
         throw new Error(HttpStatus.CONFLICT.toString());
       }
-      //TODO fix student lock
-      //studentLock = await lockSdcStudentBeingProcessedInRedis(sdcSchoolCollectionStudentID);
+      // TODO fix student locking
+      // studentLock = await lockSdcStudentBeingProcessedInRedis(sdcSchoolCollectionStudentID);
     }
 
     const payload = req.body;
-    console.log(payload);
     payload.createDate = null;
     payload.createUser = null;
     payload.updateDate = null;
-    // TODO fix update user
-    //payload.updateUser = getCreateOrUpdateUserValue(req);
+    payload.updateUser = 'ADMIN/' + req.session.passport.user.id;
 
     if (payload?.enrolledProgramCodes) {
       payload.enrolledProgramCodes = payload.enrolledProgramCodes.join('');
