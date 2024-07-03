@@ -202,51 +202,6 @@ function createTabFilter(searchParams) {
 
 }
 
-function createMultiFieldNameSearchCriteria(nameString) {
-  const nameParts = nameString.split(/\s+/);
-  const fieldNames = [
-    'legalFirstName',
-    'legalMiddleNames',
-    'legalLastName',
-    'usualFirstName',
-    'usualMiddleNames',
-    'usualLastName'
-  ];
-
-  const searchCriteriaList = [];
-  for (const part of nameParts) {
-    for (const fieldName of fieldNames) {
-      searchCriteriaList.push({
-        key: fieldName,
-        operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
-        value: `%${part}%`,
-        valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.OR
-      });
-    }
-  }
-  return searchCriteriaList;
-}
-
-function createLocalIdPenSearchCriteria(value) {
-  let searchCriteriaList = [];
-  searchCriteriaList.push({
-    key: 'studentPen',
-    operation: FILTER_OPERATION.EQUAL,
-    value: value,
-    valueType: VALUE_TYPE.STRING,
-    condition: CONDITION.OR
-  });
-  searchCriteriaList.push({
-    key: 'localID',
-    operation: FILTER_OPERATION.EQUAL,
-    value: value,
-    valueType: VALUE_TYPE.STRING,
-    condition: CONDITION.OR
-  });
-  return searchCriteriaList;
-}
-
 function toTableRow(student) {
   let bandCodesMap = cacheService.getAllActiveBandCodesMap();
   let careerProgramCodesMap = cacheService.getActiveCareerProgramCodesMap();
@@ -338,6 +293,51 @@ function createAssignedPENSearchCriteria(searchParams) {
   } else if(searchParams.label === 'NEW_PEN') {
     searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'NEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }
+  return searchCriteriaList;
+}
+
+function createMultiFieldNameSearchCriteria(nameString) {
+  const nameParts = nameString.split(/\s+/);
+  const fieldNames = [
+    'legalFirstName',
+    'legalMiddleNames',
+    'legalLastName',
+    'usualFirstName',
+    'usualMiddleNames',
+    'usualLastName'
+  ];
+
+  const searchCriteriaList = [];
+  for (const part of nameParts) {
+    for (const fieldName of fieldNames) {
+      searchCriteriaList.push({
+        key: fieldName,
+        operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+        value: `%${part}%`,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.OR
+      });
+    }
+  }
+  return searchCriteriaList;
+}
+
+function createLocalIdPenSearchCriteria(value) {
+  let searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: 'studentPen',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
+  searchCriteriaList.push({
+    key: 'localID',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
   return searchCriteriaList;
 }
 
