@@ -193,7 +193,7 @@ export default {
       this.loadStudents();
     },
     loadStudents() {
-      this.isLoading= true;
+      this.isLoading = true;
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
