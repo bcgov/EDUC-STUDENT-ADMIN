@@ -5,7 +5,6 @@ const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
-const log = require('../../components/logger');
 
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
