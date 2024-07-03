@@ -205,6 +205,8 @@ nconf.defaults({
     duplicateResolutionCodesURL: process.env.SDC_API_URL + '/duplicate-resolution-codes',
     schoolFundingCodesURL: process.env.SDC_API_URL + '/funding-codes',
     programDuplicateTypeCodesURL: process.env.SDC_API_URL + '/program-duplicate-type-codes',
+    programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
+    zeroFteReasonCodesURL: process.env.SDC_API_URL + '/zero-fte-reason-codes',
   }
 });
 module.exports = nconf;

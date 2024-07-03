@@ -19,6 +19,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     genderCodes: [],
     homeLanguageSpokenCodesMap: new Map(),
     homeLanguageSpokenCodes: [],
+    programEligibilityCodesMap: new Map(),
+    zeroFteReasonCodesMap: new Map(),
     validationIssueTypeCodesMap: new Map(),
     schoolFundingCodesMap: new Map(),
     schoolFundingCodes: [],
@@ -42,6 +44,16 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     setSchoolCollectionStatusCodes(schoolCollectionStatusCodes){
       schoolCollectionStatusCodes.forEach(schoolCollectionCode => {
         this.schoolCollectionStatusCodesMap.set(schoolCollectionCode.sdcSchoolCollectionStatusCode, schoolCollectionCode);
+      });
+    },
+    setProgramEligibilityCodesMap(programEligibilityCodesMap) {
+      programEligibilityCodesMap.forEach(issue => {
+        this.programEligibilityCodesMap.set(issue.programEligibilityIssueTypeCode, issue);
+      });
+    },
+    setZeroFteReasonCodesMap(zeroFteReasonCodesMap) {
+      zeroFteReasonCodesMap.forEach(issue => {
+        this.zeroFteReasonCodesMap.set(issue.fteZeroReasonCode, issue);
       });
     },
     setBandCodes(bandCodes) {
@@ -163,6 +175,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
           ... this.schoolFundingCodesMap.size === 0 ? [ApiService.getAllActiveSchoolFundingCodes().then((res) => this.setSchoolFundingCodes(res.data))] : [],
           ... this.specialEducationCodesMap.size === 0 ? [ApiService.getAllActiveSpecialEdCodes().then((res) => this.setSpecialEducationCodes(res.data))] : [],
           ... this.validationIssueTypeCodesMap.size === 0 ? [ApiService.getAllValidationIssueTypeCodes().then((res) => this.setValidationIssueTypeCodes(res.data))] : [],
+          ... this.programEligibilityCodesMap.size === 0 ? [ApiService.getAllProgramEligibilityTypeCodes().then((res) => this.setProgramEligibilityCodesMap(res.data))]: [],
+          ... this.zeroFteReasonCodesMap.size === 0 ? [ApiService.getAllZeroFteReasonCodes().then((res) => this.setZeroFteReasonCodesMap(res.data))] : [],
         ];
         return Promise.all(promises);
       }
