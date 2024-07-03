@@ -50,7 +50,6 @@ import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission'
 import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionPage.vue';
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 import CollectionView from '@/components/data-collection/CollectionView.vue';
-import StepOneCloseCollection from '@/components/data-collection/StepOneCloseCollection.vue';
 import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
 
 const router = createRouter({
@@ -636,24 +635,10 @@ const router = createRouter({
       component: CollectionView,
       props:  true,
       meta: {
-        pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
+        pageTitle: PAGE_TITLES.DATA_COLLECTION,
         requiresAuth: true,
         permission: PERMISSION.STUDENT_DATA_COLLECTION
       },
-      children: [
-        
-        {
-          path: 'step-1',
-          name: 'step-1',
-          component: StepOneCloseCollection,
-          meta: {
-            pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
-            requiresAuth: true,
-            permission: PERMISSION.STUDENT_DATA_COLLECTION
-          }
-        }
-
-      ]
     },
     {
       path: '/student-detail/:studentID',

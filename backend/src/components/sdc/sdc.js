@@ -368,6 +368,47 @@ async function checkDuplicatesInCollection(req, res) {
   }
 }
 
+async function resolveDuplicates(req, res) {
+  try {
+    let sdcDuplicateID = req.body.duplicate.sdcDuplicateID;
+    let currentDuplicate = await getData(`${config.get('sdc:schoolCollectionURL')}/duplicate/${sdcDuplicateID}`);
+    if(req.body.duplicate.updateDate !== currentDuplicate.updateDate){
+      throw new Error(HttpStatus.CONFLICT.toString());
+    }
+
+    const payload = req.body.students;
+    payload.forEach(student => {
+      student.createDate = null;
+      student.createUser = null;
+      student.updateDate = null;
+      student.updateUser = utils.getUser(req).idir_username;
+
+      if (student?.enrolledProgramCodes && Array.isArray(student?.enrolledProgramCodes)) {
+        student.enrolledProgramCodes = student.enrolledProgramCodes.join('');
+      }
+
+      if (student?.numberOfCourses) {
+        student.numberOfCourses = utils.stripNumberFormattingNumberOfCourses(student.numberOfCourses);
+      }
+
+      student.sdcSchoolCollectionStudentValidationIssues = null;
+      student.sdcSchoolCollectionStudentEnrolledPrograms = null;
+    });
+
+    const data = await postData(`${config.get('sdc:districtCollectionURL')}/in-district-duplicates/${req.params.sdcDuplicateID}/type/${req.params.type}`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e.message === '409' || e.status === '409' || e.status === 409) {
+      return res.status(HttpStatus.CONFLICT).json({
+        status: HttpStatus.CONFLICT,
+        message: 'The duplicate you are attempting to update is already being saved by another user. Please refresh your screen and try again.'
+      });
+    }
+    logApiError(e, 'Error resolving district duplicates.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
@@ -380,5 +421,6 @@ module.exports = {
   getSDCSchoolCollectionStudentDetail,
   getInDistrictDuplicates,
   updateStudentPEN,
-  checkDuplicatesInCollection
+  checkDuplicatesInCollection,
+  resolveDuplicates
 };

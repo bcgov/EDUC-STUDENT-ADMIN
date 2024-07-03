@@ -328,6 +328,10 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
+function stripNumberFormattingNumberOfCourses(value) {
+  if (!value) return '0000';
+  return value.replace('.', '');
+}
 
 const utils = {
   getUser(req) {
@@ -532,6 +536,7 @@ const utils = {
   forwardGet,
   isPdf,
   isImage,
+  stripNumberFormattingNumberOfCourses
 };
 
 module.exports = utils;
