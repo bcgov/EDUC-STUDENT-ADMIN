@@ -109,7 +109,7 @@ import {Routes} from '@/utils/constants';
 import {cloneDeep, isEmpty, omitBy} from 'lodash';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import ViewStudentDetailsComponent from './ViewStudentDetailsComponent.vue';
-import Filters from './Filters.vue';
+import Filters from '../../common/Filters.vue';
 import {mapState} from 'pinia';
 
 export default {
