@@ -183,6 +183,7 @@ let object = {
     ACTIVE_COLLECTION: sdcRoot + '/collection/active',
     FUNDING_DATA_SNAPSHOT_URL: sdcRoot + '/funding-groups-snapshot',
     COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes',
+    SDC_DISTRICT_COLLECTION: sdcRoot + '/sdcDistrictCollection',
     SDC_DISTRICT_COLLECTION_STATUS_CODES: sdcRoot + '/district-collection-status-codes',
     SDC_SCHOOL_COLLECTION_STATUS_CODES: sdcRoot + '/school-collection-status-codes',
     SDC_BAND_CODES: sdcRoot + '/band-codes',
