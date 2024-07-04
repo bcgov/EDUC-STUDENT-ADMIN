@@ -40,7 +40,7 @@ export default {
         duplicate: duplicate
       };
       ApiService.apiAxios.post(Routes.sdc.SDC_DISTRICT_COLLECTION + '/resolve-district-duplicates/' + duplicate?.sdcDuplicateID +'/DELETE_ENROLLMENT_DUPLICATE', payload)
-        .then((res) => {
+        .then(() => {
             this.setSuccessAlert('Success! The student has been removed.');
         }).catch(error => {
           console.error(error);
