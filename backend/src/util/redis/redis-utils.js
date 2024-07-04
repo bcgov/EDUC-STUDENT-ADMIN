@@ -4,9 +4,7 @@ const log = require('../../components/logger');
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
 const {LocalDateTime} = require('@js-joda/core');
-const HttpStatus = require('http-status-codes');
 let redLock;
-let redLockNoRetry;
 
 /**
  *
@@ -77,30 +75,10 @@ function getSagaEventsByRedisKey(redisKey) {
   }
 }
 
-async function lockSdcStudentBeingProcessedInRedis(sdcSchoolStudentID) {
-  try {
-    console.log(this.getRedLock());
-    return await this.getRedLockNoRetry().acquire(`locks:edx-sdc-student:${sdcSchoolStudentID}`, 6000);
-  } catch (e) {
-    log.info(`This pod could not acquire lock for locks:edx-sdc-student:${sdcSchoolStudentID}, check other pods. ${e}`);
-    throw new Error(HttpStatus.CONFLICT.toString());
-  }
-}
-
-async function unlockSdcStudentBeingProcessedInRedis(lock) {
-  try {
-    await this.getRedLockNoRetry().unlock(lock);
-  } catch (e) {
-    log.info(`This pod could not release lock for: ${lock}, check other pods. ${e}`);
-  }
-}
-
 const redisUtil = {
   createSagaRecord,
   removeEventRecordFromRedis,
   getSagaEventsByRedisKey,
-  lockSdcStudentBeingProcessedInRedis,
-  unlockSdcStudentBeingProcessedInRedis,
   getRedLock() {
     if (redLock) {
       return redLock; // reusable red lock object.
@@ -131,36 +109,6 @@ const redisUtil = {
       log.error('A redis connection error has occurred in getRedLock of redis-util:', err);
     });
     return redLock;
-  },
-  getRedLockNoRetry() {
-    if (redLockNoRetry) {
-      return redLockNoRetry; // reusable red lock object.
-    } else {
-      redLockNoRetry = new RedLock(
-        [Redis.getRedisClient()],
-        {
-          // the expected clock drift; for more details
-          // see http://redis.io/topics/distlock
-          driftFactor: 0.01, // time in ms
-
-          // the max number of times Redlock will attempt
-          // to lock a resource before erroring
-          retryCount: 0,
-
-          // the time in ms between attempts
-          retryDelay: 50, // time in ms
-
-          // the max time in ms randomly added to retries
-          // to improve performance under high contention
-          // see https://www.awsarchitectureblog.com/2015/03/backoff.html
-          retryJitter: 25 // time in ms
-        }
-      );
-    }
-    redLockNoRetry.on('clientError', function (err) {
-      log.error('A redis connection error has occurred in getRedLock of redis-util:', err);
-    });
-    return redLockNoRetry;
   },
   /**
    * this is central so that it is in one common place accessed by different js , files, accidental update wont cause any damage to the app, as it will be referred from all the files.

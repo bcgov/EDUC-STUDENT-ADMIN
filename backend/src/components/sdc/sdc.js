@@ -477,15 +477,12 @@ async function checkDuplicatesInCollection(req, res) {
 
 async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
   try {
-    let studentLock;
     if(req.body.sdcSchoolCollectionStudentID) {
       let sdcSchoolCollectionStudentID = req.body.sdcSchoolCollectionStudentID;
       let currentStudent = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/${sdcSchoolCollectionStudentID}`);
       if (req.body.updateDate !== currentStudent.updateDate) {
         throw new Error(HttpStatus.CONFLICT.toString());
       }
-      // TODO fix student locking
-      // studentLock = await lockSdcStudentBeingProcessedInRedis(sdcSchoolCollectionStudentID);
     }
 
     const payload = req.body;
@@ -507,9 +504,6 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
 
     const data = await postData(config.get('sdc:schoolCollectionStudentURL'), payload);
 
-    if(studentLock) {
-      await unlockSdcStudentBeingProcessedInRedis(studentLock);
-    }
     if (data?.enrolledProgramCodes) {
       data.enrolledProgramCodes = data?.enrolledProgramCodes.match(/.{1,2}/g);
     }
