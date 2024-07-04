@@ -261,44 +261,34 @@
     :scrollable="true"
     :persistent="true"
   >
-<!--    <ChangeGrade
-      :selected-student="selectedStudentForGradeChange"
-      :selected-duplicate-id="selectedEnrollmentDuplicate.sdcDuplicateID"
+   <ChangeGrade
+      :selected-student="selectedSdcSchoolCollectionStudent"
+      :selected-duplicate="selectedDuplicate"
       @close="openChangeGradeView = !openChangeGradeView"
       @close-refresh="closeAndRefreshDuplicates()"  
-    />-->
+    />
   </v-bottom-sheet>
-  <v-bottom-sheet
-    v-model="openEnrollmentResolutionViaRemoveView"
-    :inset="true"
-    :no-click-animation="true"
-    :scrollable="true"
-    :persistent="true"
-  >
-<!--    <EnrollmentDuplicateResolveViaRemove
-      :duplicate="selectedDuplicate"
-      :sdc-school-collection-student="selectedSdcSchoolCollectionStudent"
-      @close="openEnrollmentResolutionViaRemoveView = !openEnrollmentResolutionViaRemoveView"
-      @close-refresh="closeAndRefreshDuplicates()"
-    />-->
-  </v-bottom-sheet>
+  <EnrollmentDuplicateResolveViaRemove
+    ref="resolveEnrollmentDuplicateViaRemoveStudent"
+    @close-refresh="closeAndRefreshDuplicates()"
+  />
 </template>
 <script>
 import {defineComponent} from 'vue';
 import CustomTable from '../../common/CustomTable.vue';
 import {PROVINCIAL_DUPLICATES} from '@/utils/sdc/collectionTableConfiguration';
 import ProgramDuplicateResolution from './ProgramDuplicateResolution.vue';
-/*import EnrollmentDuplicateResolveViaRemove from './EnrollmentDuplicateResolveViaRemove.vue';*/
-/*import ChangeGrade from './ChangeGrade.vue';*/
+import EnrollmentDuplicateResolveViaRemove from './EnrollmentDuplicateResolveViaRemove.vue';
+import ChangeGrade from './ChangeGrade.vue';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 
 export default defineComponent({
   name: 'DuplicateTab',
   components: {
-    /*EnrollmentDuplicateResolveViaRemove,*/
+    EnrollmentDuplicateResolveViaRemove,
     CustomTable,
     ProgramDuplicateResolution,
-    /*ChangeGrade*/
+    ChangeGrade
   },
   props: {
     duplicateType: {
@@ -328,12 +318,9 @@ export default defineComponent({
       duplicateView: '1',
       editOptionsOpen: [],
       openProgramResolutionView: false,
-      selectedEnrollmentDuplicate: {},
-      openEnrollmentResolutionViaRemoveView: false,
       openChangeGradeView: false,
       selectedDuplicate: {},
-      selectedSdcSchoolCollectionStudent: {},
-      selectedStudentForGradeChange: {}
+      selectedSdcSchoolCollectionStudent: {}
     };
   },
   computed: {
@@ -352,17 +339,16 @@ export default defineComponent({
     resolveEnrollmentDuplicateViaRemove(duplicate, sdcSchoolCollectionStudent) {
       this.selectedDuplicate = duplicate;
       this.selectedSdcSchoolCollectionStudent = sdcSchoolCollectionStudent;
-      this.openEnrollmentResolutionViaRemoveView = true;
+      this.$refs.resolveEnrollmentDuplicateViaRemoveStudent.removeAndResolveStudent(duplicate, sdcSchoolCollectionStudent);
     },
     closeAndRefreshDuplicates() {
       this.openProgramResolutionView = false;
-      this.openEnrollmentResolutionViaRemoveView = false;
       this.openChangeGradeView = false;
       this.$emit('refresh-duplicates');
     },
     async changeGrade(sdcSchoolCollectionStudent, duplicate) {
-      this.selectedStudentForGradeChange = sdcSchoolCollectionStudent;
-      this.selectedEnrollmentDuplicate = duplicate;
+      this.selectedSdcSchoolCollectionStudent = sdcSchoolCollectionStudent;
+      this.selectedDuplicate = duplicate;
       this.openChangeGradeView = !this.openChangeGradeView;
     },
     getDuplicateResolutionDescription(key) {
