@@ -26,6 +26,16 @@
           class="ml-2"
         >
           <v-row>
+            <v-text-field
+              id="searchInput"
+              v-model="penLocalIdNameFilter"
+              label="PEN or Local ID or Name"
+              color="primary"
+              variant="underlined"
+              @update:model-value="setPenLocalIdNameFilter('penLocalIdName', $event)"
+            />
+          </v-row>
+          <v-row>
             <slot
               name="text-search"
             >
@@ -229,6 +239,15 @@ export default {
     },
     close() {
       this.$emit('close');
+    },
+    setPenLocalIdNameFilter(key, $event) {
+      if($event) {
+        this.selected[key] = [{title: 'PenOrLocalIdOrName', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
     },
     setSchoolNameNumberFilter(key, $event) {
       if($event) {

@@ -31,7 +31,10 @@ cacheKeys = {
   SDC_HOME_LANGUAGE_SPOKEN_CODES: 'sdc_home_language_spoken_codes',
   SDC_SCHOOL_FUNDING_CODES: 'sdc_school_funding_code',
   SDC_SPECIAL_ED_CODES: 'sdc_special_ed_codes',
-  SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes'
+  SDC_DUPLICATE_RESOLUTION_CODES: 'sdc_duplicate_resolution_codes',
+  SDC_VALIDATION_ISSUE_TYPE_CODES: 'sdc_validation_issue_type_codes',
+  SDC_PROGRAM_ELIGIBILITY_TYPE_CODES: 'sdc_program_eligibility_type_codes',
+  SDC_ZERO_FTE_REASON_CODES: 'sdc_zero_fte_reason_codes',
 };
 
 const CACHE_KEYS = Object.freeze(cacheKeys);
@@ -66,6 +69,10 @@ const FILTER_OPERATION = Object.freeze(
      * In filter operation.
      */
     IN: 'in',
+    /**
+       * Filter to return when none of the child records includes the values
+       */
+    NONE_IN: 'none_in',
     /**
      * Not in filter operation.
      */
@@ -194,6 +201,12 @@ const DUPLICATE_TYPE_CODES = Object.freeze({
   PROGRAM: 'PROGRAM'
 });
 
+const STUDENT_TYPE_CODES = Object.freeze({
+  SCHOOL_AGED: 'isSchoolAged',
+  ADULT: 'isAdult',
+  PRESCHOOL_AGED: 'isUnderSchoolAged'
+});
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -208,5 +221,6 @@ module.exports = {
   WS_CREATE_SCHOOL_TOPIC,
   WS_NEW_SECURE_MESSAGE_TOPIC,
   ENROLLED_PROGRAM_TYPE_CODE_MAP,
-  DUPLICATE_TYPE_CODES
+  DUPLICATE_TYPE_CODES,
+  STUDENT_TYPE_CODES
 };

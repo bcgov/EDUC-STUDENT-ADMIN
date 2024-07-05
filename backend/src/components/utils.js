@@ -65,6 +65,55 @@ function addTokenToHeader(params, token) {
   return params;
 }
 
+function stripNumberFormattingNumberOfCourses(value) {
+  if (!value) return '0000';
+  return value.replace('.', '');
+}
+
+function formatNumberOfCourses(value) {
+  if (!value) return '00.00';
+
+  let formatted = '';
+  switch (value.length) {
+  case 1:
+    formatted = `0${value}.00`;
+    break;
+  case 2:
+    formatted = `${value}.00`;
+    break;
+  case 3:
+    formatted = `0${value.slice(0, 1)}.${value.slice(1)}`;
+    break;
+  case 4:
+    formatted = `${value.slice(0, 2)}.${value.slice(2)}`;
+    break;
+  default:
+    formatted = '00.00';
+  }
+  return formatted;
+}
+
+function handleExceptionResponse(e, res) {
+  if (e.message === '404' || e.status === '404' || e.status === 404) {
+    return res.status(HttpStatus.NOT_FOUND).json();
+  } else if(e.message === '403') {
+    return res.status(HttpStatus.FORBIDDEN).json({
+      status: HttpStatus.FORBIDDEN,
+      message: 'You do not have permission to access this information'
+    });
+  } else if(e.message === '401'){
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      status: HttpStatus.UNAUTHORIZED,
+      message: 'Token is not valid'
+    });
+  } else {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR',
+      code: HttpStatus.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
 async function deleteData(url) {
   try {
     const delConfig = {
@@ -328,11 +377,6 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
-function stripNumberFormattingNumberOfCourses(value) {
-  if (!value) return '0000';
-  return value.replace('.', '');
-}
-
 const utils = {
   getUser(req) {
     const thisSession = req.session;
@@ -536,7 +580,9 @@ const utils = {
   forwardGet,
   isPdf,
   isImage,
-  stripNumberFormattingNumberOfCourses
+  stripNumberFormattingNumberOfCourses,
+  formatNumberOfCourses,
+  handleExceptionResponse
 };
 
 module.exports = utils;

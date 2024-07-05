@@ -197,7 +197,7 @@ export default {
       default: false
     }
   },
-  emits: ['reload', 'openStudentDetails', 'selections'],
+  emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow'],
   data() {
     return {
       masterCheckbox: false,
@@ -249,9 +249,9 @@ export default {
     });
   },
   methods: {
-    // rowclicked(props) {
-    //   this.$emit('openStudentDetails', props);
-    // },
+    rowclicked(props) {
+      this.$emit('editSelectedRow', props);
+    },
     onClick(prop) {
       let selectedValue = prop.item.raw;
       if(this.isSelected(selectedValue)) {

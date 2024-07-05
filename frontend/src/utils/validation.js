@@ -159,3 +159,10 @@ export function isValidNumber(evt) {
 export function isValidEmail(value) {
   return !!(value && /^(?=[A-Za-z0-9][A-Za-z0-9@._%+-]{5,253}$)[A-Za-z0-9._%+-]{1,64}@(?:(?=[A-Za-z0-9-]{1,63}\.)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\.){1,8}[A-Za-z]{2,63}$/.test(value));
 }
+
+export function checkEnrolledProgramLength(v) {
+  if(v === null || v.length === 0) {
+    return true;
+  }
+  return v.length > 0 && v.length <= 8;
+}

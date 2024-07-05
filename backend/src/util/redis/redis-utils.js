@@ -79,7 +79,6 @@ const redisUtil = {
   createSagaRecord,
   removeEventRecordFromRedis,
   getSagaEventsByRedisKey,
-
   getRedLock() {
     if (redLock) {
       return redLock; // reusable red lock object.

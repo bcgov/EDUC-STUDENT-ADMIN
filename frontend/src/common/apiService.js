@@ -51,6 +51,7 @@ function getCodes(url) {
       return await apiAxios.get(url, query);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
+      console.log('failing on', url);
       throw e;
     }
   };
@@ -117,9 +118,12 @@ export default {
   getAllActiveInstituteProvinceCodes: getCodes(`${Routes.cache.PROVINCES_URL}?active=true`),
   getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
   getAllFundingGroups: getCodes(`${Routes.institute.FUNDING_DATA_URL}`),
+  getAllProgramEligibilityTypeCodes:getCodes(`${Routes.sdc.SDC_PROGRAM_ELIGIBILITY_TYPE_CODES}`),
+  getAllZeroFteReasonCodes:getCodes(`${Routes.sdc.SDC_ZERO_FTE_REASON_CODES}`),
   getAllCollectionTypeCodes: getCodes(`${Routes.sdc.COLLECTION_TYPE_CODES_URL}`),
   getAllDistrictCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_DISTRICT_COLLECTION_STATUS_CODES}`),
   getAllSchoolCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STATUS_CODES}`),
+  getAllValidationIssueTypeCodes:getCodes(`${Routes.sdc.SDC_VALIDATION_ISSUE_TYPE_CODES}`),
   getAllActiveBandCodes:getCodes(`${Routes.sdc.SDC_BAND_CODES}?active=true`),
   getAllActiveCareerProgramCodes:getCodes(`${Routes.sdc.SDC_CAREER_PROGRAM_CODES}?active=true`),
   getAllActiveEnrolledProgramCodes:getCodes(`${Routes.sdc.SDC_ENROLLED_PROGRAM_CODES}?active=true`),

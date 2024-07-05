@@ -1,10 +1,11 @@
 'use strict';
-const { logApiError, getData, errorResponse, postData} = require('../utils');
+const { logApiError, getData, errorResponse, postData, stripNumberFormattingNumberOfCourses, formatNumberOfCourses, handleExceptionResponse} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
+const {createMoreFiltersSearchCriteria} = require('../studentFilters');
 
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
@@ -99,6 +100,33 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       searchCriteriaList: createSearchCriteria(req.query.searchParams)
     });
 
+    if(req.query.searchParams['tabFilter']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createTabFilter(req.query.searchParams['tabFilter'])
+      });
+    }
+
+    if (req.query.searchParams['multiFieldName']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createMultiFieldNameSearchCriteria(req.query.searchParams['multiFieldName'])
+      });
+    }
+    if (req.query.searchParams['penLocalIdNumber']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createLocalIdPenSearchCriteria(req.query.searchParams['penLocalIdNumber'])
+      });
+    }
+
+    if (req.query.searchParams['moreFilters']) {
+      let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
+      criteriaArray.forEach(criteria => {
+        search.push(criteria);
+      });
+    }
+
     if(req.query.searchParams['assignedPen']) {
       search.push({
         condition: CONDITION.AND,
@@ -117,6 +145,10 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
     };
 
     let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated`, params);
+    if (req?.query?.returnKey) {
+      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      return res.status(HttpStatus.OK).json(result);
+    }
 
     if(req?.query?.tableFormat){
       data.content = data?.content.map(toTableRow);
@@ -138,6 +170,35 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       return errorResponse(res);
     }
   }
+}
+
+function createTabFilter(searchParams) {
+  let searchCriteriaList = [];
+  let tableKey = 'sdcStudentEnrolledProgramEntities.enrolledProgramCode';
+
+  if (searchParams.label === 'FRENCH_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '05,08,11,14', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'CAREER_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '40,41,42,43', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'ELL_PR') {
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '17', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if(searchParams.label === 'INDSUPPORT_PR') {
+    searchCriteriaList.push({ key: 'bandCode', value: null, operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+    searchCriteriaList.push({ key: 'nativeAncestryInd', value: 'Y', operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+    searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN_LEFT_JOIN, value: '29,33,36', valueType: VALUE_TYPE.STRING, condition: CONDITION.OR });
+  }
+  if (searchParams.label === 'SPECIALED_PR') {
+    searchCriteriaList.push({ key: 'specialEducationCategoryCode', operation: FILTER_OPERATION.IN, value: 'A,B,C,D,E,F,G,H,K,P,Q,R', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  if (searchParams.label === 'REFUGEE') {
+    searchCriteriaList.push({ key: 'schoolFundingCode', operation: FILTER_OPERATION.IN, value: '16', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+
+  return searchCriteriaList;
+
 }
 
 function toTableRow(student) {
@@ -231,6 +292,51 @@ function createAssignedPENSearchCriteria(searchParams) {
   } else if(searchParams.label === 'NEW_PEN') {
     searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'NEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }
+  return searchCriteriaList;
+}
+
+function createMultiFieldNameSearchCriteria(nameString) {
+  const nameParts = nameString.split(/\s+/);
+  const fieldNames = [
+    'legalFirstName',
+    'legalMiddleNames',
+    'legalLastName',
+    'usualFirstName',
+    'usualMiddleNames',
+    'usualLastName'
+  ];
+
+  const searchCriteriaList = [];
+  for (const part of nameParts) {
+    for (const fieldName of fieldNames) {
+      searchCriteriaList.push({
+        key: fieldName,
+        operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+        value: `%${part}%`,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.OR
+      });
+    }
+  }
+  return searchCriteriaList;
+}
+
+function createLocalIdPenSearchCriteria(value) {
+  let searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: 'studentPen',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
+  searchCriteriaList.push({
+    key: 'localID',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
   return searchCriteriaList;
 }
 
@@ -368,6 +474,60 @@ async function checkDuplicatesInCollection(req, res) {
   }
 }
 
+async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
+  try {
+    if(req.body.sdcSchoolCollectionStudentID) {
+      let sdcSchoolCollectionStudentID = req.body.sdcSchoolCollectionStudentID;
+      let currentStudent = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/${sdcSchoolCollectionStudentID}`);
+      if (req.body.updateDate !== currentStudent.updateDate) {
+        throw new Error(HttpStatus.CONFLICT.toString());
+      }
+    }
+
+    const payload = req.body;
+    payload.createDate = null;
+    payload.createUser = null;
+    payload.updateDate = null;
+    payload.updateUser = 'ADMIN/' + req.session.passport.user.id;
+
+    if (payload?.enrolledProgramCodes) {
+      payload.enrolledProgramCodes = payload.enrolledProgramCodes.join('');
+    }
+
+    if (payload?.numberOfCourses) {
+      payload.numberOfCourses = stripNumberFormattingNumberOfCourses(payload.numberOfCourses);
+    }
+
+    payload.sdcSchoolCollectionStudentValidationIssues = null;
+    payload.sdcSchoolCollectionStudentEnrolledPrograms = null;
+
+    const data = await postData(config.get('sdc:schoolCollectionStudentURL'), payload);
+
+    if (data?.enrolledProgramCodes) {
+      data.enrolledProgramCodes = data?.enrolledProgramCodes.match(/.{1,2}/g);
+    }
+
+    if (data?.numberOfCourses) {
+      data.numberOfCourses = formatNumberOfCourses(data?.numberOfCourses);
+    }
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e.message === '409' || e.status === '409' || e.status === 409) {
+      return res.status(HttpStatus.CONFLICT).json({
+        status: HttpStatus.CONFLICT,
+        message: 'The student you are attempting to update is already being saved by another user. Please refresh your screen and try again.'
+      });
+    } else if (e.status === 400 && e.data.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create provincial duplicate.') {
+      return res.status(HttpStatus.CONFLICT).json({
+        status: HttpStatus.CONFLICT,
+        message: 'Student was not saved because it would create provincial duplicate.'
+      });
+    }
+    return handleExceptionResponse(e, res);
+  }
+
+}
+
 async function resolveDuplicates(req, res) {
   try {
     let sdcDuplicateID = req.body.duplicate.sdcDuplicateID;
@@ -421,6 +581,7 @@ module.exports = {
   getSDCSchoolCollectionStudentDetail,
   getInDistrictDuplicates,
   updateStudentPEN,
+  updateAndValidateSdcSchoolCollectionStudent,
   checkDuplicatesInCollection,
   resolveDuplicates
 };
