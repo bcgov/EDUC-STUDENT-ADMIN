@@ -517,10 +517,17 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
         status: HttpStatus.CONFLICT,
         message: 'The student you are attempting to update is already being saved by another user. Please refresh your screen and try again.'
       });
-    } else if (e.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create provincial duplicate.' && (e.status === '400' || e.status === 400)) {
-      return res.status(HttpStatus.CONFLICT).json({
-        status: HttpStatus.CONFLICT,
-        message: 'Saving this student would result in a duplicate record and is not allowed. Please check the student details and try again.'
+    } else if (e.response.data.error) {
+      const apiError = e.response.data.error;
+      if (apiError.message.includes('provincial duplicate')) {
+        return res.status(HttpStatus.CONFLICT).json({
+          status: HttpStatus.CONFLICT,
+          message: 'Saving this student would result in a duplicate record and is not allowed. Please check the student details and try again.'
+        });
+      }
+      return res.status(apiError.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: apiError.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: apiError.message || 'An unexpected error occurred'
       });
     }
     return handleExceptionResponse(e, res);
