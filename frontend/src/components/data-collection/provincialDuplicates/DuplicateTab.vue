@@ -173,33 +173,6 @@
 
   <template v-if="duplicateView==='2'">
     <strong>Duplicate Students Found: {{ allowableDuplicates.length }}</strong>
-    <!-- <v-row
-      v-for="duplicate in allowableDuplicates"
-      :key="duplicate.sdcDuplicateID"
-      class="pt-4"
-      no-gutters
-    >
-      <v-col class="pa-0">
-        <v-row no-gutters>
-          <v-col class="pb-2">
-            <v-chip color="primary">
-              <v-col>
-                Assigned PEN: {{ duplicate.sdcSchoolCollectionStudent1Entity.assignedPen }}
-              </v-col>
-            </v-chip>
-          </v-col>
-        </v-row>
-        <CustomTable
-          :headers="PROVINCIAL_DUPLICATES.allowableTableHeaders"
-          :data="[duplicate?.sdcSchoolCollectionStudent1Entity, duplicate?.sdcSchoolCollectionStudent2Entity]"
-          :is-loading="false"
-          :reset="false"
-          :total-elements="2"
-          :hide-pagination="true"
-        />
-      </v-col>
-    </v-row> -->
-
     <v-data-iterator
       :items="allowableDuplicates"
       :items-per-page="10"
@@ -257,38 +230,6 @@
   </template>
   <template v-if="duplicateView==='3'">
     <strong>Duplicate Students Found: {{ resolvedDuplicates.length }}</strong>
-    <!-- <v-row
-      v-for="duplicate in resolvedDuplicates"
-      :key="duplicate.sdcDuplicateID"
-      class="pt-4"
-      no-gutters
-    >
-      <v-col class="pa-0">
-        <v-row no-gutters>
-          <v-col class="pb-2">
-            <v-chip color="primary">
-              <v-col>
-                Assigned PEN: {{ duplicate.sdcSchoolCollectionStudent1Entity.assignedPen }}
-              </v-col>
-            </v-chip>
-          </v-col>
-        </v-row>
-        <CustomTable
-          :headers="PROVINCIAL_DUPLICATES.resolvedTableHeaders"
-          :data="[duplicate?.sdcSchoolCollectionStudent1Entity, duplicate?.sdcSchoolCollectionStudent2Entity]"
-          :is-loading="false"
-          :reset="false"
-          :total-elements="2"
-          :hide-pagination="true"
-        >
-          <template #resolution="{ sdcSchoolCollectionStudent }">
-            <span>{{ getDuplicateResolutionDescription(duplicate.duplicateResolutionCode) }}</span>
-          </template>
-        </CustomTable>
-      </v-col>
-    </v-row> -->
-
-
     <v-data-iterator
       :items="resolvedDuplicates"
       :items-per-page="10"
