@@ -62,24 +62,25 @@
 </template>
 <script>
   
-import ApiService from '../../../../common/apiService';
-import {ApiRoutes} from '../../../../utils/constants';
-import {setSuccessAlert, setFailureAlert} from '../../../composable/alertComposable';
-import {sdcCollectionStore} from '../../../../store/modules/sdcCollection';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import {cloneDeep} from 'lodash';
+import alertMixin from '@/mixins/alertMixin';
   
 export default {
   name: 'ChangeGrade',
   components: {
   },
+  mixins: [alertMixin],
   props: {
     selectedStudent: {
       type: Object,
       required: true,
       default: null
     },
-    selectedDuplicateId: {
-      type: String,
+    selectedDuplicate: {
+      type: Object,
       required: true,
       default: null
     }
@@ -108,12 +109,16 @@ export default {
     changeGradeForStudent() {
       let updatedStudent = cloneDeep(this.selectedStudent);
       updatedStudent.enrolledGradeCode = this.changedEnrolledGradeCode;
-      ApiService.apiAxios.post(ApiRoutes.sdc.SDC_DISTRICT_COLLECTION + '/'+ this.$route.params.sdcDistrictCollectionID + '/resolve-district-duplicates' + '/'+ this.selectedDuplicateId +'/' +this.type, [updatedStudent])
+      let payload = {
+        students: [updatedStudent],
+        duplicate: this.selectedDuplicate
+      };
+      ApiService.apiAxios.post(Routes.sdc.SDC_DISTRICT_COLLECTION + '/resolve-district-duplicates' + '/'+ this.selectedDuplicate.sdcDuplicateID +'/' +this.type, payload)
         .then(() => {
-          setSuccessAlert('Success! The student details have been updated.');
+          this.setSuccessAlert('Success! The student details have been updated.');
         }).catch(error => {
           console.error(error);
-          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
         }).finally(() => {
           this.cancel();
         });
