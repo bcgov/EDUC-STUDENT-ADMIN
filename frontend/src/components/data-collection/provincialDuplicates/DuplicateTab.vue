@@ -151,6 +151,7 @@
       </template>
     </v-data-iterator>
     <v-pagination
+      v-if="nonAllowableDuplicates.length > 0"
       v-model="pageNumber"
       :length="Math.ceil(nonAllowableDuplicates.length/10)"
       total-visible="5"
@@ -209,6 +210,7 @@
     </v-data-iterator>
 
     <v-pagination
+      v-if="allowableDuplicates.length > 0"
       v-model="pageNumber"
       :length="Math.ceil(allowableDuplicates.length/10)"
       total-visible="5"
@@ -271,6 +273,7 @@
     </v-data-iterator>
 
     <v-pagination
+      v-if="resolvedDuplicates.length > 0"
       v-model="pageNumber"
       :length="Math.ceil(resolvedDuplicates.length/10)"
       total-visible="5"
