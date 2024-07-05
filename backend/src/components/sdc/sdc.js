@@ -520,7 +520,7 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
     } else if (e.status === 400 && e.data.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create provincial duplicate.') {
       return res.status(HttpStatus.CONFLICT).json({
         status: HttpStatus.CONFLICT,
-        message: 'Saving this student would result in a duplicate record and is not allowed. Please check the student details and try again.'
+        message: 'Student was not saved because it would create provincial duplicate.'
       });
     }
     return handleExceptionResponse(e, res);
