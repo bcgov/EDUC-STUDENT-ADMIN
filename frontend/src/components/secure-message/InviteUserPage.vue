@@ -72,7 +72,7 @@
                             :hint="rolesHint"
                             persistent-hint
                             required
-                            :rules="requireRoleRules"
+                            :rules="conflictingRoleRules"
                             class="pb-3 mt-0 pt-0"
                           >
                             <template #no-data />
@@ -225,6 +225,24 @@ export default {
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['schoolMap']),
+    conflictingRoleRules() {
+      if(this.edxActivationRoleCodes.length < 1){
+        return ['Role Selection is required'];
+      }else if(this.isDistrictUser()){
+        let district1701Role = this.edxActivationRoleCodes.filter(userRole => userRole === 'DISTRICT_SDC');
+        let district1701ReadOnlyRole = this.edxActivationRoleCodes.filter(userRole => userRole === 'DIS_SDC_RO');
+        if(district1701Role.length > 0 && district1701ReadOnlyRole.length > 0){
+          return ['Only one district Student Data Collection role can be selected.'];
+        }
+      }else{
+        let school1701Role = this.edxActivationRoleCodes.filter(userRole => userRole === 'SCHOOL_SDC');
+        let school1701ReadOnlyRole = this.edxActivationRoleCodes.filter(userRole => userRole === 'SCH_SDC_RO');
+        if(school1701Role.length > 0 && school1701ReadOnlyRole.length > 0){
+          return ['Only one school Student Data Collection role can be selected.'];
+        }
+      }
+      return [true];
+    },
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -247,6 +265,9 @@ export default {
   methods: {
     navigateToList() {
       this.$emit('access-user:cancelMessage');
+    },
+    isDistrictUser(){
+      return this.instituteTypeCode === 'DISTRICT';
     },
     getRoleNameFromCode(role, index){
       if(index != 0){
