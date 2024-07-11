@@ -32,6 +32,7 @@
       <v-data-table
         id="monitoring-table"
         :headers="headers"
+        :sort-by="sortBy"
         :items="monitorSdcDistrictCollectionsResponse"
         :search="search"
       >
@@ -88,6 +89,7 @@ export default defineComponent({
   data() {
     return {
       edxURL: '',
+      sortBy: [{ key: 'districtTitle', order:'asc'}],
       headers: [
         {
           title: 'District',
