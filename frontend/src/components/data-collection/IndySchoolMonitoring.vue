@@ -204,6 +204,7 @@
       <v-data-table
         id="monitoring-table"
         :headers="headers"
+        :sort-by="sortBy"
         :items="filteredItems"
       >
         <template #item.schoolTitle="{ item }">
@@ -291,6 +292,7 @@ export default defineComponent({
     return {
       allowedFilters: MONITORING.allowedFilters,
       filters: {},
+      sortBy: [{ key: 'schoolTitle', order:'asc'}],
       headers: [
         {
           title: 'School',
