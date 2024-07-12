@@ -54,6 +54,14 @@
             @click="unsubmitSdcDistrictCollection(item.raw.sdcDistrictCollectionId)"
           />
         </template>
+        <template #item.contact="{ item }">
+          <a
+            target="_blank"
+            @click="openDistrictContacts(item.raw.districtID)"
+          >
+            View
+          </a>
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -149,6 +157,10 @@ export default defineComponent({
     await this.getSdcDistrictCollectionMonitoring();
   },
   methods: {
+    openDistrictContacts(districtId) {
+      let route = this.$router.resolve({name: 'districtDetails', query: {contact: true}, params: {districtID: districtId}});
+      window.open(route.href, '_blank');
+    },
     async getSdcDistrictCollectionMonitoring() {
       this.isLoading = true;
       await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcDistrictCollectionMonitoring`, {
