@@ -72,11 +72,6 @@
           <v-tab
             :value="4"
           >
-            Resolve Provincial Duplicates
-          </v-tab>
-          <v-tab
-            :value="5"
-          >
             All Students
           </v-tab>
         </v-tabs>
@@ -108,13 +103,6 @@
           </v-window-item>
           <v-window-item
             :value="4"
-            transition="false"
-            reverse-transition="false"
-          >
-            <ProvincialDuplicates :collection-object="activeCollectionObject" />
-          </v-window-item>
-          <v-window-item
-            :value="5"
             transition="false"
             reverse-transition="false"
           >
