@@ -743,9 +743,15 @@ export default {
     instituteStore().getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
+    this.setTab();
   },
   methods: {
     ...mapActions(edxStore, ['setSchoolSearchParams']),
+    setTab(){
+      if(this.$route.query?.contact){
+        this.tab = 'contacts';
+      }
+    },
     formatPhoneNumber,
     getDistrict() {
       this.loading = true;

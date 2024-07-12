@@ -252,6 +252,14 @@
             @click="unsubmitSdcSchoolCollection(item.raw.sdcSchoolCollectionId)"
           />
         </template>
+        <template #item.contact="{ item }">
+          <a
+            target="_blank"
+            @click="openSchoolContacts(item.raw.schoolId)"
+          >
+            View
+          </a>
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -410,6 +418,10 @@ export default defineComponent({
     applyFilters($event) {
       this.filters = cloneDeep($event);
       this.filters.schoolFilter = this.filters.schoolNameNumber ? this.filters.schoolNameNumber[0]?.value : '';
+    },
+    openSchoolContacts(schoolId) {
+      let route = this.$router.resolve({name: 'schoolDetails', query: {contact: true}, params: {schoolID: schoolId}});
+      window.open(route.href, '_blank');
     },
     clearFilters() {
       this.filters = {};
