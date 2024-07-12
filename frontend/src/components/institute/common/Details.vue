@@ -654,7 +654,7 @@
                     variant="underlined"
                     required
                     :maxlength="10"
-                    :rules="[rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber(), rules.required()]"
                     @keypress="isNumber($event)"
                   />
                 </v-col>

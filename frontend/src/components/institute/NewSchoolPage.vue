@@ -182,7 +182,7 @@
                 <v-text-field
                   id="newSchoolPhoneNumberInput"
                   v-model="newSchool.phoneNumber"
-                  :rules="[rules.phoneNumber()]"
+                  :rules="[rules.phoneNumber(), rules.required()]"
                   class="pt-0"
                   :maxlength="10"
                   variant="underlined"
