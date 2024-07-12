@@ -121,7 +121,6 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import IndySchoolMonitoring from '@/components/data-collection/IndySchoolMonitoring.vue';
 import PenMatch from '@/components/data-collection/PenMatch.vue';
-import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
 import DistrictMonitoring from '@/components/data-collection/DistrictMonitoring.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import AllStudentsComponent from '@/components/data-collection/AllStudents/AllStudentsComponent.vue';
@@ -131,7 +130,6 @@ export default {
   components: {
     Spinner,
     DistrictMonitoring,
-    ProvincialDuplicates,
     AllStudentsComponent,
     PenMatch,
     IndySchoolMonitoring,
