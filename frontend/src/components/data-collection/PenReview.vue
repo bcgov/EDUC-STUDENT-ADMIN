@@ -15,14 +15,6 @@
               :disabled="selectedStudents.length === 0"
               @click="viewSelectedStudents"
             />
-            <v-btn
-              id="filters"
-              color="#003366"
-              text="Filter"
-              class="mr-1 mb-1"
-              prepend-icon="mdi-filter-multiple-outline"
-              variant="outlined"
-            />
           </v-col>
         </v-row>
 
