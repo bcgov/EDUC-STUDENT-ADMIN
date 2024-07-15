@@ -157,10 +157,15 @@ export default {
     await this.getActiveCollection().then(() => {
       this.isLoading = !this.isLoading;
     });
+    this.setTab();
   },
   methods: {
     formatCollectionTypeCode,
-
+    setTab(){
+      if(this.$route.query?.penMatch){
+        this.tab = 3;
+      }
+    },
     async getActiveCollection() {
       if(this.activeCollection == null) {
         const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`);

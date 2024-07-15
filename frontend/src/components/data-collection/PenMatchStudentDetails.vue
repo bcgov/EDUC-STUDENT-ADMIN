@@ -57,6 +57,15 @@
                   @click="clickNextBtn()"
                 />
 
+                <v-chip
+                  :color="statusChipColors[studentDetails?.penMatchResult]"
+                  :text-color="statusChipColors[studentDetails?.penMatchResult]"
+                  small
+                  class="result-chip"
+                >
+                  <strong>{{ mapPenMatchResult(studentDetails?.penMatchResult) }}</strong>
+                </v-chip>
+
                 <v-spacer />
                 <PrimaryButton
                   id="modify-search-action"
@@ -84,15 +93,9 @@
                   <strong>{{ studentDetails?.schoolName }}</strong>
                 </span>
                 <v-spacer />
-                <span class="mr-6">
-                  <span class="mr-3">Submitted PEN</span>
-                  <span><strong>{{
-                    studentDetails?.studentPen
-                  }}</strong></span>
-                </span>
-                <span>
+                <span v-if="studentDetails?.assignedPen">
                   <span class="mr-3">Assigned PEN</span>
-                  <span><strong>{{
+                  <span style="color: #2E8540"><strong>{{
                     studentDetails?.assignedPen
                   }}</strong></span>
                 </span>
@@ -200,7 +203,13 @@ export default {
       modifySearchDialog: false,
       hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
       isMatchingToStudentRecord: false,
-      activeCollection: null
+      activeCollection: null,
+      statusChipColors: {
+        'INREVIEW': '#C55A11',
+        'MULTI' : '#7737BD',
+        'MATCH' : '#2E8540',
+        'NEW' : '#2E8540',
+      },
     };
   },
   beforeUnmount() {
@@ -226,7 +235,7 @@ export default {
   methods: {
     ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
     backButtonClick() {
-      this.$router.push({name: 'collection-view', params: {collectionID: this.activeCollection?.collectionID}});
+      this.$router.push({name: 'collection-view', query: {penMatch: true}, params: {collectionID: this.activeCollection?.collectionID}});
     },
     async getActiveCollection() {
       if(this.activeCollection == null) {
@@ -383,6 +392,20 @@ export default {
     async refreshMatchResults() {
       await this.runPenMatch();
     },
+    mapPenMatchResult(penMatchResult) {
+      switch(penMatchResult) {
+        case 'INREVIEW':
+          return 'Review Requested';
+        case 'MULTI':
+          return 'Multiple PEN Matches';
+        case 'NEW':
+          return 'New PEN Assigned';
+        case 'MATCH':
+          return 'PEN Matched';
+        default:
+          return penMatchResult;
+      }
+    }
   }
 };
 </script>
@@ -393,5 +416,8 @@ export default {
   background-color: rgba(255, 255, 255, 0.80) !important;
   color: white !important;
   border-radius: 50%;
+}
+.result-chip{
+  margin-left: 16px;
 }
 </style>

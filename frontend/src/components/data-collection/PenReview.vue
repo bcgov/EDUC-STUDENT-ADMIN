@@ -28,6 +28,7 @@
               :is-loading="isLoading"
               @reload="reload"
               @selections="selectedStudents = $event"
+              @editSelectedRow="editStudent"
             />
           </v-col>
         </v-row>
@@ -40,7 +41,7 @@
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import {omitBy, isEmpty} from 'lodash';
+import {omitBy, isEmpty, cloneDeep} from 'lodash';
 import {PEN_MATCHING} from '@/utils/sdc/collectionTableConfiguration';
 import CustomTable from '../common/CustomTable.vue';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
@@ -119,7 +120,15 @@ export default {
       this.setSelectedIDs(selectedStudents);
       this.setNavigationPage(0);
       this.$router.push({name: 'student-detail', params: {studentID: selectedStudents[0]}});
-    }
+    },
+    editStudent($event) {
+      const studentForEdit = cloneDeep($event);
+      let selectedStudents = [];
+      selectedStudents.push(studentForEdit?.sdcSchoolCollectionStudentID);
+      this.setSelectedIDs(selectedStudents);
+      this.setNavigationPage(0);
+      this.$router.push({name: 'student-detail', params: {studentID: selectedStudents[0]}});
+    },
   },
 };
 </script>
