@@ -27,6 +27,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     specialEducationCodesMap: new Map(),
     specialEducationCodes: [],
     ancestryItems: [{code:'Y', dropdownText:'Yes'}, {code:'N', dropdownText:'No'}],
+    otherCoursesValidNumbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    supportBlocksValidNumbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
     selectedIDs: [],
     page: 0
   }),
