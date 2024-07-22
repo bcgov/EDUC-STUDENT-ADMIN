@@ -38,7 +38,12 @@
   </v-container>
   <ConfirmationDialog ref="confirmPostProvincialDuplicates">
     <template #message>
-      <p>Are you sure that you would like to post province duplicates for the collection?</p>
+      <p>Are you sure that you would like to post province duplicates for the collection? This action cannot be undone.</p>
+    </template>
+  </ConfirmationDialog>
+  <ConfirmationDialog ref="confirmResolveRemainingDuplicates">
+    <template #message>
+      <p>Are you sure that you would like to resolve the remaining duplicates for the collection? This action cannot be undone.</p>
     </template>
   </ConfirmationDialog>
 </template>
@@ -52,6 +57,8 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import Spinner from '../common/Spinner.vue';
+import {PEN_MATCHING} from '../../utils/sdc/collectionTableConfiguration';
+import {isEmpty, omitBy} from 'lodash';
 
 export default {
   name: 'DuplicatesPosting',
@@ -61,8 +68,16 @@ export default {
       edxURL: '',
       collectionID: this.$route.params.collectionID,
       isLoading: true,
+      pageNumber: 1,
+      pageSize: 1,
+      totalPenFixElements: 0,
       nonAllowableDuplicates: [],
       nonAllowableProgramDuplicates: [],
+      filterSearchParams: {
+        assignedPen: PEN_MATCHING.defaultFilter,
+        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        moreFilters: {}
+      },
     };
   },
   computed: {
@@ -74,10 +89,9 @@ export default {
     isPostProvincialDuplicatesButtonDisabled() {
       const allDistrictsSubmitted = Array.from(this.districtCollectionStatusCodesMap.values()).every(value => value.sdcDistrictCollectionStatusCode === 'SUBMITTED');
       const allIndieSchoolsSubmitted = Array.from(this.schoolCollectionStatusCodesMap.values()).every(value => value.sdcSchoolCollectionStatusCode === 'SUBMITTED');
+      const allPenFixesResolved = this.totalPenFixElements === 0;
 
-      // TODO how do we check there are pen fixes outstanding?
-
-      return !allDistrictsSubmitted || !allIndieSchoolsSubmitted;
+      return !allDistrictsSubmitted || !allIndieSchoolsSubmitted || !allPenFixesResolved;
     },
     isResolveRemainingDuplicatesButtonDisabled() {
       return this.nonAllowableDuplicates.length === 0 && this.nonAllowableProgramDuplicates.length === 0;
@@ -93,6 +107,9 @@ export default {
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
     await sdcCollectionStore().getSchoolCollectionStatusCodeMap();
     await sdcCollectionStore().getDuplicateResolutionCodesMap();
+    sdcCollectionStore().getCodes().then(() => {
+      this.loadStudents();
+    });
     this.getProvincialDuplicates();
   },
   methods: {
@@ -123,7 +140,26 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while post provincial duplicates. Please try again later.');
         });
     },
-
+    loadStudents() {
+      this.isLoading = true;
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated?tableFormat=true`, {
+        params: {
+          pageNumber: this.pageNumber - 1,
+          pageSize: this.pageSize,
+          searchParams: omitBy(this.filterSearchParams, isEmpty),
+          sort: {
+            penMatchResult: 'ASC'
+          },
+        }
+      }).then(response => {
+        this.totalPenFixElements = response.data.totalElements;
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while trying to calculate total pen fix elements. Please try again later.');
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    },
   }
 };
 </script>
