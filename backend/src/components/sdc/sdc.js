@@ -474,6 +474,21 @@ async function checkDuplicatesInCollection(req, res) {
   }
 }
 
+async function postProvincialDuplicates(req, res) {
+  try {
+    const userInfo = utils.getUser(req);
+    const payload = {
+      'updateUser': userInfo.idir_username,
+      'collectionID': req.params.collectionID
+    };
+    const data = await postData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/in-province-duplicates`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e,'Error posting provincial duplicates.');
+    return errorResponse(res);
+  }
+}
+
 async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
   try {
     if(req.body.sdcSchoolCollectionStudentID) {
@@ -583,5 +598,6 @@ module.exports = {
   updateStudentPEN,
   updateAndValidateSdcSchoolCollectionStudent,
   checkDuplicatesInCollection,
-  resolveDuplicates
+  resolveDuplicates,
+  postProvincialDuplicates
 };
