@@ -12,7 +12,9 @@
     <v-col>
       <h4>Province Duplicates Posting</h4>
       <br>
-      <p>The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.</p>
+      <p v-if="isPostProvincialDuplicatesButtonDisabled">
+        The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.
+      </p>
       <br>
       <v-row>
         <v-btn
@@ -29,7 +31,7 @@
           text="Resolve Remaining Duplicates"
           class="ma-2"
           :disabled="isResolveRemainingDuplicatesButtonDisabled"
-          @click="console.log('hello')"
+          @click="console.log('run auto resolve remaining duplicates')"
         />
       </v-row>
     </v-col>
