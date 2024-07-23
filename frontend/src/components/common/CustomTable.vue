@@ -255,16 +255,10 @@ export default {
   },
   methods: {
     districtSafeURL(districtID, sdcDistrictCollectionId) {
-      const safeDistrictID = encodeURIComponent(districtID);
-      const safeSdcDistrictCollectionId = encodeURIComponent(sdcDistrictCollectionId);
-      const safeUserGuid = encodeURIComponent(this.user.userGuid.toLowerCase());
-      return `${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${safeDistrictID}&sdcDistrictCollectionID=${safeSdcDistrictCollectionId}&idir_guid=${safeUserGuid}`;
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
     },
     schoolSafeURL(schoolID, sdcSchoolCollectionId) {
-      const safeSchoolID = encodeURIComponent(schoolID);
-      const safeSdcSchoolCollectionId = encodeURIComponent(sdcSchoolCollectionId);
-      const safeUserGuid = encodeURIComponent(this.user.userGuid.toLowerCase());
-      return `${this.edxURL}/api/auth/silent_sdc_idir_login?schoolID=${safeSchoolID}&sdcSchoolCollectionID=${safeSdcSchoolCollectionId}&idir_guid=${safeUserGuid}`;
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcDistrictCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
     },
     rowclicked(props) {
       this.$emit('editSelectedRow', props);
