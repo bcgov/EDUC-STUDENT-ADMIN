@@ -168,6 +168,7 @@ import {displayName} from '@/utils/format';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import {sanitizeUrl} from '@braintree/sanitize-url';
 
 export default {
   name: 'CustomTable',
