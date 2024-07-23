@@ -70,7 +70,7 @@ export default {
       totalElements: 0,
       filterSearchParams: {
         assignedPen: PEN_MATCHING.defaultFilter,
-        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        sdcSchoolCollectionStudentStatusCode: 'ERROR,INFOWARN,FUNDWARN,VERIFIED',
         moreFilters: {}
       },
       selectedStudents: []
