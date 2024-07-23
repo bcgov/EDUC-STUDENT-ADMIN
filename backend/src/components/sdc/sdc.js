@@ -154,11 +154,11 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       data.content = data?.content.map(toTableRow);
     }
 
-
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
       value.schoolName = getSchoolName(school);
       value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
+      value.districtID = school.districtID;
     });
 
     return res.status(HttpStatus.OK).json(data);
