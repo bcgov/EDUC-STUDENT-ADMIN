@@ -489,6 +489,21 @@ async function postProvincialDuplicates(req, res) {
   }
 }
 
+async function resolveRemainingDuplicates(req, res) {
+  try {
+    const userInfo = utils.getUser(req);
+    const payload = {
+      'updateUser': userInfo.idir_username,
+      'collectionID': req.params.collectionID
+    };
+    const data = await postData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/resolve-duplicates`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e,'Error resolving remaining duplicates.');
+    return errorResponse(res);
+  }
+}
+
 async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
   try {
     if(req.body.sdcSchoolCollectionStudentID) {
@@ -599,5 +614,6 @@ module.exports = {
   updateAndValidateSdcSchoolCollectionStudent,
   checkDuplicatesInCollection,
   resolveDuplicates,
-  postProvincialDuplicates
+  postProvincialDuplicates,
+  resolveRemainingDuplicates
 };

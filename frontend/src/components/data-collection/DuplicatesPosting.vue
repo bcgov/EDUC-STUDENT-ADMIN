@@ -31,7 +31,7 @@
           text="Resolve Remaining Duplicates"
           class="ma-2"
           :disabled="isResolveRemainingDuplicatesButtonDisabled"
-          @click="console.log('run auto resolve remaining duplicates')"
+          @click="resolveRemainingDuplicates"
         />
       </v-row>
     </v-col>
@@ -137,7 +137,21 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while post provincial duplicates. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while posting provincial duplicates. Please try again later.');
+        });
+    },
+    async resolveRemainingDuplicates() {
+      const confirmation = await this.$refs.confirmResolveRemainingDuplicates.open('Confirm Resolving of Remaining Duplicates for the Collection.', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Confirm', rejectText: 'Cancel'});
+      if (!confirmation) {
+        return;
+      }
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/resolve-duplicates`)
+        .then(() => {
+          this.setSuccessAlert('Remaining Duplicates Resolved Successfully.');
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while resolving remaining duplicates. Please try again later.');
         });
     },
     loadStudents() {
