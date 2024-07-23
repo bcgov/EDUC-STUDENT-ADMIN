@@ -82,6 +82,8 @@
                 <a
                   :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolID}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionID}&idir_guid=${user?.userGuid?.toLowerCase()}`"
                   target="_link"
+                  :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
+                  @click="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
                 >
                   {{ props.item.raw['schoolName'] }}
                 </a>
@@ -90,6 +92,8 @@
                 <a
                   :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionID}&idir_guid=${user?.userGuid?.toLowerCase()}`"
                   target="_link"
+                  :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
+                  @click="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
                 >
                   {{ props.item.raw['districtName'] }}
                 </a>
@@ -338,5 +342,11 @@ export default {
 
 .school-router:hover{
   text-decoration: underline;
+}
+
+.disabled-link {
+  color: grey;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 </style>

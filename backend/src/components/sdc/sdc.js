@@ -154,7 +154,6 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
       data.content = data?.content.map(toTableRow);
     }
 
-
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
       value.schoolName = getSchoolName(school);
