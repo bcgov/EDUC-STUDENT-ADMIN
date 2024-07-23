@@ -74,6 +74,11 @@
           >
             All Students
           </v-tab>
+          <v-tab
+            :value="5"
+          >
+            Duplicates Posting and Collection Closure
+          </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
@@ -108,6 +113,13 @@
           >
             <AllStudentsComponent :collection-object="activeCollectionObject" />
           </v-window-item>
+          <v-window-item
+            :value="5"
+            transition="false"
+            reverse-transition="false"
+          >
+            <DuplicatesPosting />
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -124,10 +136,12 @@ import PenMatch from '@/components/data-collection/PenMatch.vue';
 import DistrictMonitoring from '@/components/data-collection/DistrictMonitoring.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import AllStudentsComponent from '@/components/data-collection/AllStudents/AllStudentsComponent.vue';
+import DuplicatesPosting from '@/components/data-collection/DuplicatesPosting.vue';
 
 export default {
   name: 'CollectionView',
   components: {
+    DuplicatesPosting,
     Spinner,
     DistrictMonitoring,
     AllStudentsComponent,
