@@ -80,16 +80,20 @@
 
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionId}&idir_guid=${user?.userGuid?.toLowerCase()}`"
+                  :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
                   target="_link"
+                  :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
+                  @click="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
                 >
                   {{ props.item.raw['schoolName'] }}
                 </a>
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolId}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionId}&idir_guid=${user?.userGuid?.toLowerCase()}`"
+                  :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
                   target="_link"
+                  :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
+                  @click="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
                 >
                   {{ props.item.raw['districtName'] }}
                 </a>
@@ -164,6 +168,7 @@ import {displayName} from '@/utils/format';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import {sanitizeUrl} from '@braintree/sanitize-url';
 
 export default {
   name: 'CustomTable',
@@ -249,6 +254,12 @@ export default {
     });
   },
   methods: {
+    districtSafeURL(districtID, sdcDistrictCollectionId) {
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+    },
+    schoolSafeURL(schoolID, sdcSchoolCollectionId) {
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcDistrictCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+    },
     rowclicked(props) {
       this.$emit('editSelectedRow', props);
     },
@@ -338,5 +349,11 @@ export default {
 
 .school-router:hover{
   text-decoration: underline;
+}
+
+.disabled-link {
+  color: grey;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 </style>
