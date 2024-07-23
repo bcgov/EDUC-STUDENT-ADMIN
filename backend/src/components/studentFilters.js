@@ -109,7 +109,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       courseRangeList = createCourseRangeFilter(pValue);
     }
     if (key === 'penLocalIdName' && pValue) {
-      let penLocalIdNameFilter = [];
       console.log(pValue, 'pvalue');
       if (/^\d+$/.test(pValue)) {
         // pValue consists only of numbers
