@@ -80,7 +80,7 @@
 
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${props.item.raw.schoolID}&sdcSchoolCollectionID=${props.item.raw.sdcSchoolCollectionID}&idir_guid=${user?.userGuid?.toLowerCase()}`"
+                  :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
                   @click="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
@@ -90,7 +90,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="`${edxURL}/api/auth/silent_sdc_idir_login?districtID=${props.item.raw.districtID}&sdcDistrictCollectionID=${props.item.raw.sdcDistrictCollectionID}&idir_guid=${user?.userGuid?.toLowerCase()}`"
+                  :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
                   @click="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
@@ -168,6 +168,7 @@ import {displayName} from '@/utils/format';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import {sanitizeUrl} from '@braintree/sanitize-url';
 
 export default {
   name: 'CustomTable',
@@ -253,6 +254,12 @@ export default {
     });
   },
   methods: {
+    districtSafeURL(districtID, sdcDistrictCollectionId) {
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+    },
+    schoolSafeURL(schoolID, sdcSchoolCollectionId) {
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcDistrictCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+    },
     rowclicked(props) {
       this.$emit('editSelectedRow', props);
     },
