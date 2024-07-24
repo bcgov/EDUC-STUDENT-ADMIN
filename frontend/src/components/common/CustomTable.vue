@@ -255,10 +255,10 @@ export default {
   },
   methods: {
     districtSafeURL(districtID, sdcDistrictCollectionId) {
-      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },
     schoolSafeURL(schoolID, sdcSchoolCollectionId) {
-      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcDistrictCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcDistrictCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },
     rowclicked(props) {
       this.$emit('editSelectedRow', props);

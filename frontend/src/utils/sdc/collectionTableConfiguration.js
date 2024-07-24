@@ -778,7 +778,6 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
       { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
       { title: 'FTE', key: 'fte' },
-      { title: 'Resolution', key: 'resolution' },
     ],
     allowableTableHeaders: [
       { title: 'District', key: 'districtName' },
@@ -807,7 +806,6 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
       { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
       { title: 'FTE', key: 'fte' },
-      { title: 'Resolution', key: 'resolution' },
     ],
   }
 );

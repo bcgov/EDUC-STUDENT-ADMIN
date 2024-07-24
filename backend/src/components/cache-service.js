@@ -30,6 +30,7 @@ let schoolFundingCodesMap = new Map();
 let schoolCollectionStatusCodesMap = new Map();
 let specialEducationCodesMap = new Map();
 let duplicateResolutionCodesMap = new Map();
+let programDuplicateTypeCodesMap = new Map();
 
 const cacheService = {
 
@@ -330,6 +331,13 @@ const cacheService = {
       duplicateResolutionCodesMap.set(duplicateResolutionCode.duplicateResolutionCode, duplicateResolutionCode);
     });
     return duplicateResolutionCodesMap;
+  },
+  getAllProgramDuplicateTypeCodesMap() {
+    let programDuplicateTypeCodes = cachedData[constants.CACHE_KEYS.SDC_PROGRAM_DUPLICATE_TYPE_CODES].records;
+    programDuplicateTypeCodes.forEach(programDuplicateTypeCode => {
+      programDuplicateTypeCodesMap.set(programDuplicateTypeCode.programDuplicateTypeCode, programDuplicateTypeCode);
+    });
+    return programDuplicateTypeCodesMap;
   },
   getActiveSchoolCollectionStatusCodesMap(){
     let schoolCollectionStatusCodesRaw = cachedData[constants.CACHE_KEYS.SDC_SCHOOL_COLLECTION_STATUS_CODES].records;
