@@ -109,9 +109,20 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       courseRangeList = createCourseRangeFilter(pValue);
     }
     if (key === 'penLocalIdName' && pValue) {
-      let nameCriteria = createMultiFieldNameSearchCriteria(pValue.toString());
-      let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
-      penLocalIdNameFilter = [...nameCriteria, ...penCriteria];
+      if (/^\d+$/.test(pValue)) {
+        // pValue consists only of numbers
+        let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
+        penLocalIdNameFilter.push(...penCriteria);
+      } else if (/^[a-zA-Z]+$/.test(pValue)) {
+        // pValue consists only of alphabetical characters
+        let nameCriteria = createMultiFieldNameSearchCriteria(pValue.toString());
+        penLocalIdNameFilter.push(...nameCriteria);
+      } else if (/^[a-zA-Z0-9]+$/.test(pValue)) {
+        // pValue contains both numbers and alphabetical characters
+        let nameCriteria = createMultiFieldNameSearchCriteria(pValue.toString());
+        let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
+        penLocalIdNameFilter.push(...nameCriteria, ...penCriteria);
+      }
     }
     if (key === 'schoolNameNumber' && pValue) {
       let schoolNameNumberCriteria = createSchoolNameNumberSearchCriteria(pValue.toString());

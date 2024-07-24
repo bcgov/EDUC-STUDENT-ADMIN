@@ -780,6 +780,7 @@ export default {
           setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
         }).finally(() => {
           this.loadingCount -= 1;
+          this.$emit('reset-parent');
           if(this.selectedStudents.length > 0) {
             this.page = (this.page  === 1 ? 1 : this.page - 1);
             this.removeIndex === 0 ? this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[0]) :this.getSdcSchoolCollectionStudentDetail(this.selectedStudents[this.removeIndex - 1]);
@@ -787,7 +788,6 @@ export default {
           else {
             this.$emit('show-issues');
           }
-          this.$emit('reset-parent');
         });
     },
     filterEnrolledProgramCodes(enrolledProgramCodes = []){
