@@ -207,7 +207,7 @@ nconf.defaults({
     programDuplicateTypeCodesURL: process.env.SDC_API_URL + '/program-duplicate-type-codes',
     programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
     zeroFteReasonCodesURL: process.env.SDC_API_URL + '/zero-fte-reason-codes',
-    sdcDuplicateURL: process.env.SDC_API_ENDPOINT + '/sdc-duplicate'
+    sdcDuplicateURL: process.env.SDC_API_URL + '/sdc-duplicate'
   }
 });
 module.exports = nconf;
