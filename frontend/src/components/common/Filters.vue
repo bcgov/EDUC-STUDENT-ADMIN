@@ -33,6 +33,21 @@
               color="primary"
               variant="underlined"
             />
+            <v-tooltip content-class="customTooltip">
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-bind="tooltipProps"
+                  size="25"
+                  color="#003366"
+                  style="align-self: center; padding-bottom: 1rem; padding-left: .5rem;"
+                >
+                  mdi-help-circle
+                </v-icon>
+              </template>
+              <span id="penLocalIdNameFilter">
+                The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
+              </span>
+            </v-tooltip>
           </v-row>
           <v-row>
             <slot
@@ -58,7 +73,6 @@
         <v-col>
           <PrimaryButton
             id="applyPenLocalIdNameFilter"
-            secondary
             large-icon
             icon="mdi-magnify"
             text="Search"
