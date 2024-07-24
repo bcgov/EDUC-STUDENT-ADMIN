@@ -113,12 +113,12 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
         // pValue consists only of numbers
         let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
         penLocalIdNameFilter.push(...penCriteria);
-      } else if (/^[a-zA-Z]+$/.test(pValue)) {
-        // pValue consists only of alphabetical characters
+      } else if (/^[a-z\-.'\s]+$/i.test(pValue)) {
+        // pValue consists only of alphabetical characters and allowed name characters
         let nameCriteria = createMultiFieldNameSearchCriteria(pValue.toString());
         penLocalIdNameFilter.push(...nameCriteria);
-      } else if (/^[a-zA-Z0-9]+$/.test(pValue)) {
-        // pValue contains both numbers and alphabetical characters
+      } else {
+        // pValue contains both numbers and alphabetical characters or unknown characters
         let nameCriteria = createMultiFieldNameSearchCriteria(pValue.toString());
         let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
         penLocalIdNameFilter.push(...nameCriteria, ...penCriteria);
