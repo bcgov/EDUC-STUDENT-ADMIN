@@ -1,113 +1,105 @@
 <template>
-  <v-row v-if="isLoading">
-    <v-col>
-      <Spinner />
-    </v-col>
-  </v-row>
-  <v-row
-    v-else-if="apiError"
-    justify="center"
-  >
-    <v-col>
-      <v-alert
-        id="api-error-alert"
-        density="compact"
-        type="error"
-        variant="tonal"
-        text="There was an error loading the data, please try again."
-      />
-    </v-col>
-  </v-row>
-  <div
-    v-else
-    class="border"
-  >
-    <v-tabs
-      v-model="tab"
-      color="#38598a"
-      show-arrows
-    >
-      <v-tab
-        v-for="name in tabs"
-        :key="name"
-        class="divider"
-        :value="name"
-      >
-        {{ name }} {{ name === 'Enrollment Duplicates' ? '(' + nonAllowableDuplicates.length + ')': '(' + nonAllowableProgramDuplicates.length + ')' }}
-      </v-tab>
-    </v-tabs>
-    <v-window v-model="tab">
-      <v-window-item
-        value="Enrollment Duplicates"
-        transition="false"
-        reverse-transition="false"
-      >
-        <DuplicateTab
-          v-if="tab==='Enrollment Duplicates'"
-          duplicate-type="enrollment"
-          :non-allowable-duplicates="nonAllowableDuplicates"
-          :allowable-duplicates="allowableDuplicates"
-          :resolved-duplicates="resolvedDuplicates"
-          :collection-object="collectionObject"
-          @refresh-duplicates="getProvincialDuplicates()"
+  <v-card>
+    <v-card-title class="sheetHeader">
+      <v-row no-gutters>
+        Provincial Duplicates
+        <v-spacer />
+        <v-btn
+          id="cancel"
+          color="white"
+          text="Close"
+          size="30"
+          icon="mdi-close"
+          variant="tonal"
+          @click="$emit('close-sheet')"
         />
-      </v-window-item>
-      <v-window-item
-        value="Program Duplicates"
-        transition="false"
-        reverse-transition="false"
+      </v-row>
+    </v-card-title>
+    <v-divider />
+    <v-card-text>
+      <v-row v-if="isLoading">
+        <v-col>
+          <Spinner />
+        </v-col>
+      </v-row>
+      <div
+        v-else
       >
-        <DuplicateTab
-          v-if="tab==='Program Duplicates'"
-          duplicate-type="program"
-          :non-allowable-duplicates="nonAllowableProgramDuplicates"
-          :resolved-duplicates="resolvedProgramDuplicates"
-          :collection-object="collectionObject"
-          @refresh-duplicates="getProvincialDuplicates()"
-        />
-      </v-window-item>
-    </v-window>
-  </div>
+        <v-tabs
+          v-model="tab"
+          color="#38598a"
+          show-arrows
+        >
+          <v-tab
+            v-for="name in tabs"
+            :key="name"
+            class="divider"
+            :value="name"
+          >
+            {{ name }} {{ name === 'Enrollment Duplicates' ? '(' + nonAllowableDuplicates?.length + ')': '(' + nonAllowableProgramDuplicates?.length + ')' }}
+          </v-tab>
+        </v-tabs>
+        <v-window v-model="tab">
+          <v-window-item
+            value="Enrollment Duplicates"
+            transition="false"
+            reverse-transition="false"
+          >
+            <DuplicateTab
+              v-if="tab==='Enrollment Duplicates'"
+              duplicate-type="enrollment"
+              :non-allowable-duplicates="nonAllowableDuplicates"
+            />
+          </v-window-item>
+          <v-window-item
+            value="Program Duplicates"
+            transition="false"
+            reverse-transition="false"
+          >
+            <DuplicateTab
+              v-if="tab==='Program Duplicates'"
+              duplicate-type="program"
+              :non-allowable-duplicates="nonAllowableProgramDuplicates"
+            />
+          </v-window-item>
+        </v-window>
+      </div>
+    </v-card-text>
+  </v-card>
 </template>
 <script>
 import {defineComponent} from 'vue';
-import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import Spinner from '../../common/Spinner.vue';
 import DuplicateTab from './DuplicateTab.vue';
 
 export default defineComponent({
-  name: 'StepFourInDistrictDuplicates',
+  name: 'ProvincialDuplicates',
   components: {
     DuplicateTab,
     Spinner
   },
   mixins: [alertMixin],
   props: {
-    collectionObject: {
+    sdcDuplicates: {
       type: Object,
-      required: true,
+      required: false,
       default: null
+    },
+    defaultTab: {
+      type: String,
+      default: 'Enrollment Duplicates'
     }
   },
+  emits: ['close-sheet'],
   data() {
     return {
-      apiError: false,
-      editOptionsOpen: [],
       nonAllowableDuplicates: [],
-      allowableDuplicates: [],
-      resolvedDuplicates: [],
       nonAllowableProgramDuplicates: [],
-      resolvedProgramDuplicates: [],
-      isLoading: true,
-      panel: [0],
-      duplicateView: 'nonAllowable',
-      programDuplicateView: 'nonAllowableProgram',
+      isLoading: false,
       duplicateResolutionCodesMap: null,
-      collectionID: this.$route.params.collectionID,
-      tab: null,
+      tab: this.defaultTab,
       tabs: [
         'Enrollment Duplicates',
         'Program Duplicates'
@@ -116,38 +108,21 @@ export default defineComponent({
   },
   async created() {
     this.duplicateResolutionCodesMap = sdcCollectionStore().getDuplicateResolutionCodesMap();
-    this.getProvincialDuplicates();
+    await this.setDuplicateVariables(this.sdcDuplicates);
   },
   methods: {
-    getProvincialDuplicates(){
-      this.isLoading = true;
-      ApiService.apiAxios.get(Routes.sdc.BASE_URL + '/collection/'+ this.collectionID + '/provincial-duplicates').then(response => {
-        this.nonAllowableDuplicates = response.data?.enrollmentDuplicates?.NON_ALLOW;
-        this.allowableDuplicates = response.data?.enrollmentDuplicates?.ALLOWABLE;
-        this.resolvedDuplicates = response.data?.enrollmentDuplicates?.RESOLVED;
-        this.nonAllowableProgramDuplicates = response.data?.programDuplicates?.NON_ALLOW;
-        this.resolvedProgramDuplicates = response.data?.programDuplicates?.RESOLVED;
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-        this.apiError = true;
-      }).finally(() => {
-        this.isLoading = false;
-      });
-    },
+    setDuplicateVariables(sdcDuplicates) {
+      this.nonAllowableDuplicates = sdcDuplicates.enrollmentDuplicates;
+      this.nonAllowableProgramDuplicates = sdcDuplicates.programDuplicates;
+    }
   }
 });
 </script>
-
 <style scoped>
-.border {
-  border: 2px solid grey;
-  border-radius: 5px;
-  padding: 35px;
-  margin-bottom: 2em;
-}
-.form-hint{
-  color: rgb(56, 89, 138);
-  font-size: 14px;
+.sheetHeader {
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
 }
 </style>
