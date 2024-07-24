@@ -44,7 +44,7 @@
                   mdi-help-circle
                 </v-icon>
               </template>
-              <span id="penLocalIdNameFilter">
+              <span id="penLocalIdNameFilterTooltip">
                 The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
               </span>
             </v-tooltip>
