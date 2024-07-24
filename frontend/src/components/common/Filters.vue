@@ -32,7 +32,6 @@
               label="PEN or Local ID or Name"
               color="primary"
               variant="underlined"
-              @update:model-value="setPenLocalIdNameFilter('penLocalIdName', $event)"
             />
           </v-row>
           <v-row>
@@ -55,6 +54,16 @@
               />
             </slot>
           </v-row>
+        </v-col>
+        <v-col>
+          <PrimaryButton
+            id="applyPenLocalIdNameFilter"
+            secondary
+            large-icon
+            icon="mdi-magnify"
+            text="Search"
+            @click-action="setPenLocalIdNameFilter('penLocalIdName', penLocalIdNameFilter)"
+          />
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton

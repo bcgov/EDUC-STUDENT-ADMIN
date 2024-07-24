@@ -109,7 +109,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       courseRangeList = createCourseRangeFilter(pValue);
     }
     if (key === 'penLocalIdName' && pValue) {
-      console.log(pValue, 'pvalue');
       if (/^\d+$/.test(pValue)) {
         // pValue consists only of numbers
         let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
@@ -124,8 +123,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
         let penCriteria = createLocalIdPenSearchCriteria(pValue.toString());
         penLocalIdNameFilter.push(...nameCriteria, ...penCriteria);
       }
-
-      console.log(penLocalIdNameFilter, 'penLocalIdNameFilter');
     }
     if (key === 'schoolNameNumber' && pValue) {
       let schoolNameNumberCriteria = createSchoolNameNumberSearchCriteria(pValue.toString());
