@@ -182,7 +182,6 @@ export default {
       },
       requiredRules: [v => !!v || 'Required'],
       datePattern: 'yyyy-MM-dd\'T\'HH:mm:ss',
-      isLoading: true,
       isDisabled: true,
       validForm: false,
       rules: Rules,
