@@ -26,8 +26,7 @@ export const appStore = defineStore('app', {
     alertNotification: false,
     config: '',
     fundingGroupsMap: new Map(),
-    fundingGroups: [],
-    collectionTypeCodesMap: new Map()
+    fundingGroups: []
   }),
   getters: {
     activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString()),
@@ -113,12 +112,6 @@ export const appStore = defineStore('app', {
         this.fundingGroupsMap.set(element.schoolFundingGroupCode, element);
       });
     },
-    async setCollectionTypeCodes(collectionTypes) {
-      this.collectionTypeCodesMap = new Map();
-      collectionTypes.forEach(element => {
-        this.collectionTypeCodesMap.set(element.collectionTypeCode, element);
-      });
-    },
     async getInstituteCodes() {
       if(localStorage.getItem('jwtToken')) {// DONT Call api if there is not token.
         const promises = [
@@ -126,7 +119,7 @@ export const appStore = defineStore('app', {
           ... this.activeSchools.length === 0 ? [ApiService.getActiveSchools().then((res) => this.setActiveSchools(res.data))] : [],
           ... this.districtMap.size === 0 ? [ApiService.getDistricts().then((res) => this.setDistricts(res.data))] : [],
           ... this.activeDistricts.length === 0 ? [ApiService.getActiveDistricts().then((res) => this.setActiveDistricts(res.data))] : [],
-          ... this.independentAuthorityMap.size === 0 ? [ApiService.getAuthorities().then((res) => this.setIndependentAuthorities(res.data))] : []
+          ... this.independentAuthorityMap.size === 0 ? [ApiService.getAuthorities().then((res) => this.setIndependentAuthorities(res.data))] : [],
         ];
         return Promise.all(promises);
       }
@@ -134,8 +127,7 @@ export const appStore = defineStore('app', {
     async getSdcCodes(){
       if(localStorage.getItem('jwtToken')){
         const promises = [
-          ... this.fundingGroupsMap.size === 0 ? [ApiService.getAllFundingGroups().then((res)=> this.setFundingGroups(res.data))] : [],
-          ... this.collectionTypeCodesMap.size === 0 ? [ApiService.getAllCollectionTypeCodes().then((res) => this.setCollectionTypeCodes(res.data))]: []
+          ... this.fundingGroupsMap.size === 0 ? [ApiService.getAllFundingGroups().then((res)=> this.setFundingGroups(res.data))] : []
         ];
         return Promise.all(promises);
       }

@@ -118,7 +118,7 @@
             transition="false"
             reverse-transition="false"
           >
-            <DuplicatesPosting />
+            <DuplicatesPosting :collection-object="activeCollectionObject"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -127,8 +127,8 @@
 </template>
 <script>
 import alertMixin from '../../mixins/alertMixin';
+import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import {formatCollectionTypeCode} from '@/utils/format';
-import {COLLECTION_CLOSURE_STEPS} from '@/utils/institute/collectionClosureSteps';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import IndySchoolMonitoring from '@/components/data-collection/IndySchoolMonitoring.vue';
@@ -151,8 +151,6 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      steps: [],
-      currentStepInCollectionClosureProcess: {},
       registerNextEvent: false,
       activeCollectionObject: {},
       activeCollectionType: null,
@@ -162,11 +160,7 @@ export default {
     };
   },
   async created() {
-
-    this.steps = [...COLLECTION_CLOSURE_STEPS];
-
-    //TODO: Replace the below with actual retrieval of collection closure status
-    this.setCurrentStepInCollectionClosureProcess(this.steps[0]);
+    await sdcCollectionStore().getCollectionTypeCodesMap();
 
     await this.getActiveCollection().then(() => {
       this.isLoading = !this.isLoading;
@@ -197,11 +191,6 @@ export default {
     navigationCompleted() {
       this.registerNextEvent = false;
     },
-
-    setCurrentStepInCollectionClosureProcess(currentStepInCollectionClosureProcess) {
-      this.currentStepInCollectionClosureProcess = currentStepInCollectionClosureProcess;
-    },
-
     backToActiveCollection() {
       this.$router.push({name: 'sdc-collection'});
     }
