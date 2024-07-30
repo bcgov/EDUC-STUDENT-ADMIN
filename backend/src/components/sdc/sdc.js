@@ -602,6 +602,28 @@ async function getInFlightSchoolProvincialDuplicates(req, res) {
   }
 }
 
+async function closeCollection(req, res) {
+  try {
+    const incomingBody = req.body;
+
+    const payload = {
+      existingCollectionID: req.params.collectionID,
+      newCollectionSnapshotDate: incomingBody.snapshotDate, 
+      newCollectionSubmissionDueDate: incomingBody.submissionDueDate,
+      newCollectionDuplicationResolutionDueDate: incomingBody.duplicationResolutionDueDate,
+      newCollectionSignOffDueDate: incomingBody.signoffDueDate,
+      createUser: utils.getUser(req).idir_username,
+      updateUser: utils.getUser(req).idir_username
+    }
+
+    const data = await postData(`${config.get('sdc:collectionURL')}/close-collection`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'Error closing collection');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
@@ -620,5 +642,6 @@ module.exports = {
   postProvincialDuplicates,
   resolveRemainingDuplicates,
   getInFlightDistrictProvincialDuplicates,
-  getInFlightSchoolProvincialDuplicates
+  getInFlightSchoolProvincialDuplicates,
+  closeCollection
 };

@@ -30,7 +30,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     otherCoursesValidNumbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     supportBlocksValidNumbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
     selectedIDs: [],
-    page: 0
+    page: 0,
+    collectionTypeCodesMap: new Map()
   }),
   actions: {
     setDistrictCollectionStatusCodes(districtCollectionStatusCodes){
@@ -141,6 +142,12 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
         this.validationIssueTypeCodesMap.set(validationIssue.validationIssueTypeCode, validationIssue);
       });
     },
+    async setCollectionTypeCodes(collectionTypes) {
+      this.collectionTypeCodesMap = new Map();
+      collectionTypes.forEach(element => {
+        this.collectionTypeCodesMap.set(element.collectionTypeCode, element);
+      });
+    },
     setSelectedIDs(selectedIDs) {
       this.selectedIDs = selectedIDs;
     },
@@ -165,6 +172,12 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
       }
       return this.schoolCollectionStatusCodesMap;
     },
+    async getCollectionTypeCodesMap() {
+      if(this.collectionTypeCodesMap.size === 0) {
+        ApiService.getAllCollectionTypeCodes().then((res) => this.setCollectionTypeCodes(res.data));
+      }
+      return this.collectionTypeCodesMap;
+    },
     async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const promises = [
@@ -179,6 +192,7 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
           ... this.validationIssueTypeCodesMap.size === 0 ? [ApiService.getAllValidationIssueTypeCodes().then((res) => this.setValidationIssueTypeCodes(res.data))] : [],
           ... this.programEligibilityCodesMap.size === 0 ? [ApiService.getAllProgramEligibilityTypeCodes().then((res) => this.setProgramEligibilityCodesMap(res.data))]: [],
           ... this.zeroFteReasonCodesMap.size === 0 ? [ApiService.getAllZeroFteReasonCodes().then((res) => this.setZeroFteReasonCodesMap(res.data))] : [],
+          ... this.collectionTypeCodesMap.size === 0 ? [ApiService.getAllCollectionTypeCodes().then((res) => this.setCollectionTypeCodes(res.data))]: []
         ];
         return Promise.all(promises);
       }
