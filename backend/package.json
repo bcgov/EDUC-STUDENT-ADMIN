@@ -10,7 +10,6 @@
     "start": "node --max-old-space-size=150 ./src/server.js",
     "lint": "node_modules/.bin/eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
     "lint:fix": "node_modules/.bin/eslint . --fix --ignore-pattern 'node_modules' --ext .js",
-    "test:unit": "node_modules/.bin/jest --env node --detectOpenHandles --coverage",
     "clean": "rm -rf coverage dist",
     "pretest": "npm run lint",
     "purge": "rm -rf node_modules",
@@ -38,7 +37,6 @@
     "helmet": "^4.4.1",
     "http-status-codes": "^1.4.0",
     "ioredis": "^4.27.7",
-    "jest-junit": "^7.0.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "memory-cache": "^0.2.0",
@@ -69,7 +67,6 @@
     "@babel/preset-env": "^7.14.2",
     "@babel/preset-stage-2": "^7.8.3",
     "axios-mock-adapter": "^1.19.0",
-    "babel-jest": "^27.0.1",
     "babel-plugin-rewire": "^1.2.0",
     "babel-preset-airbnb": "^5.0.0",
     "core-js": "^3.37.0",
@@ -83,7 +80,6 @@
     "env": {
       "commonjs": true,
       "es6": true,
-      "jest": true,
       "node": true
     },
     "extends": [
@@ -121,38 +117,6 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "jest": {
-    "reporters": [
-      "default",
-      "jest-junit"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "json"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "testMatch": [
-      "**/tests/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
-    ],
-    "testURL": "http://localhost",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
-    "testResultsProcessor": "jest-sonar-reporter"
-  },
-  "jest-junit": {
-    "outputDirectory": "./tests/unit/reports/",
-    "outputName": "./junit.xml",
-    "usePathForSuitName": true
-  },
-  "jestSonar": {
-    "reportPath": "coverage",
-    "reportFile": "test-report.xml",
-    "indent": 2
-  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
