@@ -249,7 +249,7 @@ export default {
       if (!confirmation) {
         return;
       }
-      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/post-provincial-duplicates`, this.newCollection)
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/post-provincial-duplicates`)
         .then(() => {
           this.setSuccessAlert('Provincial Duplicates Posted Successfully.');
         })
@@ -337,7 +337,7 @@ export default {
         return;
       }
       this.isLoading = true;
-      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/close-collection`)
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/close-collection`, this.newCollection)
         .then(() => {
           this.setSuccessAlert('Your request to close the current collection is accepted.');
         })
