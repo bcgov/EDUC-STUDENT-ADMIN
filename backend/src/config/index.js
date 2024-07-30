@@ -98,6 +98,11 @@ nconf.defaults({
       mergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-merge-complete-saga',
       demergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-demerge-complete-saga'
     },
+    rateLimit: {
+      enabled: process.env.IS_RATE_LIMIT_ENABLED,
+      windowInSec: process.env.RATE_LIMIT_WINDOW_IN_SEC,
+      limit: process.env.RATE_LIMIT_LIMIT,
+    },
     nominalRoll: {
       rootURL: process.env.NOMINAL_ROLL_API_URL,
       roleAdmin: process.env.NOMINAL_ROLL,
