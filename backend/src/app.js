@@ -11,6 +11,7 @@ const passport = require('passport');
 const helmet = require('helmet');
 const auth = require('./components/auth');
 const bodyParser = require('body-parser');
+const lusca = require('lusca');
 const {rateLimit}  = require('express-rate-limit');
 dotenv.config();
 
@@ -116,6 +117,7 @@ app.use(session({
   cookie: cookie,
   store: dbSession
 }));
+
 app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());

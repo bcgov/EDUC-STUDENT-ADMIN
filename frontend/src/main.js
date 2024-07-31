@@ -7,7 +7,7 @@ import 'regenerator-runtime/runtime';
 import {createPinia} from 'pinia';
 import moment from 'moment';
 import * as colors from 'vuetify/lib/util/colors';
-import styles from 'vuetify/styles';
+import * as styles from 'vuetify/styles';
 import * as labs from 'vuetify/labs/components';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';

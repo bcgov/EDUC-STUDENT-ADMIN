@@ -39,6 +39,7 @@
     "ioredis": "^4.27.7",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "lusca": "^1.7.0",
     "memory-cache": "^0.2.0",
     "morgan": "^1.9.1",
     "nats": "2.6.1",

@@ -6,7 +6,7 @@ export default {
   //Retrieves an auth token from the API endpoint
   async getAuthToken() {
     try {
-      const response = await axios.get(Routes.TOKEN);
+      const response = await this.getAxios().get(Routes.TOKEN);
 
       return response.data;
     } catch (e) {
@@ -14,11 +14,21 @@ export default {
       throw e;
     }
   },
-
+  axiosInstance: null,
+  getAxios(){
+    if(this.axiosInstance === null){
+      this.axiosInstance = axios;
+      this.axiosInstance.defaults.withXSRFToken = true;
+      this.axiosInstance.defaults.withCredentials = true;
+      this.axiosInstance.defaults.xsrfCookieName = '_csrf';
+      this.axiosInstance.defaults.xsrfHeaderName = 'X-CSRF-TOKEN';
+    }
+    return this.axiosInstance;
+  },
   //Refreshes the users auth token
   async refreshAuthToken(token) {
     try {
-      const response = await axios.post(Routes.REFRESH, {
+      const response = await this.getAxios().post(Routes.REFRESH, {
         refreshToken: token
       });
 
