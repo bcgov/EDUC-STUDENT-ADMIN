@@ -222,6 +222,8 @@ export default {
     pageNumber: {
       handler(val) {
         if(val) {
+          this.masterCheckbox = false;
+          this.selected = [];
           this.$emit('reload', {pageNumber: val});
         }
       },
