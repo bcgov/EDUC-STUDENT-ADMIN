@@ -117,7 +117,16 @@ app.use(session({
   cookie: cookie,
   store: dbSession
 }));
-
+app.use(lusca({
+  csrf: {
+    cookie: {name: '_csrf'}
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  nosniff: true,
+  referrerPolicy: 'same-origin',
+  xframe: 'SAMEORIGIN',
+  xssProtection: true,
+}));
 app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
