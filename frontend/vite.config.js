@@ -11,6 +11,8 @@ export default defineConfig({
     ]
   },
   build: {
+    outDir: './dist',
+    emptyOutDir: true, // also necessary
     target: 'esnext'
   },
   server: {
