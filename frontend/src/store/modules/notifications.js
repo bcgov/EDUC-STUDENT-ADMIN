@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import { studentStore } from '@/store/modules/student';
 import { appStore } from '@/store/modules/app';
+import { sdcCollection } from '@/store/modules/sdcCollection'
 
 export const notificationsStore = defineStore('notifications', {
   namespaced: true,
@@ -21,6 +22,8 @@ export const notificationsStore = defineStore('notifications', {
           await studentStore().resetStudentInProcessStatus(notificationData.studentID);
         } else if(notificationData && notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED'){
           await appStore().refreshEntities();
+        } else if(notificationData && notificationData.eventType === 'CLOSE_CURRENT_COLLECTION_AND_OPEN_NEW_COLLECTION' && notificationData.eventOutcome === 'NEW_COLLECTION_CREATED') {
+          await sdcCollection().getCollectionTypeCodesMap();
         }
       }catch (e) {
         console.error(e);

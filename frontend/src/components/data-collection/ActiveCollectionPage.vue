@@ -21,7 +21,8 @@
           </v-row>
         </v-card-title>
         <v-card-subtitle class="mt-1">
-          {{ collectionType }} {{ year }} Collection
+          <span v-if="collectionObject !== null">{{ collectionType }} {{ year }} Collection</span>
+          <span v-else>No Open Collection</span>
         </v-card-subtitle>
         <v-card-text
           class="mt-2 ml-2 mr-2"
@@ -34,7 +35,7 @@
             >
               mdi-calendar
             </v-icon>
-            Snapshot Date: {{ snapshotDate }}
+            Snapshot Date: {{ collectionObject !== null ? snapshotDate : '-' }}
           </v-row>
           <v-row class="dates">
             <v-icon
@@ -44,7 +45,7 @@
             >
               mdi-calendar
             </v-icon>
-            Submission Due: {{ submissionDueDate }}
+            Submission Due: {{ collectionObject !== null ? submissionDueDate : '-' }}
           </v-row>
         </v-card-text>
         <v-spacer />
@@ -55,6 +56,7 @@
             <v-btn
               variant="text"
               @click="goToCloseCollection()"
+              :disabled="collectionObject === null"
             >
               <span
                 class="ml-1 pr-2"
@@ -80,7 +82,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'ActiveCollectionPage',
@@ -92,18 +94,36 @@ export default {
       collectionID: null,
       collectionType: null,
       snapshotDate: null,
-      submissionDueDate: null
+      submissionDueDate: null,
+      collectionObject: null
     };
   },
   created() {
     this.getActiveCollection();
   },
+  computed: {
+    ...mapState(notificationsStore, ['notification']),
+  },
+  watch: {
+    notification(notificationData) {
+      if (notificationData) {
+        if (notificationData.eventType === 'CLOSE_CURRENT_COLLECTION_AND_OPEN_NEW_COLLECTION' && notificationData.eventOutcome === 'NEW_COLLECTION_CREATED' && notificationData.eventPayload) {
+          try {
+              const eventMessage = `New Collection is now OPEN. Please refresh your screen.`;
+              this.setSuccessAlert(eventMessage);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    },
+  },
   methods:{
     getActiveCollection(){
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`)
         .then(response => {
-
-          let createTimestamp = Date.parse(response.data.createDate);
+          this.collectionObject = response.data;
+          let createTimestamp = Date.parse(response.data.openDate);
           this.year = new Date(createTimestamp).getFullYear();
 
           let lowercaseCollectionType = response.data.collectionTypeCode.toLowerCase();

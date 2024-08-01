@@ -9,7 +9,7 @@
     id="duplicatesPosting"
     fluid
   >
-  <v-row class="mb-5 mt-3 pb-3 pt-3 border">
+  <v-row v-if="collectionObject?.collectionTypeCode !== 'JULY'" class="mb-5 mt-3 pb-3 pt-3 border">
     <v-col>
       <h4>Province Duplicates Posting</h4>
       <br>
@@ -62,7 +62,7 @@
               :disabled-week-days="[0, 6]"
               label="Snapshot Date"
               :rules="[rules.required()]"
-              model-type="yyyy-MM-dd'T'00:00:00"
+              model-type="yyyy-MM-dd"
               @update:model-value="calculateSubmissionDate"
           />
         </v-col>
@@ -77,7 +77,7 @@
               :min-date="newCollection.snapshotDate"
               label="Submission Due Date"
               :rules="[rules.required()]"
-              model-type="yyyy-MM-dd'T'00:00:00"
+              model-type="yyyy-MM-dd"
               @update:model-value="calculateAdminDates"
           />
         </v-col>
@@ -92,7 +92,7 @@
               :min-date="newCollection.submissionDueDate"
               label="Duplicate Resolution Due Date"
               :rules="[rules.required()]"
-              model-type="yyyy-MM-dd'T'00:00:00"
+              model-type="yyyy-MM-dd"
           />
         </v-col>
       </v-row>
@@ -106,7 +106,7 @@
               :min-date="newCollection.duplicationResolutionDueDate"
               label="Sign-Off Due Date"
               :rules="[rules.required()]"
-              model-type="yyyy-MM-dd'T'00:00:00"
+              model-type="yyyy-MM-dd"
           />
         </v-col>
       </v-row>
@@ -150,15 +150,17 @@ import Spinner from '../common/Spinner.vue';
 import {PEN_MATCHING} from '../../utils/sdc/collectionTableConfiguration';
 import {isEmpty, omitBy} from 'lodash';
 import {formatCollectionTypeCode} from "@/utils/format"
-import {findUpcomingDate} from "@/utils/dateHelpers.js"
+import {findUpcomingDateForCollectionClosure} from "@/utils/dateHelpers.js"
 import DatePicker from "@/components/util/DatePicker.vue";
 import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from "@js-joda/core";
 import * as Rules from '@/utils/institute/formRules';
 import {COLLECTION_TYPE_CODE_MAPPING} from '../../utils/sdc/collectionTypecode';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'DuplicatesPosting',
   components: {Spinner, ConfirmationDialog, DatePicker},
+  mixins: [alertMixin],
   props: {
     collectionObject: {
       type: Object,
@@ -181,7 +183,7 @@ export default {
         moreFilters: {}
       },
       requiredRules: [v => !!v || 'Required'],
-      datePattern: 'yyyy-MM-dd\'T\'HH:mm:ss',
+      datePattern: 'yyyy-MM-dd',
       isDisabled: true,
       validForm: false,
       rules: Rules,
@@ -299,7 +301,7 @@ export default {
 
     async validateForm() {
       await this.$nextTick();
-      const isValid = await this.$refs.closeForm.validate();
+      const isValid = await this.$refs?.closeForm?.validate();
       this.validForm = isValid.valid;
     },
     getActiveCollection() {
@@ -309,9 +311,8 @@ export default {
     },
     calculateSnapshotDate(){
       let newSnapshotDate = LocalDate.parse(this.collectionTypeCodesMap.get(this.newCollection.collectionType.toUpperCase()).snapshotDate);
-      this.newCollection.snapshotDate = findUpcomingDate(newSnapshotDate.month(), newSnapshotDate.dayOfMonth()).toString();
+      this.newCollection.snapshotDate = findUpcomingDateForCollectionClosure(newSnapshotDate.month(), newSnapshotDate.dayOfMonth()).toString();
       this.newCollection.collectionYear = this.newCollection.snapshotDate.slice(0, 4);
-
       this.calculateSubmissionDate();
     },
     calculateSubmissionDate(){
@@ -340,6 +341,7 @@ export default {
       ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/close-collection`, this.newCollection)
         .then(() => {
           this.setSuccessAlert('Your request to close the current collection is accepted.');
+          this.$router.push({name: 'sdc-collection'});  
         })
         .catch(error => {
           console.error(error);
