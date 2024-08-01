@@ -12,7 +12,7 @@ export default defineConfig({
   },
   build: {
     outDir: './dist',
-    emptyOutDir: true, // also necessary
+    emptyOutDir: false, // also necessary
     target: 'esnext'
   },
   server: {
