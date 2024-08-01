@@ -1,5 +1,6 @@
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import moment from 'moment';
+import {getDateFormatter} from '@/utils/format';
 
 export function findUpcomingDate(month, day) {
   let currentDate = LocalDate.now();
@@ -26,4 +27,12 @@ export function getFromMomentDate(date){
     return moment(date).fromNow();
   }
   return '';
+}
+
+export function findUpcomingDateForCollectionClosure(month, day) {
+  const formatter = getDateFormatter('uuuu-MM-dd');
+  let currentDate = LocalDate.now();
+  let defaultUpcomingDate = new LocalDate(currentDate.year(), month, day);
+  defaultUpcomingDate = defaultUpcomingDate.isBefore(currentDate) ? defaultUpcomingDate.plusYears(1) : defaultUpcomingDate;
+  return defaultUpcomingDate.atStartOfDay().format(formatter);
 }
