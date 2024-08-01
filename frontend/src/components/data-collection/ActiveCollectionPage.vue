@@ -78,7 +78,7 @@
 </template>
 
 <script>
-
+import {mapState} from 'pinia';
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
