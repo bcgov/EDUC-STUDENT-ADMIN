@@ -9,4 +9,4 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine AS caddy-sta
 
 EXPOSE 2015
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY --from=build-stage /frontend/dist /srv
+COPY --from=build-stage /dist /srv
