@@ -1,5 +1,5 @@
 'use strict';
-const TOPICS = ['CLOSE_COLLECTION_TOPIC'];
+const TOPICS = ['SDC_EVENTS_TOPIC'];
 const logger = require('../../components/logger');
 const CONSTANTS = require('../../util/constants');
 const NATS = require('../../messaging/message-pub-sub');
