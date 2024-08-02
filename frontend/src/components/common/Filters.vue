@@ -25,7 +25,7 @@
           cols="6"
           class="ml-2"
         >
-          <v-row>
+          <v-row v-if="showStudentSearch">
             <v-text-field
               id="searchInput"
               v-model="penLocalIdNameFilter"
@@ -208,7 +208,12 @@ export default {
       type: Object,
       required: false,
       default: null
-    }
+    },
+    showStudentSearch: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
   emits: ['clearFilters', 'apply-filters', 'close'],
   data() {
