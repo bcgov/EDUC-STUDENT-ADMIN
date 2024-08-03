@@ -202,7 +202,7 @@ export default defineComponent({
     });
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
     this.getSdcDistrictCollectionMonitoring();
-    if(this.collectionObject.collectionStatusCode !== 'PROVDUPES' ) {
+    if(this.collectionObject.collectionStatusCode === 'INPROGRESS' ) {
       this.getProvincialDuplicateCounts();
     }
   },

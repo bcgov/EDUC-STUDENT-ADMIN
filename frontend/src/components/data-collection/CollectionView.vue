@@ -15,7 +15,7 @@
       class="mt-1 d-flex justify-start"
     >
       <v-col>
-        <h4>{{ activeCollectionType }} {{ activeCollectionYear }}</h4>
+        <h4>{{ collectionType }} {{ collectionYear }}</h4>
       </v-col>
     </v-row>
     <v-row
@@ -65,6 +65,7 @@
             Independent School Data Submissions
           </v-tab>
           <v-tab
+            v-if="isCollectionActive"
             :value="3"
           >
             PEN Fixes
@@ -75,6 +76,7 @@
             All Students
           </v-tab>
           <v-tab
+            v-if="isCollectionActive"
             :value="5"
           >
             Duplicates Posting and Collection Closure
@@ -86,7 +88,7 @@
             transition="false"
             reverse-transition="false"
           >
-            <DistrictMonitoring :collection-object="activeCollectionObject" />
+            <DistrictMonitoring :collection-object="collectionObject" />
           </v-window-item>
           <v-window-item
             :value="2"
@@ -94,16 +96,17 @@
             reverse-transition="false"
           >
             <IndySchoolMonitoring
-              :collection-object="activeCollectionObject"
+              :collection-object="collectionObject"
             />
           </v-window-item>
           <v-window-item
+            v-if="isCollectionActive"
             :value="3"
             transition="false"
             reverse-transition="false"
           >
             <PenMatch
-              :collection-object="activeCollectionObject"
+              :collection-object="collectionObject"
             />
           </v-window-item>
           <v-window-item
@@ -111,14 +114,15 @@
             transition="false"
             reverse-transition="false"
           >
-            <AllStudentsComponent :collection-object="activeCollectionObject" />
+            <AllStudentsComponent :collection-object="collectionObject" />
           </v-window-item>
           <v-window-item
+            v-if="isCollectionActive"
             :value="5"
             transition="false"
             reverse-transition="false"
           >
-            <DuplicatesPosting :collection-object="activeCollectionObject"/>
+            <DuplicatesPosting :collection-object="collectionObject"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -149,20 +153,27 @@ export default {
     IndySchoolMonitoring,
   },
   mixins: [alertMixin],
+  props: {
+    collectionID: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       registerNextEvent: false,
-      activeCollectionObject: {},
-      activeCollectionType: null,
-      activeCollectionYear: null,
+      collectionObject: {},
+      collectionType: null,
+      collectionYear: null,
+      isCollectionActive: false,
       isLoading: true,
       tab: ''
     };
   },
   async created() {
     await sdcCollectionStore().getCollectionTypeCodesMap();
-
-    await this.getActiveCollection().then(() => {
+    await this.getActiveCollection();
+    await this.getCollectionByID().then(() => {
       this.isLoading = !this.isLoading;
     });
     this.setTab();
@@ -175,15 +186,19 @@ export default {
       }
     },
     async getActiveCollection() {
+      ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`).then((response) => {
+        this.isCollectionActive = response.data.collectionID === this.collectionID;
+      });
+    },
+    async getCollectionByID() {
       if(this.activeCollection == null) {
-        const response = await ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`);
-        this.activeCollectionObject = response.data;
+        const response = await ApiService.apiAxios.get(`${Routes.sdc.COLLECTION}/` + this.collectionID);
+        this.collectionObject = response.data;
 
-        this.activeCollectionType = formatCollectionTypeCode(this.activeCollectionObject.collectionTypeCode);
-        this.activeCollectionYear = this.activeCollectionObject.snapshotDate.slice(0, 4);
+        this.collectionType = formatCollectionTypeCode(this.collectionObject.collectionTypeCode);
+        this.collectionYear = this.collectionObject.snapshotDate.slice(0, 4);
       }
     },
-
     next() {
       this.registerNextEvent = true;
     },
