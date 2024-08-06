@@ -111,13 +111,13 @@
         </v-col>
       </v-row>
 
-      <v-row class="justify-end pr-3">
+      <v-row class="justify-end pr-3"><!-- || isCloseCollectionButtonDisabled-->
         <v-btn
           id="closeCollection"
           color="primary"
           text="Post and Close Collection"
           class="ma-2"
-          :disabled="!validForm || isCloseCollectionButtonDisabled"
+          :disabled="!validForm"
           @click="closeCollection"
         />
       </v-row>
@@ -341,7 +341,7 @@ export default {
       ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/close-collection`, this.newCollection)
         .then(() => {
           this.setSuccessAlert('Your request to close the current collection is accepted.');
-          this.$router.push({name: 'sdc-collection'});  
+          this.$router.push({name: 'sdc-collection'});
         })
         .catch(error => {
           console.error(error);
