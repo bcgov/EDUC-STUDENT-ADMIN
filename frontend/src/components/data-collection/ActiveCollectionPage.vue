@@ -76,10 +76,10 @@
     </v-row>
     <v-divider class="py-6 mt-6" />
     <v-row>
-      <v-icon icon="mdi-history" />
-      <h3 class="pl-2">
+      <v-icon icon="mdi-history pt-3" />
+      <h2 class="pl-2">
         Collection History
-      </h3>
+      </h2>
     </v-row>
     <v-row>
       <v-col>
@@ -255,9 +255,11 @@ export default {
 </script>
 
 <style scoped>
+:deep(.v-data-table-footer__items-per-page) {
+  display: none;
+}
+
 .containerSetup {
-  padding-right: 0 !important;
-  padding-left: 0 !important;
   width: 100%;
 }
 
