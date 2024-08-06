@@ -6,6 +6,7 @@ const utils = require('../utils');
 const cacheService = require('../cache-service');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
 const {createMoreFiltersSearchCriteria} = require('../studentFilters');
+const {LocalDate} = require('@js-joda/core');
 
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
@@ -614,12 +615,68 @@ async function closeCollection(req, res) {
       newCollectionSignOffDueDate: incomingBody.signoffDueDate,
       createUser: utils.getUser(req).idir_username,
       updateUser: utils.getUser(req).idir_username
-    }
+    };
 
     const data = await postData(`${config.get('sdc:collectionURL')}/close-collection`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'Error closing collection');
+    return errorResponse(res);
+  }
+}
+
+async function getCollectionPaginated(req, res) {
+  try {
+    const search = [];
+
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: [{ key: 'collectionStatusCode', value: 'COMPLETED', operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING }]
+    });
+
+    if(req.query.searchParams?.['collectionType']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: [{ key: 'collectionTypeCode', value: req.query.searchParams?.['collectionType'], operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING }]
+      });
+    }
+
+    if(req.query.searchParams?.['year']) {
+      const yearStart = LocalDate.of(req.query.searchParams?.['year'], 1, 1);
+      const yearEnd = LocalDate.of(req.query.searchParams?.['year'], 12, 31);
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: [{ key: 'submissionDueDate', value: `${yearStart},${yearEnd}`, operation: FILTER_OPERATION.BETWEEN, valueType: VALUE_TYPE.DATE }]
+      });
+    }
+
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      }
+    };
+
+    let data = await getData(`${config.get('sdc:collectionURL')}/paginated`, params);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e?.status === 404) {
+      res.status(HttpStatus.OK).json(null);
+    } else {
+      logApiError(e, 'Error getting collection paginated list');
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCollectionByID(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'getCollectionByID', 'Error getting collection');
     return errorResponse(res);
   }
 }
@@ -643,5 +700,7 @@ module.exports = {
   resolveRemainingDuplicates,
   getInFlightDistrictProvincialDuplicates,
   getInFlightSchoolProvincialDuplicates,
-  closeCollection
+  closeCollection,
+  getCollectionPaginated,
+  getCollectionByID
 };

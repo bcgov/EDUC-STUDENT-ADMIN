@@ -31,7 +31,8 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
     supportBlocksValidNumbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
     selectedIDs: [],
     page: 0,
-    collectionTypeCodesMap: new Map()
+    collectionTypeCodesMap: new Map(),
+    collectionTypeCodes: []
   }),
   actions: {
     setDistrictCollectionStatusCodes(districtCollectionStatusCodes){
@@ -143,6 +144,7 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
       });
     },
     async setCollectionTypeCodes(collectionTypes) {
+      this.collectionTypeCodes = collectionTypes;
       this.collectionTypeCodesMap = new Map();
       collectionTypes.forEach(element => {
         this.collectionTypeCodesMap.set(element.collectionTypeCode, element);

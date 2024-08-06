@@ -180,7 +180,9 @@ let object = {
   sdc: {
     BASE_URL: sdcRoot,
     SDC_SCHOOL_COLLECTION: sdcRoot + '/sdcSchoolCollection',
+    COLLECTION: sdcRoot + '/collection',
     ACTIVE_COLLECTION: sdcRoot + '/collection/active',
+    COLLECTION_PAGINATED: sdcRoot + '/collection/paginated',
     FUNDING_DATA_SNAPSHOT_URL: sdcRoot + '/funding-groups-snapshot',
     COLLECTION_TYPE_CODES_URL: sdcRoot + '/collection-type-codes',
     SDC_DISTRICT_COLLECTION: sdcRoot + '/sdcDistrictCollection',

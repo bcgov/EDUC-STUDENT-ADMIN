@@ -460,7 +460,7 @@ export default defineComponent({
     });
     this.schoolCollectionStatusCodes = await sdcCollectionStore().getSchoolCollectionStatusCodeMap();
     this.getSdcSchoolCollections();
-    if(this.collectionObject.collectionStatusCode !== 'PROVDUPES' ) {
+    if(this.collectionObject.collectionStatusCode === 'INPROGRESS' ) {
       this.getProvincialDuplicateCounts();
     }
   },
