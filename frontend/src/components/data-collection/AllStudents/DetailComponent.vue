@@ -197,10 +197,12 @@ export default {
     },
     applyFilters($event) {
       this.filterSearchParams.moreFilters = cloneDeep($event);
+      this.pageNumber = 1;
       this.loadStudents();
     },
     clearFilters() {
       this.filterSearchParams.moreFilters = {};
+      this.pageNumber = 1;
       this.loadStudents();
     },
     loadStudents() {
