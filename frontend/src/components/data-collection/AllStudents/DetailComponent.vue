@@ -9,7 +9,14 @@
           <span
             id="studentsFound"
             class="bold"
-          >Students Found:  {{ totalElements }}
+          >
+            Students Found:  {{ totalElements }}
+          </span>
+          <span
+            id="currentPage"
+            class="bold"
+          >
+            Page:  {{ pageNumber }}
           </span>
           <router-link
             v-if="showExportBtn"
