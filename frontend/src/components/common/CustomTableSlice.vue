@@ -152,14 +152,14 @@
         <div class="pagination-controls">
           <v-btn
             icon
-            :disabled="!canLoadPrevious"
+            :disabled="!canLoadPrevious || isLoading"
             @click="$emit('loadPrevious')"
           >
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
           <v-btn
             icon
-            :disabled="!canLoadNext"
+            :disabled="!canLoadNext || isLoading"
             @click="$emit('loadNext')"
           >
             <v-icon>mdi-chevron-right</v-icon>
