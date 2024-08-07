@@ -413,15 +413,15 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORT
   -d "[$reportsSdcPublicSchoolsPermissionJson]"
 
 echo
-echo Creating REPORTS_SDC_HEADCOUNTS_PERMISSION role
+echo Creating REPORTS_SDC_HEADCOUNTS role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"REPORTS_SDC_HEADCOUNTS_PERMISSION\",\"description\" : \"Allows access to sdc headcount reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+  -d "{\"name\" : \"REPORTS_SDC_HEADCOUNTS\",\"description\" : \"Allows access to sdc headcount reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Assigning permissions to REPORTS_SDC_HEADCOUNTS_PERMISSION role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_HEADCOUNTS_PERMISSION/composites" \
+echo Assigning permissions to REPORTS_SDC_HEADCOUNTS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_HEADCOUNTS/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "[$reportsSdcHeadcountsPermissionJson]"
