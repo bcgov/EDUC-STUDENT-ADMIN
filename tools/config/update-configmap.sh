@@ -228,6 +228,45 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"EDIT_STUDENT_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to edit Student Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION\",\"description\" : \"Permission to view independent schools SDC reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION\",\"description\" : \"Permission to view public schools SDC reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating REPORTS_SDC_HEADCOUNTS_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_HEADCOUNTS_PERMISSION\",\"description\" : \"Permission to view headcount SDC reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION permission
+reportsSdcIndependentSchoolsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION permission
+reportsSdcPublicSchoolsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving REPORTS_SDC_HEADCOUNTS_PERMISSION permission
+reportsSdcHeadcountsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_HEADCOUNTS_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
 echo Retrieving MANAGE_EDX_SCHOOL_USERS_PERMISSION permission
 manageSchoolUsersPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_EDX_SCHOOL_USERS_PERMISSION" \
   -H "Content-Type: application/json" \
@@ -344,6 +383,48 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/SECURE
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "[$manageExchangePENInboxPermissionJson]"
+
+echo
+echo Creating REPORTS_SDC_INDEPENDENT_SCHOOLS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_INDEPENDENT_SCHOOLS\",\"description\" : \"Allows access to sdc independent schools reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to REPORTS_SDC_INDEPENDENT_SCHOOLS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_INDEPENDENT_SCHOOLS/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$reportsSdcIndependentSchoolsPermissionJson]"
+
+echo
+echo Creating REPORTS_SDC_PUBLIC_SCHOOLS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_PUBLIC_SCHOOLS\",\"description\" : \"Allows access to sdc public schools reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to REPORTS_SDC_PUBLIC_SCHOOLS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_PUBLIC_SCHOOLS/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$reportsSdcPublicSchoolsPermissionJson]"
+
+echo
+echo Creating REPORTS_SDC_HEADCOUNTS_PERMISSION role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"REPORTS_SDC_HEADCOUNTS_PERMISSION\",\"description\" : \"Allows access to sdc headcount reports\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to REPORTS_SDC_HEADCOUNTS_PERMISSION role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_HEADCOUNTS_PERMISSION/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$reportsSdcHeadcountsPermissionJson]"
 
 echo
 echo Creating EDX_ADMIN role
