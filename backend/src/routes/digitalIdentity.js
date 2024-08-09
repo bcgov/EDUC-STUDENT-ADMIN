@@ -7,7 +7,7 @@ const utils = require('../components/utils');
 const permUtils = require('../components/permissionUtils');
 const extendSession = utils.extendSession();
 
-router.get('/list', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchUserToken, extendSession, permUtils.isValidUUIDParam('studentID'), getDigitalIdentityByStudentID);
+router.get('/list', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchUserToken, extendSession, permUtils.isValidUUIDQueryParam('studentID'), getDigitalIdentityByStudentID);
 
 router.put('/:digitalID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchUserToken, extendSession, permUtils.isValidUUIDParam('digitalID'), unlinkDigitalIdentity);
 
