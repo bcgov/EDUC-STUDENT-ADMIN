@@ -8,6 +8,7 @@ const perm = require('../util/Permission');
 const cacheService = require('./cache-service');
 const _ = require('lodash');
 const auth = require('./auth');
+const {v4: validate } = require('uuid');
 
 function checkUserHasPermission(permission) {
   return function(req, res, next) {
@@ -341,8 +342,42 @@ function isAuthorized(req) {
   }
 }
 
+function isValidUUIDParam(paramName) {
+  return function(req, res, next) {
+    if (!req.params[paramName]) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'No request parameter was provided.'
+      });
+    }
+
+    if (!validate(req.params[paramName])) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Not a valid UUID provided for request parameter.'
+      });
+    }
+    return next();
+  };
+}
+
+function isValidUUIDQueryParam(paramName) {
+  return function(req, res, next) {
+    if (!req.query[paramName]) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'No query parameter was provided.'
+      });
+    }
+    if (!validate(req.query[paramName])) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Not a valid UUID provided for query parameter.'
+      });
+    }
+    return next();
+  };
+}
 
 const permUtils = {
+  isValidUUIDParam,
+  isValidUUIDQueryParam,
   checkUserHasPermission,
   hasPermissionToUpdateAuthority,
   hasPermissionToAddSchool,

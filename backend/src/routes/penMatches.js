@@ -5,6 +5,7 @@ const roles = require('../components/roles');
 const auth = require('../components/auth');
 const { getPenMatch ,getPossibleMatchesByStudentID, deletePossibleMatchesByStudentIDAndMatchedStudentID, savePossibleMatchesForStudent, deletePossibleMatches} = require('../components/penMatches');
 const utils = require('../components/utils');
+const permUtils = require('../components/permissionUtils');
 const extendSession = utils.extendSession();
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('PenRequestBatch & StudentSearch', [...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
@@ -18,11 +19,11 @@ router.post('/possible-match/bulk-delete', passport.authenticate('jwt', {session
 
 router.get('/possible-match-reason-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession,  utils.cacheMiddleware(), utils.getCodes('server:penMatch:matchReasonCodes', 'PossibleMatchReasonCodes'));
 
-router.get('/possible-match/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession,  getPossibleMatchesByStudentID);
+router.get('/possible-match/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, permUtils.isValidUUIDParam('studentID'), getPossibleMatchesByStudentID);
 
 router.post('/possible-match/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession,  savePossibleMatchesForStudent);
 
-router.delete('/possible-match/:studentID/:matchedStudentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession,  deletePossibleMatchesByStudentIDAndMatchedStudentID);
+router.delete('/possible-match/:studentID/:matchedStudentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, permUtils.isValidUUIDParam('studentID'), permUtils.isValidUUIDParam('matchedStudentID'), deletePossibleMatchesByStudentIDAndMatchedStudentID);
 
 
 

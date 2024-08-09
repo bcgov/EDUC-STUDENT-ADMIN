@@ -5,20 +5,21 @@ const router = express.Router();
 const {getCachedDistrictByDistrictId, getCachedDistricts, getCachedSchools, getCachedSchoolBySchoolID, getCachedAuthorities, getCachedAuthorityByAuthorityID,getCachedSchoolCategoryFacilityTypes,getCachedInstituteData} = require('../components/institute/institute');
 const utils = require('../components/utils');
 const constants = require('../util/constants');
+const permUtils = require("../components/permissionUtils");
 
 const extendSession = utils.extendSession();
 
-router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistrictByDistrictId);
+router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, permUtils.isValidUUIDParam('districtId'), extendSession, getCachedDistrictByDistrictId);
 
 router.get('/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistricts);
 
 router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchools);
 
-router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchoolBySchoolID);
+router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, permUtils.isValidUUIDParam('schoolID'), getCachedSchoolBySchoolID);
 
 router.get('/authority', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorities);
 
-router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorityByAuthorityID);
+router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, permUtils.isValidUUIDParam('authorityID'), getCachedAuthorityByAuthorityID);
 
 router.get('/school-category-facility-type', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchoolCategoryFacilityTypes);
 

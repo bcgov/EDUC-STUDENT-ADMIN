@@ -13,7 +13,7 @@ const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & GMP & PenRequestBatch 
 
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToGetMacros(hasMacroRoles), utils.forwardGet('getMacros', 'server:macro:penMacroURL', null, addSagaStatus));
 
-router.post('/:macroId/updateMacro', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, updateMacroByMacroId);
+router.post('/:macroId/updateMacro', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, permUtils.isValidUUIDParam('macroId'),  updateMacroByMacroId);
 
 router.post('/createMacro', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, createMacro);
 

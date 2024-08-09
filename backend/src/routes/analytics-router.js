@@ -9,7 +9,7 @@ const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 
 router.get('/gmp/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGUMPAnalyticsUserToken, extendSession, getGMPStatsByStatsType);
-router.get('/ump/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGUMPAnalyticsUserToken, extendSession,   getUMPStatsByStatsType);
+router.get('/ump/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGUMPAnalyticsUserToken, extendSession, getUMPStatsByStatsType);
 router.get('/new-pen', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAnalyticsUserToken, extendSession,   getNewPenStats);
 router.get('/merges', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAnalyticsUserToken, extendSession,   getMergeStats);
 module.exports = router;

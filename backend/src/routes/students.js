@@ -32,12 +32,12 @@ router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefin
 router.get('/document-type-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:docTypeCodesURL', 'studentDocTypeCodes'));
 router.get('/historyActivityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:historyActivityCodesURL', 'studentHistoryActivityCodes'));
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), isValidUITokenWithSearchRoles, extendSession, searchStudent);
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToGetStudentByPEN(isValidUiTokenWithSimpleSearchRoles), extendSession, getStudentByPen);
-router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
-router.get('/demographics/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentDemographicsOnlyByStudentId);
-router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, permUtils.isValidUUIDParam('id'), extendSession, getStudentById);
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToGetStudentByPEN(isValidUiTokenWithSimpleSearchRoles), permUtils.isValidUUIDQueryParam('pen'), extendSession, getStudentByPen);
+router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, permUtils.isValidUUIDParam('id'), extendSession, getStudentByStudentId);
+router.get('/demographics/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, permUtils.isValidUUIDParam('id'), extendSession, getStudentDemographicsOnlyByStudentId);
+router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, permUtils.isValidUUIDParam('studentID'), extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, createNewStudent);
-router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, getStudentHistoryByStudentID);
+router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, permUtils.isValidUUIDParam('id'), extendSession, getStudentHistoryByStudentID);
 
 module.exports = router;
