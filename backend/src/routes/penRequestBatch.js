@@ -8,6 +8,7 @@ const extendSession = utils.extendSession();
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentIDs, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing, repostReports, findValidationIssuesByPrbStudentID,getPenRequestBatchSamePENStudentIDs } = require('../components/penRequestBatch');
+const permUtils = require('../components/permissionUtils');
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('PenRequestBatch & StudentSearch', [...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
 
@@ -48,16 +49,16 @@ router.get('/sourceMetadata', passport.authenticate('jwt', {session: false}, und
 /*
  * Get pen request batch students match results
  */
-router.get('/matchOutcome', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudentMatchOutcome);
+router.get('/matchOutcome', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, permUtils.isValidUUIDQueryParam('id'), permUtils.isValidUUIDQueryParam('studentId'), getPenRequestBatchStudentMatchOutcome);
 
 
 // Updates the info requested of student by studentId.
-router.put('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, updatePrbStudentInfoRequested);
+router.put('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, permUtils.isValidUUIDParam('id'), permUtils.isValidUUIDParam('studentId'), updatePrbStudentInfoRequested);
 
 /*
  * Get pen request batch student by id
  */
-router.get('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudentById);
+router.get('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, permUtils.isValidUUIDParam('id'), permUtils.isValidUUIDParam('studentId'), getPenRequestBatchStudentById);
 
 
 router.get('/studentStatusCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentStatusCodesURL', 'penRequestBatchStudentStatusCodes'));
@@ -81,7 +82,7 @@ router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', 
 /*
  * User Unmatch saga
  */
-router.post('/:id/students/:studentId/user-unmatch', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, userUnmatchSaga);
+router.post('/:id/students/:studentId/user-unmatch', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, permUtils.isValidUUIDParam('id'), permUtils.isValidUUIDParam('studentId'), userUnmatchSaga);
 
 router.post('/archiveFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, archiveFiles);
 
@@ -93,6 +94,6 @@ router.post('/unarchiveFiles', passport.authenticate('jwt', {session: false}, un
 router.post('/deleteFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, softDeleteFiles);
 router.post('/release-batch-files', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, releaseBatchFilesForFurtherProcessing);
 router.post('/repostReports', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, repostReports);
-router.get('/students/:id/validation-issues', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, findValidationIssuesByPrbStudentID);
+router.get('/students/:id/validation-issues', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, permUtils.isValidUUIDParam('id'), findValidationIssuesByPrbStudentID);
 router.get('/students/validation-issues', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, utils.forwardGet('getValidationIssuesByPrbStudentIDs', 'server:penRequestBatch:rootURL', '/pen-request-batch/students/validation-issues'));
 module.exports = router;

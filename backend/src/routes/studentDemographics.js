@@ -5,9 +5,10 @@ const auth = require('../components/auth');
 const {getStudentDemographicsById} = require('../components/requests');
 const utils = require('../components/utils');
 const roles = require('../components/roles');
+const permUtils = require('../components/permissionUtils');
 const extendSession = utils.extendSession();
 
 const hasGMPUMPAdminRoles = auth.isValidUiTokenWithRoles('GMP & UMP', [roles.Admin.GMP, roles.Admin.UMP]);
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), hasGMPUMPAdminRoles, extendSession, getStudentDemographicsById);
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), hasGMPUMPAdminRoles, extendSession, permUtils.isValidUUIDParam('id'), getStudentDemographicsById);
 
 module.exports = router;
