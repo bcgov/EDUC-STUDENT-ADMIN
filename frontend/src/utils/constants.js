@@ -383,6 +383,38 @@ export const PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELD
   }
 );
 
+export const SDC_REPORTS = Object.freeze(
+  {
+    publicReports: [
+      { 
+        label: 'All Students',
+        reportID: 'ALL_STUDENTS_REPORT'
+      },
+      {
+        label: 'Five Students',
+        reportID: 'FIVE_STUDENTS_REPORT'
+      }],
+    independentReports: [
+      {
+        label: 'All Students',
+        reportID: 'ALL_STUDENTS_REPORT'
+      },
+      {
+        label: 'Five Students',
+        reportID: 'FIVE_STUDENTS_REPORT'
+      },],
+    headcountReports: [
+      {
+        label: 'All Students',
+        reportID: 'ALL_STUDENTS_REPORT'
+      },
+      {
+        label: 'Five Students',
+        reportID: 'FIVE_STUDENTS_REPORT'
+      },]
+  }
+);
+
 export const NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER = Object.freeze(
   {
     givenNames: { name: STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, label: 'Legal Given'},

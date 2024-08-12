@@ -38,5 +38,5 @@ export const PERMISSION = Object.freeze(
 
 export function hasRequiredPermission(userInfo, permission){
   return (userInfo?.userRoles?.filter(perm => perm === permission).length > 0);
-};
+}
 
