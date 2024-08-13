@@ -67,7 +67,7 @@
             :headers="headers"
             hide-default-header
             hide-default-footer
-            disable-pagination
+            items-per-page="-1"
             item-key="studentID"
             item-value="studentID"
             :items="studentPossibleMatches"
