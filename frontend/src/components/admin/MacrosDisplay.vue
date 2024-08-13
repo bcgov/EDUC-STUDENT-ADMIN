@@ -187,32 +187,33 @@ export default {
       currentMacro: null,
       originalMacro: null,
       itemInProcess: null,
-    };
-  },
-  computed: {
-    ...mapState(notificationsStore, ['notification']),
-    items() {
-      return [
+      items: [
         {
           name: 'Get My PEN',
           children: [
             {
               id: 'gmp',
+              businessUseTypeCode: 'GMP',
               dbVal: 'MOREINFO',
               name: 'Request Info',
-              storeMutation: 'gmpRequestInfo'
+              storeMutation: 'gmpRequestInfo',
+              isSelected: false
             },
             {
               id: 'gmp',
+              businessUseTypeCode: 'GMP',
               dbVal: 'REJECT',
               name: 'Reject',
-              storeMutation: 'gmpReject'
+              storeMutation: 'gmpReject',
+              isSelected: false
             },
             {
               id: 'gmp',
+              businessUseTypeCode: 'GMP',
               dbVal: 'COMPLETE',
               name: 'Provide PEN',
-              storeMutation: 'gmpComplete'
+              storeMutation: 'gmpComplete',
+              isSelected: false
             }
           ],
           macros: this.gmpMacros
@@ -222,21 +223,27 @@ export default {
           children: [
             {
               id: 'ump',
+              businessUseTypeCode: 'UMP',
               dbVal: 'MOREINFO',
               name: 'Request Info',
-              storeMutation: 'umpRequestInfo'
+              storeMutation: 'umpRequestInfo',
+              isSelected: false
             },
             {
               id: 'ump',
+              businessUseTypeCode: 'UMP',
               dbVal: 'REJECT',
               name: 'Reject',
-              storeMutation: 'umpReject'
+              storeMutation: 'umpReject',
+              isSelected: false
             },
             {
               id: 'ump',
+              businessUseTypeCode: 'UMP',
               dbVal: 'COMPLETE',
               name: 'Send Updates',
-              storeMutation: 'umpComplete'
+              storeMutation: 'umpComplete',
+              isSelected: false
             }
           ],
           macros: this.umpMacros
@@ -246,15 +253,19 @@ export default {
           children: [
             {
               id: 'penReg',
+              businessUseTypeCode: 'PENREG',
               dbVal: 'MERGE',
               name: 'Merge',
-              storeMutation: 'merge'
+              storeMutation: 'merge',
+              isSelected: false
             },
             {
               id: 'penReg',
+              businessUseTypeCode: 'PENREG',
               dbVal: 'INFOREQ',
               name: 'Post Info',
-              storeMutation: 'batch'
+              storeMutation: 'batch',
+              isSelected: false
             }
           ],
           macros: this.penRegMacros
@@ -264,15 +275,20 @@ export default {
           children: [
             {
               id: 'edx',
+              businessUseTypeCode: 'EDX',
               dbVal: 'MESSAGE',
               name: 'Message',
-              storeMutation: 'edx'
+              storeMutation: 'edx',
+              isSelected: false
             }
           ],
           macros: this.edxMacros
         },
-      ];
-    },
+      ]
+    };
+  },
+  computed: {
+    ...mapState(notificationsStore, ['notification']),
     title() {
       let item;
       if (this.selected) {
@@ -332,12 +348,15 @@ export default {
       return ApiService.apiAxios
         .get(Routes.MACRO_URL, params)
         .then(response => {
-          if (response.data) {
+          if (response.data && response.data.length > 0) {
             const macros = _.groupBy(response.data, 'macroTypeCode');
             const selectedMacros = macros[item.dbVal];
             this.saveMacrosInStore(selectedMacros.storeMutation, deepCloneObject(selectedMacros));
             selectedMacros.forEach(macro => macro.editable = false);
             this.macros = selectedMacros;
+          } else {
+            //if there are no macros clear view
+            this.macros = [];
           }
         })
         .catch(error => {
@@ -472,10 +491,8 @@ export default {
     createMacro(macro) {
       this.processing = true;
 
-      if (this.macros.length > 0 && this.macros[0].macroTypeCode) {
-        macro.macroTypeCode = this.macros[0].macroTypeCode;
-        macro.businessUseTypeCode = this.macros[0].businessUseTypeCode;
-      }
+      macro.macroTypeCode = this.selected?.dbVal;
+      macro.businessUseTypeCode = this.selected?.businessUseTypeCode;
 
       return ApiService.apiAxios.post(`${Routes.MACRO_URL}/createMacro`, macro)
         .then((response) => {
