@@ -7,9 +7,10 @@
           class="found-align"
         >
           <span
-            id="studentsFound"
+            id="currentPage"
             class="bold"
-          >Students Found:  {{ totalElements }}
+          >
+            Page:  {{ pageNumber }}
           </span>
           <router-link
             v-if="showExportBtn"
@@ -54,15 +55,19 @@
 
       <v-row>
         <v-col cols="12">
-          <CustomTable
+          <CustomTableSlice
             :headers="config.tableHeaders"
             :data="studentList"
             :total-elements="totalElements"
             :is-loading="isLoading"
             :reset="resetFlag"
+            :can-load-next="canLoadNext"
+            :can-load-previous="canLoadPrevious"
             @reload="reload"
             @editSelectedRow="editStudent"
             @selections="selectedStudents = $event"
+            @loadNext="loadNext"
+            @loadPrevious="loadPrevious"
           />
         </v-col>
       </v-row>
@@ -104,7 +109,6 @@
 
 <script>
 import alertMixin from '../../../mixins/alertMixin';
-import CustomTable from '../../common/CustomTable.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {cloneDeep, isEmpty, omitBy} from 'lodash';
@@ -112,12 +116,13 @@ import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import ViewStudentDetailsComponent from './ViewStudentDetailsComponent.vue';
 import Filters from '../../common/Filters.vue';
 import {mapState} from 'pinia';
+import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 
 export default {
   name: 'DetailComponent',
   components: {
+    CustomTableSlice,
     Filters,
-    CustomTable,
     ViewStudentDetailsComponent
   },
   mixins: [alertMixin],
@@ -147,6 +152,8 @@ export default {
       studentList: [],
       isLoading: false,
       totalElements: 0,
+      canLoadNext: false,
+      canLoadPrevious: false,
       selectedStudents: [],
       filterSearchParams: {
         tabFilter: this.config.defaultFilter,
@@ -191,29 +198,47 @@ export default {
     },
     applyFilters($event) {
       this.filterSearchParams.moreFilters = cloneDeep($event);
+      this.pageNumber = 1;
       this.loadStudents();
     },
     clearFilters() {
       this.filterSearchParams.moreFilters = {};
+      this.pageNumber = 1;
       this.loadStudents();
     },
     loadStudents() {
       this.isLoading = true;
-      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated?tableFormat=true`, {
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,
           searchParams: omitBy(this.filterSearchParams, isEmpty),
+          sort: {
+            legalLastName: 'ASC'
+          },
         }
       }).then(response => {
         this.studentList = response.data.content;
-        this.totalElements = response.data.totalElements;
+        this.canLoadNext = response.data.last === false;
+        this.canLoadPrevious = response.data.first === false;
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while trying to retrieve students list. Please try again later.');
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    loadNext() {
+      if (this.canLoadNext) {
+        this.pageNumber += 1;
+        this.loadStudents();
+      }
+    },
+    loadPrevious() {
+      if (this.canLoadPrevious) {
+        this.pageNumber -= 1;
+        this.loadStudents();
+      }
     },
     toggleFilters() {
       this.showFilters= !this.showFilters;
