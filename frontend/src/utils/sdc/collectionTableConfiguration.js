@@ -536,7 +536,7 @@ export const BAND_FILTER = Object.freeze(
 
 export const SPED_FILTER = Object.freeze(
   {
-    heading: 'Special Education',
+    heading: 'Inclusive Education',
     id: 'sped',
     multiple: true,
     key: 'sped',
@@ -607,7 +607,7 @@ export const SPED_FILTER = Object.freeze(
 
 export const SPED_FUNDING_FILTER = Object.freeze(
   {
-    heading: 'Special Education Funding Eligibility',
+    heading: 'Inclusive Education Funding Eligibility',
     id: 'spedFunding',
     multiple: false,
     key: 'spedFunding',
@@ -776,7 +776,7 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInELL' } },
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
-      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
       { title: 'FTE', key: 'fte' },
     ],
     allowableTableHeaders: [
@@ -790,7 +790,7 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInELL' } },
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
-      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
       { title: 'FTE', key: 'fte' },
     ],
     resolvedTableHeaders: [
@@ -804,7 +804,7 @@ export const PROVINCIAL_DUPLICATES = Object.freeze(
       { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInELL' } },
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
-      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
       { title: 'FTE', key: 'fte' },
     ],
   }
@@ -853,7 +853,7 @@ export const FTE = Object.freeze(
       { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInELL' } },
       { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
       { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
-      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Special Education Category', key: 'mappedSpedCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
     ],
     summaryReport: [
       { title: 'Eligible Enrolment & Eligible FTE', endpoint:'enrollment'},
@@ -926,7 +926,7 @@ export const FTE = Object.freeze(
         filterOptions: [
           ...SPED_FILTER.filterOptions,
           {
-            title: 'No Special Education Category',
+            title: 'No Inclusive Education Category',
             id: 'noSpedCategory',
             value: 'noSpedCode'
           }
