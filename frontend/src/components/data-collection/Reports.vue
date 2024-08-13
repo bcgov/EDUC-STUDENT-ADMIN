@@ -1,6 +1,5 @@
 <template>
   <v-container
-    id="enrollmentTab"
     fluid
   >
     <v-row class="mt-3 mb-3">
