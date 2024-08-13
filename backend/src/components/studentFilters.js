@@ -346,7 +346,7 @@ function validateSpedCodes(filters = []) {
   const activeSpedCodes = cacheService.getActiveSpecialEducationCodes();
   if (filters.length > 0) {
     if (filters.every(value => activeSpedCodes.includes(code => value === code.specialEducationCategoryCode))) {
-      log.error('Invalid special education filter.');
+      log.error('Invalid inclusive education filter.');
       throw new Error('400');
     }
   }

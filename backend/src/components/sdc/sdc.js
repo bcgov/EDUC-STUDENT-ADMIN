@@ -427,6 +427,16 @@ function createLocalIdPenSearchCriteria(value) {
   return searchCriteriaList;
 }
 
+async function getSDCSchoolCollectionDetail(req, res) {
+  try {
+    let sdcSchoolCollectionData = await getData(`${config.get('sdc:schoolCollectionURL')}/${req.params.sdcSchoolCollectionID}`);
+    return res.status(HttpStatus.OK).json(sdcSchoolCollectionData);
+  } catch (e) {
+    logApiError(e, 'Error getting sdc school collection detail');
+    return errorResponse(res);
+  }
+}
+
 async function getSDCSchoolCollectionStudentDetail(req, res) {
   try {
     let sdcSchoolCollectionStudentData = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/${req.params.sdcSchoolCollectionStudentID}`);
@@ -775,6 +785,7 @@ module.exports = {
   getIndySdcSchoolCollectionMonitoringByCollectionId,
   unsubmitSdcDistrictCollection,
   unsubmitSdcSchoolCollection,
+  getSDCSchoolCollectionDetail,
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
   getInDistrictDuplicates,

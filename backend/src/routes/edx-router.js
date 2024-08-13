@@ -55,8 +55,8 @@ router.get('/valid-districts-for-messaging', passport.authenticate('jwt', {sessi
 //school-district user access routes
 router.get('/users/roles', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.forwardGet('getUserRoles', 'server:edx:rootURL', '/users/roles'));
 
-router.get('/users/school/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, getEdxSchoolUsers);
-router.get('/users/district/:districtID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, getEdxDistrictUsers);
+router.get('/users/school/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('schoolID'), getEdxSchoolUsers);
+router.get('/users/district/:districtID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('districtID'), getEdxDistrictUsers);
 
 router.post('/users/roles/school', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, updateEdxUserSchoolRoles);
 router.post('/users/roles/district', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, updateEdxUserDistrictRoles);
@@ -67,11 +67,11 @@ router.post('/users/remove/district', passport.authenticate('jwt', {session: fal
 router.post('/users/relink/school', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, relinkUserSchoolAccess);
 router.post('/users/relink/district', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, relinkUserDistrictAccess);
 
-router.get('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, findSchoolPrimaryEdxActivationCode);
-router.get('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, findDistrictPrimaryEdxActivationCode);
+router.get('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), findSchoolPrimaryEdxActivationCode);
+router.get('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), findDistrictPrimaryEdxActivationCode);
 
-router.post('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, generateOrRegeneratePrimaryEdxActivationSchoolCode);
-router.post('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, generateOrRegeneratePrimaryEdxActivationDistrictCode);
+router.post('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), generateOrRegeneratePrimaryEdxActivationSchoolCode);
+router.post('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), generateOrRegeneratePrimaryEdxActivationDistrictCode);
 
 router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), schoolUserActivationInvite);
 router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), districtUserActivationInvite);
@@ -84,25 +84,25 @@ router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined
 router.get('/exchange/stats/:teamRole', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, getExchangeStats);
 
 router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, claimAllExchanges);
-router.post('/exchange/:secureExchangeID/students', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, createSecureExchangeStudent);
+router.post('/exchange/:secureExchangeID/students', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), createSecureExchangeStudent);
 
 router.post('/exchange/claimOne', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, claimExchange);
 
 router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatusesURL', 'exchangeStatuses'));
 router.get('/exchange/file-requirements', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, utils.cacheMiddleware(), utils.getCodes('server:edx:fileRequirementsURL', 'fileRequirements'));
-router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, markAs);
-router.put('/exchange/:secureExchangeID/markExchangeStatusAs/:status', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, markExchangeStatusAs);
+router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), markAs);
+router.put('/exchange/:secureExchangeID/markExchangeStatusAs/:status', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), markExchangeStatusAs);
 
-router.put('/exchange/:secureExchangeID/removeDoc/:documentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, removeDocumentFromExchange);
-router.put('/exchange/:secureExchangeID/removeStudent/:studentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, removeSecureExchangeStudent);
-router.put('/exchange/:secureExchangeID/removeNote/:noteID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, removeSecureExchangeNote);
+router.put('/exchange/:secureExchangeID/removeDoc/:documentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), permUtils.isValidUUIDParam('documentID'), removeDocumentFromExchange);
+router.put('/exchange/:secureExchangeID/removeStudent/:studentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), permUtils.isValidUUIDParam('studentID'), removeSecureExchangeStudent);
+router.put('/exchange/:secureExchangeID/removeNote/:noteID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), permUtils.isValidUUIDParam('noteID'), removeSecureExchangeNote);
 
-router.get('/exchange/:secureExchangeID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, getExchange);
+router.get('/exchange/:secureExchangeID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), getExchange);
 router.post('/exchange/:secureExchangeID/comments', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION),extendSession, createSecureExchangeComment);
-router.post('/exchange/:secureExchangeID/notes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION),extendSession, createSecureExchangeNote);
+router.post('/exchange/:secureExchangeID/notes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION),extendSession, permUtils.isValidUUIDParam('secureExchangeID'), createSecureExchangeNote);
 router.post('/exchange', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, createExchange);
-router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, uploadDocumentToExchange);
-router.get('/exchange/:secureExchangeID/documents/:documentId', permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), getExchangeDocumentById());
+router.post('/exchange/:secureExchangeID/documents', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), extendSession, permUtils.isValidUUIDParam('secureExchangeID'), uploadDocumentToExchange);
+router.get('/exchange/:secureExchangeID/documents/:documentId', permUtils.checkUserHasPermission(PERMISSION.MANAGE_EXCHANGE_PEN_INBOX_PERMISSION), permUtils.isValidUUIDParam('secureExchangeID'), permUtils.isValidUUIDParam('documentId'), getExchangeDocumentById());
 router.post('/exchange/onboarding-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION),extendSession, uploadOnboardingFile);
 
 // Create School Saga

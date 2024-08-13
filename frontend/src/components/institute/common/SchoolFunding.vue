@@ -304,7 +304,7 @@ export default {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_INDEPENDENT_SCHOOL_PERMISSION);
     },
     getHistoricalCollectionsForSchool() {
-      ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION}/${this.schoolID}`)
+      ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION}/search/${this.schoolID}`)
         .then(response => {
           this.pastCollections = response.data;
           this.pastCollections.forEach(collection => {

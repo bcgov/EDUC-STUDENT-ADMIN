@@ -9,40 +9,43 @@
     id="duplicatesPosting"
     fluid
   >
-  <v-row v-if="collectionObject?.collectionTypeCode !== 'JULY'" class="mb-5 mt-3 pb-3 pt-3 border">
-    <v-col>
-      <h4>Province Duplicates Posting</h4>
-      <br>
-      <p v-if="isPostProvincialDuplicatesButtonDisabled">
-        The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.
-      </p>
-      <br>
-      <v-row>
-        <v-btn
-          id="postProvincialDuplicatesButton"
-          color="primary"
-          text="Post Province Duplicates"
-          class="ma-2"
-          :disabled="isPostProvincialDuplicatesButtonDisabled"
-          @click="postProvincialDuplicates"
-        />
-        <v-btn
-          id="resolveRemainingDuplicatesButton"
-          color="primary"
-          text="Resolve Remaining Duplicates"
-          class="ma-2"
-          :disabled="isResolveRemainingDuplicatesButtonDisabled"
-          @click="resolveRemainingDuplicates"
-        />
-      </v-row>
-    </v-col>
-  </v-row>
+    <v-row
+      v-if="collectionObject?.collectionTypeCode !== 'JULY'"
+      class="mb-5 mt-3 pb-3 pt-3 border"
+    >
+      <v-col>
+        <h4>Province Duplicates Posting</h4>
+        <br>
+        <p v-if="isPostProvincialDuplicatesButtonDisabled">
+          The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.
+        </p>
+        <br>
+        <v-row>
+          <v-btn
+            id="postProvincialDuplicatesButton"
+            color="primary"
+            text="Post Province Duplicates"
+            class="ma-2"
+            :disabled="isPostProvincialDuplicatesButtonDisabled"
+            @click="postProvincialDuplicates"
+          />
+          <v-btn
+            id="resolveRemainingDuplicatesButton"
+            color="primary"
+            text="Resolve Remaining Duplicates"
+            class="ma-2"
+            :disabled="isResolveRemainingDuplicatesButtonDisabled"
+            @click="resolveRemainingDuplicates"
+          />
+        </v-row>
+      </v-col>
+    </v-row>
 
     <v-form
-        ref="closeForm"
-        v-model="validForm"
+      ref="closeForm"
+      v-model="validForm"
     >
-    <h4>Collection Closure</h4>
+      <h4>Collection Closure</h4>
       <v-row>
         <v-col class="mb-3 d-flex">
           <span>The next collection will open when the current collection is closed. Please confirm the information for the next collection.</span>
@@ -50,68 +53,71 @@
       </v-row>
       <v-row>
         <v-col cols="6">
-          <h3 class="subHeading">{{newCollection.collectionType}} {{newCollection.collectionYear}} Collection</h3>
+          <h3 class="subHeading">
+            {{ newCollection.collectionType }} {{ newCollection.collectionYear }} Collection
+          </h3>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
           <DatePicker
-              id="snapshotDateField"
-              v-model="newCollection.snapshotDate"
-              :model-value="newCollection.snapshotDate"
-              :disabled-week-days="[0, 6]"
-              label="Snapshot Date"
-              :rules="[rules.required()]"
-              model-type="yyyy-MM-dd"
-              @update:model-value="calculateSubmissionDate"
+            id="snapshotDateField"
+            v-model="newCollection.snapshotDate"
+            :model-value="newCollection.snapshotDate"
+            :disabled-week-days="[0, 6]"
+            label="Snapshot Date"
+            :rules="[rules.required()]"
+            model-type="yyyy-MM-dd"
+            @update:model-value="calculateSubmissionDate"
           />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
           <DatePicker
-              id="submissionDueDateField"
-              v-model="newCollection.submissionDueDate"
-              :model-value="newCollection.submissionDueDate"
-              :disabled-week-days="[0, 6]"
-              :min-date="newCollection.snapshotDate"
-              label="Submission Due Date"
-              :rules="[rules.required()]"
-              model-type="yyyy-MM-dd"
-              @update:model-value="calculateAdminDates"
+            id="submissionDueDateField"
+            v-model="newCollection.submissionDueDate"
+            :model-value="newCollection.submissionDueDate"
+            :disabled-week-days="[0, 6]"
+            :min-date="newCollection.snapshotDate"
+            label="Submission Due Date"
+            :rules="[rules.required()]"
+            model-type="yyyy-MM-dd"
+            @update:model-value="calculateAdminDates"
           />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
           <DatePicker
-              id="duplicateResolutionDateField"
-              v-model="newCollection.duplicationResolutionDueDate"
-              :model-value="newCollection.duplicationResolutionDueDate"
-              :disabled-week-days="[0, 6]"
-              :min-date="newCollection.submissionDueDate"
-              label="Duplicate Resolution Due Date"
-              :rules="[rules.required()]"
-              model-type="yyyy-MM-dd"
+            id="duplicateResolutionDateField"
+            v-model="newCollection.duplicationResolutionDueDate"
+            :model-value="newCollection.duplicationResolutionDueDate"
+            :disabled-week-days="[0, 6]"
+            :min-date="newCollection.submissionDueDate"
+            label="Duplicate Resolution Due Date"
+            :rules="[rules.required()]"
+            model-type="yyyy-MM-dd"
           />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
           <DatePicker
-              id="signoffDueDateField"
-              v-model="newCollection.signoffDueDate"
-              :model-value="newCollection.signoffDueDate"
-              :disabled-week-days="[0, 6]"
-              :min-date="newCollection.duplicationResolutionDueDate"
-              label="Sign-Off Due Date"
-              :rules="[rules.required()]"
-              model-type="yyyy-MM-dd"
+            id="signoffDueDateField"
+            v-model="newCollection.signoffDueDate"
+            :model-value="newCollection.signoffDueDate"
+            :disabled-week-days="[0, 6]"
+            :min-date="newCollection.duplicationResolutionDueDate"
+            label="Sign-Off Due Date"
+            :rules="[rules.required()]"
+            model-type="yyyy-MM-dd"
           />
         </v-col>
       </v-row>
 
-      <v-row class="justify-end pr-3"><!-- || isCloseCollectionButtonDisabled-->
+      <v-row class="justify-end pr-3">
+        <!-- || isCloseCollectionButtonDisabled-->
         <v-btn
           id="closeCollection"
           color="primary"
@@ -135,7 +141,7 @@
   </ConfirmationDialog>
   <ConfirmationDialog ref="confirmCloseCollection">
     <template #message>
-      <p>Are you sure that you would like to close the current collection and open {{newCollection.collectionType}} {{newCollection.collectionYear}} collection? This action cannot be undone.</p>
+      <p>Are you sure that you would like to close the current collection and open {{ newCollection.collectionType }} {{ newCollection.collectionYear }} collection? This action cannot be undone.</p>
     </template>
   </ConfirmationDialog>
 </template>
@@ -149,10 +155,10 @@ import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import Spinner from '../common/Spinner.vue';
 import {PEN_MATCHING} from '../../utils/sdc/collectionTableConfiguration';
 import {isEmpty, omitBy} from 'lodash';
-import {formatCollectionTypeCode} from "@/utils/format"
-import {findUpcomingDateForCollectionClosure} from "@/utils/dateHelpers.js"
-import DatePicker from "@/components/util/DatePicker.vue";
-import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from "@js-joda/core";
+import {formatCollectionTypeCode} from '@/utils/format';
+import {findUpcomingDateForCollectionClosure} from '@/utils/dateHelpers.js';
+import DatePicker from '@/components/util/DatePicker.vue';
+import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
 import {COLLECTION_TYPE_CODE_MAPPING} from '../../utils/sdc/collectionTypecode';
 import alertMixin from '@/mixins/alertMixin';
@@ -229,7 +235,7 @@ export default {
     });
     this.getProvincialDuplicates();
     sdcCollectionStore().getCollectionTypeCodesMap().finally(() => {
-        this.getActiveCollection()
+      this.getActiveCollection();
     });
   },
   methods: {
@@ -302,7 +308,9 @@ export default {
     async validateForm() {
       await this.$nextTick();
       const isValid = await this.$refs?.closeForm?.validate();
-      this.validForm = isValid.valid;
+      if(isValid){
+        this.validForm = isValid.valid;
+      }
     },
     getActiveCollection() {
       this.closingCollectionType = formatCollectionTypeCode(this.collectionObject?.collectionTypeCode);
@@ -332,7 +340,7 @@ export default {
 
       this.fireFormValidate();
     },
-   async closeCollection() {
+    async closeCollection() {
       const confirmation = await this.$refs.confirmCloseCollection.open('Close Collection.', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Confirm', rejectText: 'Cancel'});
       if (!confirmation) {
         return;
@@ -348,7 +356,7 @@ export default {
           if (error?.response?.status === 409) {
             this.setFailureAlert(error?.response?.data?.message || 'Another saga is in progress for this file, please try again later.');
           } else {
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while closing the collection. Please try again later.');
+            this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while closing the collection. Please try again later.');
           }
         })
         .finally(() => {
