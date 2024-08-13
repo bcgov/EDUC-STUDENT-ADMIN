@@ -90,7 +90,7 @@
                         :maxlength="9"
                         :rules="penRules"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -101,7 +101,7 @@
                         variant="underlined"
                         :maxlength="12"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -114,7 +114,7 @@
                         :rules="[rules.required()]"
                         model-type="yyyyMMdd"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -128,7 +128,7 @@
                         variant="underlined"
                         :rules="[rules.required()]"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -142,7 +142,7 @@
                         :rules="[rules.required()]"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -153,7 +153,7 @@
                         variant="underlined"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -166,7 +166,7 @@
                         variant="underlined"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -177,7 +177,7 @@
                         variant="underlined"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -190,7 +190,7 @@
                         variant="underlined"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -201,7 +201,7 @@
                         variant="underlined"
                         :maxlength="25"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -217,7 +217,7 @@
                         item-title="dropdownText"
                         :rules="[rules.required()]"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -230,7 +230,7 @@
                         item-value="schoolFundingCode"
                         item-title="dropdownText"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -244,7 +244,7 @@
                         variant="underlined"
                         density="compact"
                         autocomplete="off"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -255,7 +255,7 @@
                         variant="underlined"
                         :items="sdcCollection.otherCoursesValidNumbers"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -268,7 +268,7 @@
                         variant="underlined"
                         :items="sdcCollection.supportBlocksValidNumbers"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -281,7 +281,7 @@
                         item-value="specialEducationCategoryCode"
                         item-title="dropdownText"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -297,7 +297,7 @@
                         item-title="dropdownText"
                         density="compact"
                         :rules="[rules.required()]"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -310,7 +310,7 @@
                         item-value="bandCode"
                         item-title="dropdownText"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -325,7 +325,7 @@
                         item-value="homeLanguageSpokenCode"
                         item-title="dropdownText"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -336,7 +336,7 @@
                         variant="underlined"
                         :maxlength="6"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                   </v-row>
@@ -351,7 +351,7 @@
                         item-value="careerProgramCode"
                         item-title="dropdownText"
                         density="compact"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                       />
                     </v-col>
                     <v-col>
@@ -366,7 +366,7 @@
                         multiple
                         density="compact"
                         :rules="enrolledProgramRules"
-                        :disabled="isSchoolCollectionSubmitted()"
+                        :disabled="isSchoolCollectionSubmitted"
                         @update:model-value="syncWithEnrolledProgramCodeOnUserInput"
                       />
                     </v-col>
@@ -533,7 +533,7 @@
             text="Remove"
             variant="outlined"
             class="mr-1"
-            :disabled="isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
+            :disabled="isSchoolCollectionSubmitted || isDistrictCollectionSubmitted"
             @click="deleteStudent"
           />
           <v-btn
@@ -541,7 +541,7 @@
             color="#003366"
             text="Validate & Save"
             class="mr-1"
-            :disabled="!studentDetailsFormValid || isSchoolCollectionSubmitted() || isDistrictCollectionSubmitted()"
+            :disabled="!studentDetailsFormValid || isSchoolCollectionSubmitted || isDistrictCollectionSubmitted"
             @click="save"
           />
         </v-col>
@@ -622,14 +622,21 @@ export default {
       sdcSchoolCollectionStudentDetailCopy: {},
       loadingCount: 0,
       rules: Rules,
+      sdcSchoolCollection: null,
       studentDetailsFormValid:false,
       removeIndex: null,
       enrolledProgramRules: [v => checkEnrolledProgramLength(v) || 'Select a maximum of 8 Enrolled Programs'],
-      courseOptions: []
+      courseOptions: [],
+      completionStatuses: ['SUBMITTED','COMPLETED']
     };
   },
   computed: {
-
+    isSchoolCollectionSubmitted(){
+      return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcSchoolCollectionStatusCode);
+    },
+    isDistrictCollectionSubmitted(){
+      return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcDistrictCollectionStatusCode);
+    }
   },
   watch: {
     selectedStudents: {
@@ -674,19 +681,12 @@ export default {
     this.generateCourseOptions();
   },
   async created() {
-
   },
   methods: {
     generateCourseOptions() {
       for (let i = 0; i <= 30; i += 0.25) {
         this.courseOptions.push(i.toFixed(2).padStart(5, '0'));
       }
-    },
-    isSchoolCollectionSubmitted(){
-      return this.sdcCollection?.schoolCollection?.sdcSchoolCollectionStatusCode === 'SUBMITTED';
-    },
-    isDistrictCollectionSubmitted(){
-      return this.sdcCollection?.districtCollection?.sdcDistrictCollectionStatusCode === 'SUBMITTED';
     },
     next() {
       if(sdcCollectionStore().currentStepInCollectionProcess.isComplete) {
@@ -704,12 +704,30 @@ export default {
     isLoading(){
       return this.loadingCount > 0;
     },
+    getSdcSchoolCollection() {
+      this.loadingCount += 1;
+      ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION}/${this.sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionID}`)
+        .then(response => {
+          this.sdcSchoolCollection = response.data;
+        }).catch(error => {
+          console.error(error);
+          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
+        }).finally(() => {
+          this.removeIndex = null;
+          this.loadingCount -= 1;
+          if (!this.isLoading()) {
+            this.$nextTick().then(this.validateForm);
+          }
+          this.$emit('student-object', this.sdcSchoolCollectionStudentDetailCopy);
+        });
+    },
     getSdcSchoolCollectionStudentDetail(sdcSchoolCollectionStudentID) {
       this.loadingCount += 1;
       this.selectedSdcStudentID=sdcSchoolCollectionStudentID;
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${sdcSchoolCollectionStudentID}`)
         .then(response => {
           this.filterSdcSchoolCollectionStudentAndPopulateProperties(response.data);
+          this.getSdcSchoolCollection();
         }).catch(error => {
           console.error(error);
           setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get student detail counts. Please try again later.');
