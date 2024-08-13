@@ -67,7 +67,7 @@
             :headers="headers"
             hide-default-header
             hide-default-footer
-            disable-pagination
+            items-per-page="-1"
             item-key="studentID"
             item-value="studentID"
             :items="studentPossibleMatches"
@@ -186,8 +186,7 @@
                       <span
                         v-else
                         :class="['bottom-column-item', item.item.raw[header.bottomValue] && demogValuesMatch(header.bottomValue, item.item.raw[header.bottomValue])? 'font-weight-bold':'']"
-                      >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue] : ''
-                        }}</span>
+                      >{{ item.item.raw[header.bottomValue] !== item.item.raw[header.topValue] ? item.item.raw[header.bottomValue] : '' }}</span>
                     </span>
                   </div>
                 </td>
