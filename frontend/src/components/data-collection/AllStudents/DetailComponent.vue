@@ -7,12 +7,6 @@
           class="found-align"
         >
           <span
-            id="studentsFound"
-            class="bold"
-          >
-            Students Found:  {{ totalElements }}
-          </span>
-          <span
             id="currentPage"
             class="bold"
           >
