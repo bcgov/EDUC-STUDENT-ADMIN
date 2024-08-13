@@ -81,6 +81,11 @@
           >
             Duplicates Posting and Collection Closure
           </v-tab>
+          <v-tab
+            :value="6"
+          >
+            Reports
+          </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
@@ -124,6 +129,13 @@
           >
             <DuplicatesPosting :collection-object="collectionObject"/>
           </v-window-item>
+          <v-window-item
+            :value="6"
+            transition="false"
+            reverse-transition="false"
+          >
+            <Reports/>
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -141,10 +153,12 @@ import DistrictMonitoring from '@/components/data-collection/DistrictMonitoring.
 import Spinner from '@/components/common/Spinner.vue';
 import AllStudentsComponent from '@/components/data-collection/AllStudents/AllStudentsComponent.vue';
 import DuplicatesPosting from '@/components/data-collection/DuplicatesPosting.vue';
+import Reports from '@/components/data-collection/Reports.vue';
 
 export default {
   name: 'CollectionView',
   components: {
+    Reports,
     DuplicatesPosting,
     Spinner,
     DistrictMonitoring,
