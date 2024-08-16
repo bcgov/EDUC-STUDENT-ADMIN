@@ -192,6 +192,7 @@ nconf.defaults({
     rootURL: process.env.SDC_API_URL,
     schoolCollectionStudentURL: process.env.SDC_API_URL + '/sdcSchoolCollectionStudent',
     schoolCollectionURL: process.env.SDC_API_URL + '/sdcSchoolCollection',
+    ministrySDCReportsURL: process.env.SDC_API_URL + '/ministryHeadcounts',
     collectionURL: process.env.SDC_API_URL + '/collection',
     genderCodesURL: process.env.SDC_API_URL + '/gender-codes',
     bandCodesURL: process.env.SDC_API_URL + '/band-codes',

@@ -17,6 +17,7 @@ const edxRoot= baseRoot+'/edx';
 const instituteRoot = baseRoot + '/institute';
 const cacheRoot = baseRoot + '/cache';
 const sdcRoot = baseRoot + '/sdc';
+const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -27,6 +28,7 @@ let object = {
   USER: authRoot + '/user',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
   CONFIG: baseRoot + '/config',
+  SDC_MINISTRY_REPORTS: ministrySDCReportsRoot,
 
   digitalIdentity: {
     ROOT_ENDPOINT: digitalIDRoot,
@@ -387,31 +389,26 @@ export const SDC_REPORTS = Object.freeze(
   {
     publicReports: [
       { 
-        label: 'All Students',
-        reportID: 'ALL_STUDENTS_REPORT'
-      },
-      {
-        label: 'Five Students',
-        reportID: 'FIVE_STUDENTS_REPORT'
+        label: 'ABC',
+        url: '123'
       }],
     independentReports: [
       {
         label: 'All Students',
-        reportID: 'ALL_STUDENTS_REPORT'
+        reportID: 'ALL_STUDENTS_REPORT',
+        url: 'ABC'
       },
       {
         label: 'Five Students',
-        reportID: 'FIVE_STUDENTS_REPORT'
+        reportID: 'FIVE_STUDENTS_REPORT',
+        url: 'ABC'
       },],
     headcountReports: [
       {
-        label: 'All Students',
-        reportID: 'ALL_STUDENTS_REPORT'
-      },
-      {
-        label: 'Five Students',
-        reportID: 'FIVE_STUDENTS_REPORT'
-      },]
+        label: 'School Enrollment Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/'
+      }
+    ]
   }
 );
 
