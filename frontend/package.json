@@ -14,7 +14,7 @@
     "@js-joda/core": "^5.5.3",
     "@mdi/font": "^7.2.96",
     "@vuepic/vue-datepicker": "^7.0.0",
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "core-js": "^3.37.1",
