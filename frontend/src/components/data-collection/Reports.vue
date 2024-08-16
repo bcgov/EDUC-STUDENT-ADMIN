@@ -60,7 +60,7 @@
   
 <script>
 
-import {hasRequiredPermission} from '@/utils/constants/Permission';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import ReportSection from '@/components/data-collection/ReportSection.vue';
@@ -88,13 +88,13 @@ export default {
   },
   methods: {
     hasAccessToPublicReports(){
-      return hasRequiredPermission(this.userInfo, 'REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION');
+      return hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION);
     },
     hasAccessToIndependentReports(){
-      return hasRequiredPermission(this.userInfo, 'REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION');
+      return hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION);
     },
     hasAccessToHeadcountReports(){
-      return hasRequiredPermission(this.userInfo, 'REPORTS_SDC_HEADCOUNTS_PERMISSION');
+      return hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
     },
     showPublicReports() {
       this.reportView = 'publicReports';
