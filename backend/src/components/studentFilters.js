@@ -27,6 +27,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
   let courseRangeList = [];
   let penLocalIdNameFilter = [];
   let schoolNameNumberFilter = [];
+  let districtNameNumberFilter = [];
   for (const [key, filter] of Object.entries(searchFilter)) {
     let pValue = filter ? filter.map(filter => filter.value) : null;
     if (key === 'studentType' && pValue) {
@@ -127,6 +128,10 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     if (key === 'schoolNameNumber' && pValue) {
       let schoolNameNumberCriteria = createSchoolNameNumberSearchCriteria(pValue.toString());
       schoolNameNumberFilter = [...schoolNameNumberCriteria];
+    }
+    if (key === 'districtNameNumber' && pValue) {
+      let districtNameNumberCriteria = createDistrictNameNumberSearchCriteria(pValue.toString());
+      districtNameNumberFilter = [...districtNameNumberCriteria];
     }
   }
   const search = [];
@@ -266,6 +271,12 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     search.push({
       condition: CONDITION.AND,
       searchCriteriaList: schoolNameNumberFilter
+    });
+  }
+  if (districtNameNumberFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: districtNameNumberFilter
     });
   }
   return search;
@@ -710,6 +721,20 @@ function createSchoolNameNumberSearchCriteria(value) {
   });
 
   return searchSchoolCriteriaList;
+}
+
+function createDistrictNameNumberSearchCriteria(value) {
+  const searchDistrictCriteriaList = [];
+
+  searchDistrictCriteriaList.push({
+    key: 'sdcSchoolCollection.sdcDistrictCollection.districtID',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.UUID,
+    condition: CONDITION.AND
+  });
+
+  return searchDistrictCriteriaList;
 }
 
 module.exports = {

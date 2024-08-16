@@ -235,7 +235,7 @@
                 item-title="districtCodeName"
                 item-value="districtID"
                 autocomplete="off"
-                @update:model-value="console.log('todo')"
+                @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
               />
             </slot>
           </v-row>
@@ -458,6 +458,19 @@ export default {
       }
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
+    setDistrictNameNumberFilter(key, $event) {
+      if (this.penLocalIdNameFilter != null) {
+        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
+        else delete this.selected['penLocalIdNameFilter'];
+      }
+      if($event) {
+        this.selected[key] = [{title: 'DistrictNameOrNumber', value: $event}];
         this.apply();
       } else {
         delete this.selected[key];
