@@ -12,7 +12,7 @@
           :class="{ 'active-button': reportView === 'publicReports' }"
           @click="showPublicReports"
         >
-          Public School Reports
+          Public School
         </v-btn>
         <v-btn
           v-if="hasAccessToIndependentReports()"
@@ -22,7 +22,7 @@
           :class="{ 'active-button': reportView === 'independentReports' }"
           @click="showIndependentReports"
         >
-          Independent School Reports
+          Independent School
         </v-btn>
         <v-btn
           v-if="hasAccessToHeadcountReports()"
@@ -32,7 +32,7 @@
           :class="{ 'active-button': reportView === 'headcountReports' }"
           @click="showHeadcountReports"
         >
-          Headcount Reports
+          Headcount
         </v-btn>
       </v-btn-toggle>
     </v-row>
