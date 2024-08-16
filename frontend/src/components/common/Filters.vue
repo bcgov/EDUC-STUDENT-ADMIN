@@ -37,7 +37,7 @@
             large-icon
             icon="mdi-magnify"
             text="Search Name and ID"
-            @click-action="setPenLocalIdNameFilter('penLocalIdName', penLocalIdNameFilter)"
+            @click-action="setPenLocalIdNameFilter($event, 'click')"
           />
         </v-col>
       </v-row>
@@ -442,20 +442,29 @@ export default {
     close() {
       this.$emit('close');
     },
-    setPenLocalIdNameFilter(key, $event) {
-      if($event) {
-        this.selected[key] = [{title: 'PenOrLocalIdOrName', value: $event}];
-        this.apply();
-      } else {
-        delete this.selected[key];
+    setPenLocalIdNameFilter($event, val) {
+      const keys = [
+        'legalFirstName', 'legalMiddleNames', 'legalLastName',
+        'usualFirstName', 'usualMiddleNames', 'usualLastName',
+        'studentPen', 'assignedPen', 'localID'
+      ];
+
+      keys.forEach(key => {
+        if (this[key] != null) {
+          if (this[key].length > 0) {
+            this.selected[key] = [{ title: key, value: this[key] }];
+          } else {
+            delete this.selected[key];
+          }
+        }
+      });
+
+      if ($event && val === 'click') {
         this.apply();
       }
     },
     setSchoolNameNumberFilter(key, $event) {
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter($event, null);
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
         this.apply();
@@ -465,10 +474,7 @@ export default {
       }
     },
     setDistrictNameNumberFilter(key, $event) {
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter($event, null);
       if($event) {
         this.selected[key] = [{title: 'DistrictNameOrNumber', value: $event}];
         this.apply();
@@ -478,10 +484,7 @@ export default {
       }
     },
     setFilter(val, key) {
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter(null, null);
       if(val && !isEmpty(val)) {
         this.selected[key] = (Array.isArray(val) ? val : [val]);
         this.apply();
@@ -491,10 +494,7 @@ export default {
       }
     },
     setCourseRangeFilter(key, $event){
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter($event, null);
       if($event) {
         let courseFilterTitle;
         if($event[0] === this.courseRangeDefault[0]){
@@ -517,6 +517,15 @@ export default {
       this.courseRange = [...this.courseRangeDefault];
       this.penLocalIdNameFilter = null;
       this.schoolNameNumberFilter = null;
+      this.legalFirstName = null;
+      this.legalMiddleNames = null;
+      this.legalLastName = null;
+      this.usualFirstName = null;
+      this.usualMiddleNames = null;
+      this.usualLastName = null;
+      this.studentPen = null;
+      this.assignedPen = null;
+      this.localID = null;
       this.$emit('clearFilters');
     },
     apply() {

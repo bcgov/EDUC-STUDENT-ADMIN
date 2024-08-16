@@ -26,6 +26,8 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
   let fundingTypeList = [];
   let courseRangeList = [];
   let penLocalIdNameFilter = [];
+  let nameFilter = [];
+  let penLocalIdFilter = [];
   let schoolNameNumberFilter = [];
   let districtNameNumberFilter = [];
   for (const [key, filter] of Object.entries(searchFilter)) {
@@ -132,6 +134,21 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     if (key === 'districtNameNumber' && pValue) {
       let districtNameNumberCriteria = createDistrictNameNumberSearchCriteria(pValue.toString());
       districtNameNumberFilter = [...districtNameNumberCriteria];
+    }
+    const nameKeys = [
+      'legalFirstName', 'legalMiddleNames', 'legalLastName',
+      'usualFirstName', 'usualMiddleNames', 'usualLastName'
+    ];
+    if (nameKeys.includes(key) && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameCriteria];
+    }
+    const penKeys = [
+      'studentPen', 'assignedPen', 'localID'
+    ];
+    if (penKeys.includes(key) && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdCriteria];
     }
   }
   const search = [];
@@ -277,6 +294,18 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     search.push({
       condition: CONDITION.AND,
       searchCriteriaList: districtNameNumberFilter
+    });
+  }
+  if (nameFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: nameFilter
+    });
+  }
+  if (penLocalIdFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: penLocalIdFilter
     });
   }
   return search;
@@ -680,6 +709,30 @@ function createMultiFieldNameSearchCriteria(nameString) {
       });
     }
   }
+  return searchCriteriaList;
+}
+
+function createNameCriteria(key, nameString) {
+  const searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: key,
+    operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+    value: `%${nameString}%`,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
+  return searchCriteriaList;
+}
+
+function createPenLocalIdCriteria(key, idString) {
+  const searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: key,
+    operation: FILTER_OPERATION.EQUAL,
+    value: idString,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.OR
+  });
   return searchCriteriaList;
 }
 
