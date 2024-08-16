@@ -135,20 +135,41 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       let districtNameNumberCriteria = createDistrictNameNumberSearchCriteria(pValue.toString());
       districtNameNumberFilter = [...districtNameNumberCriteria];
     }
-    const nameKeys = [
-      'legalFirstName', 'legalMiddleNames', 'legalLastName',
-      'usualFirstName', 'usualMiddleNames', 'usualLastName'
-    ];
-    if (nameKeys.includes(key) && pValue) {
+    if (key === 'legalFirstName' && pValue) {
       let nameCriteria = createNameCriteria(key, pValue.toString());
-      nameFilter = [...nameCriteria];
+      nameFilter = [...nameFilter, ...nameCriteria];
     }
-    const penKeys = [
-      'studentPen', 'assignedPen', 'localID'
-    ];
-    if (penKeys.includes(key) && pValue) {
+    if (key === 'legalMiddleNames' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'legalLastName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualFirstName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualMiddleNames' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualLastName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'studentPen' && pValue) {
       let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
-      penLocalIdFilter = [...penLocalIdCriteria];
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
+    }
+    if (key === 'assignedPen' && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
+    }
+    if (key === 'localID' && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
     }
   }
   const search = [];
