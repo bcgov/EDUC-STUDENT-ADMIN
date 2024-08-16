@@ -537,6 +537,7 @@ export default {
       this.courseRange = [...this.courseRangeDefault];
       this.penLocalIdNameFilter = null;
       this.schoolNameNumberFilter = null;
+      this.districtNameNumberFilter = null;
       this.legalFirstName = null;
       this.legalMiddleNames = null;
       this.legalLastName = null;
