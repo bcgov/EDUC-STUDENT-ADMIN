@@ -16,6 +16,7 @@ export const appStore = defineStore('app', {
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
     notClosedSchools: [],
+    notClosedSchoolsMap: new Map(),
     activeSchools: [],
     activeDistricts: [],
     districtMap : new Map(),
@@ -65,12 +66,14 @@ export const appStore = defineStore('app', {
     async setMincodeSchoolNameAndDistrictCodes(mincodeSchoolNameList) {
       this.mincodeSchoolNames = new Map();
       this.schoolMap = new Map();
+      this.notClosedSchoolsMap = new Map();
       this.notClosedSchools = [];
       mincodeSchoolNameList.forEach(element => {
         this.mincodeSchoolNames.set(element.mincode, element.schoolName);
         this.schoolMap.set(element.schoolID, {...element});
         if(isSchoolActive(element)){
           this.notClosedSchools.push(element);
+          this.notClosedSchoolsMap.set(element.schoolID, element);
         }
         this.districtCodes.add(element.mincode?.substring(0, 3));
       });

@@ -8,7 +8,7 @@ const { getSnapshotFundingDataForSchool, getAllCollectionsForSchool, getActiveCo
   getIndySdcSchoolCollectionMonitoringByCollectionId, unsubmitSdcDistrictCollection, unsubmitSdcSchoolCollection, getInDistrictDuplicates, getSDCSchoolCollectionStudentPaginatedSlice,
   getSDCSchoolCollectionStudentPaginated, getSDCSchoolCollectionStudentDetail, updateStudentPEN, checkDuplicatesInCollection, updateAndValidateSdcSchoolCollectionStudent, resolveDuplicates, postProvincialDuplicates, resolveRemainingDuplicates,
   getInFlightDistrictProvincialDuplicates, getInFlightSchoolProvincialDuplicates, closeCollection, getCollectionPaginated, getSDCSchoolCollectionDetail,
-  getCollectionByID
+  getCollectionByID, getSdcSchoolCollections, getSdcDistrictCollections
 } = require('../components/sdc/sdc');
 const {getCachedSDCData} = require('../components/sdc/sdc-cache');
 const constants = require('../util/constants');
@@ -50,6 +50,8 @@ router.post('/collection/:collectionID/resolve-duplicates', passport.authenticat
 router.post('/collection/:collectionID/close-collection', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('collectionID'), closeCollection);
 router.get('/collection/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getCollectionPaginated);
 router.get('/collection/:collectionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('collectionID'), getCollectionByID);
+router.get('/collection/:collectionID/sdcSchoolCollections', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('collectionID'), getSdcSchoolCollections);
+router.get('/collection/:collectionID/sdcDistrictCollections', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('collectionID'), getSdcDistrictCollections);
 
 //student
 router.get('/sdcSchoolCollectionStudent/:sdcSchoolCollectionStudentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionStudentID'), getSDCSchoolCollectionStudentDetail);

@@ -194,33 +194,12 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       });
     }
 
-    if (req.query.searchParams['multiFieldName']) {
-      search.push({
-        condition: CONDITION.AND,
-        searchCriteriaList: createMultiFieldNameSearchCriteria(req.query.searchParams['multiFieldName'])
-      });
-    }
-    if (req.query.searchParams['penLocalIdNumber']) {
-      search.push({
-        condition: CONDITION.AND,
-        searchCriteriaList: createLocalIdPenSearchCriteria(req.query.searchParams['penLocalIdNumber'])
-      });
-    }
-
     if (req.query.searchParams['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
         search.push(criteria);
       });
     }
-
-    if(req.query.searchParams['assignedPen']) {
-      search.push({
-        condition: CONDITION.AND,
-        searchCriteriaList: createAssignedPENSearchCriteria(req.query.searchParams['assignedPen'])
-      });
-    }
-
 
     const params = {
       params: {
@@ -777,6 +756,34 @@ async function getCollectionByID(req, res) {
   }
 }
 
+async function getSdcSchoolCollections(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/sdcSchoolCollections`);
+
+    data?.forEach(value => {
+      value.schoolName = getSchoolName(cacheService.getSchoolBySchoolID(value.schoolID));
+    });
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'getSdcSchoolCollectionByCollectionId', 'error getSdcSchoolCollectionByCollectionId');
+    return errorResponse(res);
+  }
+}
+
+async function getSdcDistrictCollections(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/sdcDistrictCollections`);
+
+    data?.forEach(value => {
+      value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(value.districtID));
+    });
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'getSdcDistrictCollectionsByCollectionId', 'error getSdcDistrictCollectionsByCollectionId');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
@@ -800,5 +807,7 @@ module.exports = {
   closeCollection,
   getCollectionPaginated,
   getCollectionByID,
-  getSDCSchoolCollectionStudentPaginatedSlice
+  getSDCSchoolCollectionStudentPaginatedSlice,
+  getSdcSchoolCollections,
+  getSdcDistrictCollections
 };

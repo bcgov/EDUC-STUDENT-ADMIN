@@ -719,7 +719,7 @@ function createNameCriteria(key, nameString) {
     operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
     value: `%${nameString}%`,
     valueType: VALUE_TYPE.STRING,
-    condition: CONDITION.OR
+    condition: CONDITION.AND
   });
   return searchCriteriaList;
 }
@@ -731,7 +731,7 @@ function createPenLocalIdCriteria(key, idString) {
     operation: FILTER_OPERATION.EQUAL,
     value: idString,
     valueType: VALUE_TYPE.STRING,
-    condition: CONDITION.OR
+    condition: CONDITION.AND
   });
   return searchCriteriaList;
 }
@@ -780,7 +780,7 @@ function createDistrictNameNumberSearchCriteria(value) {
   const searchDistrictCriteriaList = [];
 
   searchDistrictCriteriaList.push({
-    key: 'sdcSchoolCollection.sdcDistrictCollection.districtID',
+    key: 'sdcSchoolCollection.sdcDistrictCollectionID',
     operation: FILTER_OPERATION.EQUAL,
     value: value,
     valueType: VALUE_TYPE.UUID,

@@ -233,7 +233,7 @@
                 single-line
                 :clearable="true"
                 item-title="districtCodeName"
-                item-value="districtID"
+                item-value="sdcDistrictCollectionID"
                 autocomplete="off"
                 @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
               />
@@ -332,6 +332,8 @@
 <script>
 import alertMixin from '../../mixins/alertMixin';
 import PrimaryButton from '../util/PrimaryButton.vue';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 import {isEmpty, sortBy} from 'lodash';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
@@ -390,7 +392,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['districtMap', 'schoolMap', 'notClosedSchools', 'config']),
+    ...mapState(appStore, ['districtMap', 'schoolMap', 'notClosedSchools', 'notClosedSchoolsMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
   },
@@ -418,26 +420,44 @@ export default {
   methods: {
     setupSchoolList(){
       this.schoolSearchNames = [];
-      for(const school of this.notClosedSchools.values()){
-        let schoolItem = {
-          schoolCodeName: school.schoolName + ' - ' + school.mincode,
-          schoolID: school.schoolID,
-          districtID: school.districtID,
-        };
-        this.schoolSearchNames.push(schoolItem);
-      }
-      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.notClosedSchoolsMap.get(schoolCollection.schoolID);
+            if (school) {
+              let schoolItem = {
+                schoolCodeName: school.schoolName + ' - ' + school.mincode,
+                schoolID: school.schoolID,
+                districtID: school.districtID
+              };
+              this.schoolSearchNames.push(schoolItem);
+            }
+          });
+          this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
     setupDistrictList(){
-      this.districtSearchNames = [];
-      for(const district of this.districtMap.values()){
-        let districtItem = {
-          districtCodeName: district.name + ' - ' + district.districtNumber,
-          districtID: district.districtId,
-        };
-        this.districtSearchNames.push(districtItem);
-      }
-      this.districtSearchNames = sortBy(this.districtSearchNames, ['districtCodeName']);
+      this.schoolSearchNames = [];
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcDistrictCollections`)
+        .then((res) => {
+          res.data.forEach(districtCollection => {
+            const district = this.districtMap.get(districtCollection.districtID);
+            if (district) {
+              let districtItem = {
+                districtCodeName: district.name + ' - ' + district.districtNumber,
+                sdcDistrictCollectionID: districtCollection.sdcDistrictCollectionID,
+              };
+              this.districtSearchNames.push(districtItem);
+            }
+          });
+          this.districtSearchNames = sortBy(this.districtSearchNames, ['districtCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
     close() {
       this.$emit('close');
