@@ -31,7 +31,10 @@
             @click-action="clear"
           />
         </v-col>
-        <v-col class="d-flex justify-end">
+        <v-col
+          v-if="showStudentSearch"
+          class="d-flex justify-end"
+        >
           <PrimaryButton
             id="applyPenLocalIdNameFilter"
             large-icon
@@ -41,143 +44,145 @@
           />
         </v-col>
       </v-row>
-      <v-row class="d-flex justify-space-around">
-        <v-col
-          id="searchFiltering"
-          class="filter-heading pb-0"
-        >
-          Name and ID Filtering
-        </v-col>
-        <v-tooltip content-class="customTooltip">
-          <template #activator="{ props: tooltipProps }">
-            <v-icon
-              v-bind="tooltipProps"
-              size="25"
-              color="#003366"
-              style="align-self: center;"
-            >
-              mdi-help-circle
-            </v-icon>
-          </template>
-          <span id="penLocalIdNameFilterTooltip">
-            The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
-          </span>
-        </v-tooltip>
-      </v-row>
-      <v-row>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="legalFirstName"
-            label="Legal First Name"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="legalMiddleNames"
-            label="Legal Middle Names"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="legalLastName"
-            label="Legal Last Name"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="usualFirstName"
-            label="Usual First Name"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="usualMiddleNames"
-            label="Usual Middle Names"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="usualLastName"
-            label="Usual Last Name"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="studentPen"
-            label="Student Pen"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="assignedPen"
-            label="Assigned Pen"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-        <v-col
-          class="py-0"
-          cols="4"
-        >
-          <v-text-field
-            id="searchInput"
-            v-model="localID"
-            label="Local ID"
-            color="primary"
-            variant="underlined"
-          />
-        </v-col>
-      </v-row>
+      <div v-if="showStudentSearch">
+        <v-row class="d-flex justify-space-around">
+          <v-col
+            id="searchFiltering"
+            class="filter-heading pb-0"
+          >
+            Name and ID Filtering
+          </v-col>
+          <v-tooltip content-class="customTooltip">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-bind="tooltipProps"
+                size="25"
+                color="#003366"
+                style="align-self: center;"
+              >
+                mdi-help-circle
+              </v-icon>
+            </template>
+            <span id="penLocalIdNameFilterTooltip">
+              The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
+            </span>
+          </v-tooltip>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalFirstName"
+              label="Legal First Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalMiddleNames"
+              label="Legal Middle Names"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalLastName"
+              label="Legal Last Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualFirstName"
+              label="Usual First Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualMiddleNames"
+              label="Usual Middle Names"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualLastName"
+              label="Usual Last Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="studentPen"
+              label="Student Pen"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="assignedPen"
+              label="Assigned Pen"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="localID"
+              label="Local ID"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+      </div>
       <v-row>
         <v-col
           id="schoolDistrictFilters"
