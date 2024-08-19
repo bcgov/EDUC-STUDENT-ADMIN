@@ -735,13 +735,27 @@ function createMultiFieldNameSearchCriteria(nameString) {
 
 function createNameCriteria(key, nameString) {
   const searchCriteriaList = [];
-  searchCriteriaList.push({
-    key: key,
-    operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
-    value: `%${nameString}%`,
-    valueType: VALUE_TYPE.STRING,
-    condition: CONDITION.AND
-  });
+  if (key === 'usualMiddleNames' || key === 'legalMiddleNames') {
+    const names = nameString.split(/\s+/);
+    names.forEach(name => {
+      searchCriteriaList.push({
+        key: key,
+        operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+        value: `%${name}%`,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.OR
+      });
+    });
+  } else {
+    searchCriteriaList.push({
+      key: key,
+      operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+      value: `%${nameString}%`,
+      valueType: VALUE_TYPE.STRING,
+      condition: CONDITION.AND
+    });
+  }
+
   return searchCriteriaList;
 }
 
