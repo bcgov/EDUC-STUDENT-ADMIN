@@ -75,7 +75,7 @@ export default {
   emits: [],
   data() {
     return {
-      reportView: 'publicReports',
+      reportView: null,
       publicReports: SDC_REPORTS.publicReports,
       independentReports: SDC_REPORTS.independentReports,
       headcountsReports: SDC_REPORTS.headcountReports
