@@ -406,7 +406,8 @@ export const SDC_REPORTS = Object.freeze(
     headcountReports: [
       {
         label: 'School Enrollment Headcounts',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/'
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
       }
     ]
   }

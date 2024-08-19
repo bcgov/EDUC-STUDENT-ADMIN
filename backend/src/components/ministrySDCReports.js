@@ -20,6 +20,39 @@ async function getMinistrySDCReport(req, res) {
   }
 }
 
+async function downloadMinistrySDCReport(req, res) {
+  try {
+    if(!reportTypes.includes(req.params.reportType)){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided.'
+      });
+    }
+    const url = `${config.get('sdc:ministrySDCReportsURL')}/${req.params.collectionID}/${req.params.reportType}/download`;
+    const data = await getData(url);
+    const fileDetails = getFileDetails(req.params.reportType);
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(data.documentData, 'base64');
+    return res.status(200).send(buffer);
+  } catch (e) {
+    await logApiError(e, 'downloadMinistrySDCReport', 'Error occurred while attempting to download ministry SDC report.');
+    return errorResponse(res);
+  }
+}
+
+function getFileDetails(reportType) {
+  const mappings = {
+    'school-enrollment-headcounts': { filename: 'AllSchoolsHeadcounts.csv', contentType: 'text/csv' },
+    'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
+  };
+  return mappings[reportType] || mappings['DEFAULT'];
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
+
 module.exports = {
-  getMinistrySDCReport
+  getMinistrySDCReport,
+  downloadMinistrySDCReport
 };

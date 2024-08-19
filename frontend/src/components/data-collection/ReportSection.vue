@@ -3,14 +3,27 @@
     <v-col cols="4">
       <v-select
         id="reportListDropdown"
-        v-model="selectedReportURL"
+        v-model="selectedReport"
         class="pt-0"
         label="Select Report"
         variant="outlined"
         :items="reportList"
         item-title="label"
-        item-value="url"
+        return-object
       />
+    </v-col>
+    <v-col
+      v-if="reportData !== null && selectedReport?.csvDownloadURL"
+      class="mt-4 ml-4"
+    >
+      <router-link
+        id="downloadReport"
+        :to="{ path: selectedReport.csvDownloadURL + collectionID}"
+        target="_blank"
+      >
+        <v-icon>mdi-tray-arrow-down</v-icon>
+        Download CSV
+      </router-link>
     </v-col>
   </v-row>
   <v-row v-if="isLoading">
@@ -72,7 +85,7 @@ export default {
   },
   data() {
     return {
-      selectedReportURL: null,
+      selectedReport: null,
       reportData: null,
       search: null,
       isLoading: false,
@@ -81,14 +94,15 @@ export default {
     };
   },
   watch: {
-    selectedReportURL() {
+    selectedReport() {
       this.getReportData();
     }
   },
   methods: {
     async getReportData() {
       this.isLoading = true;
-      await ApiService.apiAxios.get(this.selectedReportURL + this.collectionID).then(response => {
+
+      await ApiService.apiAxios.get(this.selectedReport.url + this.collectionID).then(response => {
         this.reportData = response.data.rows;
         this.headers = [];
         response.data.headers.forEach(header => {
