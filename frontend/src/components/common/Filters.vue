@@ -21,11 +21,179 @@
     <v-divider />
     <v-card-text>
       <v-row>
+        <v-col class="d-flex justify-start">
+          <PrimaryButton
+            id="clear-filter"
+            secondary
+            large-icon
+            icon="mdi-filter-off-outline"
+            text="Clear All"
+            @click-action="clear"
+          />
+        </v-col>
         <v-col
-          cols="6"
-          class="ml-2"
+          v-if="showStudentSearch"
+          class="d-flex justify-end"
         >
-          <v-row v-if="showStudentSearch">
+          <PrimaryButton
+            id="applyPenLocalIdNameFilter"
+            large-icon
+            icon="mdi-magnify"
+            text="Search Name and ID"
+            @click-action="setPenLocalIdNameFilter($event, 'click')"
+          />
+        </v-col>
+      </v-row>
+      <div v-if="showStudentSearch">
+        <v-row class="d-flex justify-space-around">
+          <v-col
+            id="searchFiltering"
+            class="filter-heading pb-0"
+          >
+            Name and ID Filtering
+          </v-col>
+          <v-tooltip content-class="customTooltip">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-bind="tooltipProps"
+                size="25"
+                color="#003366"
+                style="align-self: center;"
+              >
+                mdi-help-circle
+              </v-icon>
+            </template>
+            <span id="penLocalIdNameFilterTooltip">
+              The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
+            </span>
+          </v-tooltip>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalFirstName"
+              label="Legal First Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalMiddleNames"
+              label="Legal Middle Names"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="legalLastName"
+              label="Legal Last Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualFirstName"
+              label="Usual First Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualMiddleNames"
+              label="Usual Middle Names"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="usualLastName"
+              label="Usual Last Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="studentPen"
+              label="Student Pen"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="assignedPen"
+              label="Assigned Pen"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            class="py-0"
+            cols="4"
+          >
+            <v-text-field
+              id="searchInput"
+              v-model="localID"
+              label="Local ID"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+        </v-row>
+      </div>
+      <v-row>
+        <v-col
+          id="schoolDistrictFilters"
+          class="filter-heading pb-0"
+        >
+          School and District Filtering
+        </v-col>
+      </v-row>
+      <v-row class="d-flex justify-space-around">
+        <v-col cols="5">
+          <v-row v-if="false">
             <v-text-field
               id="searchInput"
               v-model="penLocalIdNameFilter"
@@ -33,21 +201,6 @@
               color="primary"
               variant="underlined"
             />
-            <v-tooltip content-class="customTooltip">
-              <template #activator="{ props: tooltipProps }">
-                <v-icon
-                  v-bind="tooltipProps"
-                  size="25"
-                  color="#003366"
-                  style="align-self: center; padding-bottom: 1rem; padding-left: .5rem;"
-                >
-                  mdi-help-circle
-                </v-icon>
-              </template>
-              <span id="penLocalIdNameFilterTooltip">
-                The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
-              </span>
-            </v-tooltip>
           </v-row>
           <v-row>
             <slot
@@ -63,31 +216,34 @@
                 single-line
                 :clearable="true"
                 item-title="schoolCodeName"
-                item-value="schoolID"
+                item-value="sdcSchoolCollectionID"
                 autocomplete="off"
                 @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
               />
             </slot>
           </v-row>
         </v-col>
-        <v-col>
-          <PrimaryButton
-            id="applyPenLocalIdNameFilter"
-            large-icon
-            icon="mdi-magnify"
-            text="Search"
-            @click-action="setPenLocalIdNameFilter('penLocalIdName', penLocalIdNameFilter)"
-          />
-        </v-col>
-        <v-col class="d-flex justify-end">
-          <PrimaryButton
-            id="clear-filter"
-            secondary
-            large-icon
-            icon="mdi-filter-off-outline"
-            text="Clear All"
-            @click-action="clear"
-          />
+        <v-col cols="5">
+          <v-row>
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectDistrict"
+                v-model="districtNameNumberFilter"
+                variant="underlined"
+                :items="districtSearchNames"
+                color="#003366"
+                label="District Name or Number"
+                single-line
+                :clearable="true"
+                item-title="districtCodeName"
+                item-value="sdcDistrictCollectionID"
+                autocomplete="off"
+                @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
+              />
+            </slot>
+          </v-row>
         </v-col>
       </v-row>
       <div
@@ -181,6 +337,8 @@
 <script>
 import alertMixin from '../../mixins/alertMixin';
 import PrimaryButton from '../util/PrimaryButton.vue';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 import {isEmpty, sortBy} from 'lodash';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
@@ -224,11 +382,22 @@ export default {
       courseRange: [0, 15],
       penLocalIdNameFilter: null,
       schoolNameNumberFilter: null,
+      districtNameNumberFilter: null,
+      legalFirstName: null,
+      legalMiddleNames: null,
+      legalLastName: null,
+      usualFirstName: null,
+      usualMiddleNames: null,
+      usualLastName: null,
+      studentPen: null,
+      assignedPen: null,
+      localID: null,
       schoolSearchNames: [],
+      districtSearchNames: [],
     };
   },
   computed: {
-    ...mapState(appStore, ['schoolMap', 'notClosedSchools', 'config']),
+    ...mapState(appStore, ['districtMap', 'schoolMap', 'notClosedSchools', 'notClosedSchoolsMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
   },
@@ -245,6 +414,7 @@ export default {
       this.isDistrictUser = true;
       appStore().getInstituteCodes().then(() => {
         this.setupSchoolList();
+        this.setupDistrictList();
         this.loading = false;
       });
     });
@@ -255,33 +425,70 @@ export default {
   methods: {
     setupSchoolList(){
       this.schoolSearchNames = [];
-      for(const school of this.notClosedSchools.values()){
-        let schoolItem = {
-          schoolCodeName: school.schoolName + ' - ' + school.mincode,
-          schoolID: school.schoolID,
-          districtID: school.districtID,
-        };
-        this.schoolSearchNames.push(schoolItem);
-      }
-      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.notClosedSchoolsMap.get(schoolCollection.schoolID);
+            if (school) {
+              let schoolItem = {
+                schoolCodeName: school.schoolName + ' - ' + school.mincode,
+                sdcSchoolCollectionID: schoolCollection.sdcSchoolCollectionID,
+              };
+              this.schoolSearchNames.push(schoolItem);
+            }
+          });
+          this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    setupDistrictList(){
+      this.schoolSearchNames = [];
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcDistrictCollections`)
+        .then((res) => {
+          res.data.forEach(districtCollection => {
+            const district = this.districtMap.get(districtCollection.districtID);
+            if (district) {
+              let districtItem = {
+                districtCodeName: district.name + ' - ' + district.districtNumber,
+                sdcDistrictCollectionID: districtCollection.sdcDistrictCollectionID,
+              };
+              this.districtSearchNames.push(districtItem);
+            }
+          });
+          this.districtSearchNames = sortBy(this.districtSearchNames, ['districtCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
     close() {
       this.$emit('close');
     },
-    setPenLocalIdNameFilter(key, $event) {
-      if($event) {
-        this.selected[key] = [{title: 'PenOrLocalIdOrName', value: $event}];
-        this.apply();
-      } else {
-        delete this.selected[key];
+    setPenLocalIdNameFilter($event, val) {
+      const keys = [
+        'legalFirstName', 'legalMiddleNames', 'legalLastName',
+        'usualFirstName', 'usualMiddleNames', 'usualLastName',
+        'studentPen', 'assignedPen', 'localID'
+      ];
+
+      keys.forEach(key => {
+        if (this[key] != null) {
+          if (this[key].length > 0) {
+            this.selected[key] = [{ title: key, value: this[key] }];
+          } else {
+            delete this.selected[key];
+          }
+        }
+      });
+
+      if ($event && val === 'click') {
         this.apply();
       }
     },
     setSchoolNameNumberFilter(key, $event) {
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter($event, null);
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
         this.apply();
@@ -290,11 +497,18 @@ export default {
         this.apply();
       }
     },
-    setFilter(val, key) {
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
+    setDistrictNameNumberFilter(key, $event) {
+      this.setPenLocalIdNameFilter($event, null);
+      if($event) {
+        this.selected[key] = [{title: 'DistrictNameOrNumber', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
       }
+    },
+    setFilter(val, key) {
+      this.setPenLocalIdNameFilter(null, null);
       if(val && !isEmpty(val)) {
         this.selected[key] = (Array.isArray(val) ? val : [val]);
         this.apply();
@@ -304,10 +518,7 @@ export default {
       }
     },
     setCourseRangeFilter(key, $event){
-      if (this.penLocalIdNameFilter != null) {
-        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
-        else delete this.selected['penLocalIdNameFilter'];
-      }
+      this.setPenLocalIdNameFilter($event, null);
       if($event) {
         let courseFilterTitle;
         if($event[0] === this.courseRangeDefault[0]){
@@ -330,6 +541,16 @@ export default {
       this.courseRange = [...this.courseRangeDefault];
       this.penLocalIdNameFilter = null;
       this.schoolNameNumberFilter = null;
+      this.districtNameNumberFilter = null;
+      this.legalFirstName = null;
+      this.legalMiddleNames = null;
+      this.legalLastName = null;
+      this.usualFirstName = null;
+      this.usualMiddleNames = null;
+      this.usualLastName = null;
+      this.studentPen = null;
+      this.assignedPen = null;
+      this.localID = null;
       this.$emit('clearFilters');
     },
     apply() {

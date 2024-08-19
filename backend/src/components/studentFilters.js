@@ -26,7 +26,10 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
   let fundingTypeList = [];
   let courseRangeList = [];
   let penLocalIdNameFilter = [];
+  let nameFilter = [];
+  let penLocalIdFilter = [];
   let schoolNameNumberFilter = [];
+  let districtNameNumberFilter = [];
   for (const [key, filter] of Object.entries(searchFilter)) {
     let pValue = filter ? filter.map(filter => filter.value) : null;
     if (key === 'studentType' && pValue) {
@@ -127,6 +130,46 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     if (key === 'schoolNameNumber' && pValue) {
       let schoolNameNumberCriteria = createSchoolNameNumberSearchCriteria(pValue.toString());
       schoolNameNumberFilter = [...schoolNameNumberCriteria];
+    }
+    if (key === 'districtNameNumber' && pValue) {
+      let districtNameNumberCriteria = createDistrictNameNumberSearchCriteria(pValue.toString());
+      districtNameNumberFilter = [...districtNameNumberCriteria];
+    }
+    if (key === 'legalFirstName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'legalMiddleNames' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'legalLastName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualFirstName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualMiddleNames' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'usualLastName' && pValue) {
+      let nameCriteria = createNameCriteria(key, pValue.toString());
+      nameFilter = [...nameFilter, ...nameCriteria];
+    }
+    if (key === 'studentPen' && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
+    }
+    if (key === 'assignedPen' && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
+    }
+    if (key === 'localID' && pValue) {
+      let penLocalIdCriteria = createPenLocalIdCriteria(key, pValue.toString());
+      penLocalIdFilter = [...penLocalIdFilter, ...penLocalIdCriteria];
     }
   }
   const search = [];
@@ -266,6 +309,24 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     search.push({
       condition: CONDITION.AND,
       searchCriteriaList: schoolNameNumberFilter
+    });
+  }
+  if (districtNameNumberFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: districtNameNumberFilter
+    });
+  }
+  if (nameFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: nameFilter
+    });
+  }
+  if (penLocalIdFilter.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: penLocalIdFilter
     });
   }
   return search;
@@ -672,6 +733,30 @@ function createMultiFieldNameSearchCriteria(nameString) {
   return searchCriteriaList;
 }
 
+function createNameCriteria(key, nameString) {
+  const searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: key,
+    operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
+    value: `%${nameString}%`,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.AND
+  });
+  return searchCriteriaList;
+}
+
+function createPenLocalIdCriteria(key, idString) {
+  const searchCriteriaList = [];
+  searchCriteriaList.push({
+    key: key,
+    operation: FILTER_OPERATION.EQUAL,
+    value: idString,
+    valueType: VALUE_TYPE.STRING,
+    condition: CONDITION.AND
+  });
+  return searchCriteriaList;
+}
+
 function createLocalIdPenSearchCriteria(value) {
   let searchCriteriaList = [];
   searchCriteriaList.push({
@@ -702,7 +787,7 @@ function createSchoolNameNumberSearchCriteria(value) {
   const searchSchoolCriteriaList = [];
 
   searchSchoolCriteriaList.push({
-    key: 'sdcSchoolCollection.schoolID',
+    key: 'sdcSchoolCollection.sdcSchoolCollectionID',
     operation: FILTER_OPERATION.EQUAL,
     value: value,
     valueType: VALUE_TYPE.UUID,
@@ -710,6 +795,20 @@ function createSchoolNameNumberSearchCriteria(value) {
   });
 
   return searchSchoolCriteriaList;
+}
+
+function createDistrictNameNumberSearchCriteria(value) {
+  const searchDistrictCriteriaList = [];
+
+  searchDistrictCriteriaList.push({
+    key: 'sdcSchoolCollection.sdcDistrictCollectionID',
+    operation: FILTER_OPERATION.EQUAL,
+    value: value,
+    valueType: VALUE_TYPE.UUID,
+    condition: CONDITION.AND
+  });
+
+  return searchDistrictCriteriaList;
 }
 
 module.exports = {
