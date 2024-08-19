@@ -211,7 +211,7 @@
                 single-line
                 :clearable="true"
                 item-title="schoolCodeName"
-                item-value="schoolID"
+                item-value="sdcSchoolCollectionID"
                 autocomplete="off"
                 @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
               />
@@ -427,8 +427,7 @@ export default {
             if (school) {
               let schoolItem = {
                 schoolCodeName: school.schoolName + ' - ' + school.mincode,
-                schoolID: school.schoolID,
-                districtID: school.districtID
+                sdcSchoolCollectionID: schoolCollection.sdcSchoolCollectionID,
               };
               this.schoolSearchNames.push(schoolItem);
             }

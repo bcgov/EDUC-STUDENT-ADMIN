@@ -787,7 +787,7 @@ function createSchoolNameNumberSearchCriteria(value) {
   const searchSchoolCriteriaList = [];
 
   searchSchoolCriteriaList.push({
-    key: 'sdcSchoolCollection.schoolID',
+    key: 'sdcSchoolCollection.sdcSchoolCollectionID',
     operation: FILTER_OPERATION.EQUAL,
     value: value,
     valueType: VALUE_TYPE.UUID,
