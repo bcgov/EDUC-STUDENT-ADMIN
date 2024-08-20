@@ -215,6 +215,12 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
         search.push(criteria);
       });
     }
+    if (req.query.searchParams['grade']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createFsaReportCriteria(req.query.searchParams['grade'])
+      });
+    }
 
     const params = {
       params: {
@@ -237,8 +243,11 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
 
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
+      let district = cacheService.getDistrictJSONByDistrictId(school.districtID);
+      value.schoolNumber = school.mincode;
       value.schoolName = getSchoolName(school);
-      value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
+      value.districtName = getDistrictName(district);
+      value.districtNumber = district.districtNumber;
       value.districtID = school.districtID;
       value.mincode = cacheService.getSchoolBySchoolID(value.schoolID)?.mincode;
     });
@@ -252,6 +261,16 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       return errorResponse(res);
     }
   }
+}
+
+function createFsaReportCriteria(searchParams) {
+  let searchCriteriaList = [];
+  if(searchParams === 'FSA_SEP_GRADE') {
+    searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '04,07', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  } else if(searchParams === 'FSA_FEB_GRADE') {
+    searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '03,06', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  return searchCriteriaList;
 }
 
 function createTabFilter(searchParams) {

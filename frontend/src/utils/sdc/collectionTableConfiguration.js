@@ -936,3 +936,25 @@ export const FTE = Object.freeze(
   }
 );
 
+export const MIN_REPORTS = Object.freeze(
+  {
+    fsaReportHeadersforFeb: [
+      { title: 'Student PEN', key: 'assignedPen'},
+      { title: 'District Number', key: 'districtNumber' },
+      { title: 'School Number', key: 'schoolNumber' },
+      { title: 'Next Year Grade', key: 'enrolledGradeCode'},
+      { title: 'Student Local ID', key: 'localID' },
+      { title: 'Legal First Name', key: 'legalFirstName'},
+      { title: 'Legal Last Name', key: 'legalLastName' }
+    ],
+    fsaReportHeadersforSept: [
+      { title: 'Student PEN', key: 'assignedPen'},
+      { title: 'District Number', key: 'districtNumber' },
+      { title: 'School Number', key: 'schoolNumber' },
+      { title: 'Year Grade', key: 'enrolledGradeCode'},
+      { title: 'Student Local ID', key: 'localID' },
+      { title: 'Legal First Name', key: 'legalFirstName'},
+      { title: 'Legal Last Name', key: 'legalLastName' }
+    ]
+  }
+);
