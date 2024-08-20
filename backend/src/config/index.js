@@ -186,7 +186,8 @@ nconf.defaults({
     bannerColor: process.env.BANNER_COLOR,
     webSocketURL: process.env.WEB_SOCKET_URL,
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
-    edxURL: process.env.EDX_URL
+    edxURL: process.env.EDX_URL,
+    enableEdxRelease: process.env.ENABLE_EDX_RELEASE
   },
   sdc: {
     rootURL: process.env.SDC_API_URL,
