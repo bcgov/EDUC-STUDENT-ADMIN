@@ -2,7 +2,7 @@
 const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
-let reportTypes = ['school-enrollment-headcounts'];
+let reportTypes = ['school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report'];
 
 async function getMinistrySDCReport(req, res) {
   try {

@@ -41,16 +41,19 @@
         <div v-if="reportView === 'publicReports'">
           <ReportSection
             :report-list="publicReports"
+            :collection-object="collectionObject"
           />
         </div>
         <div v-if="reportView === 'independentReports'">
           <ReportSection
             :report-list="independentReports"
+            :collection-object="collectionObject"
           />
         </div>
         <div v-if="reportView === 'headcountReports'">
           <ReportSection
             :report-list="headcountsReports"
+            :collection-object="collectionObject"
           />
         </div>
       </v-col>
@@ -71,6 +74,12 @@ export default {
   name: 'Reports',
   components: {
     ReportSection
+  },
+  props: {
+    collectionObject: {
+      type: Object,
+      required: true
+    }
   },
   emits: [],
   data() {

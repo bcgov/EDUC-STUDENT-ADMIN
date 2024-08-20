@@ -26,15 +26,7 @@
       </router-link>
     </v-col>
   </v-row>
-  <v-row v-if="isLoading">
-    <v-col>
-      <Spinner />
-    </v-col>
-  </v-row>
-  <v-row
-    v-if="reportData !== null"
-    no-gutters
-  >
+  
     <v-col>
       <v-row>
         <v-col>
@@ -49,7 +41,13 @@
           />
         </v-col>
       </v-row>
-      <v-row>
+
+      <v-row v-if="reportData === null && isLoading">
+        <v-col>
+          <Spinner />
+        </v-col>
+      </v-row>
+      <v-row v-if="!displayAllStudents && reportData !== null"> 
         <v-col>
           <v-data-table
             id="dataTable"
@@ -62,8 +60,21 @@
           />
         </v-col>
       </v-row>
+      <v-row v-if="displayAllStudents">
+        <v-col>
+          <CustomTableSlice
+            :headers="config"
+            :data="studentList"
+            :total-elements="totalElements"
+            :is-loading="isLoading"
+            :can-load-next="canLoadNext"
+            :can-load-previous="canLoadPrevious"
+            @loadNext="loadNext"
+            @loadPrevious="loadPrevious"
+          />
+        </v-col>
+      </v-row>
     </v-col>
-  </v-row>
 </template>
 
 <script>
@@ -71,10 +82,14 @@
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner.vue';
+import {MIN_REPORTS} from '@/utils/sdc/collectionTableConfiguration.js';
+import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
+import {Routes} from '@/utils/constants';
+import {isEmpty, omitBy} from 'lodash';
 
 export default {
   name: 'ReportSection',
-  components: {Spinner},
+  components: {Spinner, CustomTableSlice},
   mixins: [alertMixin],
   props: {
     reportList: {
@@ -82,6 +97,10 @@ export default {
       type: Array,
       default: null
     },
+    collectionObject: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -90,12 +109,34 @@ export default {
       search: null,
       isLoading: false,
       headers: [],
-      collectionID: this.$route.params.collectionID
+      collectionID: this.$route.params.collectionID,
+      displayAllStudents: false,
+      allStudentsView: ['FSA Registration Report'],
+      filterSearchParams: {
+        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        moreFilters: {},
+        grade: ''
+      },
+      pageNumber: 1,
+      pageSize: 15,
+      studentList: [],
+      totalElements: 0,
+      canLoadNext: false,
+      canLoadPrevious: false,
+      config: null
     };
   },
   watch: {
     selectedReport() {
-      this.getReportData();
+      this.displayAllStudents = false;
+      if(this.allStudentsView.includes(this.selectedReport.label)) {
+        this.loadHeaders(this.selectedReport.label);
+        if(this.displayAllStudents) {
+          this.loadStudents();
+        }
+      } else {
+        this.getReportData();
+      }
     }
   },
   methods: {
@@ -105,7 +146,7 @@ export default {
       await ApiService.apiAxios.get(this.selectedReport.url + this.collectionID).then(response => {
         this.reportData = response.data.rows;
         this.headers = [];
-        response.data.headers.forEach(header => {
+        response?.data?.headers?.forEach(header => {
           let formattedHeader =
             {
               title: header,
@@ -124,6 +165,43 @@ export default {
         .finally(() => {
           this.isLoading = false;
         });
+    },
+    loadStudents() {
+      this.isLoading = true;
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated-slice?tableFormat=true`, {
+        params: {
+          pageNumber: this.pageNumber - 1,
+          pageSize: this.pageSize,
+          searchParams: omitBy(this.filterSearchParams, isEmpty),
+          sort: {
+            legalLastName: 'ASC'
+          },
+        }
+      }).then(response => {
+        this.studentList = response.data.content;
+        this.canLoadNext = response.data.last === false;
+        this.canLoadPrevious = response.data.first === false;
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while trying to retrieve students list. Please try again later.');
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    },
+    loadHeaders(label) {
+      if(label === 'FSA Registration Report') {
+          if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
+            this.config = MIN_REPORTS.fsaReportHeadersforFeb;
+            this.filterSearchParams.grade = 'FSA_FEB_GRADE';
+            this.displayAllStudents = true;
+          } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
+            this.config = MIN_REPORTS.fsaReportHeadersforSept;
+            this.filterSearchParams.grade = 'FSA_SEP_GRADE';
+            this.displayAllStudents = true;
+          } else {
+            this.displayAllStudents = false;
+          }
+        }
     }
   }
 };

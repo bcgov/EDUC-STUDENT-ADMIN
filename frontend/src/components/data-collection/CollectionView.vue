@@ -134,7 +134,7 @@
             transition="false"
             reverse-transition="false"
           >
-            <Reports/>
+            <Reports :collection-object="collectionObject"/>
           </v-window-item>
         </v-window>
       </v-col>
