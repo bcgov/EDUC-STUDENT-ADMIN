@@ -93,6 +93,7 @@ export default {
               this.indySchoolsDistrictsNames.push(schoolItem);
             }
           });
+          this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
         })
         .catch(error => {
           console.error(error);
@@ -110,12 +111,11 @@ export default {
               this.indySchoolsDistrictsNames.push(districtItem);
             }
           });
+          this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
         })
         .catch(error => {
           console.error(error);
         });
-
-      this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
     }
   }
 };
