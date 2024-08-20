@@ -21,23 +21,45 @@
       </slot>
     </v-row>
   </v-col>
+  <v-col v-if="indySchoolsDistrictsNameNumberFilter != null">
+    <DetailComponent
+      :config="config"
+      :collection-object="collectionObject"
+      :indy-school-district-object="indySchoolDistrictObject"
+      :show-export-btn="true"
+    />
+  </v-col>
 </template>
 
 <script>
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sortBy} from 'lodash';
+import DetailComponent from './AllStudents/DetailComponent.vue';
+import {FTE} from '@/utils/sdc/collectionTableConfiguration.js';
 
 export default {
   name: 'FundingPolicyReport',
+  components: {DetailComponent},
+  props: {
+    collectionObject: {
+      type: Object,
+      required: true,
+      default: null
+    },
+  },
   data() {
     return {
       indySchoolsDistrictsNameNumberFilter: null,
       indySchoolsDistrictsNames: [],
+      config: FTE,
+      indySchoolDistrictObject: null,
     };
   },
   computed: {
-    ...mapState(appStore, ['districtMap', 'independentAuthorityMap']),
+    ...mapState(appStore, ['districtMap', 'schoolMap']),
   },
   created() {
     appStore().getInstituteCodes().then(() => {
@@ -48,25 +70,51 @@ export default {
   methods: {
     setIndySchoolsDistrictsNameNumberFilter(key, $event) {
       console.log(key, $event);
+      if ($event) {
+        const type = $event.split(' - ')[0];
+        const id = $event.split(' - ')[1];
+        this.indySchoolDistrictObject = { type, id };
+      } else {
+        this.indySchoolDistrictObject = null;
+      }
     },
     setupIndySchoolsDistrictsList() {
       this.indySchoolsDistrictsNames = [];
 
-      for (const indySchool of this.independentAuthorityMap.values()) {
-        let schoolItem = {
-          codeName: indySchool.name + ' - ' + indySchool.authorityNumber,
-          id: 'indy - ' + indySchool.authorityID,
-        };
-        this.indySchoolsDistrictsNames.push(schoolItem);
-      }
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.schoolMap.get(schoolCollection.schoolID);
+            // if no authority ID it is not an indy school
+            if (school && school.authorityID != null) {
+              let schoolItem = {
+                codeName: school.schoolName + ' - ' + school.mincode,
+                id: 'indy - ' + schoolCollection.sdcSchoolCollectionID,
+              };
+              this.indySchoolsDistrictsNames.push(schoolItem);
+            }
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
 
-      for (const district of this.districtMap.values()) {
-        let districtItem = {
-          codeName: district.name + ' - ' + district.districtNumber,
-          id: 'district - ' + district.districtID,
-        };
-        this.indySchoolsDistrictsNames.push(districtItem);
-      }
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcDistrictCollections`)
+        .then((res) => {
+          res.data.forEach(districtCollection => {
+            const district = this.districtMap.get(districtCollection.districtID);
+            if (district) {
+              let districtItem = {
+                codeName: district.name + ' - ' + district.districtNumber,
+                id: 'district - ' + districtCollection.sdcDistrictCollectionID,
+              };
+              this.indySchoolsDistrictsNames.push(districtItem);
+            }
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
 
       this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
     }

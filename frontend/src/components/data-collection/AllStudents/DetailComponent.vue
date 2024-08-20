@@ -86,6 +86,7 @@
       <Filters
         :filters="config.allowedFilters"
         :collection-object="collectionObject"
+        :indy-school-district-object="indySchoolDistrictObject"
         @apply-filters="applyFilters"
         @clear-filters="clearFilters"
         @close="showFilters= !showFilters"
@@ -138,6 +139,11 @@ export default {
       required: true,
       default: null
     },
+    indySchoolDistrictObject: {
+      type: Object,
+      required: false,
+      default: null
+    },
     showExportBtn: {
       type: Boolean,
       default: false
@@ -177,7 +183,6 @@ export default {
     sdcCollectionStore().getCodes().then(() => {
       this.loadStudents();
     });
-
   },
   methods: {
     closeAndLoadStudents() {
@@ -208,6 +213,20 @@ export default {
     },
     loadStudents() {
       this.isLoading = true;
+      if (this.indySchoolDistrictObject != null) {
+        const filterKey = this.indySchoolDistrictObject.type === 'indy' ? 'schoolNameNumber' : 'districtNameNumber';
+        const filterTitle = this.indySchoolDistrictObject.type === 'indy' ? 'SchoolNameOrNumber' : 'DistrictNameOrNumber';
+
+        if (!this.filterSearchParams.moreFilters[filterKey]) {
+          this.filterSearchParams.moreFilters[filterKey] = [];
+        }
+
+        this.filterSearchParams.moreFilters[filterKey][0] = {
+          title: filterTitle,
+          value: this.indySchoolDistrictObject.id
+        };
+      }
+      console.log(this.filterSearchParams);
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,

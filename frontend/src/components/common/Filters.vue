@@ -183,69 +183,73 @@
           </v-col>
         </v-row>
       </div>
-      <v-row>
-        <v-col
-          id="schoolDistrictFilters"
-          class="filter-heading pb-0"
+      <div v-if="indySchoolDistrictObject == null">
+        <v-row>
+          <v-col
+            id="schoolDistrictFilters"
+            class="filter-heading pb-0"
+          >
+            School and District Filtering
+          </v-col>
+        </v-row>
+        <v-row
+          class="d-flex justify-space-around"
         >
-          School and District Filtering
-        </v-col>
-      </v-row>
-      <v-row class="d-flex justify-space-around">
-        <v-col cols="5">
-          <v-row v-if="false">
-            <v-text-field
-              id="searchInput"
-              v-model="penLocalIdNameFilter"
-              label="PEN or Local ID or Name"
-              color="primary"
-              variant="underlined"
-            />
-          </v-row>
-          <v-row>
-            <slot
-              name="text-search"
-            >
-              <v-autocomplete
-                id="selectSchool"
-                v-model="schoolNameNumberFilter"
+          <v-col cols="5">
+            <v-row v-if="false">
+              <v-text-field
+                id="searchInput"
+                v-model="penLocalIdNameFilter"
+                label="PEN or Local ID or Name"
+                color="primary"
                 variant="underlined"
-                :items="schoolSearchNames"
-                color="#003366"
-                label="School Name or Number"
-                single-line
-                :clearable="true"
-                item-title="schoolCodeName"
-                item-value="sdcSchoolCollectionID"
-                autocomplete="off"
-                @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
               />
-            </slot>
-          </v-row>
-        </v-col>
-        <v-col cols="5">
-          <v-row>
-            <slot
-              name="text-search"
-            >
-              <v-autocomplete
-                id="selectDistrict"
-                v-model="districtNameNumberFilter"
-                variant="underlined"
-                :items="districtSearchNames"
-                color="#003366"
-                label="District Name or Number"
-                single-line
-                :clearable="true"
-                item-title="districtCodeName"
-                item-value="sdcDistrictCollectionID"
-                autocomplete="off"
-                @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
-              />
-            </slot>
-          </v-row>
-        </v-col>
-      </v-row>
+            </v-row>
+            <v-row>
+              <slot
+                name="text-search"
+              >
+                <v-autocomplete
+                  id="selectSchool"
+                  v-model="schoolNameNumberFilter"
+                  variant="underlined"
+                  :items="schoolSearchNames"
+                  color="#003366"
+                  label="School Name or Number"
+                  single-line
+                  :clearable="true"
+                  item-title="schoolCodeName"
+                  item-value="sdcSchoolCollectionID"
+                  autocomplete="off"
+                  @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
+                />
+              </slot>
+            </v-row>
+          </v-col>
+          <v-col cols="5">
+            <v-row>
+              <slot
+                name="text-search"
+              >
+                <v-autocomplete
+                  id="selectDistrict"
+                  v-model="districtNameNumberFilter"
+                  variant="underlined"
+                  :items="districtSearchNames"
+                  color="#003366"
+                  label="District Name or Number"
+                  single-line
+                  :clearable="true"
+                  item-title="districtCodeName"
+                  item-value="sdcDistrictCollectionID"
+                  autocomplete="off"
+                  @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
+                />
+              </slot>
+            </v-row>
+          </v-col>
+        </v-row>
+      </div>
       <div
         v-for="(filter, key) in filters"
         :key="key"
@@ -371,6 +375,11 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    indySchoolDistrictObject: {
+      type: Object,
+      required: false,
+      default: null
     },
   },
   emits: ['clearFilters', 'apply-filters', 'close'],

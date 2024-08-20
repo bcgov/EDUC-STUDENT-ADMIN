@@ -64,7 +64,7 @@
           />
         </div>
         <div v-if="reportView === 'fundingPolicyReport'">
-          <FundingPolicyReports />
+          <FundingPolicyReports :collection-object="collectionObject" />
         </div>
       </v-col>
     </v-row>
@@ -86,6 +86,13 @@ export default {
   components: {
     FundingPolicyReports,
     ReportSection
+  },
+  props: {
+    collectionObject: {
+      type: Object,
+      required: false,
+      default: null
+    },
   },
   emits: [],
   data() {
