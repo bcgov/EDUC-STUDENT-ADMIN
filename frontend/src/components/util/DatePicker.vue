@@ -40,6 +40,10 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update:model-value', 'clearDate'],
@@ -72,6 +76,7 @@ export default defineComponent({
     position="left"
     :teleport="allowTeleport ? '.v-overlay-container' : false"
     auto-apply
+    :readonly="readonly"
     @update:model-value="saveDate"
   >
     <template #dp-input="{ value, onInput, onEnter, onTab }">
@@ -84,7 +89,8 @@ export default defineComponent({
         :disabled="disabled"
         variant="underlined"
         placeholder="yyyy/mm/dd"
-        :clearable="true"
+        :clearable="!readonly"
+        :readonly="readonly"
         hide-details="auto"
         @input="onInput"
         @keydown.enter.prevent="onEnter"

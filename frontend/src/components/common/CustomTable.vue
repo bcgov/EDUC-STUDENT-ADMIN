@@ -56,9 +56,9 @@
           </th>
         </tr>
       </template>
-      <template #item="props">
+      <template #item="{props, index}">
         <tr
-          class="hoverTable"
+          :class="clickable ? `hoverTable`:``"
           @click="rowclicked(props.item.raw)"
         >
           <td
@@ -72,75 +72,114 @@
               hide-details="true"
               @click.prevent.stop="onClick(props)"
             />
-            <div v-else>
-              <span v-if="column.key === 'studentPen'">
-                
-                {{ getAssignedPen(props.item.raw['assignedPen']) }}
-              </span>
+            <div
+              v-else
+            >
+              <span :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``">
+                <span v-if="column.key === 'studentPen'">
 
-              <div v-else-if="column.key === 'schoolName'">
-                <a
-                  :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
-                  target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
-                  @click="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
-                >
-                  {{ props.item.raw['schoolName'] }}
-                </a>
-              </div>
-              <div v-else-if="column.key === 'districtName'">
-                <a
-                  :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
-                  target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
-                  @click="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
-                >
-                  {{ props.item.raw['districtName'] }}
-                </a>
-              </div>
+                  {{ getAssignedPen(props.item.raw['assignedPen']) }}
+                </span>
 
-              <span v-else-if="column.key === 'legalName'">
-                {{ displayName(props.item.raw['legalFirstName'], props.item.raw['legalMiddleNames'], props.item.raw['legalLastName']) }}
-              </span>
-
-              <div v-else-if="column.key === 'isAdult'">
-                <span v-if="props.item.raw['isAdult'] !== null || props.item.raw['isAdult' !== undefined]">{{ props.item.raw['isAdult'] === "true" ? 'Yes' : 'No' }}</span>
-              </div>
-
-              <div v-else-if="column.key === 'fte'">
-                <span>{{ props.item.raw['fte'] === 0 ? 0 : props.item.raw['fte'] }}</span>
-              </div>
-              <div v-else-if="column.key === 'mappedIndigenousEnrolledProgram' || column.key === 'mappedLanguageEnrolledProgram'">
-                <template v-if="props.item.raw[column.key]">
-                  <span
-                    v-for="(progs, idx) in props.item.raw[column.key].split(',')"
-                    :key="idx"
+                <div v-else-if="column.key === 'schoolName'">
+                  <a
+                    v-if="showLinks"
+                    :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
+                    target="_link"
+                    :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
+                    @click.stop="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
                   >
-                    <div>{{ progs }}</div>
+                    {{ props.item.raw['schoolName'] }}
+                  </a>
+                  <span v-else>
+                    {{ props.item.raw['schoolName'] }}
                   </span>
-                </template>
-                <template v-else>
-                  <div>-</div>
-                </template>
-              </div>
-              <span v-else-if="column.key === 'resolution'">
-                <slot
-                  :sdc-school-collection-student="props.item.raw"
-                  name="resolution"
-                >
-                  <template v-if="props.item.raw[column.key]">
-                    {{ props.item.raw[column.key] }}
-                  </template>
-                  <template v-else>-</template>
-                </slot>
-              </span>
-              <span v-else-if="props.item.raw[column.key]">{{ props.item.raw[column.key] }}</span>
-              <span v-else-if="column.title !== 'select'">-</span>
+                </div>
+                <div v-else-if="column.key === 'districtName'">
+                  <a
+                    v-if="showLinks"
+                    :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
+                    target="_link"
+                    :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
+                    @click.stop="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
+                  >
+                    {{ props.item.raw['districtName'] }}
+                  </a>
+                  <span v-else>
+                    {{ props.item.raw['districtName'] }}
+                  </span>
+                </div>
 
-              <div v-if="column.hasOwnProperty('subHeader')">
+                <span v-else-if="column.key === 'legalName'">
+                  <span :class="highlightChanges && index !== data.length-1 && data[index]['legalLastName'] !== data[index+1]?.['legalLastName'] ? `highlight`: ``">
+                    {{ props.item.raw['legalLastName'] }}
+                  </span>
+                  <span v-if="props.item.raw['legalFirstName'] || props.item.raw['legalMiddleNames']">,
+                    <span
+                      v-if="props.item.raw['legalFirstName']"
+                      :class="highlightChanges && index !== data.length-1 && data[index]['legalFirstName'] !== data[index+1]?.['legalFirstName'] ? `highlight`: ``"
+                    > {{ props.item.raw['legalFirstName'] }}</span>
+                    <span
+                      v-if="props.item.raw['legalMiddleNames']"
+                      :class="highlightChanges && index !== data.length-1 && data[index]['legalMiddleNames'] !== data[index+1]?.['legalMiddleNames'] ? `highlight`: ``"
+                    > ({{ props.item.raw['legalMiddleNames'] }})</span>
+                  </span>
+                </span>
+
+                <div v-else-if="column.key === 'isAdult'">
+                  <span v-if="props.item.raw['isAdult'] !== null || props.item.raw['isAdult' !== undefined]">{{ props.item.raw['isAdult'] === "true" ? 'Yes' : 'No' }}</span>
+                </div>
+
+                <div v-else-if="column.key === 'fte'">
+                  <span>{{ props.item.raw['fte'] === 0 ? 0 : props.item.raw['fte'] }}</span>
+                </div>
+                <div v-else-if="column.key === 'mappedIndigenousEnrolledProgram' || column.key === 'mappedLanguageEnrolledProgram'">
+                  <template v-if="props.item.raw[column.key]">
+                    <span
+                      v-for="(progs, idx) in props.item.raw[column.key].split(',')"
+                      :key="idx"
+                    >
+                      <div>{{ progs }}</div>
+                    </span>
+                  </template>
+                  <template v-else>
+                    <div>-</div>
+                  </template>
+                </div>
+                <div v-else-if="column.key === 'updateDate'">
+                  <span>{{ formatDateFromDateTime(props.item.raw[column.key]) }}</span>
+                </div>
+                <span v-else-if="column.key === 'resolution'">
+                  <slot
+                    :sdc-school-collection-student="props.item.raw"
+                    name="resolution"
+                  >
+                    <template v-if="props.item.raw[column.key]">
+                      {{ props.item.raw[column.key] }}
+                    </template>
+                    <template v-else>-</template>
+                  </slot>
+                </span>
+                <span v-else-if="props.item.raw[column.key]">{{ props.item.raw[column.key] }}</span>
+                <span v-else-if="column.title !== 'select'">-</span>
+              </span>
+              <div
+                v-if="column.hasOwnProperty('subHeader')"
+                :class="highlightChanges && index !== data.length-1 && data[index][column.subHeader.key] !== data[index+1]?.[column.subHeader.key] ? `highlight td-data`: `td-data`"
+              >
                 <div v-if="column.subHeader.key === 'usualName'">
-                  <span v-if="props.item.raw['usualLastName'] || props.item.raw['usualFirstName'] || props.item.raw['usualMiddleNames']">
-                    {{ displayName(props.item.raw['usualFirstName'], props.item.raw['usualMiddleNames'], props.item.raw['usualLastName']) }}
+                  <span :class="highlightChanges && index !== data.length-1 && data[index]['usualLastName'] !== data[index+1]?.['usualLastName'] ? `highlight`: ``">
+                    {{ props.item.raw['usualLastName'] }}
+                  </span>
+                  <span v-if="props.item.raw['usualFirstName'] || props.item.raw['usualMiddleNames']">,
+                    <span
+                      v-if="props.item.raw['usualFirstName']"
+                      :class="highlightChanges && index !== data.length-1 && data[index]['usualFirstName'] !== data[index+1]?.['usualFirstName'] ? `highlight`: ``"
+                    > {{ props.item.raw['usualFirstName'] }}</span>
+                    <span
+                      v-if="props.item.raw['usualMiddleNames']"
+                      :class="highlightChanges && index !== data.length-1 && data[index]['usualMiddleNames'] !== data[index+1]?.['usualMiddleNames'] ? `highlight`: ``"
+                    > ({{ props.item.raw['usualMiddleNames'] }})</span>
                   </span>
                   <span v-else>-</span>
                 </div>
@@ -169,6 +208,7 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import {sanitizeUrl} from '@braintree/sanitize-url';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 
 export default {
   name: 'CustomTable',
@@ -200,6 +240,18 @@ export default {
       type: Boolean,
       required: true,
       default: false
+    },
+    highlightChanges: {
+      type: Boolean,
+      default: false
+    },
+    showLinks: {
+      type: Boolean,
+      default: true
+    },
+    clickable: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow'],
@@ -290,6 +342,10 @@ export default {
       }
       this.masterCheckbox = this.selected.length > 0 && this.isAllSelected();
     },
+    formatDateFromDateTime(inputDate) {
+      const date = LocalDateTime.parse(inputDate);
+      return date.format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+    },
     getSdcStudentStatusIconColor(status) {
       if (status === 'FUNDWARN') {
         return '#ff9800';
@@ -340,7 +396,7 @@ export default {
        display: none;
  }
 
- tr:hover td {
+ .hoverTable tr:hover td {
   background-color: #e8e8e8 !important;
   cursor: pointer;
 }
@@ -357,5 +413,9 @@ export default {
   color: grey;
   cursor: not-allowed;
   text-decoration: none;
+}
+.highlight {
+  font-weight: bold;
+  color: #008000 !important;
 }
 </style>

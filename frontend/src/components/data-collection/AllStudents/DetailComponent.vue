@@ -101,6 +101,7 @@
   >
     <ViewStudentDetailsComponent
       :selected-student-ids="studentForEdit"
+      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode)"
       @reload-students="reloadStudentsFlag = true"
       @close="closeAndLoadStudents"
     />

@@ -30,6 +30,7 @@
         :total-students="1"
         :save-event="saveStudent"
         :show-funding-eligibility-detail="showFundingEligibilitySection()"
+        :readonly="readonly"
         @form-validity="isValid"
         @show-issues="cancel"
         @reset-parent="reset()"
@@ -104,6 +105,10 @@ export default {
       type: Array,
       required: true,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close', 'reload-students'],
