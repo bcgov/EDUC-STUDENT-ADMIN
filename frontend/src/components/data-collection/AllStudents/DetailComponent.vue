@@ -142,7 +142,7 @@ export default {
     indySchoolDistrictObject: {
       type: Object,
       required: false,
-      default: null
+      default: () => null
     },
     showExportBtn: {
       type: Boolean,
@@ -177,6 +177,16 @@ export default {
     ...mapState(sdcCollectionStore, ['schoolCollection','schoolFundingCodesMap', 'enrolledProgramCodesMap', 'careerProgramCodesMap', 'bandCodesMap', 'specialEducationCodesMap']),
     filterCount() {
       return Object.values(this.filterSearchParams.moreFilters).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length;
+    }
+  },
+  watch: {
+    indySchoolDistrictObject: {
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal && newVal !== null) {
+          this.loadStudents();
+        }
+      },
+      deep: true
     }
   },
   created() {
@@ -226,7 +236,6 @@ export default {
           value: this.indySchoolDistrictObject.id
         };
       }
-      console.log(this.filterSearchParams);
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,

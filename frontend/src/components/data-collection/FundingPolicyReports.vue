@@ -69,7 +69,6 @@ export default {
   },
   methods: {
     setIndySchoolsDistrictsNameNumberFilter(key, $event) {
-      console.log(key, $event);
       if ($event) {
         const type = $event.split(' - ')[0];
         const id = $event.split(' - ')[1];
