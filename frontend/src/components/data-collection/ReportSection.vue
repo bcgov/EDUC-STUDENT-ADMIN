@@ -212,7 +212,7 @@ export default {
           this.config = MIN_REPORTS.fsaReportHeadersforFeb;
           this.filterSearchParams.grade = 'FSA_FEB_GRADE';
           this.displayAllStudents = true;
-        } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
+        } else if(this.collectionObject?.collectionTypeCode === 'SEPTEMBER') {
           this.config = MIN_REPORTS.fsaReportHeadersforSept;
           this.filterSearchParams.grade = 'FSA_SEP_GRADE';
           this.displayAllStudents = true;
@@ -220,7 +220,19 @@ export default {
           this.displayAllStudents = false;
         }
       }
-    }
+    },
+    loadNext() {
+      if (this.canLoadNext) {
+        this.pageNumber += 1;
+        this.loadStudents();
+      }
+    },
+    loadPrevious() {
+      if (this.canLoadPrevious) {
+        this.pageNumber -= 1;
+        this.loadStudents();
+      }
+    },
   }
 };
 </script>
