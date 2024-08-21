@@ -819,6 +819,56 @@ async function getSdcDistrictCollections(req, res) {
   }
 }
 
+async function downloadSdcReport(req, res) {
+  const reportTypeValues = [
+    ['csv_school', 'ALL_STUDENT_SCHOOL_CSV'],
+    ['csv_dis', 'ALL_STUDENT_DIS_CSV']
+  ];
+  const REPORT_TYPE_CODE_MAP = Object.freeze(new Map(reportTypeValues));
+  
+  try {
+    const reportType = REPORT_TYPE_CODE_MAP.get(req.params.reportTypeCode);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+
+    let mincode;
+    let collectionId;
+    if(req.params.sdcDistrictCollectionID){
+      mincode = cacheService.getDistrictByDistrictID(res.locals.requestedSdcDistrictCollection.districtID).districtNumber;
+      collectionId = req.params.sdcDistrictCollectionID;
+    }else{
+      mincode = cacheService.getSchoolBySchoolID(res.locals.requestedSdcSchoolCollection.schoolID).mincode;
+      collectionId = req.params.sdcSchoolCollectionID;
+    }
+
+    const resData = await getData(`${config.get('sdc:rootURL')}/reportGeneration/${collectionId}/${reportType}`);
+    const fileDetails = getFileDetails(reportType, mincode);
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(resData.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
+  } catch (e) {
+    return handleExceptionResponse(e, res);
+  }
+}
+
+function getFileDetails(reportType, mincode) {
+  const mappings = {
+    'ALL_STUDENT_DIS_CSV': { filename: `AllDistrictStudents_${mincode}.csv`, contentType: 'text/csv' },
+    'ALL_STUDENT_SCHOOL_CSV': { filename: `AllSchoolStudents_${mincode}.csv`, contentType: 'text/csv' },
+    'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
+  };
+  return mappings[reportType] || mappings['DEFAULT'];
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
+
 module.exports = {
   getSnapshotFundingDataForSchool,
   getAllCollectionsForSchool,
@@ -844,5 +894,6 @@ module.exports = {
   getCollectionByID,
   getSDCSchoolCollectionStudentPaginatedSlice,
   getSdcSchoolCollections,
-  getSdcDistrictCollections
+  getSdcDistrictCollections,
+  downloadSdcReport
 };

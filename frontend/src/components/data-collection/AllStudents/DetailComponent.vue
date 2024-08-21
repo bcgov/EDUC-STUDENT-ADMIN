@@ -204,6 +204,10 @@ export default {
       this.reloadStudentsFlag = false;
     },
     downloadReportURL() {
+      if (this.indySchoolDistrictObject != null) {
+        if (this.indySchoolDistrictObject.type === 'indy') return `${Routes.sdc.SDC_SCHOOL_COLLECTION}/${this.indySchoolDistrictObject.id}/report/csv_dis/download`;
+        if (this.indySchoolDistrictObject.type === 'district') return `${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.indySchoolDistrictObject.id}/report/csv_dis/download`;
+      }
       return `${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.$route.params.sdcDistrictCollectionID}/report/csv_dis/download`;
     },
     editStudent($event) {
