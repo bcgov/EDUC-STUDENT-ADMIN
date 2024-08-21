@@ -395,7 +395,8 @@ export const SDC_REPORTS = Object.freeze(
       },
       { 
         label: 'FSA Registration Report',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/'
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/fsa-registration-report/'
       }
     ],
     independentReports: [
