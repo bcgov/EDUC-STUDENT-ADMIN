@@ -15,6 +15,7 @@ const constants = require('../util/constants');
 const {getCodes} = require('../components/utils');
 const PERMISSION = perm.PERMISSION;
 const permUtils = require('../components/permissionUtils');
+const auth = require('../components/auth');
 
 //cached code table calls
 router.get('/band-codes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_BAND_CODES, 'sdc:bandCodesURL'));
@@ -64,14 +65,14 @@ router.post('/sdcSchoolCollectionStudent', passport.authenticate('jwt', {session
 //district collection
 router.post('/sdcDistrictCollection/:sdcDistrictCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDistrictCollectionID'), unsubmitSdcDistrictCollection);
 router.post('/sdcDistrictCollection/resolve-district-duplicates/:sdcDuplicateID/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDuplicateID'), resolveDuplicates);
-router.get('/sdcDistrictCollection/:sdcDistrictCollectionID/report/:reportTypeCode/download',passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDistrictCollectionID'), downloadSdcReport);
+router.get('/sdcDistrictCollection/:sdcDistrictCollectionID/report/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDistrictCollectionID'), downloadSdcReport);
 
 //school collection
 router.get('/sdcSchoolCollection/:sdcSchoolCollectionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), getSDCSchoolCollectionDetail);
 router.get('/sdcSchoolCollection/search/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, permUtils.isValidUUIDParam('schoolID'), getAllCollectionsForSchool);
 router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), unsubmitSdcSchoolCollection);
 router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/resolve-duplicates/:sdcDuplicateID/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDuplicateID'), resolveDuplicates);
-router.get('/sdcSchoolCollection/:sdcSchoolCollectionID/report/:reportTypeCode/download', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), downloadSdcReport);
+router.get('/:sdcSchoolCollectionID/report/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), downloadSdcReport);
 
 //duplciates
 router.get('/sdc-duplicate/all-district-provincial-in-flight/:collectionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('collectionID'), getInFlightDistrictProvincialDuplicates);

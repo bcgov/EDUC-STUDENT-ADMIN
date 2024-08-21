@@ -833,19 +833,15 @@ async function downloadSdcReport(req, res) {
         message: 'Invalid report type provided'
       });
     }
-
-    let mincode;
     let collectionId;
     if(req.params.sdcDistrictCollectionID){
-      mincode = cacheService.getDistrictByDistrictID(res.locals.requestedSdcDistrictCollection.districtID).districtNumber;
       collectionId = req.params.sdcDistrictCollectionID;
-    }else{
-      mincode = cacheService.getSchoolBySchoolID(res.locals.requestedSdcSchoolCollection.schoolID).mincode;
+    } else {
       collectionId = req.params.sdcSchoolCollectionID;
     }
 
     const resData = await getData(`${config.get('sdc:rootURL')}/reportGeneration/${collectionId}/${reportType}`);
-    const fileDetails = getFileDetails(reportType, mincode);
+    const fileDetails = getFileDetails(reportType);
 
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(resData.documentData, 'base64');
@@ -855,10 +851,10 @@ async function downloadSdcReport(req, res) {
   }
 }
 
-function getFileDetails(reportType, mincode) {
+function getFileDetails(reportType) {
   const mappings = {
-    'ALL_STUDENT_DIS_CSV': { filename: `AllDistrictStudents_${mincode}.csv`, contentType: 'text/csv' },
-    'ALL_STUDENT_SCHOOL_CSV': { filename: `AllSchoolStudents_${mincode}.csv`, contentType: 'text/csv' },
+    'ALL_STUDENT_DIS_CSV': { filename: `AllDistrictStudents.csv`, contentType: 'text/csv' },
+    'ALL_STUDENT_SCHOOL_CSV': { filename: `AllSchoolStudents.csv`, contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
