@@ -91,47 +91,62 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
   try {
     const search = [];
 
-    search.push({
-      condition: null,
-      searchCriteriaList: [{ key: 'sdcSchoolCollection.collectionEntity.collectionID', value: req.params.collectionID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
-    });
+    if(req.params.collectionID) {
+      search.push({
+        condition: null,
+        searchCriteriaList: [{
+          key: 'sdcSchoolCollection.collectionEntity.collectionID',
+          value: req.params.collectionID,
+          operation: FILTER_OPERATION.EQUAL,
+          valueType: VALUE_TYPE.UUID
+        }]
+      });
+    }
+    if(req.query.searchParams) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createSearchCriteria(req.query.searchParams)
+      });
+    }
 
-    search.push({
-      condition: CONDITION.AND,
-      searchCriteriaList: createSearchCriteria(req.query.searchParams)
-    });
-
-    if(req.query.searchParams['tabFilter']) {
+    if(req.query.searchParams?.['tabFilter']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createTabFilter(req.query.searchParams['tabFilter'])
       });
     }
 
-    if (req.query.searchParams['multiFieldName']) {
+    if (req.query.searchParams?.['multiFieldName']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createMultiFieldNameSearchCriteria(req.query.searchParams['multiFieldName'])
       });
     }
-    if (req.query.searchParams['penLocalIdNumber']) {
+    if (req.query.searchParams?.['penLocalIdNumber']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createLocalIdPenSearchCriteria(req.query.searchParams['penLocalIdNumber'])
       });
     }
 
-    if (req.query.searchParams['moreFilters']) {
+    if (req.query.searchParams?.['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
         search.push(criteria);
       });
     }
 
-    if(req.query.searchParams['assignedPen']) {
+    if(req.query.searchParams?.['assignedPen']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createAssignedPENSearchCriteria(req.query.searchParams['assignedPen'])
+      });
+    }
+
+    if(req.query.assignedStudentID) {
+      search.push({
+        condition: null,
+        searchCriteriaList: [{ key: 'assignedStudentId', value: req.query.assignedStudentID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
       });
     }
 
@@ -200,6 +215,12 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
         search.push(criteria);
       });
     }
+    if (req.query.searchParams['grade']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createFsaReportCriteria(req.query.searchParams['grade'])
+      });
+    }
 
     const params = {
       params: {
@@ -222,9 +243,13 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
 
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
+      let district = cacheService.getDistrictJSONByDistrictId(school.districtID);
+      value.schoolNumber = school.mincode;
       value.schoolName = getSchoolName(school);
-      value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
+      value.districtName = getDistrictName(district);
+      value.districtNumber = district.districtNumber;
       value.districtID = school.districtID;
+      value.mincode = cacheService.getSchoolBySchoolID(value.schoolID)?.mincode;
     });
 
     return res.status(HttpStatus.OK).json(data);
@@ -236,6 +261,16 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       return errorResponse(res);
     }
   }
+}
+
+function createFsaReportCriteria(searchParams) {
+  let searchCriteriaList = [];
+  if(searchParams === 'FSA_SEP_GRADE') {
+    searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '04,07', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  } else if(searchParams === 'FSA_FEB_GRADE') {
+    searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '03,06', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  return searchCriteriaList;
 }
 
 function createTabFilter(searchParams) {

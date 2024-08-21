@@ -389,9 +389,15 @@ export const SDC_REPORTS = Object.freeze(
   {
     publicReports: [
       { 
-        label: 'ABC',
-        url: '123'
-      }],
+        label: 'School Physical Address Report',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-address-report/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/'
+      },
+      { 
+        label: 'FSA Registration Report',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/'
+      }
+    ],
     independentReports: [
       {
         label: 'All Students',

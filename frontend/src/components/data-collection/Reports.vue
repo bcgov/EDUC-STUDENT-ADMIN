@@ -51,16 +51,19 @@
         <div v-if="reportView === 'publicReports'">
           <ReportSection
             :report-list="publicReports"
+            :collection-object="collectionObject"
           />
         </div>
         <div v-if="reportView === 'independentReports'">
           <ReportSection
             :report-list="independentReports"
+            :collection-object="collectionObject"
           />
         </div>
         <div v-if="reportView === 'headcountReports'">
           <ReportSection
             :report-list="headcountsReports"
+            :collection-object="collectionObject"
           />
         </div>
         <div v-if="reportView === 'fundingPolicyReport'">
@@ -90,9 +93,8 @@ export default {
   props: {
     collectionObject: {
       type: Object,
-      required: false,
-      default: null
-    },
+      required: true
+    }
   },
   emits: [],
   data() {
@@ -126,9 +128,6 @@ export default {
     },
     showHeadcountReports() {
       this.reportView = 'headcountReports';
-    },
-    showFundingPolicyReports() {
-      this.reportView = 'fundingPolicyReport';
     }
   }
 };
