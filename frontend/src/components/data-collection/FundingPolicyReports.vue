@@ -1,27 +1,47 @@
 <template>
   <v-col>
-    <v-row>
+    <v-row v-if="collectionType === 'FUNDING_POLICY_REPORT_INDY'">
       <slot
         name="text-search"
       >
         <v-autocomplete
-          id="selectIndySchoolDistrict"
-          v-model="indySchoolsDistrictsNameNumberFilter"
+          id="selectIndySchool"
+          v-model="indySchoolsNameNumberFilter"
           variant="underlined"
-          :items="indySchoolsDistrictsNames"
+          :items="indySchoolNames"
           color="#003366"
-          label="District and Independent School Select"
+          label="Independent School Select"
           single-line
           :clearable="true"
           item-title="codeName"
           item-value="id"
           autocomplete="off"
-          @update:model-value="setIndySchoolsDistrictsNameNumberFilter('indySchoolsDistrictsNameNumber', $event)"
+          @update:model-value="setIndySchoolsDistrictsNameNumberFilter('indy', $event)"
+        />
+      </slot>
+    </v-row>
+    <v-row v-if="collectionType === 'FUNDING_POLICY_REPORT_DISTRICT'">
+      <slot
+        name="text-search"
+      >
+        <v-autocomplete
+          id="selectDistrict"
+          v-model="districtsNameNumberFilter"
+          variant="underlined"
+          :items="districtNames"
+          color="#003366"
+          label="District Select"
+          single-line
+          :clearable="true"
+          item-title="codeName"
+          item-value="id"
+          autocomplete="off"
+          @update:model-value="setIndySchoolsDistrictsNameNumberFilter('district', $event)"
         />
       </slot>
     </v-row>
   </v-col>
-  <v-col v-if="indySchoolsDistrictsNameNumberFilter != null">
+  <v-col v-if="indySchoolsNameNumberFilter != null || districtsNameNumberFilter != null">
     <DetailComponent
       :config="config"
       :collection-object="collectionObject"
@@ -49,11 +69,17 @@ export default {
       required: true,
       default: null
     },
+    collectionType: {
+      type: String,
+      required: true,
+    }
   },
   data() {
     return {
-      indySchoolsDistrictsNameNumberFilter: null,
-      indySchoolsDistrictsNames: [],
+      indySchoolsNameNumberFilter: null,
+      districtsNameNumberFilter: null,
+      indySchoolNames: [],
+      districtNames: [],
       config: FTE,
       indySchoolDistrictObject: null,
     };
@@ -70,15 +96,14 @@ export default {
   methods: {
     setIndySchoolsDistrictsNameNumberFilter(key, $event) {
       if ($event) {
-        const type = $event.split(' - ')[0];
-        const id = $event.split(' - ')[1];
-        this.indySchoolDistrictObject = { type, id };
+        this.indySchoolDistrictObject = { type: key, id: $event };
       } else {
         this.indySchoolDistrictObject = null;
       }
     },
     setupIndySchoolsDistrictsList() {
-      this.indySchoolsDistrictsNames = [];
+      this.indySchoolNames = [];
+      this.districtNames = [];
 
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
         .then((res) => {
@@ -88,12 +113,12 @@ export default {
             if (school && school.authorityID != null) {
               let schoolItem = {
                 codeName: school.schoolName + ' - ' + school.mincode,
-                id: 'indy - ' + schoolCollection.sdcSchoolCollectionID,
+                id: schoolCollection.sdcSchoolCollectionID,
               };
-              this.indySchoolsDistrictsNames.push(schoolItem);
+              this.indySchoolNames.push(schoolItem);
             }
           });
-          this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
+          this.indySchoolNames = sortBy(this.indySchoolNames, ['codeName']);
         })
         .catch(error => {
           console.error(error);
@@ -106,12 +131,12 @@ export default {
             if (district) {
               let districtItem = {
                 codeName: district.name + ' - ' + district.districtNumber,
-                id: 'district - ' + districtCollection.sdcDistrictCollectionID,
+                id: districtCollection.sdcDistrictCollectionID,
               };
-              this.indySchoolsDistrictsNames.push(districtItem);
+              this.districtNames.push(districtItem);
             }
           });
-          this.indySchoolsDistrictsNames = sortBy(this.indySchoolsDistrictsNames, ['codeName']);
+          this.districtNames = sortBy(this.districtNames, ['codeName']);
         })
         .catch(error => {
           console.error(error);

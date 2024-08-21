@@ -27,54 +27,69 @@
     </v-col>
   </v-row>
   
-    <v-col>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-model="search"
-            label="Search"
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-            clearable
-            hide-details
-            single-line
-          />
-        </v-col>
-      </v-row>
+  <v-col>
+    <v-row v-if="selectedReport?.reportID !== 'FUNDING_POLICY_REPORT_DISTRICT' && selectedReport?.reportID !== 'FUNDING_POLICY_REPORT_INDY'">
+      <v-col>
+        <v-text-field
+          v-model="search"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          clearable
+          hide-details
+          single-line
+        />
+      </v-col>
+    </v-row>
 
-      <v-row v-if="reportData === null && isLoading">
-        <v-col>
-          <Spinner />
-        </v-col>
-      </v-row>
-      <v-row v-if="!displayAllStudents && reportData !== null"> 
-        <v-col>
-          <v-data-table
-            id="dataTable"
-            :search="search"
-            :headers="headers"
-            :items="reportData"
-            items-per-page="10"
-            class="elevation-1 rounded"
-            mobile-breakpoint="0"
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="displayAllStudents">
-        <v-col>
-          <CustomTableSlice
-            :headers="config"
-            :data="studentList"
-            :total-elements="totalElements"
-            :is-loading="isLoading"
-            :can-load-next="canLoadNext"
-            :can-load-previous="canLoadPrevious"
-            @loadNext="loadNext"
-            @loadPrevious="loadPrevious"
-          />
-        </v-col>
-      </v-row>
-    </v-col>
+    <v-row v-if="reportData === null && isLoading">
+      <v-col>
+        <Spinner />
+      </v-col>
+    </v-row>
+    <v-row v-if="!displayAllStudents && reportData !== null">
+      <v-col>
+        <v-data-table
+          id="dataTable"
+          :search="search"
+          :headers="headers"
+          :items="reportData"
+          items-per-page="10"
+          class="elevation-1 rounded"
+          mobile-breakpoint="0"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="displayAllStudents">
+      <v-col>
+        <CustomTableSlice
+          :headers="config"
+          :data="studentList"
+          :total-elements="totalElements"
+          :is-loading="isLoading"
+          :can-load-next="canLoadNext"
+          :can-load-previous="canLoadPrevious"
+          @loadNext="loadNext"
+          @loadPrevious="loadPrevious"
+        />
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_INDY'">
+        <FundingPolicyReport
+          :collection-object="collectionObject"
+          :collection-type="selectedReport?.reportID"
+        />
+      </v-col>
+      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_DISTRICT'">
+        <FundingPolicyReport
+          :collection-object="collectionObject"
+          :collection-type="selectedReport?.reportID"
+        />
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script>
@@ -86,10 +101,11 @@ import {MIN_REPORTS} from '@/utils/sdc/collectionTableConfiguration.js';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 import {Routes} from '@/utils/constants';
 import {isEmpty, omitBy} from 'lodash';
+import FundingPolicyReport from './FundingPolicyReports.vue';
 
 export default {
   name: 'ReportSection',
-  components: {Spinner, CustomTableSlice},
+  components: {FundingPolicyReport, Spinner, CustomTableSlice},
   mixins: [alertMixin],
   props: {
     reportList: {
@@ -134,6 +150,8 @@ export default {
         if(this.displayAllStudents) {
           this.loadStudents();
         }
+      } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT') {
+        this.displayAllStudents = false;
       } else {
         this.getReportData();
       }
@@ -190,18 +208,18 @@ export default {
     },
     loadHeaders(label) {
       if(label === 'FSA Registration Report') {
-          if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
-            this.config = MIN_REPORTS.fsaReportHeadersforFeb;
-            this.filterSearchParams.grade = 'FSA_FEB_GRADE';
-            this.displayAllStudents = true;
-          } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
-            this.config = MIN_REPORTS.fsaReportHeadersforSept;
-            this.filterSearchParams.grade = 'FSA_SEP_GRADE';
-            this.displayAllStudents = true;
-          } else {
-            this.displayAllStudents = false;
-          }
+        if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
+          this.config = MIN_REPORTS.fsaReportHeadersforFeb;
+          this.filterSearchParams.grade = 'FSA_FEB_GRADE';
+          this.displayAllStudents = true;
+        } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
+          this.config = MIN_REPORTS.fsaReportHeadersforSept;
+          this.filterSearchParams.grade = 'FSA_SEP_GRADE';
+          this.displayAllStudents = true;
+        } else {
+          this.displayAllStudents = false;
         }
+      }
     }
   }
 };

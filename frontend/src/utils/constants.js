@@ -396,6 +396,10 @@ export const SDC_REPORTS = Object.freeze(
       { 
         label: 'FSA Registration Report',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/'
+      },
+      {
+        label: 'All Students by District (CSV)',
+        reportID: 'FUNDING_POLICY_REPORT_DISTRICT',
       }
     ],
     independentReports: [
@@ -408,7 +412,12 @@ export const SDC_REPORTS = Object.freeze(
         label: 'Five Students',
         reportID: 'FIVE_STUDENTS_REPORT',
         url: 'ABC'
-      },],
+      },
+      {
+        label: 'All Students by Independent School (CSV)',
+        reportID: 'FUNDING_POLICY_REPORT_INDY',
+      }
+    ],
     headcountReports: [
       {
         label: 'School Enrollment Headcounts',

@@ -34,16 +34,6 @@
         >
           Headcount
         </v-btn>
-        <v-btn
-          v-if="hasAccessToHeadcountReports()"
-          id="fundingPolicyReportButton"
-          size="large"
-          class="detail-button"
-          :class="{ 'active-button': reportView === 'fundingPolicyReport' }"
-          @click="showFundingPolicyReports"
-        >
-          Funding Policy Reports
-        </v-btn>
       </v-btn-toggle>
     </v-row>
     <v-row>
@@ -66,9 +56,6 @@
             :collection-object="collectionObject"
           />
         </div>
-        <div v-if="reportView === 'fundingPolicyReport'">
-          <FundingPolicyReports :collection-object="collectionObject" />
-        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -81,13 +68,10 @@ import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import ReportSection from '@/components/data-collection/ReportSection.vue';
 import {SDC_REPORTS} from '@/utils/constants';
-import FundingPolicyReports from '@/components/data-collection/FundingPolicyReports.vue';
-
 
 export default {
   name: 'Reports',
   components: {
-    FundingPolicyReports,
     ReportSection
   },
   props: {
