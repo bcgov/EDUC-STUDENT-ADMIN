@@ -27,54 +27,54 @@
     </v-col>
   </v-row>
   
-    <v-col>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-model="search"
-            label="Search"
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-            clearable
-            hide-details
-            single-line
-          />
-        </v-col>
-      </v-row>
+  <v-col>
+    <v-row v-if="displayAllStudents || reportData !== null">
+      <v-col>
+        <v-text-field
+          v-model="search"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          clearable
+          hide-details
+          single-line
+        />
+      </v-col>
+    </v-row>
 
-      <v-row v-if="reportData === null && isLoading">
-        <v-col>
-          <Spinner />
-        </v-col>
-      </v-row>
-      <v-row v-if="!displayAllStudents && reportData !== null"> 
-        <v-col>
-          <v-data-table
-            id="dataTable"
-            :search="search"
-            :headers="headers"
-            :items="reportData"
-            items-per-page="10"
-            class="elevation-1 rounded"
-            mobile-breakpoint="0"
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="displayAllStudents">
-        <v-col>
-          <CustomTableSlice
-            :headers="config"
-            :data="studentList"
-            :total-elements="totalElements"
-            :is-loading="isLoading"
-            :can-load-next="canLoadNext"
-            :can-load-previous="canLoadPrevious"
-            @loadNext="loadNext"
-            @loadPrevious="loadPrevious"
-          />
-        </v-col>
-      </v-row>
-    </v-col>
+    <v-row v-if="reportData === null && isLoading">
+      <v-col>
+        <Spinner />
+      </v-col>
+    </v-row>
+    <v-row v-if="!displayAllStudents && reportData !== null"> 
+      <v-col>
+        <v-data-table
+          id="dataTable"
+          :search="search"
+          :headers="headers"
+          :items="reportData"
+          items-per-page="10"
+          class="elevation-1 rounded"
+          mobile-breakpoint="0"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="displayAllStudents">
+      <v-col>
+        <CustomTableSlice
+          :headers="config"
+          :data="studentList"
+          :total-elements="totalElements"
+          :is-loading="isLoading"
+          :can-load-next="canLoadNext"
+          :can-load-previous="canLoadPrevious"
+          @loadNext="loadNext"
+          @loadPrevious="loadPrevious"
+        />
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script>
@@ -190,18 +190,18 @@ export default {
     },
     loadHeaders(label) {
       if(label === 'FSA Registration Report') {
-          if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
-            this.config = MIN_REPORTS.fsaReportHeadersforFeb;
-            this.filterSearchParams.grade = 'FSA_FEB_GRADE';
-            this.displayAllStudents = true;
-          } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
-            this.config = MIN_REPORTS.fsaReportHeadersforSept;
-            this.filterSearchParams.grade = 'FSA_SEP_GRADE';
-            this.displayAllStudents = true;
-          } else {
-            this.displayAllStudents = false;
-          }
+        if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
+          this.config = MIN_REPORTS.fsaReportHeadersforFeb;
+          this.filterSearchParams.grade = 'FSA_FEB_GRADE';
+          this.displayAllStudents = true;
+        } else if(this.collectionObject?.collectionTypeCode !== 'SEPTEMBER') {
+          this.config = MIN_REPORTS.fsaReportHeadersforSept;
+          this.filterSearchParams.grade = 'FSA_SEP_GRADE';
+          this.displayAllStudents = true;
+        } else {
+          this.displayAllStudents = false;
         }
+      }
     }
   }
 };
