@@ -28,7 +28,7 @@
   </v-row>
   
   <v-col>
-    <v-row v-if="selectedReport?.reportID !== 'FUNDING_POLICY_REPORT_DISTRICT' && selectedReport?.reportID !== 'FUNDING_POLICY_REPORT_INDY'">
+    <v-row v-if="displayAllStudents || reportData !== null">
       <v-col>
         <v-text-field
           v-model="search"

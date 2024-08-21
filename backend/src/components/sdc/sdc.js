@@ -853,8 +853,8 @@ async function downloadSdcReport(req, res) {
 
 function getFileDetails(reportType) {
   const mappings = {
-    'ALL_STUDENT_DIS_CSV': { filename: `AllDistrictStudents.csv`, contentType: 'text/csv' },
-    'ALL_STUDENT_SCHOOL_CSV': { filename: `AllSchoolStudents.csv`, contentType: 'text/csv' },
+    'ALL_STUDENT_DIS_CSV': { filename: 'AllDistrictStudents.csv', contentType: 'text/csv' },
+    'ALL_STUDENT_SCHOOL_CSV': { filename: 'AllSchoolStudents.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];

@@ -93,8 +93,18 @@ export default {
     ...mapState(authStore, ['userInfo'])
   },
   created() {
+    this.setOriginalReportTab();
   },
   methods: {
+    setOriginalReportTab(){
+      if(this.hasAccessToPublicReports()){
+        this.reportView = 'publicReports';
+      }else if(this.hasAccessToIndependentReports()){
+        this.reportView = 'independentReports';
+      }else if(this.hasAccessToHeadcountReports()){
+        this.reportView = 'headcountReports';
+      }
+    },
     hasAccessToPublicReports(){
       return hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION);
     },
