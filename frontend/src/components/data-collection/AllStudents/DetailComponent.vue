@@ -86,6 +86,7 @@
       <Filters
         :filters="config.allowedFilters"
         :collection-object="collectionObject"
+        :indy-school-district-object="indySchoolDistrictObject"
         @apply-filters="applyFilters"
         @clear-filters="clearFilters"
         @close="showFilters= !showFilters"
@@ -139,6 +140,11 @@ export default {
       required: true,
       default: null
     },
+    indySchoolDistrictObject: {
+      type: Object,
+      required: false,
+      default: () => null
+    },
     showExportBtn: {
       type: Boolean,
       default: false
@@ -174,11 +180,20 @@ export default {
       return Object.values(this.filterSearchParams.moreFilters).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length;
     }
   },
+  watch: {
+    indySchoolDistrictObject: {
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal && newVal !== null) {
+          this.loadStudents();
+        }
+      },
+      deep: true
+    }
+  },
   created() {
     sdcCollectionStore().getCodes().then(() => {
       this.loadStudents();
     });
-
   },
   methods: {
     closeAndLoadStudents() {
@@ -189,6 +204,10 @@ export default {
       this.reloadStudentsFlag = false;
     },
     downloadReportURL() {
+      if (this.indySchoolDistrictObject != null) {
+        if (this.indySchoolDistrictObject.type === 'indy') return `${Routes.sdc.BASE_URL}/${this.indySchoolDistrictObject.id}/report/csv_school/download`;
+        if (this.indySchoolDistrictObject.type === 'district') return `${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.indySchoolDistrictObject.id}/report/csv_dis/download`;
+      }
       return `${Routes.sdc.SDC_DISTRICT_COLLECTION}/${this.$route.params.sdcDistrictCollectionID}/report/csv_dis/download`;
     },
     editStudent($event) {
@@ -209,6 +228,19 @@ export default {
     },
     loadStudents() {
       this.isLoading = true;
+      if (this.indySchoolDistrictObject != null) {
+        const filterKey = this.indySchoolDistrictObject.type === 'indy' ? 'schoolNameNumber' : 'districtNameNumber';
+        const filterTitle = this.indySchoolDistrictObject.type === 'indy' ? 'SchoolNameOrNumber' : 'DistrictNameOrNumber';
+
+        if (!this.filterSearchParams.moreFilters[filterKey]) {
+          this.filterSearchParams.moreFilters[filterKey] = [];
+        }
+
+        this.filterSearchParams.moreFilters[filterKey][0] = {
+          title: filterTitle,
+          value: this.indySchoolDistrictObject.id
+        };
+      }
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,

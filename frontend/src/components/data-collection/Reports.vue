@@ -69,7 +69,6 @@ import {authStore} from '@/store/modules/auth';
 import ReportSection from '@/components/data-collection/ReportSection.vue';
 import {SDC_REPORTS} from '@/utils/constants';
 
-
 export default {
   name: 'Reports',
   components: {

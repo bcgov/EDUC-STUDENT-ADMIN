@@ -47,7 +47,7 @@
         <Spinner />
       </v-col>
     </v-row>
-    <v-row v-if="!displayAllStudents && reportData !== null"> 
+    <v-row v-if="!displayAllStudents && reportData !== null">
       <v-col>
         <v-data-table
           id="dataTable"
@@ -72,6 +72,21 @@
           @loadNext="loadNext"
           @loadPrevious="loadPrevious"
         />
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_INDY'">
+        <FundingPolicyReport
+          :collection-object="collectionObject"
+          :collection-type="selectedReport?.reportID"
+        />
+      </v-col>
+      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_DISTRICT'">
+        <FundingPolicyReport
+          :collection-object="collectionObject"
+          :collection-type="selectedReport?.reportID"
+        />
       </v-col>
     </v-row>
   </v-col>
@@ -86,10 +101,11 @@ import {MIN_REPORTS} from '@/utils/sdc/collectionTableConfiguration.js';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 import {Routes} from '@/utils/constants';
 import {isEmpty, omitBy} from 'lodash';
+import FundingPolicyReport from './FundingPolicyReports.vue';
 
 export default {
   name: 'ReportSection',
-  components: {Spinner, CustomTableSlice},
+  components: {FundingPolicyReport, Spinner, CustomTableSlice},
   mixins: [alertMixin],
   props: {
     reportList: {
@@ -134,6 +150,8 @@ export default {
         if(this.displayAllStudents) {
           this.loadStudents();
         }
+      } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT') {
+        this.displayAllStudents = false;
       } else {
         this.getReportData();
       }
