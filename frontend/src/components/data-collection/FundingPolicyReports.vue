@@ -1,13 +1,13 @@
 <template>
   <v-col>
-    <v-row v-if="collectionType === 'FUNDING_POLICY_REPORT_INDY'">
+    <v-row no-gutters v-if="collectionType === 'FUNDING_POLICY_REPORT_INDY'">
       <slot
         name="text-search"
       >
         <v-autocomplete
           id="selectIndySchool"
           v-model="indySchoolsNameNumberFilter"
-          variant="underlined"
+          variant="outlined"
           :items="indySchoolNames"
           color="#003366"
           label="Independent School Select"
@@ -27,7 +27,7 @@
         <v-autocomplete
           id="selectDistrict"
           v-model="districtsNameNumberFilter"
-          variant="underlined"
+          variant="outlined"
           :items="districtNames"
           color="#003366"
           label="District Select"

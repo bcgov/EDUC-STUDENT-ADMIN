@@ -26,70 +26,71 @@
       </router-link>
     </v-col>
   </v-row>
-  
-  <v-col>
-    <v-row v-if="displayAllStudents || reportData !== null">
-      <v-col>
-        <v-text-field
-          v-model="search"
-          label="Search"
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          clearable
-          hide-details
-          single-line
-        />
-      </v-col>
-    </v-row>
 
-    <v-row v-if="reportData === null && isLoading">
-      <v-col>
-        <Spinner />
-      </v-col>
-    </v-row>
-    <v-row v-if="!displayAllStudents && reportData !== null">
-      <v-col>
-        <v-data-table
-          id="dataTable"
-          :search="search"
-          :headers="headers"
-          :items="reportData"
-          items-per-page="10"
-          class="elevation-1 rounded"
-          mobile-breakpoint="0"
-        />
-      </v-col>
-    </v-row>
-    <v-row v-if="displayAllStudents">
-      <v-col>
-        <CustomTableSlice
-          :headers="config"
-          :data="studentList"
-          :total-elements="totalElements"
-          :is-loading="isLoading"
-          :can-load-next="canLoadNext"
-          :can-load-previous="canLoadPrevious"
-          @loadNext="loadNext"
-          @loadPrevious="loadPrevious"
-        />
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_INDY'">
-        <FundingPolicyReport
-          :collection-object="collectionObject"
-          :collection-type="selectedReport?.reportID"
-        />
-      </v-col>
-      <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_DISTRICT'">
-        <FundingPolicyReport
-          :collection-object="collectionObject"
-          :collection-type="selectedReport?.reportID"
-        />
-      </v-col>
-    </v-row>
-  </v-col>
+  <v-row
+    v-if="displayAllStudents || reportData !== null"
+    no-gutters
+  >
+    <v-col>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        clearable
+        hide-details
+        single-line
+      />
+    </v-col>
+  </v-row>
+
+  <v-row v-if="reportData === null && isLoading">
+    <v-col>
+      <Spinner />
+    </v-col>
+  </v-row>
+  <v-row v-if="!displayAllStudents && reportData !== null">
+    <v-col>
+      <v-data-table
+        id="dataTable"
+        :search="search"
+        :headers="headers"
+        :items="reportData"
+        items-per-page="10"
+        class="elevation-1 rounded"
+        mobile-breakpoint="0"
+      />
+    </v-col>
+  </v-row>
+  <v-row v-if="displayAllStudents">
+    <v-col>
+      <CustomTableSlice
+        :headers="config"
+        :data="studentList"
+        :total-elements="totalElements"
+        :is-loading="isLoading"
+        :can-load-next="canLoadNext"
+        :can-load-previous="canLoadPrevious"
+        @loadNext="loadNext"
+        @loadPrevious="loadPrevious"
+      />
+      />
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_INDY'">
+      <FundingPolicyReport
+        :collection-object="collectionObject"
+        :collection-type="selectedReport?.reportID"
+      />
+    </v-col>
+    <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_DISTRICT'">
+      <FundingPolicyReport
+        :collection-object="collectionObject"
+        :collection-type="selectedReport?.reportID"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -160,6 +161,7 @@ export default {
   methods: {
     async getReportData() {
       this.isLoading = true;
+      this.reportData = null;
 
       await ApiService.apiAxios.get(this.selectedReport.url + this.collectionID).then(response => {
         this.reportData = response.data.rows;
