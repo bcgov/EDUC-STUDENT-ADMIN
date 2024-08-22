@@ -129,7 +129,7 @@ export default {
       displayAllStudents: false,
       allStudentsView: ['FSA Registration Report'],
       filterSearchParams: {
-        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {},
         grade: ''
       },
