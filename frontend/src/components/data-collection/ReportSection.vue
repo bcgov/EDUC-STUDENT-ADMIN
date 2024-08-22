@@ -13,7 +13,7 @@
       />
     </v-col>
     <v-col
-      v-if="reportData !== null && selectedReport?.csvDownloadURL"
+      v-if="(reportData !== null || displayAllStudents) && selectedReport?.csvDownloadURL"
       class="mt-4 ml-4"
     >
       <router-link
