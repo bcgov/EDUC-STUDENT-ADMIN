@@ -381,6 +381,9 @@ function createSearchCriteria(searchParams = []) {
     if (key === 'sdcSchoolCollectionStudentStatusCode') {
       searchCriteriaList.push({ key: key, operation: FILTER_OPERATION.IN, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
+    if (key === 'notSdcSchoolCollectionStudentStatusCode') {
+      searchCriteriaList.push({ key: key, operation: FILTER_OPERATION.NONE_IN, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
   });
   return searchCriteriaList;
 }

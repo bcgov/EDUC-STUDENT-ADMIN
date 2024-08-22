@@ -47,7 +47,7 @@ export default {
       totalElements: 0,
       filterSearchParams: {
         assignedPen: NEW_PEN.defaultFilter,
-        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {}
       }
     };

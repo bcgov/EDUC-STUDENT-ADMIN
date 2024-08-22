@@ -185,7 +185,7 @@ export default {
       nonAllowableProgramDuplicates: [],
       filterSearchParams: {
         assignedPen: PEN_MATCHING.defaultFilter,
-        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {}
       },
       requiredRules: [v => !!v || 'Required'],
