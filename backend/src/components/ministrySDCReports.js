@@ -2,7 +2,7 @@
 const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
-let reportTypes = ['school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report'];
+let reportTypes = ['school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report', 'offshore-enrollment-headcounts'];
 
 async function getMinistrySDCReport(req, res) {
   try {
@@ -43,6 +43,8 @@ function getFileDetails(reportType) {
   const mappings = {
     'school-enrollment-headcounts': { filename: 'AllSchoolsHeadcounts.csv', contentType: 'text/csv' },
     'school-address-report': { filename: 'SchoolPhysicalAddressReport.csv', contentType: 'text/csv' },
+    'fsa-registration-report': { filename: 'FsaRegistrationReport.csv', contentType: 'text/csv' },
+    'offshore-enrollment-headcounts': { filename: 'OffshoreSchoolsHeadcounts.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
