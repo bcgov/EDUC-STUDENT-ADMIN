@@ -401,7 +401,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['districtMap', 'schoolMap', 'notClosedSchools', 'notClosedSchoolsMap', 'config']),
+    ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
   },
@@ -432,7 +432,7 @@ export default {
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
         .then((res) => {
           res.data.forEach(schoolCollection => {
-            const school = this.notClosedSchoolsMap.get(schoolCollection.schoolID);
+            const school = this.schoolMap.get(schoolCollection.schoolID);
             if (school) {
               let schoolItem = {
                 schoolCodeName: school.schoolName + ' - ' + school.mincode,
