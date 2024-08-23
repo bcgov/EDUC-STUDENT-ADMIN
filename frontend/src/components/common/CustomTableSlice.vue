@@ -59,7 +59,7 @@
       <template #item="props">
         <tr
           class="hoverTable"
-          @click="rowclicked(props.item.raw)"
+          @click="rowClicked(props.item.raw)"
         >
           <td
             v-for="column in headers"
@@ -81,7 +81,7 @@
                   :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
-                  @click="props.item.raw.schoolID && props.item.raw.sdcSchoolCollectionID ? true : $event.preventDefault()"
+                  @click="$event.stopPropagation()"
                 >
                   {{ props.item.raw['schoolName'] }}
                 </a>
@@ -91,7 +91,7 @@
                   :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
-                  @click="props.item.raw.districtID && props.item.raw.sdcDistrictCollectionID ? true : $event.preventDefault()"
+                  @click="$event.stopPropagation()"
                 >
                   {{ props.item.raw['districtName'] }}
                 </a>
@@ -271,9 +271,9 @@ export default {
       return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },
     schoolSafeURL(schoolID, sdcSchoolCollectionId) {
-      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${schoolID}&sdcSchoolCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
+      return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?schoolID=${schoolID}&sdcSchoolCollectionID=${sdcSchoolCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },
-    rowclicked(props) {
+    rowClicked(props) {
       this.$emit('editSelectedRow', props);
     },
     onClick(prop) {
