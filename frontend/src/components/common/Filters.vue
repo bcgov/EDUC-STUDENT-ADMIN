@@ -193,9 +193,8 @@
           </v-col>
         </v-row>
         <v-row
-          class="d-flex justify-space-around"
         >
-          <v-col cols="5">
+          <v-col cols="6" class="pt-0">
             <v-row v-if="false">
               <v-text-field
                 id="searchInput"
@@ -205,48 +204,44 @@
                 variant="underlined"
               />
             </v-row>
-            <v-row>
-              <slot
-                name="text-search"
-              >
-                <v-autocomplete
-                  id="selectSchool"
-                  v-model="schoolNameNumberFilter"
-                  variant="underlined"
-                  :items="schoolSearchNames"
-                  color="#003366"
-                  label="School Name or Number"
-                  single-line
-                  :clearable="true"
-                  item-title="schoolCodeName"
-                  item-value="sdcSchoolCollectionID"
-                  autocomplete="off"
-                  @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
-                />
-              </slot>
-            </v-row>
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectSchool"
+                v-model="schoolNameNumberFilter"
+                variant="underlined"
+                :items="schoolSearchNames"
+                color="#003366"
+                label="School Name or Number"
+                single-line
+                :clearable="true"
+                item-title="schoolCodeName"
+                item-value="sdcSchoolCollectionID"
+                autocomplete="off"
+                @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
+              />
+            </slot>
           </v-col>
-          <v-col cols="5">
-            <v-row>
-              <slot
-                name="text-search"
-              >
-                <v-autocomplete
-                  id="selectDistrict"
-                  v-model="districtNameNumberFilter"
-                  variant="underlined"
-                  :items="districtSearchNames"
-                  color="#003366"
-                  label="District Name or Number"
-                  single-line
-                  :clearable="true"
-                  item-title="districtCodeName"
-                  item-value="sdcDistrictCollectionID"
-                  autocomplete="off"
-                  @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
-                />
-              </slot>
-            </v-row>
+          <v-col cols="6" class="pt-0">
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectDistrict"
+                v-model="districtNameNumberFilter"
+                variant="underlined"
+                :items="districtSearchNames"
+                color="#003366"
+                label="District Name or Number"
+                single-line
+                :clearable="true"
+                item-title="districtCodeName"
+                item-value="sdcDistrictCollectionID"
+                autocomplete="off"
+                @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
+              />
+            </slot>
           </v-col>
         </v-row>
       </div>
