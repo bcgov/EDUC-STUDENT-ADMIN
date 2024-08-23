@@ -42,6 +42,7 @@ async function downloadMinistrySDCReport(req, res) {
 function getFileDetails(reportType) {
   const mappings = {
     'school-enrollment-headcounts': { filename: 'AllSchoolsHeadcounts.csv', contentType: 'text/csv' },
+    'indy-school-enrollment-headcounts': { filename: 'IndependentSchoolsHeadcounts.csv', contentType: 'text/csv' },
     'school-address-report': { filename: 'SchoolPhysicalAddressReport.csv', contentType: 'text/csv' },
     'fsa-registration-report': { filename: 'FsaRegistrationReport.csv', contentType: 'text/csv' },
     'offshore-enrollment-headcounts': { filename: 'OffshoreSchoolsHeadcounts.csv', contentType: 'text/csv' },
