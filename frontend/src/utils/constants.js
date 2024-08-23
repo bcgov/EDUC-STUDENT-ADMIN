@@ -421,12 +421,17 @@ export const SDC_REPORTS = Object.freeze(
     ],
     headcountReports: [
       {
-        label: 'All School Enrollment Headcounts',
+        label: 'School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
       },
       {
-        label: 'Independent School Enrollment Headcounts',
+        label: 'Offshore School Enrolment Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-enrollment-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/'
+      },
+      {
+        label: 'Independent School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/'
       }

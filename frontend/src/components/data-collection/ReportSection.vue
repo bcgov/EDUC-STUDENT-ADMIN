@@ -13,7 +13,7 @@
       />
     </v-col>
     <v-col
-      v-if="reportData !== null && selectedReport?.csvDownloadURL"
+      v-if="(reportData !== null || displayAllStudents) && selectedReport?.csvDownloadURL"
       class="mt-4 ml-4"
     >
       <router-link
@@ -130,7 +130,7 @@ export default {
       displayAllStudents: false,
       allStudentsView: ['FSA Registration Report'],
       filterSearchParams: {
-        sdcSchoolCollectionStudentStatusCode: 'INFOWARN,FUNDWARN,VERIFIED',
+        notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {},
         grade: ''
       },
