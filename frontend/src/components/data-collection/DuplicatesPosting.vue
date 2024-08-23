@@ -26,7 +26,7 @@
             color="primary"
             text="Post Province Duplicates"
             class="ma-2"
-            :disabled="isPostProvincialDuplicatesButtonDisabled"
+            :disabled="isPostProvincialDuplicatesButtonDisabled || isCloseCollectionButtonDisabled"
             @click="postProvincialDuplicates"
           />
           <v-btn
@@ -117,7 +117,6 @@
       </v-row>
 
       <v-row class="justify-end pr-3">
-        <!-- || isCloseCollectionButtonDisabled-->
         <v-btn
           id="closeCollection"
           color="primary"
