@@ -405,16 +405,6 @@ export const SDC_REPORTS = Object.freeze(
     ],
     independentReports: [
       {
-        label: 'All Students',
-        reportID: 'ALL_STUDENTS_REPORT',
-        url: 'ABC'
-      },
-      {
-        label: 'Five Students',
-        reportID: 'FIVE_STUDENTS_REPORT',
-        url: 'ABC'
-      },
-      {
         label: 'All Students by Independent School (CSV)',
         reportID: 'FUNDING_POLICY_REPORT_INDY',
       }
@@ -434,6 +424,11 @@ export const SDC_REPORTS = Object.freeze(
         label: 'Independent School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/'
+      },
+      {
+        label: 'Offshore Spoken Language Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-languages-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-languages-headcounts/'
       }
     ]
   }
