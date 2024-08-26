@@ -426,6 +426,11 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/'
       },
       {
+        label: 'Offshore Spoken Language Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-languages-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-languages-headcounts/'
+      },
+      {
         label: 'School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
