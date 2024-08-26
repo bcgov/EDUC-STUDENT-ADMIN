@@ -388,32 +388,37 @@ export const PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELD
 export const SDC_REPORTS = Object.freeze(
   {
     publicReports: [
-      { 
-        label: 'School Physical Address Report',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-address-report/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/'
+      {
+        label: 'All Students by District',
+        reportID: 'FUNDING_POLICY_REPORT_DISTRICT',
       },
-      { 
+      {
         label: 'FSA Registration Report',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/fsa-registration-report/'
       },
-      {
-        label: 'All Students by District (CSV)',
-        reportID: 'FUNDING_POLICY_REPORT_DISTRICT',
+      { 
+        label: 'School Physical Address Report',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-address-report/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/'
       }
     ],
     independentReports: [
       {
-        label: 'All Students by Independent School (CSV)',
+        label: 'All Students by Independent School',
         reportID: 'FUNDING_POLICY_REPORT_INDY',
       }
     ],
     headcountReports: [
       {
-        label: 'School Enrolment Headcounts',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
+        label: 'Independent School Enrolment Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-school-enrollment-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/'
+      },
+      {
+        label: 'Independent School Inclusive Education Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-enrollment-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-enrollment-headcounts/'
       },
       {
         label: 'Offshore School Enrolment Headcounts',
@@ -421,14 +426,14 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/'
       },
       {
-        label: 'Independent School Enrolment Headcounts',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-school-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/'
-      },
-      {
         label: 'Offshore Spoken Language Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-languages-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-languages-headcounts/'
+      },
+      {
+        label: 'School Enrolment Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
       }
     ]
   }
