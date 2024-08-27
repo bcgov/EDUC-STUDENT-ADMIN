@@ -82,6 +82,7 @@
             Duplicates Posting and Collection Closure
           </v-tab>
           <v-tab
+            v-if="hasAccessToReports()"
             :value="6"
           >
             Reports
@@ -154,6 +155,10 @@ import Spinner from '@/components/common/Spinner.vue';
 import AllStudentsComponent from '@/components/data-collection/AllStudents/AllStudentsComponent.vue';
 import DuplicatesPosting from '@/components/data-collection/DuplicatesPosting.vue';
 import Reports from '@/components/data-collection/Reports.vue';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
+import {mapState} from "pinia";
+import {authStore} from "@/store/modules/auth";
+import {appStore} from "@/store/modules/app";
 
 export default {
   name: 'CollectionView',
@@ -184,6 +189,9 @@ export default {
       tab: ''
     };
   },
+  computed: {
+    ...mapState(authStore, ['userInfo'])
+  },
   async created() {
     await sdcCollectionStore().getCollectionTypeCodesMap();
     await this.getActiveCollection();
@@ -198,6 +206,15 @@ export default {
       if(this.$route.query?.penMatch){
         this.tab = 3;
       }
+    },
+    hasAccessToReports(){
+      var bool = hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION)
+          || hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION)
+          || hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
+      console.log('Boll: ' + bool);
+      return hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_PUBLIC_SCHOOLS_PERMISSION) 
+          || hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION) 
+          || hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
     },
     async getActiveCollection() {
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`).then((response) => {
