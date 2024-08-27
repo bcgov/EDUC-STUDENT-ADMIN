@@ -44,7 +44,7 @@
     </v-col>
   </v-row>
 
-  <v-row v-if="reportData === null && isLoading">
+  <v-row v-if="reportData === null && isLoading && !displayAllStudents">
     <v-col>
       <Spinner />
     </v-col>
@@ -73,7 +73,6 @@
         :can-load-previous="canLoadPrevious"
         @loadNext="loadNext"
         @loadPrevious="loadPrevious"
-      />
       />
     </v-col>
   </v-row>
@@ -147,12 +146,14 @@ export default {
     selectedReport() {
       this.displayAllStudents = false;
       if(this.allStudentsView.includes(this.selectedReport.label)) {
+        this.reportData = null;
         this.loadHeaders(this.selectedReport.label);
         if(this.displayAllStudents) {
           this.loadStudents();
         }
       } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT') {
         this.displayAllStudents = false;
+        this.reportData = null;
       } else {
         this.getReportData();
       }
