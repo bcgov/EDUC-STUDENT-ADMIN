@@ -137,5 +137,9 @@ export default {
 .table {
   width: none !important;
 }
+
+:deep(.v-data-table-footer__items-per-page) {
+       display: flex;
+ }
   </style>
   
