@@ -21,6 +21,6 @@ const PERMISSION = Object.freeze(
 );
 
 module.exports = {
-  PERMISSION,
-}
+  PERMISSION
+};
 

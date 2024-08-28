@@ -180,6 +180,11 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
       }
       return this.collectionTypeCodesMap;
     },
+    async getLatestBandCodes() {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
+        await ApiService.getLatestActiveBandCodes().then((res) => this.setBandCodes(res.data));
+      }
+    },
     async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is no token.
         const promises = [

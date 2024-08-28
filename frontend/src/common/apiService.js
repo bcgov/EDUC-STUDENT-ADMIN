@@ -133,6 +133,7 @@ export default {
   getAllSchoolCollectionStatusCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STATUS_CODES}`),
   getAllValidationIssueTypeCodes:getCodes(`${Routes.sdc.SDC_VALIDATION_ISSUE_TYPE_CODES}`),
   getAllActiveBandCodes:getCodes(`${Routes.sdc.SDC_BAND_CODES}?active=true`),
+  getLatestActiveBandCodes:getCodes(`${Routes.sdc.SDC_BAND_CODES}?active=true&refreshCache=true`),
   getAllActiveCareerProgramCodes:getCodes(`${Routes.sdc.SDC_CAREER_PROGRAM_CODES}?active=true`),
   getAllActiveEnrolledProgramCodes:getCodes(`${Routes.sdc.SDC_ENROLLED_PROGRAM_CODES}?active=true`),
   getAllActiveGenderCodes:getCodes(`${Routes.sdc.SDC_GENDER_CODES}?active=true`),

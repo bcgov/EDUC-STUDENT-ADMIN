@@ -46,3 +46,6 @@ export function hasRequiredPermission(userInfo, permission){
   return (userInfo?.userRoles?.filter(perm => perm === permission).length > 0);
 }
 
+export function hasRequiredRole(userInfo, role){
+  return (userInfo?.userRoles?.filter(rl => role === rl).length > 0);
+}
