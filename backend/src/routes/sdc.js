@@ -34,7 +34,7 @@ router.get('/zero-fte-reason-codes', passport.authenticate('jwt', {session: fals
 
 //end cached code table calls
 
-router.put('/band-codes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission("STUDENT_ADMIN_ADMINISTRATOR"), extendSession, updateBandCode);
+router.put('/band-codes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission('STUDENT_ADMIN_ADMINISTRATOR'), extendSession, updateBandCode);
 
 router.get('/district-collection-status-codes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_DISTRICT_COLLECTION_STATUS_CODES, 'sdc:districtCollectionStatusCodesURL'));
 router.get('/school-collection-status-codes', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_SCHOOL_COLLECTION_STATUS_CODES, 'sdc:schoolCollectionStatusCodesURL'));
