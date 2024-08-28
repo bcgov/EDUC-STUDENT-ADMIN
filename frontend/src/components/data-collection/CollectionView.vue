@@ -156,8 +156,8 @@ import AllStudentsComponent from '@/components/data-collection/AllStudents/AllSt
 import DuplicatesPosting from '@/components/data-collection/DuplicatesPosting.vue';
 import Reports from '@/components/data-collection/Reports.vue';
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
-import {mapState} from "pinia";
-import {authStore} from "@/store/modules/auth";
+import {mapState} from 'pinia";
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'CollectionView',
