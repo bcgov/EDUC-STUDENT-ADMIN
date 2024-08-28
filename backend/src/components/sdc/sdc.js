@@ -8,6 +8,21 @@ const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP,
 const {createMoreFiltersSearchCriteria} = require('../studentFilters');
 const {LocalDate} = require('@js-joda/core');
 
+async function updateBandCode(req, res) {
+  try {
+    const params = req.body;
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+
+    const result = await utils.putData(`${config.get('sdc:bandCodesURL')}` , params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'updateBandCode', 'Error occurred while attempting to update a band code.');
+    return errorResponse(res);
+  }
+}
+
 async function getSnapshotFundingDataForSchool(req, res) {
   try {
     const data = await getData(`${config.get('sdc:schoolFundingCodesSnapshotURL')}/${req.params.schoolID}/${req.params.collectionID}`);
@@ -894,5 +909,6 @@ module.exports = {
   getSDCSchoolCollectionStudentPaginatedSlice,
   getSdcSchoolCollections,
   getSdcDistrictCollections,
-  downloadSdcReport
+  downloadSdcReport,
+  updateBandCode
 };

@@ -1,13 +1,11 @@
 <template>
   <v-container
     fluid
-    class="px-0 mb-4"
   >
     <v-row
-      no-gutters
       style="background-color:white;"
     >
-      <v-col>
+      <v-col class="pa-5">
         <v-data-table
           id="dataTable"
           v-model:page="pageNumber"
@@ -93,6 +91,7 @@
         <PrimaryButton
           id="resolveBtn"
           text="Save"
+          @click-action="saveBandData"
         />
       </v-card-actions>
     </v-card>
@@ -106,6 +105,9 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {deepCloneObject} from "@/utils/common";
 
 
 export default {
@@ -133,24 +135,44 @@ export default {
         }
       ],
       openBandCodeDialog: false,
-      dataLoading: false,
+      dataLoading: true,
       editBandRecord: null,
       bandCodeList: []
     };
   },
   created() {
     appStore().getInstituteCodes();
-    sdcCollectionStore().getCodes().then(() => {
-      this.bandCodeList = this.bandCodes.filter(bandCode => bandCode.bandCode !== null);
-    });
+    this.loadBandCodes();
   },
   computed: {
     ...mapState(sdcCollectionStore, ['bandCodes']),
   },
   methods: {
+    deepCloneObject,
     editBandData(event, band){
-      this.editBandRecord = band.item.raw;
+      this.editBandRecord = this.deepCloneObject(band.item.raw);
       this.openBandCodeDialog = true;
+    },
+    loadBandCodes(){
+      sdcCollectionStore().getLatestBandCodes().then(() => {
+        this.bandCodeList = this.bandCodes.filter(bandCode => bandCode.bandCode !== null);
+        this.dataLoading = false;
+      });
+    },
+    saveBandData(){
+      this.dataLoading = true;
+      ApiService.apiAxios.put(`${Routes.sdc.SDC_BAND_CODES}`, this.editBandRecord)
+        .then(() => {
+          this.setSuccessAlert('Success! The band information has been updated.');
+          this.loadBandCodes();
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the band code changes. Please try again later.');
+        })
+        .finally(() => {
+          this.dataLoading = false;
+          this.openBandCodeDialog = false;
+        });
     }
   }
 };
