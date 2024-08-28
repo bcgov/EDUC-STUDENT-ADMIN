@@ -38,64 +38,64 @@
         </v-col>
       </template>
     </ConfirmationDialog>
+    <v-dialog
+      v-model="openBandCodeDialog"
+      width="30em"
+    >
+      <v-card>
+        <v-card-title
+          class="header pt-1 pb-1"
+        >
+          <slot name="title">
+            Edit Band Information
+          </slot>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            id="bandCode"
+            v-model="editBandRecord.bandCode"
+            class="pt-0 pb-5"
+            label="Band Code"
+            variant="underlined"
+            disabled
+            hide-details="auto"
+          />
+          <v-text-field
+            id="bandLabel"
+            v-model="editBandRecord.label"
+            class="pt-0 pb-5"
+            maxlength="30"
+            label="Band Name"
+            variant="underlined"
+            hide-details="auto"
+          />
+          <v-text-field
+            id="bandLabel"
+            v-model="editBandRecord.description"
+            class="pt-0 pb-5"
+            maxlength="255"
+            label="Description"
+            variant="underlined"
+            hide-details="auto"
+          />
+        </v-card-text>
+        <v-card-actions class="pt-0">
+          <v-spacer />
+          <PrimaryButton
+            id="rejectBtn"
+            secondary
+            text="Cancel"
+            @click-action="openBandCodeDialog = false"
+          />
+          <PrimaryButton
+            id="resolveBtn"
+            text="Save"
+            @click-action="saveBandData"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
-  <v-dialog
-    v-model="openBandCodeDialog"
-    width="30em"
-  >
-    <v-card>
-      <v-card-title
-        class="header pt-1 pb-1"
-      >
-        <slot name="title">
-          Edit Band Information
-        </slot>
-      </v-card-title>
-      <v-card-text>
-        <v-text-field
-          id="bandCode"
-          v-model="editBandRecord.bandCode"
-          class="pt-0 pb-5"
-          label="Band Code"
-          variant="underlined"
-          disabled
-          hide-details="auto"
-        />
-        <v-text-field
-          id="bandLabel"
-          v-model="editBandRecord.label"
-          class="pt-0 pb-5"
-          maxlength="30"
-          label="Band Name"
-          variant="underlined"
-          hide-details="auto"
-        />
-        <v-text-field
-          id="bandLabel"
-          v-model="editBandRecord.description"
-          class="pt-0 pb-5"
-          maxlength="255"
-          label="Description"
-          variant="underlined"
-          hide-details="auto"
-        />
-      </v-card-text>
-      <v-card-actions class="pt-0">
-        <v-spacer />
-        <PrimaryButton
-          id="rejectBtn"
-          secondary
-          text="Cancel"
-          @click-action="openBandCodeDialog = false"
-        />
-        <PrimaryButton
-          id="resolveBtn"
-          text="Save"
-          @click-action="saveBandData"
-        />
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script>
@@ -107,7 +107,7 @@ import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {deepCloneObject} from "@/utils/common";
+import {deepCloneObject} from '@/utils/common';
 
 
 export default {
@@ -183,4 +183,7 @@ export default {
   font-weight: bold;
 }
 
+:deep(#dataTable > div.v-table__wrapper > table > tbody > tr:hover > td){
+  background-color: #e8e8e8;
+}
 </style>
