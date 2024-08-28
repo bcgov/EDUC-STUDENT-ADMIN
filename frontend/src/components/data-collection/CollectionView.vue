@@ -158,7 +158,6 @@ import Reports from '@/components/data-collection/Reports.vue';
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from "pinia";
 import {authStore} from "@/store/modules/auth";
-import {appStore} from "@/store/modules/app";
 
 export default {
   name: 'CollectionView',
