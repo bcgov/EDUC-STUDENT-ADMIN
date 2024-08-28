@@ -28,6 +28,7 @@ import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import UnAuthorizedPage from '@/components/UnAuthorizedPage.vue';
 import CompareStudents from '@/components/CompareStudents.vue';
 import StudentRegistrationContactsDisplay from '@/components/penreg/student-registration/StudentRegistrationContactsDisplay.vue';
+import BandCodes from '@/components/admin/BandCodes.vue';
 import MacrosDisplay from '@/components/admin/MacrosDisplay.vue';
 import NominalRoll from '@/components/nominal-roll/NominalRoll.vue';
 import NomRollStudentListDisplay from '@/components/nominal-roll/NomRollStudentListDisplay.vue';
@@ -46,7 +47,7 @@ import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
-import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {PERMISSION, hasRequiredPermission, hasRequiredRole} from '@/utils/constants/Permission';
 import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionPage.vue';
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 import CollectionView from '@/components/data-collection/CollectionView.vue';
@@ -282,6 +283,16 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.MACRO_MANAGEMENT,
         requiresAuth: true,
         role: 'EDIT_MACROS_ROLE'
+      },
+    },
+    {
+      path: '/bandCodes',
+      name: 'bandCodes',
+      component: BandCodes,
+      meta: {
+        pageTitle: PAGE_TITLES.BAND_CODE_MANAGEMENT,
+        requiresAuth: true,
+        role: 'STUDENT_ADMIN_ADMINISTRATOR'
       },
     },
     {
@@ -701,7 +712,8 @@ router.beforeEach((to, _from, next) => {
           next('/unauthorized');
           return;
         }
-        const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
+
+        const hasRole = hasRequiredRole(aStore.userInfo, to.meta.role);
         const hasPermission = hasRequiredPermission(aStore.userInfo, to.meta.permission);
         if (!hasRole && !hasPermission) {
           next('/unauthorized-page');

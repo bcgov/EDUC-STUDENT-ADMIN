@@ -237,7 +237,12 @@ export default {
           authorized: this.STAFF_ADMINISTRATION_ADMIN || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION) || this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION),
           items: [
             {
-              title: 'Macro Management',
+              title: 'Band Codes',
+              link: 'bandCodes',
+              authorized: this.STAFF_ADMINISTRATION_ADMIN
+            },
+            {
+              title: 'Macros',
               link: 'macros',
               authorized: this.EDIT_MACROS_ROLE
             },

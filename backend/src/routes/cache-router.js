@@ -5,7 +5,7 @@ const router = express.Router();
 const {getCachedDistrictByDistrictId, getCachedDistricts, getCachedSchools, getCachedSchoolBySchoolID, getCachedAuthorities, getCachedAuthorityByAuthorityID,getCachedSchoolCategoryFacilityTypes,getCachedInstituteData} = require('../components/institute/institute');
 const utils = require('../components/utils');
 const constants = require('../util/constants');
-const permUtils = require("../components/permissionUtils");
+const permUtils = require('../components/permissionUtils');
 
 const extendSession = utils.extendSession();
 
