@@ -675,18 +675,18 @@ if [ "$envValue" = "dev" ]; then
   bannerColor="#8d28d7"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
   disableSdcFunctionality=false
-  ENABLE_EDX_RELEASE="true"
+  ENABLE_EDX_RELEASE=true
 elif [ "$envValue" = "test" ]; then
   bannerEnvironment="TEST"
   bannerColor="#58fe01"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
   disableSdcFunctionality=false
-  ENABLE_EDX_RELEASE="false"
+  ENABLE_EDX_RELEASE=false
 else
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
   disableSdcFunctionality=true
   EDUC_EDX_FRONTEND="https://educationdataexchange.gov.bc.ca"
-  ENABLE_EDX_RELEASE="false"
+  ENABLE_EDX_RELEASE=false
 fi
 
 BANNER_ENVIRONMENT="$bannerEnvironment"
