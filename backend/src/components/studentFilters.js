@@ -85,7 +85,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }
     if (key === 'warnings' && pValue) {
       validateWarningFilter(pValue);
-      searchCriteriaList.push({ key: 'sdcStudentValidationIssueEntities.validationIssueSeverityCode', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+      searchCriteriaList.push({ key: 'sdcSchoolCollectionStudentStatusCode', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
     if (key === 'grade' && pValue) {
       validateGradeFilter(pValue);
@@ -343,7 +343,7 @@ function validateFteZeroFilter(filters) {
     'AUTHDUP'
   ];
   if (filters.length > 0) {
-    if (filters.every(value => fteZeroCategories.includes(cat => value === cat))) {
+    if (!filters.every(value => fteZeroCategories.includes(value))) {
       log.error('Invalid zero fte reason code.');
       throw new Error('400');
     }
@@ -353,7 +353,7 @@ function validateFteZeroFilter(filters) {
 function validateGradeFilter(filterGrades = []) {
   const activeGradeCodes = cacheService.getActiveEnrolledGradeCodes();
   if (filterGrades.length > 0) {
-    if (filterGrades.every(value => activeGradeCodes.includes(grade => value === grade.enrolledGradeCode))) {
+    if (!filterGrades.every(value => activeGradeCodes.includes(value))) {
       log.error('Invalid grade filter.');
       throw new Error('400');
     }
@@ -392,11 +392,13 @@ function validateEnrolledProgramFilter(filterGrades = []) {
 
 function validateWarningFilter(filters = []) {
   let allowedWarningValues = [
-    'FUNDING_WARNING',
-    'INFO_WARNING'
+    'FUNDWARN',
+    'INFOWARN',
+    'ERROR',
+    'DELETED'
   ];
   if (filters.length > 0) {
-    if (filters.every(value => allowedWarningValues.includes(cat => value === cat))) {
+    if (!filters.every(value => allowedWarningValues.includes(value))) {
       log.error('Invalid warning filter.');
       throw new Error('400');
     }

@@ -102,7 +102,7 @@
   >
     <ViewStudentDetailsComponent
       :selected-student-ids="studentForEdit"
-      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode)"
+      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode) || isStudentRemoved"
       @reload-students="reloadStudentsFlag = true"
       @close="closeAndLoadStudents"
     />
@@ -164,7 +164,6 @@ export default {
       selectedStudents: [],
       filterSearchParams: {
         tabFilter: this.config.defaultFilter,
-        notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {}
       },
       showFilters: null,
@@ -172,6 +171,7 @@ export default {
       editStudentSheet: false,
       resetFlag: false,
       reloadStudentsFlag: false,
+      isStudentRemoved: false
     };
   },
   computed: {
@@ -214,6 +214,7 @@ export default {
       const selectedStudent = cloneDeep($event);
       this.studentForEdit.splice(0);
       this.studentForEdit.push(selectedStudent?.sdcSchoolCollectionStudentID);
+      this.isStudentRemoved = selectedStudent?.sdcSchoolCollectionStudentStatusCode === 'DELETED';
       this.editStudentSheet = true;
     },
     applyFilters($event) {
