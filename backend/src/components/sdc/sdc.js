@@ -212,25 +212,28 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       searchCriteriaList: [{ key: 'sdcSchoolCollection.collectionEntity.collectionID', value: req.params.collectionID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
     });
 
-    search.push({
-      condition: CONDITION.AND,
-      searchCriteriaList: createSearchCriteria(req.query.searchParams)
-    });
-
-    if(req.query.searchParams['tabFilter']) {
+    if(req?.query?.searchParams) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createSearchCriteria(req.query.searchParams)
+      });
+    }
+    
+    if(req?.query?.searchParams && req.query.searchParams['tabFilter']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createTabFilter(req.query.searchParams['tabFilter'])
       });
     }
 
-    if (req.query.searchParams['moreFilters']) {
+    if (req?.query?.searchParams && req.query.searchParams['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
         search.push(criteria);
       });
     }
-    if (req.query.searchParams['grade']) {
+
+    if (req?.query?.searchParams && req?.query?.searchParams['grade']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createFsaReportCriteria(req.query.searchParams['grade'])
@@ -245,7 +248,6 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-
     let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated-slice`, params);
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);

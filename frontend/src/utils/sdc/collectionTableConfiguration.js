@@ -4,7 +4,7 @@
 
 export const WARNING_FILTER = Object.freeze(
   {
-    heading: 'Warnings',
+    heading: 'Student Status',
     id: 'warnings',
     multiple: true,
     key: 'warnings',
@@ -12,12 +12,22 @@ export const WARNING_FILTER = Object.freeze(
       {
         title: 'Has Funding Warnings',
         id: 'hasFundingWarning',
-        value: 'FUNDING_WARNING'
+        value: 'FUNDWARN'
       },
       {
         title: 'Has Info Warnings',
         id: 'hasInfoWarning',
-        value: 'INFO_WARNING'
+        value: 'INFOWARN'
+      },
+      {
+        title: 'Has Errors',
+        id: 'hasErrors',
+        value: 'ERROR'
+      },
+      {
+        title: 'Is removed from the collection',
+        id: 'isDeleted',
+        value: 'DELETED'
       }
     ]
   }
@@ -842,6 +852,7 @@ export const NEW_PEN = Object.freeze(
 export const FTE = Object.freeze(
   {
     tableHeaders: [
+      { key: 'sdcSchoolCollectionStudentStatusCode' },
       { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
@@ -860,11 +871,11 @@ export const FTE = Object.freeze(
       { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
     ],
     allowedFilters: {
+      warnings: WARNING_FILTER,
       studentType: STUDENT_TYPE_FILTER,
       fte: FTE_FILTER,
       grade: GRADE_FILTER,
       fundingType: FUNDING_TYPE_FILTER,
-      warnings: WARNING_FILTER,
       courses: COURSE_FILTER,
       support: SUPPORT_BLOCKS_FILTER,
       fteZero: FTE_ZERO_FILTER,

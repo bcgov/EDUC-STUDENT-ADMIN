@@ -59,6 +59,7 @@
       <template #item="props">
         <tr
           class="hoverTable"
+          :style="{'color': getRow(props.item.raw['sdcSchoolCollectionStudentStatusCode'])}"
           @click="rowClicked(props.item.raw)"
         >
           <td
@@ -72,6 +73,23 @@
               hide-details="true"
               @click.prevent.stop="onClick(props)"
             />
+            <v-tooltip
+              v-else-if="column.key === 'sdcSchoolCollectionStudentStatusCode'"
+               :style="{ display: getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) ? '' : 'none'}"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-bind="tooltipProps"
+                  size="25"
+                  :color="getSdcStudentStatusIconColor(props.item.raw['sdcSchoolCollectionStudentStatusCode'])"
+                >
+                  {{ getSdcStudentIssueIcon(props.item.raw['sdcSchoolCollectionStudentStatusCode']) }}
+                </v-icon>
+              </template>
+              <div style="white-space: pre-line;">
+                {{ getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) }}
+              </div>
+            </v-tooltip>
             <div v-else>
               <span v-if="column.key === 'studentPen'">
                 {{ getAssignedPen(props.item.raw['assignedPen']) }}
@@ -306,6 +324,10 @@ export default {
         return '#ff9800';
       } else if (status === 'INFOWARN') {
         return '#2196F3';
+      } else if (status === 'ERROR') {
+        return 'rgb(217, 6, 6)'
+      } else if (status === 'DELETED') {
+        return 'grey'
       }
     },
     getSdcStudentIssueIcon(status) {
@@ -313,6 +335,10 @@ export default {
         return 'mdi-alert-outline';
       } else if (status === 'INFOWARN') {
         return 'mdi-alert-circle-outline';
+      } else if (status === 'ERROR') {
+        return 'mdi-alert-circle-outline'
+      } else if (status === 'DELETED') {
+        return 'mdi-delete-circle-outline'
       }
     },
     getSdcStudentStatusHoverText(status) {
@@ -320,6 +346,17 @@ export default {
         return 'Funding Warning';
       } else if (status === 'INFOWARN') {
         return 'Info Warning';
+      } else if (status === 'ERROR') {
+        return 'Error';
+      } else if (status === 'DELETED') {
+        return 'Removed from collection'
+      }
+    },
+    getRow(status) {
+      if(status === 'DELETED') {
+        return 'grey'
+      } else {
+        return 'none'
       }
     },
     getAssignedPen(assignedPen) {
