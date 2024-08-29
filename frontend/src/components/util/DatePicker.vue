@@ -43,7 +43,7 @@ export default defineComponent({
     },
     readonly: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   emits: ['update:model-value', 'clearDate'],
@@ -62,8 +62,8 @@ export default defineComponent({
     :model-type="modelType"
     :menu-class-name="allowTeleport ? 'teleport-datepicker' : ''"
     format="yyyy/MM/dd"
-    :disabled="disabled"
     preview-format="yyyy/MM/dd"
+    :disabled="disabled"
     :text-input="{
       enterSubmit: true,
       tabSubmit: true,
@@ -86,12 +86,12 @@ export default defineComponent({
         :rules="rules"
         prepend-inner-icon="mdi-calendar"
         :label="label"
-        :disabled="disabled"
         variant="underlined"
         placeholder="yyyy/mm/dd"
         :clearable="!readonly"
         :readonly="readonly"
         hide-details="auto"
+        :disabled="disabled"
         @input="onInput"
         @keydown.enter.prevent="onEnter"
         @keydown.tab.prevent="onTab"
