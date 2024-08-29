@@ -50,11 +50,12 @@ export const authStore = defineStore('auth', {
     NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollReadOnly || state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
+    STAFF_ADMINISTRATION_ROLE: state => state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
-    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
-   },
+    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser
+  },
   actions: {
     //sets Json web token and determines whether user is authenticated
     async setJwtToken(token = null) {

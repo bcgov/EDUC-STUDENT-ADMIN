@@ -73,7 +73,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.COMPARE_STUDENTS,
         requiresAuth: true,
-        role: 'PROCESS_STUDENT_ROLE'
+        role: 'STUDENT_SEARCH_ADMIN'
       }
     },
     {
@@ -292,7 +292,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.BAND_CODE_MANAGEMENT,
         requiresAuth: true,
-        role: 'STUDENT_ADMIN_ADMINISTRATOR'
+        role: 'STAFF_ADMINISTRATION_ROLE'
       },
     },
     {
@@ -714,7 +714,6 @@ router.beforeEach((to, _from, next) => {
         }
 
         const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
-        // const hasRole = hasRequiredRole(aStore.userInfo, to.meta.role);
         const hasPermission = hasRequiredPermission(aStore.userInfo, to.meta.permission);
         if (!hasRole && !hasPermission) {
           next('/unauthorized-page');
