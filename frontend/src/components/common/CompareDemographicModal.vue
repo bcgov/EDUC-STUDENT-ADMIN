@@ -158,7 +158,7 @@ export default {
       }
     },
     useEdxRelease() {
-      return this.config.ENABLE_EDX_RELEASE;
+      return !this.config.DISABLE_SDC_FUNCTIONALITY;
     }
   },
   created() {
