@@ -47,7 +47,7 @@ import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
-import {PERMISSION, hasRequiredPermission, hasRequiredRole} from '@/utils/constants/Permission';
+import {PERMISSION, hasRequiredPermission} from '@/utils/constants/Permission';
 import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionPage.vue';
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 import CollectionView from '@/components/data-collection/CollectionView.vue';

@@ -23,7 +23,7 @@ export default {
   computed:{
     ...mapState(appStore, ['config']),
     currentComponent() {
-      return this.config.ENABLE_EDX_RELEASE ? StudentSLDHistoryV2 : StudentSLDHistoryV1;
+      return this.config.DISABLE_SDC_FUNCTIONALITY ? StudentSLDHistoryV1 : StudentSLDHistoryV2;
     }
   }
 };
