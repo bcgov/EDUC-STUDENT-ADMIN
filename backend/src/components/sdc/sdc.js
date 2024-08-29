@@ -219,21 +219,21 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       });
     }
     
-    if(req?.query?.searchParams && req.query.searchParams['tabFilter']) {
+    if(req.query.searchParams?.['tabFilter']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createTabFilter(req.query.searchParams['tabFilter'])
       });
     }
 
-    if (req?.query?.searchParams && req.query.searchParams['moreFilters']) {
+    if (req.query.searchParams?.['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
         search.push(criteria);
       });
     }
 
-    if (req?.query?.searchParams && req?.query?.searchParams['grade']) {
+    if (req?.query?.searchParams?.['grade']) {
       search.push({
         condition: CONDITION.AND,
         searchCriteriaList: createFsaReportCriteria(req.query.searchParams['grade'])

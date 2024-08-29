@@ -214,7 +214,7 @@ export default {
       const selectedStudent = cloneDeep($event);
       this.studentForEdit.splice(0);
       this.studentForEdit.push(selectedStudent?.sdcSchoolCollectionStudentID);
-      this.isStudentRemoved = selectedStudent?.sdcSchoolCollectionStudentStatusCode === 'DELETED' ? true : false;
+      this.isStudentRemoved = selectedStudent?.sdcSchoolCollectionStudentStatusCode === 'DELETED';
       this.editStudentSheet = true;
     },
     applyFilters($event) {
