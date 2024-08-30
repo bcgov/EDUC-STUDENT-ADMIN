@@ -239,7 +239,7 @@ export default {
             {
               title: 'Band Codes',
               link: 'bandCodes',
-              authorized: this.STAFF_ADMINISTRATION_ADMIN
+              authorized: this.STAFF_ADMINISTRATION_ADMIN && !this.config.DISABLE_SDC_FUNCTIONALITY
             },
             {
               title: 'Macros',
