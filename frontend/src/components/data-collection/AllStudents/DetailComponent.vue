@@ -231,16 +231,7 @@ export default {
       this.isLoading = true;
       if (this.indySchoolDistrictObject != null) {
         const filterKey = this.indySchoolDistrictObject.type === 'indy' ? 'schoolNameNumber' : 'districtNameNumber';
-        const filterTitle = this.indySchoolDistrictObject.type === 'indy' ? 'SchoolNameOrNumber' : 'DistrictNameOrNumber';
-
-        if (!this.filterSearchParams.moreFilters[filterKey]) {
-          this.filterSearchParams.moreFilters[filterKey] = [];
-        }
-
-        this.filterSearchParams.moreFilters[filterKey][0] = {
-          title: filterTitle,
-          value: this.indySchoolDistrictObject.id
-        };
+        this.filterSearchParams.schoolOrDistrictId = {key: filterKey, value: this.indySchoolDistrictObject.id};
       }
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {

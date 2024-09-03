@@ -325,9 +325,9 @@ export default {
       } else if (status === 'INFOWARN') {
         return '#2196F3';
       } else if (status === 'ERROR') {
-        return 'rgb(217, 6, 6)'
+        return 'rgb(217, 6, 6)';
       } else if (status === 'DELETED') {
-        return 'grey'
+        return 'grey';
       }
     },
     getSdcStudentIssueIcon(status) {
@@ -336,9 +336,9 @@ export default {
       } else if (status === 'INFOWARN') {
         return 'mdi-alert-circle-outline';
       } else if (status === 'ERROR') {
-        return 'mdi-alert-circle-outline'
+        return 'mdi-alert-circle-outline';
       } else if (status === 'DELETED') {
-        return 'mdi-delete-circle-outline'
+        return 'mdi-delete-circle-outline';
       }
     },
     getSdcStudentStatusHoverText(status) {
@@ -349,14 +349,14 @@ export default {
       } else if (status === 'ERROR') {
         return 'Error';
       } else if (status === 'DELETED') {
-        return 'Removed from collection'
+        return 'Removed from collection';
       }
     },
     getRow(status) {
       if(status === 'DELETED') {
-        return 'grey'
+        return 'grey';
       } else {
-        return 'none'
+        return 'black';
       }
     },
     getAssignedPen(assignedPen) {
