@@ -5,7 +5,7 @@ const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
 const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
-const {createMoreFiltersSearchCriteria} = require('../studentFilters');
+const {createMoreFiltersSearchCriteria, createSchoolNameNumberSearchCriteria, createDistrictNameNumberSearchCriteria} = require('../studentFilters');
 const {LocalDate} = require('@js-joda/core');
 
 async function updateBandCode(req, res) {
@@ -240,6 +240,13 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
       });
     }
 
+    if (req?.query?.searchParams?.['schoolOrDistrictId']) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createSchoolOrDistrictCriteria(req.query.searchParams['schoolOrDistrictId'])
+      });
+    }
+
     const params = {
       params: {
         pageNumber: req.query.pageNumber,
@@ -286,6 +293,16 @@ function createFsaReportCriteria(searchParams) {
     searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '04,07', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   } else if(searchParams === 'FSA_FEB_GRADE') {
     searchCriteriaList.push({ key: 'enrolledGradeCode', operation: FILTER_OPERATION.IN, value: '03,06', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
+  return searchCriteriaList;
+}
+
+function createSchoolOrDistrictCriteria(searchParams) {
+  let searchCriteriaList = [];
+  if(searchParams?.key === 'schoolNameNumber') {
+    return createSchoolNameNumberSearchCriteria(searchParams?.value);
+  } else if(searchParams?.key === 'districtNameNumber') {
+    return createDistrictNameNumberSearchCriteria(searchParams?.value);
   }
   return searchCriteriaList;
 }

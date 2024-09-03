@@ -828,5 +828,7 @@ function createDistrictNameNumberSearchCriteria(value) {
 }
 
 module.exports = {
-  createMoreFiltersSearchCriteria
+  createMoreFiltersSearchCriteria,
+  createSchoolNameNumberSearchCriteria,
+  createDistrictNameNumberSearchCriteria
 };
