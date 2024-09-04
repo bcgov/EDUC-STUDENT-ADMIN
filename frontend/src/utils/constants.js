@@ -434,7 +434,12 @@ export const SDC_REPORTS = Object.freeze(
         label: 'School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
-      }
+      }, 
+      {
+        label: 'Inclusive Education Variance Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/inclusive-education-variance-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variance-headcounts/'
+      },
     ]
   }
 );
