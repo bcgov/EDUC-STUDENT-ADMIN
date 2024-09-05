@@ -105,7 +105,6 @@ export default {
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/getDistrictHeadcounts/${this.districtObject.id}`, {
         params: {
           type: this.collectionType,
-          compare: false
         }
       }).then(response => {
         this.headcountTableData = response.data.headcountResultsTable;

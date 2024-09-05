@@ -893,7 +893,6 @@ async function getDistrictHeadcounts(req, res) {
     const params = {
       params: {
         type: req.query.type,
-        compare: req.query.compare
       }
     };
     let headCounts = await getData(`${config.get('sdc:rootURL')}/headcounts/${req.params.sdcDistrictCollectionID}`, params);
