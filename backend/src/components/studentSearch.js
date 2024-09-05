@@ -98,7 +98,7 @@ async function searchStudent(req, res) {
   const params = {
     params: {
       pageNumber: req.query.pageNumber,
-      sort: req.query.sort,
+      sort: JSON.stringify(req.query.sort),
       searchCriteriaList: JSON.stringify(search)
     }
   };
@@ -137,7 +137,7 @@ async function getStudentHistoryByStudentID(req, res) {
     params: {
       pageSize: req.query.pageSize <= 20 ? req.query.pageSize : 20,
       pageNumber: req.query.pageNumber,
-      sort: req.query.sort,
+      sort: JSON.stringify(req.query.sort),
     }
   };
 
