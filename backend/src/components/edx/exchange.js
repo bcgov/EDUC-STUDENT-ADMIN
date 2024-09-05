@@ -113,7 +113,7 @@ async function getExchangesPaginated(req, res) {
     params: {
       pageNumber: req.query.pageNumber,
       pageSize: req.query.pageSize,
-      sort: req.query.sort,
+      sort: JSON.stringify(req.query.sort),
       searchCriteriaList: JSON.stringify(criteria),
     }
   };

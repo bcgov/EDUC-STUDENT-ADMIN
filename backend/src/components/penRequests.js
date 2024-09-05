@@ -24,9 +24,20 @@ async function findPenRequestsByPen(req, res) {
   try {
     let yearAgo = LocalDateTime.now().minus(1, ChronoUnit.YEARS);
     let now = LocalDateTime.now();
-    const url = `${config.get('server:penRequest:rootURL')}/paginated?pageNumber=0&pageSize=200&searchCriteriaList=[{"key":"initialSubmitDate","operation":"btn","value":"${yearAgo},${now}","valueType":"DATE_TIME"},{"key":"pen","operation":"eq","value":"${req.query.pen}","valueType":"STRING"}]}]`
+    let searchCriteriaList = [];
+    searchCriteriaList.push({key:'initialSubmitDate',operation:'btn',value:`${yearAgo},${now}`,valueType:'DATE_TIME'});
+    searchCriteriaList.push({key:'pen',operation:'eq',value:`${req.query.pen}`,valueType:'STRING'});
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(searchCriteriaList)
+      }
+    };
+    const url = `${config.get('server:penRequest:rootURL')}/paginated`;
 
-    const response = await getData(url);
+    const response = await getData(url, params);
     return res.status(200).json(response.numberOfElements);
   } catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
