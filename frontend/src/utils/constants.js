@@ -437,8 +437,7 @@ export const SDC_REPORTS = Object.freeze(
       }, 
       {
         label: 'Inclusive Education Variance Headcounts',
-        url: object.SDC_MINISTRY_REPORTS + '/headcount/inclusive-education-variance-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variance-headcounts/'
+        reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
       },
     ]
   }
