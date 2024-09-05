@@ -888,6 +888,22 @@ async function downloadSdcReport(req, res) {
   }
 }
 
+async function getDistrictHeadcounts(req, res) {
+  try {
+    const params = {
+      params: {
+        type: req.query.type,
+        compare: req.query.compare
+      }
+    };
+    let headCounts = await getData(`${config.get('sdc:rootURL')}/headcounts/${req.params.sdcDistrictCollectionID}`, params);
+    return res.status(HttpStatus.OK).json(headCounts);
+  } catch (e) {
+    await logApiError(e, 'getDistrictHeadcounts', 'Error getting District headcount.');
+    return errorResponse(res);
+  }
+}
+
 function getFileDetails(reportType) {
   const mappings = {
     'ALL_STUDENT_DIS_CSV': { filename: 'AllDistrictStudents.csv', contentType: 'text/csv' },
@@ -929,5 +945,6 @@ module.exports = {
   getSdcSchoolCollections,
   getSdcDistrictCollections,
   downloadSdcReport,
-  updateBandCode
+  updateBandCode,
+  getDistrictHeadcounts
 };
