@@ -84,9 +84,9 @@ export default {
   data() {
     return {
       reportView: null,
-      publicReports: SDC_REPORTS.publicReports,
-      independentReports: SDC_REPORTS.independentReports,
-      headcountsReports: SDC_REPORTS.headcountReports
+      publicReports: [],
+      independentReports: [],
+      headcountsReports: []
     };
   },
   computed: {
@@ -94,8 +94,19 @@ export default {
   },
   created() {
     this.setOriginalReportTab();
+    this.publicReports = this.getActiveReports(SDC_REPORTS.publicReports);
+    this.independentReports = this.getActiveReports(SDC_REPORTS.independentReports);
+    this.headcountsReports = this.getActiveReports(SDC_REPORTS.headcountReports);
   },
   methods: {
+    getActiveReports(reports){
+      return reports.filter(report => {
+        if(report.onlyForCollection && !report.onlyForCollection.includes(this.collectionObject.collectionTypeCode)){
+          return false;
+        }
+        return true;
+      });
+    },
     setOriginalReportTab(){
       if(this.hasAccessToPublicReports()){
         this.reportView = 'publicReports';

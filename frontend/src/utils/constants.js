@@ -421,6 +421,12 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-enrollment-headcounts/'
       },
       {
+        label: 'Independent School Inclusive Education Funding Headcounts',
+        url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-funding-headcounts/',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-funding-headcounts/',
+        onlyForCollection: ['FEBRUARY']
+      },
+      {
         label: 'Offshore School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/'
