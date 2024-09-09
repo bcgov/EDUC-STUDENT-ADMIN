@@ -26,6 +26,8 @@
       :table-i-d="tableID"
       :headcount-table-data="headcountTableData"
     />
+    <br>
+    <span>** This report displays the count of students reported by each district and eligible for Inclusive Education funding.</span>
   </v-col>
 </template>
 

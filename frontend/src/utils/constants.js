@@ -442,7 +442,7 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
       }, 
       {
-        label: 'Inclusive Education Variance Headcounts',
+        label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
       },
     ]
