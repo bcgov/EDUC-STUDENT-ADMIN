@@ -829,7 +829,7 @@ async function getStudentRegistrationContactByMincode(req, res) {
       params: {
         pageNumber: req.query.pageNumber,
         pageSize: req.query.pageSize,
-        sort: req.query.sort,
+        sort: JSON.stringify(req.query.sort),
         searchCriteriaList: JSON.stringify(schoolSearchCriteria)
       }
     };
@@ -958,7 +958,7 @@ async function getSchoolsPaginated(req, res){
       params: {
         pageNumber: req.query.pageNumber,
         pageSize: req.query.pageSize,
-        sort: req.query.sort,
+        sort: JSON.stringify(req.query.sort),
         searchCriteriaList: JSON.stringify(schoolSearchCriteria)
       }
     };
@@ -1060,7 +1060,7 @@ async function getSchoolHistoryPaginated(req, res) {
       params: {
         pageNumber: req.query.pageNumber,
         pageSize: req.query.pageSize,
-        sort: req.query.sort,
+        sort: JSON.stringify(req.query.sort),
         searchCriteriaList: JSON.stringify(historySearchCriteria)
       }
     };
@@ -1262,7 +1262,7 @@ async function getAuthoritiesPaginated(req, res){
     params: {
       pageNumber: req.query.pageNumber,
       pageSize: req.query.pageSize,
-      sort: req.query.sort,
+      sort: JSON.stringify(req.query.sort),
       searchCriteriaList: JSON.stringify(authoritySearchCriteria)
     }
   };
