@@ -21,7 +21,10 @@
       </slot>
     </v-row>
   </v-col>
-  <v-col v-if="districtsNameNumberFilter != null && tableID != null">
+  <v-col v-if="loading">
+    <Spinner />
+  </v-col>
+  <v-col v-else-if="districtsNameNumberFilter != null && tableID != null">
     <HeadCountReportComponent
       :table-i-d="tableID"
       :headcount-table-data="headcountTableData"
@@ -39,10 +42,11 @@ import {mapState} from 'pinia';
 import {sortBy} from 'lodash';
 import {FTE} from '@/utils/sdc/collectionTableConfiguration.js';
 import HeadCountReportComponent from './common/HeadCountReportComponent.vue';
+import Spinner from '@/components/common/Spinner.vue';
 
 export default {
   name: 'FundingPolicyReport',
-  components: {HeadCountReportComponent},
+  components: {HeadCountReportComponent, Spinner},
   props: {
     collectionObject: {
       type: Object,
@@ -61,7 +65,8 @@ export default {
       config: FTE,
       districtObject: null,
       headcountTableData: null,
-      tableID: null
+      tableID: null,
+      loading: false
     };
   },
   computed: {
@@ -104,6 +109,7 @@ export default {
         });
     },
     fetchDistrictSummaryCounts() {
+      this.loading = true;
       ApiService.apiAxios.get(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/getDistrictHeadcounts/${this.districtObject.id}`, {
         params: {
           type: this.collectionType,
@@ -115,7 +121,7 @@ export default {
         console.error(error);
         this.setFailureAlert('An error occurred while trying to retrieve students list. Please try again later.');
       }).finally(() => {
-        this.isLoading = false;
+        this.loading = false;
       });
     },
   }
