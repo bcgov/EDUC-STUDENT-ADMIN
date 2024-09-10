@@ -75,7 +75,7 @@
             />
             <v-tooltip
               v-else-if="column.key === 'sdcSchoolCollectionStudentStatusCode'"
-               :style="{ display: getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) ? '' : 'none'}"
+              :style="{ display: getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) ? '' : 'none'}"
             >
               <template #activator="{ props: tooltipProps }">
                 <v-icon
