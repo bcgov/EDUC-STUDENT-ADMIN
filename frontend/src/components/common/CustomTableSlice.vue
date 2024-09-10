@@ -96,20 +96,22 @@
               </span>
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
+                  :href="!readOnly ? schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID) : 'javascript:void(0)'"
                   target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
-                  @click="$event.stopPropagation()"
+                  :class="{ 'disabled-link': !readOnly && (!props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID) }"
+                  :style="{ color: readOnly ? 'black' : '' }"
+                  @click="readOnly ? $event.preventDefault() : $event.stopPropagation()"
                 >
                   {{ props.item.raw['schoolName'] }}
                 </a>
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
+                  :href="!readOnly ? districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID) : 'javascript:void(0)'"
                   target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
-                  @click="$event.stopPropagation()"
+                  :class="{ 'disabled-link': !readOnly && (!props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID) }"
+                  :style="{ color: readOnly ? 'black' : '' }"
+                  @click="readOnly ? $event.preventDefault() : $event.stopPropagation()"
                 >
                   {{ props.item.raw['districtName'] }}
                 </a>
@@ -233,6 +235,11 @@ export default {
       required: true,
       default: false
     },
+    readOnly: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow', 'loadPrevious', 'loadNext'],
   data() {

@@ -63,6 +63,7 @@
             :reset="resetFlag"
             :can-load-next="canLoadNext"
             :can-load-previous="canLoadPrevious"
+            :read-only="readOnly"
             @reload="reload"
             @editSelectedRow="editStudent"
             @selections="selectedStudents = $event"
