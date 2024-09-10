@@ -89,6 +89,12 @@
         :collection-type="selectedReport?.reportID"
       />
     </v-col>
+    <v-col v-if="selectedReport?.reportID === 'INCLUSIVE_EDUCATION_VARIANCE'">
+      <InclusiveEducationVarianceReport
+        :collection-object="collectionObject"
+        :collection-type="selectedReport?.reportID"
+      />
+    </v-col>
   </v-row>
 </template>
 
@@ -102,10 +108,11 @@ import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 import {Routes} from '@/utils/constants';
 import {isEmpty, omitBy} from 'lodash';
 import FundingPolicyReport from './FundingPolicyReports.vue';
+import InclusiveEducationVarianceReport from './InclusiveEducationVarianceReport.vue';
 
 export default {
   name: 'ReportSection',
-  components: {FundingPolicyReport, Spinner, CustomTableSlice},
+  components: {FundingPolicyReport, InclusiveEducationVarianceReport, Spinner, CustomTableSlice},
   mixins: [alertMixin],
   props: {
     reportList: {
@@ -151,7 +158,7 @@ export default {
         if(this.displayAllStudents) {
           this.loadStudents();
         }
-      } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT') {
+      } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
         this.displayAllStudents = false;
         this.reportData = null;
       } else {
