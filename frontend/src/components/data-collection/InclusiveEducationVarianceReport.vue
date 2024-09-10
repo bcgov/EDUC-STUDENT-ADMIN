@@ -98,11 +98,12 @@ export default {
               let districtItem = {
                 codeName: district.name + ' - ' + district.districtNumber,
                 id: districtCollection.sdcDistrictCollectionID,
+                districtNumber: district.districtNumber
               };
               this.districtNames.push(districtItem);
             }
           });
-          this.districtNames = sortBy(this.districtNames, ['codeName']);
+          this.districtNames = sortBy(this.districtNames, ['districtNumber']);
         })
         .catch(error => {
           console.error(error);

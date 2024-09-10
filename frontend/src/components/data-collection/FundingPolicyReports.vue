@@ -115,11 +115,12 @@ export default {
               let schoolItem = {
                 codeName: school.schoolName + ' - ' + school.mincode,
                 id: schoolCollection.sdcSchoolCollectionID,
+                mincode: school.mincode
               };
               this.indySchoolNames.push(schoolItem);
             }
           });
-          this.indySchoolNames = sortBy(this.indySchoolNames, ['codeName']);
+          this.indySchoolNames = sortBy(this.indySchoolNames, ['mincode']);
         })
         .catch(error => {
           console.error(error);
@@ -133,11 +134,12 @@ export default {
               let districtItem = {
                 codeName: district.name + ' - ' + district.districtNumber,
                 id: districtCollection.sdcDistrictCollectionID,
+                districtNumber: district.districtNumber
               };
               this.districtNames.push(districtItem);
             }
           });
-          this.districtNames = sortBy(this.districtNames, ['codeName']);
+          this.districtNames = sortBy(this.districtNames, ['districtNumber']);
         })
         .catch(error => {
           console.error(error);
