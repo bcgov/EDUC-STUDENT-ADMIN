@@ -96,7 +96,7 @@
               </span>
               <div v-else-if="column.key === 'schoolName'">
                 <a
-                  :href="!readOnly ? schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID) : 'javascript:void(0)'"
+                  :href="readOnly ? 'javascript:void(0)' : schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !readOnly && (!props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID) }"
                   :style="{ color: readOnly ? 'black' : '' }"
@@ -107,7 +107,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <a
-                  :href="!readOnly ? districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID) : 'javascript:void(0)'"
+                  :href="readOnly ? 'javascript:void(0)' : districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
                   target="_link"
                   :class="{ 'disabled-link': !readOnly && (!props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID) }"
                   :style="{ color: readOnly ? 'black' : '' }"
