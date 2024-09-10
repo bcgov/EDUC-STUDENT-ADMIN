@@ -236,18 +236,22 @@ export default {
     },
     loadStudents() {
       this.isLoading = true;
+      let sort = {
+        sdcSchoolCollectionStudentID: 'ASC'
+      };
       if (this.indySchoolDistrictObject != null) {
         const filterKey = this.indySchoolDistrictObject.type === 'indy' ? 'schoolNameNumber' : 'districtNameNumber';
         this.filterSearchParams.schoolOrDistrictId = {key: filterKey, value: this.indySchoolDistrictObject.id};
+        if (this.indySchoolDistrictObject.type === 'district') {
+          sort = { sdcSchoolCollection: 'DESC' };
+        }
       }
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,
           searchParams: omitBy(this.filterSearchParams, isEmpty),
-          sort: {
-            sdcSchoolCollectionStudentID: 'ASC'
-          },
+          sort: sort,
         }
       }).then(response => {
         this.studentList = response.data.content;
