@@ -47,6 +47,7 @@
       :collection-object="collectionObject"
       :indy-school-district-object="indySchoolDistrictObject"
       :show-export-btn="true"
+      :read-only="true"
     />
   </v-col>
 </template>

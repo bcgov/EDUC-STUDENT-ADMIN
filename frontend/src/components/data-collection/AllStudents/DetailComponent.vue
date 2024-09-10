@@ -102,7 +102,7 @@
   >
     <ViewStudentDetailsComponent
       :selected-student-ids="studentForEdit"
-      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode) || isStudentRemoved"
+      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode) || isStudentRemoved || readOnly"
       @reload-students="reloadStudentsFlag = true"
       @close="closeAndLoadStudents"
     />
@@ -147,6 +147,12 @@ export default {
     },
     showExportBtn: {
       type: Boolean,
+      required: false,
+      default: false
+    },
+    readOnly: {
+      type: Boolean,
+      required: false,
       default: false
     }
   },
