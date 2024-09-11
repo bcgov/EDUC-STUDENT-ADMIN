@@ -745,7 +745,7 @@ function createNameCriteria(key, nameString) {
         operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE,
         value: `%${name}%`,
         valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.OR
+        condition: CONDITION.AND
       });
     });
   } else {

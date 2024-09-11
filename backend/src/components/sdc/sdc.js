@@ -68,7 +68,7 @@ async function getIndySdcSchoolCollectionMonitoringByCollectionId(req, res) {
     const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/monitorIndySdcSchoolCollections`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    await logApiError(e, 'Error retrieving the district collection monitoring stats');
+    await logApiError(e, 'Error retrieving the indy school collection monitoring stats');
     return errorResponse(res);
   }
 }
@@ -888,12 +888,27 @@ async function downloadSdcReport(req, res) {
   }
 }
 
+
 async function moveSld (req, res) {
   try {
     await postData(`${config.get('sdc:schoolCollectionStudentURL')}/move-sld`, req.body);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
     logApiError(e, 'Error attempting to move sld record(s)');
+    return errorResponse(res);
+  }
+
+async function getDistrictHeadcounts(req, res) {
+  try {
+    const params = {
+      params: {
+        type: req.query.type,
+      }
+    };
+    let headCounts = await getData(`${config.get('sdc:rootURL')}/headcounts/${req.params.sdcDistrictCollectionID}`, params);
+    return res.status(HttpStatus.OK).json(headCounts);
+  } catch (e) {
+    await logApiError(e, 'getDistrictHeadcounts', 'Error getting District headcount.');
     return errorResponse(res);
   }
 }
@@ -941,4 +956,5 @@ module.exports = {
   downloadSdcReport,
   updateBandCode,
   moveSld
+  getDistrictHeadcounts
 };
