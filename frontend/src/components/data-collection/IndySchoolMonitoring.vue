@@ -259,7 +259,7 @@
             indeterminate
           />
           <a
-            v-else-if="item.raw.unresolvedEnrollmentDuplicates !== 0"
+            v-else-if="item.raw.unresolvedEnrollmentDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
             @click="showDuplicates(item.raw.sdcSchoolCollectionId, 'Enrollment Duplicates')"
           >
             {{ item.raw.unresolvedEnrollmentDuplicates }}
@@ -273,7 +273,7 @@
             indeterminate
           />
           <a
-            v-else-if="item.raw.unresolvedProgramDuplicates !== 0"
+            v-else-if="item.raw.unresolvedProgramDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
             @click="showDuplicates(item.raw.sdcSchoolCollectionId, 'Program Duplicates')"
           >
             {{ item.raw.unresolvedProgramDuplicates }}
