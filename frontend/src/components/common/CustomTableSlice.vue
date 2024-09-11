@@ -75,7 +75,7 @@
             />
             <v-tooltip
               v-else-if="column.key === 'sdcSchoolCollectionStudentStatusCode'"
-               :style="{ display: getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) ? '' : 'none'}"
+              :style="{ display: getSdcStudentStatusHoverText(props.item.raw['sdcSchoolCollectionStudentStatusCode'], props.item.raw['sdcSchoolCollectionStudentValidationIssues']) ? '' : 'none'}"
             >
               <template #activator="{ props: tooltipProps }">
                 <v-icon
@@ -95,24 +95,34 @@
                 {{ getAssignedPen(props.item.raw['assignedPen']) }}
               </span>
               <div v-else-if="column.key === 'schoolName'">
-                <a
-                  :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
-                  target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
-                  @click="$event.stopPropagation()"
-                >
+                <span v-if="readOnly">
                   {{ props.item.raw['schoolName'] }}
-                </a>
+                </span>
+                <span v-else>
+                  <a
+                    :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
+                    target="_link"
+                    :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
+                    @click="$event.stopPropagation()"
+                  >
+                    {{ props.item.raw['schoolName'] }}
+                  </a>
+                </span>
               </div>
               <div v-else-if="column.key === 'districtName'">
-                <a
-                  :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
-                  target="_link"
-                  :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
-                  @click="$event.stopPropagation()"
-                >
+                <span v-if="readOnly">
                   {{ props.item.raw['districtName'] }}
-                </a>
+                </span>
+                <span v-else>
+                  <a
+                    :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
+                    target="_link"
+                    :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
+                    @click="$event.stopPropagation()"
+                  >
+                    {{ props.item.raw['districtName'] }}
+                  </a>
+                </span>
               </div>
               <span v-else-if="column.key === 'legalName'">
                 {{ displayName(props.item.raw['legalFirstName'], props.item.raw['legalMiddleNames'], props.item.raw['legalLastName']) }}
@@ -233,6 +243,11 @@ export default {
       required: true,
       default: false
     },
+    readOnly: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow', 'loadPrevious', 'loadNext'],
   data() {
