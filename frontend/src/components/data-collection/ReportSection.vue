@@ -28,7 +28,7 @@
   </v-row>
 
   <v-row
-    v-if="displayAllStudents || reportData !== null"
+    v-if="(reportData !== null || displayAllStudents) && selectedReport?.url"
     no-gutters
   >
     <v-col>
@@ -49,7 +49,7 @@
       <Spinner />
     </v-col>
   </v-row>
-  <v-row v-if="!displayAllStudents && reportData !== null">
+  <v-row v-if="!displayAllStudents && reportData !== null && selectedReport?.url">
     <v-col>
       <v-data-table
         id="dataTable"

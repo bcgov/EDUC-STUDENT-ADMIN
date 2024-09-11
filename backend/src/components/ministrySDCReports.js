@@ -3,7 +3,7 @@ const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
-  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'inclusive-education-variance-headcounts'];
+  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report'];
 
 async function getMinistrySDCReport(req, res) {
   try {
@@ -50,6 +50,7 @@ function getFileDetails(reportType) {
     'offshore-enrollment-headcounts': { filename: 'OffshoreSchoolsHeadcounts.csv', contentType: 'text/csv' },
     'offshore-languages-headcounts': { filename: 'OffshoreSpokenLanguageHeadcounts.csv', contentType: 'text/csv' },
     'indy-inclusive-ed-funding-headcounts': { filename: 'IndependentSchoolsInclusiveEdFundingHeadcounts.csv', contentType: 'text/csv' },
+    'indy-funding-report': { filename: 'IndependentSchoolsFundingReport.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];

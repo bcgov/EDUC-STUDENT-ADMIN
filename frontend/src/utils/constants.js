@@ -445,6 +445,10 @@ export const SDC_REPORTS = Object.freeze(
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
       },
+      {
+        label: 'Independent School Funding Report',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report/'
+      },
     ]
   }
 );
