@@ -897,6 +897,7 @@ async function moveSld (req, res) {
     logApiError(e, 'Error attempting to move sld record(s)');
     return errorResponse(res);
   }
+}
 
 async function getDistrictHeadcounts(req, res) {
   try {
@@ -955,6 +956,6 @@ module.exports = {
   getSdcDistrictCollections,
   downloadSdcReport,
   updateBandCode,
-  moveSld
+  moveSld,
   getDistrictHeadcounts
 };
