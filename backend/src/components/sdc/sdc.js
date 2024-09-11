@@ -68,7 +68,7 @@ async function getIndySdcSchoolCollectionMonitoringByCollectionId(req, res) {
     const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/monitorIndySdcSchoolCollections`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    await logApiError(e, 'Error retrieving the district collection monitoring stats');
+    await logApiError(e, 'Error retrieving the indy school collection monitoring stats');
     return errorResponse(res);
   }
 }
