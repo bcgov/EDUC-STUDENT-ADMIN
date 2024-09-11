@@ -285,7 +285,7 @@ export default {
       if (!confirmation) {
         return;
       }
-      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/post-provincial-duplicates`)
+      ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/in-province-duplicates`)
         .then(() => {
           this.setSuccessAlert('Provincial Duplicates Posted Successfully.');
         })
