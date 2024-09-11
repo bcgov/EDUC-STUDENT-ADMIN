@@ -10,12 +10,13 @@
     fluid
   >
     <v-row
+      v-if="collectionObject?.collectionTypeCode !== 'JULY'"
       class="mb-5 mt-3 pb-3 pt-3 border"
     >
       <v-col>
         <h4>Province Duplicates Posting</h4>
         <br>
-        <p>
+        <p v-if="isPostProvincialDuplicatesButtonDisabled">
           The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.
         </p>
         <br>
@@ -258,8 +259,7 @@ export default {
       const indieSchoolsNotSubmittedCount = this.monitorSdcSchoolCollectionsResponse.filter(response => response.schoolStatus !== 'SUBMITTED').length;
       const allPenFixesResolved = this.totalPenFixElements === 0;
 
-      // this.isPostProvincialDuplicatesButtonDisabled = districtsNotSubmittedCount > 0 || indieSchoolsNotSubmittedCount > 0 || !allPenFixesResolved;
-      this.isPostProvincialDuplicatesButtonDisabled = false;
+      this.isPostProvincialDuplicatesButtonDisabled = districtsNotSubmittedCount > 0 || indieSchoolsNotSubmittedCount > 0 || !allPenFixesResolved;
     },
     checkIsCloseCollectionButtonDisabled() {
       const districtsNotCompletedCount = this.monitorSdcDistrictCollectionsResponse.filter(response => response.sdcDistrictCollectionStatusCode !== 'COMPLETED').length;
