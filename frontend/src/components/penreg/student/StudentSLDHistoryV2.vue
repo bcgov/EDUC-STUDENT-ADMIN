@@ -19,6 +19,7 @@
           v-model:selected-records="compareStudent"
           :clear-on-exit="false"
           :disabled="isStudentUpdated || !PROCESS_STUDENT_ROLE"
+          @refresh-sld-data="retrieveStudentSLDData"
         />
       </v-col>
     </v-row>
@@ -31,7 +32,24 @@
         :highlight-changes="true"
         :show-links="false"
         :clickable="false"
-      />
+      >
+        <template #toolTip="{ toolTipText, chipText }">
+          <v-tooltip>
+            <template #activator="{ props }">
+              <v-chip
+                color="deep-purple"
+                text-color="white"
+                small
+                class="px-2"
+                v-bind="props"
+              >
+                {{ chipText }}
+              </v-chip>
+            </template>
+            <span>{{ toolTipText }}</span>
+          </v-tooltip>
+        </template>
+      </CustomTable>
     </v-row>
   </div>
 </template>
@@ -83,7 +101,8 @@ export default {
       isStudentUpdated: false,
       pageNumber: 1,
       pageSize: 10,
-      totalElements: 0
+      totalElements: 0,
+      existingMergedStudentIds: []
     };
   },
   computed:{
@@ -124,25 +143,50 @@ export default {
     retrieveStudentSLDData() {
       this.loading = true;
       ApiService.apiAxios
-        .get(Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT + '/byAssignedStudentID', {
-          params: {
-            pageNumber: this.pageNumber - 1,
-            pageSize: this.pageSize,
-            sort: {
-              'sdcSchoolCollection.uploadDate': 'DESC'
-            },
-            assignedStudentID: this.student.studentID,
-            tableFormat: true
-          }
-        })
+        .get(Routes.penServices.ROOT_ENDPOINT + '/' + this.student.studentID + '/student-merge',
+          {
+            params: {
+              mergeDirection: 'FROM'
+            }
+          })
         .then(response => {
-          this.sldData = response?.data?.content;
-          this.totalElements = response?.data?.totalElements;
-        }).catch(error => {
+          this.existingMergedStudentIds = response.data.map(studentMerges => studentMerges.mergeStudentID);
+          ApiService.apiAxios
+            .get(Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT + '/byAssignedStudentID', {
+              params: {
+                pageNumber: this.pageNumber - 1,
+                pageSize: this.pageSize,
+                sort: {
+                  'sdcSchoolCollection.uploadDate': 'DESC'
+                },
+                assignedStudentID: [...this.existingMergedStudentIds, this.student.studentID],
+                tableFormat: true
+              }
+            })
+            .then(response => {
+              this.sldData = response?.data?.content;
+              this.sldData.map(data => {
+                console.log(data);
+                if(this.existingMergedStudentIds.includes(data.assignedStudentId)) {
+                  data.toolTipText = `Merged from ${data.assignedPen}`;
+                  data.toolTipChipText = 'M';
+                  if(!this.tableHeaders.find(x => x.title === 'toolTip')) {
+                    this.tableHeaders.unshift({ title: 'toolTip', value: 'toolTipText', key: 'toolTipText', sortable: false });
+                  }
+                }
+                return data;
+              });
+              this.totalElements = response?.data?.totalElements;
+            }).catch(error => {
+              this.setFailureAlert('Could not retrieve data from API, Please try again later.');
+              console.log(error);
+            }).finally(() => {
+              this.loading = false;
+            });
+        })
+        .catch(error => {
           this.setFailureAlert('Could not retrieve data from API, Please try again later.');
           console.log(error);
-        }).finally(() => {
-          this.loading = false;
         });
     },
   }

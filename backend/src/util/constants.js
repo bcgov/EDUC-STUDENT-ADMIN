@@ -106,6 +106,10 @@ const FILTER_OPERATION = Object.freeze(
      * Ends with filter operation.
      */
     ENDS_WITH: 'ends_with',
+    /**
+     * In operation that does not include the DISTINCT condition
+     */
+    IN_NOT_DISTINCT: 'in_not_distinct'
   }
 );
 const CONDITION = Object.freeze(

@@ -73,7 +73,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.COMPARE_STUDENTS,
         requiresAuth: true,
-        role: 'STUDENT_SEARCH_ADMIN'
+        role: 'PROCESS_STUDENT_ROLE'
       }
     },
     {

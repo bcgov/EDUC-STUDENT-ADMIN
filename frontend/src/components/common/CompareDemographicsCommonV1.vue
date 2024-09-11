@@ -91,8 +91,8 @@
             <th
               v-for="(header, index) in headers"
               :id="`${header.text}Header`"
-              :key="index"
               class="header-font"
+              :key="index"
               :title="header.tooltip"
             >
               {{ header.text }}
@@ -156,8 +156,8 @@
           </v-tooltip>
         </span>
         <span
-          v-for="(key, idx) in studentDataHeaders"
-          :key="idx"
+          v-for="(key, index) in studentDataHeaders"
+          :key="index"
           :ref="key+`Col`"
           class="pl-4 pr-3"
         >
@@ -199,13 +199,13 @@
         </a>
       </v-row>
       <v-data-table
-        v-if="sldDataTablesToDisplay[students.studentID]"
+        v-if="sldDataTablesToDisplay[students.pen]"
         class="sldTable"
         :headers="headers"
-        :items="sldData[students.studentID]"
-        :items-length="sldDataTablesNumberOfRows[students.studentID]"
-        :items-per-page="sldDataTablesNumberOfRows[students.studentID]"
-        @update:items-per-page="getSldData(students)"
+        :items="sldData[students.pen]"
+        :items-length="sldDataTablesNumberOfRows[students.pen]"
+        :items-per-page="sldDataTablesNumberOfRows[students.pen]"
+        @update:items-per-page="getSldData(students.pen)"
       >
         <template #headers />
         <template #item="item">
@@ -221,83 +221,55 @@
                 density="compact"
                 class="studentCheckbox pa-0 ma-0"
                 color="#606060"
-                :disabled="sldSelectDisabled(students.studentID)"
+                :disabled="sldSelectDisabled(students.pen)"
               />
               <div
                 v-else-if="header.value === 'mincode'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
-                <span class="top-field-item">{{ item.item.raw.mincode }}</span>
+                <span class="top-field-item">{{ item.item.raw.distNo + item.item.raw.schlNo }}</span>
                 <span
                   v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
                 />
               </div>
               <div
-                v-else-if="header.value === 'legalLastName'"
+                v-else-if="header.value === 'legalSurname'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
                   v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ item.item.raw['usualLastName'] }}</span>
+                >{{ item.item.raw['usualSurname'] }}</span>
               </div>
               <div
-                v-else-if="header.value === 'legalFirstName'"
+                v-else-if="header.value === 'legalGivenName'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
                   v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ item.item.raw['usualFirstName'] }}</span>
+                >{{ item.item.raw['usualGivenName'] }}</span>
               </div>
               <div
-                v-else-if="header.value === 'legalMiddleNames'"
+                v-else-if="header.value === 'legalMiddleName'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ item.item.raw[header.value] }}</span>
                 <span
                   v-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
-                >{{ item.item.raw['usualMiddleNames'] }}</span>
+                >{{ item.item.raw['usualMiddleName'] }}</span>
               </div>
               <div
-                v-else-if="header.value === 'dob'"
+                v-else-if="header.value === 'birthDate'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ formatDob(item.item.raw[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
                 <span
                   v-if="existSldUsualName(item.item.raw)"
-                  class="bottom-field-item"
-                />
-              </div>
-              <div
-                v-else-if="header.value === 'updateDate'"
-                :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
-              >
-                <span class="top-field-item">{{ formatDateFromDateTime(item.item.raw[header.value]) }}</span>
-                <span v-if="existingMergedStudentIdsMap?.get(students.pen)?.includes(item.item.raw.assignedStudentId)">
-                  <v-tooltip
-                    bottom
-                  >
-                    <template #activator="{ props }">
-                      <v-chip
-                        color="deep-purple"
-                        text-color="white"
-                        small
-                        class="px-2"
-                        v-bind="props"
-                      >
-                        M
-                      </v-chip>
-                    </template>
-                    <span>Merged from {{ item.item.raw.assignedPen }}</span>
-                  </v-tooltip>
-                </span>
-                <span
-                  v-else-if="existSldUsualName(item.item.raw)"
                   class="bottom-field-item"
                 />
               </div>
@@ -316,18 +288,18 @@
         </template>
       </v-data-table>
       <v-row
-        v-show="sldDataTablesToDisplay[students.studentID]"
+        v-show="sldDataTablesToDisplay[students.pen]"
         class="pl-4"
       >
         <TertiaryButton
           text="More"
           icon="$plus"
-          @click-action="updateSldTableRows(students.studentID, sldDataTablesNumberOfRows[students.studentID] + 10)"
+          @click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"
         />
         <TertiaryButton
           text="Less"
           icon="$minus"
-          @click-action="updateSldTableRows(students.studentID, sldDataTablesNumberOfRows[students.studentID] - 10)"
+          @click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"
         />
       </v-row>
     </div>
@@ -354,10 +326,7 @@
         />
       </v-card-actions>
     </div>
-    <ConfirmationDialog
-      ref="confirmationDialog"
-      :show-title-bar="false"
-    >
+    <ConfirmationDialog ref="confirmationDialog" :show-title-bar="false">
       <template #message>
         <v-row class="mb-3">
           <v-col>
@@ -366,10 +335,7 @@
         </v-row>
       </template>
     </ConfirmationDialog>
-    <ConfirmationDialog
-      ref="moveSldConfirmationDialog"
-      :show-title-bar="false"
-    >
+    <ConfirmationDialog ref="moveSldConfirmationDialog" :show-title-bar="false">
       <template #message>
         <v-row>
           <v-col>
@@ -399,10 +365,10 @@ import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {notificationsStore} from '@/store/modules/notifications';
 import {studentStore} from '@/store/modules/student';
 import _ from 'lodash';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 
 export default {
-  name: 'CompareDemographicsCommonV2',
+  emits: ['update:selectedRecords'],
+  name: 'CompareDemographicsCommonV1',
   components: {
     TertiaryButton,
     PrimaryButton,
@@ -416,15 +382,13 @@ export default {
       required: true
     },
     title: {
-      type: String,
-      default: ''
+      type: String
     },
     closeCompareModal: {
       type: Function,
       default: null
     }
   },
-  emits: ['update:selectedRecords', 'refresh-sld-data'],
   data() {
     return {
       studentDataHeaders: [
@@ -439,17 +403,17 @@ export default {
         'postalCode',
       ],
       headers: [
-        { id: 'table-checkbox', type: 'select', key: 'checkbox', sortable: false },
-        {text: 'Date', value: 'updateDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
+        { id: 'table-checkbox', type: 'select', sortable: false },
+        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
-        {text: 'Surname', value: 'legalLastName', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
-        {text: 'Given', value: 'legalFirstName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
-        {text: 'Middle', value: 'legalMiddleNames', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
-        {text: 'Gen', value: 'gender', key: 'gender', sortable: false, tooltip: 'Gender'},
-        {text: 'Birth Date', value: 'dob', key: 'dob', sortable: false, tooltip: 'Birth Date'},
-        {text: 'Local ID', value: 'localID', key: 'localId', sortable: false, tooltip: 'Local ID'},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Grade Code'},
-        {text: 'Postal Code', value: 'postalCode', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
+        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
+        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
+        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
+        {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
+        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
       ],
       penToAdd: null,
       penRules: [v => (!v || isValidPEN(v)) || this.penHint],
@@ -471,22 +435,7 @@ export default {
       mergedFromStudentID: '',
       movedFromStudent: {},
       movedToStudent: {},
-      existingMergedStudentIdsMap: new Map()
     };
-  },
-  computed: {
-    ...mapState(notificationsStore, ['notification']),
-    studentRecords: {
-      get: function() {
-        return this.sortStudents(this.selectedRecords);
-      },
-      set: async function(value) {
-        this.$emit('update:selectedRecords', value);
-      }
-    },
-    checkedSldStudents() {
-      return Object.values(this.sldData).flatMap(records => records.filter(record => record.selected));
-    },
   },
   watch: {
     notification(val) {
@@ -501,6 +450,8 @@ export default {
           setTimeout(() => {
             this.openStudentDetails(this.mergedFromStudent.studentID);
           }, 500);
+        } else if (notificationData.sagaName === 'PEN_SERVICES_MOVE_SLD_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
+          this.handleMoveSldSagaCompleteMessage(notificationData);
         } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
@@ -509,12 +460,26 @@ export default {
   },
   mounted() {
     this.studentRecords.forEach(student => {
-      this.getSldData(student);
+      this.getSldData(student.pen);
       if(student.trueStudentID) {
         this.getTrueStudent(student, student.trueStudentID);
       }
     });
     this.checkedStudents = [];
+  },
+  computed: {
+    ...mapState(notificationsStore, ['notification']),
+    studentRecords: {
+      get: function() {
+        return this.sortStudents(this.selectedRecords);
+      },
+      set: async function(value) {
+        this.$emit('update:selectedRecords', value);
+      }
+    },
+    checkedSldStudents() {
+      return Object.values(this.sldData).flatMap(records => records.filter(record => record.selected));
+    },
   },
   methods: {
     ...mapState(studentStore, ['setStudentInProcessStatus', 'clearStudentInProcessStatus']),
@@ -540,7 +505,7 @@ export default {
         this.setFailureAlert(this.penAlreadyAddedErrorMessage);
         return;
       }
-      this.getSldData(this.studentDataMap.get(this.penToAdd));
+      this.getSldData(this.penToAdd);
       const student = this.studentDataMap.get(this.penToAdd);
       if (student) {
         this.studentRecords.push(student);
@@ -615,50 +580,23 @@ export default {
         this.isSearchedPENMerged = false;
       }
     },
-    formatDateFromDateTime(inputDate) {
-      const date = LocalDateTime.parse(inputDate);
-      return date.format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
-    },
     formatDob,
     formatMincode,
     formatPostalCode,
     formatPen,
     sortArrayByDate,
     getMatchedRecordsByStudent,
-    getSldData(student) {
+    getSldData(pen) {
       ApiService.apiAxios
-        .get(Routes.penServices.ROOT_ENDPOINT + '/' + student?.studentID + '/student-merge',
-          {
-            params: {
-              mergeDirection: 'FROM'
-            }
-          })
+        .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
         .then(response => {
-          this.existingMergedStudentIdsMap.set(student?.pen, response.data.map(studentMerges => studentMerges.mergeStudentID));
-          ApiService.apiAxios
-            .get(Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT + '/byAssignedStudentID', {
-              params: {
-                pageNumber: 0,
-                pageSize: this.pageSize,
-                sort: {
-                  'sdcSchoolCollection.uploadDate': 'DESC'
-                },
-                assignedStudentID: [...this.existingMergedStudentIdsMap.get(student?.pen), student?.studentID],
-                tableFormat: true
-              }
-            })
-            .then(response => {
-              if (response?.data?.length > 0) {
-                response.data.forEach(sld => sld.selected = false);
-              }
-              this.storedSldData[student?.studentID] = response.data?.content;
-              this.updateSldRowDisplay(student?.studentID, true);
-              this.updateSldTableRows(student?.studentID, 10);
-            })
-            .catch(error => {
-              console.log(error);
-              this.setFailureAlert(this.studentDNEErrorMessage);
-            });
+          if (response?.data?.length > 0) {
+            response.data = this.sortArrayByDate(response.data, 'reportDate', false);
+            response.data.forEach(sld => sld.selected = false);
+          }
+          this.storedSldData[pen] = response.data;
+          this.updateSldRowDisplay(pen, true);
+          this.updateSldTableRows(pen, 10);
         })
         .catch(error => {
           console.log(error);
@@ -877,7 +815,7 @@ export default {
         return;
       }
 
-      this.movedFromStudent = this.studentRecords.find(student => this.checkedSldStudents.some(record => record.assignedStudentId === student.studentID));
+      this.movedFromStudent = this.studentRecords.find(student => this.checkedSldStudents.some(record => record.pen.startsWith(student.pen)));
       this.movedToStudent = this.studentRecords.find(student => student.pen !== this.movedFromStudent.pen);
 
       let result = await this.$refs.moveSldConfirmationDialog.open(null, null,
@@ -885,21 +823,27 @@ export default {
       if (!result) {
         return;
       }
-
+      
+      this.setStudentInProcessStatus(this.movedFromStudent.studentID);
       this.isProcessing = true;
-
+      const moveSldSagaData = this.checkedSldStudents.map(record => {
+        return _.pick(record, ['pen', 'distNo', 'schlNo', 'reportDate', 'studentId']);
+      });
       const moveSldRequest = {
-        sdcSchoolCollectionIdsToUpdate: this.checkedSldStudents.map(record => record.sdcSchoolCollectionStudentID),
-        toStudentPen: this.movedToStudent?.pen
+        moveSldSagaData, 
+        movedToPen: this.movedToStudent.pen,
+        studentID: this.movedFromStudent.studentID
       };
       ApiService.apiAxios
-        .post(Routes['sdc'].BASE_URL + '/move-sld', moveSldRequest)
-        .then(() => {
-          this.notifyMoveCompleteMessage();
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + this.movedFromStudent.studentID + '/move-sld', moveSldRequest)
+        .then(response => {
+          this.setSuccessAlert('Your request to move sld records is accepted.');
+          this.sagaId = response.data;
         })
         .catch(error => {
           console.log(error);
           this.isProcessing = false;
+          this.clearStudentInProcessStatus(this.movedFromStudent.studentID);
           if (error?.response?.status === 409 && error?.response?.data?.message) {
             this.setFailureAlert(error?.response?.data?.message);
           } else {
@@ -934,21 +878,35 @@ export default {
       }
       return warningMessage;
     },
-    sldSelectDisabled(assignedStudentID) {
+    sldSelectDisabled(pen) {
       const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
-      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID));
+      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.pen.startsWith(pen));
     },
     resetSldSelection(){
       this.checkedSldStudents.forEach(record => record.selected = false);
     },
-    notifyMoveCompleteMessage() {
+    handleMoveSldSagaCompleteMessage(notificationData) {
+      if(this.sagaId === notificationData.sagaId && notificationData.studentID === this.movedFromStudent?.studentID) {
+        this.notifyMoveSldSagaCompleteMessage();
+      } else {
+        this.showWarningAndDisableActionIfMovedSldStudentMatched(notificationData.studentID);
+      }
+    },
+    notifyMoveSldSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to move sld records is completed.');
       this.isProcessing = false;
       this.studentRecords.forEach(student => {
-        this.getSldData(student);
+        this.getSldData(student.pen);
       });
       this.resetSldSelection();
-      this.$emit('refresh-sld-data');
+    },
+    showWarningAndDisableActionIfMovedSldStudentMatched(studentID){
+      const student = this.studentRecords?.find(el => el?.studentID === studentID);
+      if (!this.isProcessing && student) {
+        const warningMessage = `SLD records for ${student.pen} is updated by other users, Please refresh the page.`;
+        this.setWarningAlert(warningMessage);
+        this.addStaleDataToMap({studentID, warningMessage});
+      }
     },
   },
 };
@@ -1050,6 +1008,10 @@ export default {
 
   .sldTable {
     font-size: 0.9rem;
+  }
+
+  .sldTable .flex-row-div {
+    height: 21px !important;
   }
 
   .sldTable .flex-column-div {

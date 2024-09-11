@@ -54,7 +54,8 @@
     "strip-ansi": "^6.0.0",
     "uuid": "^8.3.2",
     "winston": "^3.5.0",
-    "winston-daily-rotate-file": "^4.5.0"
+    "winston-daily-rotate-file": "^4.5.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.8",

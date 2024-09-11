@@ -161,7 +161,7 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
     if(req.query.assignedStudentID) {
       search.push({
         condition: null,
-        searchCriteriaList: [{ key: 'assignedStudentId', value: req.query.assignedStudentID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
+        searchCriteriaList: [{ key: 'assignedStudentId', value: req.query.assignedStudentID.join(','), operation: FILTER_OPERATION.IN_NOT_DISTINCT, valueType: VALUE_TYPE.UUID }]
       });
     }
 
@@ -888,6 +888,16 @@ async function downloadSdcReport(req, res) {
   }
 }
 
+async function moveSld (req, res) {
+  try {
+    await postData(`${config.get('sdc:schoolCollectionStudentURL')}/move-sld`, req.body);
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    logApiError(e, 'Error attempting to move sld record(s)');
+    return errorResponse(res);
+  }
+}
+
 function getFileDetails(reportType) {
   const mappings = {
     'ALL_STUDENT_DIS_CSV': { filename: 'AllDistrictStudents.csv', contentType: 'text/csv' },
@@ -929,5 +939,6 @@ module.exports = {
   getSdcSchoolCollections,
   getSdcDistrictCollections,
   downloadSdcReport,
-  updateBandCode
+  updateBandCode,
+  moveSld
 };

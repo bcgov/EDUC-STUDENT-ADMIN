@@ -42,7 +42,7 @@
                 {{ column.subHeader.title }}
               </div>
             </div>
-            <div v-else-if="column.title !== 'select'">
+            <div v-else-if="!['select', 'toolTip'].includes(column.title)">
               <div class="header-text">
                 {{ column.title }}
               </div>
@@ -72,16 +72,30 @@
               hide-details="true"
               @click.prevent.stop="onClick(props)"
             />
+            <span
+              v-else-if="column.title === 'toolTip' && props.item.raw.toolTipText"
+            >
+              <slot
+                name="toolTip"
+                :tool-tip-text="props.item.raw.toolTipText"
+                :chip-text="data[index].toolTipChipText"
+              />
+            </span>
             <div
               v-else
             >
-              <span :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``">
-                <span v-if="column.key === 'studentPen'">
-
+              <span>
+                <span
+                  v-if="column.key === 'studentPen'"
+                  :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
+                >
                   {{ getAssignedPen(props.item.raw['assignedPen']) }}
                 </span>
 
-                <div v-else-if="column.key === 'schoolName'">
+                <div
+                  v-else-if="column.key === 'schoolName'"
+                  :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
+                >
                   <a
                     v-if="showLinks"
                     :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
@@ -95,7 +109,10 @@
                     {{ props.item.raw['schoolName'] }}
                   </span>
                 </div>
-                <div v-else-if="column.key === 'districtName'">
+                <div
+                  v-else-if="column.key === 'districtName'"
+                  :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
+                >
                   <a
                     v-if="showLinks"
                     :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
@@ -127,17 +144,23 @@
                 </span>
 
                 <div v-else-if="column.key === 'isAdult'">
-                  <span v-if="props.item.raw['isAdult'] !== null || props.item.raw['isAdult' !== undefined]">{{ props.item.raw['isAdult'] === "true" ? 'Yes' : 'No' }}</span>
+                  <span
+                    v-if="props.item.raw['isAdult'] !== null || props.item.raw['isAdult' !== undefined]"
+                    :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
+                  >
+                    {{ props.item.raw['isAdult'] === "true" ? 'Yes' : 'No' }}
+                  </span>
                 </div>
 
                 <div v-else-if="column.key === 'fte'">
-                  <span>{{ props.item.raw['fte'] === 0 ? 0 : props.item.raw['fte'] }}</span>
+                  <span :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``">{{ props.item.raw['fte'] === 0 ? 0 : props.item.raw['fte'] }}</span>
                 </div>
                 <div v-else-if="column.key === 'mappedIndigenousEnrolledProgram' || column.key === 'mappedLanguageEnrolledProgram'">
                   <template v-if="props.item.raw[column.key]">
                     <span
                       v-for="(progs, idx) in props.item.raw[column.key].split(',')"
                       :key="idx"
+                      :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
                     >
                       <div>{{ progs }}</div>
                     </span>
@@ -160,8 +183,13 @@
                     <template v-else>-</template>
                   </slot>
                 </span>
-                <span v-else-if="props.item.raw[column.key]">{{ props.item.raw[column.key] }}</span>
-                <span v-else-if="column.title !== 'select'">-</span>
+                <span
+                  v-else-if="props.item.raw[column.key]"
+                  :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
+                >
+                  {{ props.item.raw[column.key] }}
+                </span>
+                <span v-else-if="!['select', 'toolTip'].includes(column.title)">-</span>
               </span>
               <div
                 v-if="column.hasOwnProperty('subHeader')"
