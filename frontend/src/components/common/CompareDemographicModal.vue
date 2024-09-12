@@ -17,10 +17,11 @@
     </template>
     <v-card id="requestInfoDialogCard">
       <CompareDemographicsCommon
-        v-if="compareModalOpen && !useEdxRelease"
+        v-if="compareModalOpen"
         v-model:selected-records="studentRecords"
         title="Compare/View"
         :close-compare-modal="closeCompareModal"
+        @refresh-sld-data="$emit('refresh-sld-data')"
       >
         <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
           <PrimaryButton
@@ -59,49 +60,6 @@
           />
         </template>
       </CompareDemographicsCommon>
-      <CompareDemographicsCommonV2
-        v-if="compareModalOpen && useEdxRelease"
-        v-model:selected-records="studentRecords"
-        title="Compare/View"
-        :close-compare-modal="closeCompareModal"
-      >
-        <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
-          <PrimaryButton
-            id="compareModalCancelBtn"
-            text="Cancel"
-            secondary
-            @click-action="[closeCompareModal(), clearError()]"
-          />
-          <PrimaryButton
-            id="moveSldBtn"
-            text="Move Sld Record"
-            primary
-            :disabled="disableMoveSld()"
-            @click-action="moveSldRecords()"
-          />
-          <PrimaryButton
-            id="twinBtn"
-            text="Twin"
-            primary
-            :disabled="validateAction()"
-            @click-action="twin()"
-          />
-          <PrimaryButton
-            id="demergeBtn"
-            text="Demerge"
-            primary
-            :disabled="disableDemerge()"
-            @click-action="demerge()"
-          />
-          <PrimaryButton
-            id="mergeBtn"
-            text="Merge PENs"
-            primary
-            :disabled="disableMerge()"
-            @click-action="merge()"
-          />
-        </template>
-      </CompareDemographicsCommonV2>
     </v-card>
   </v-dialog>
 </template>
@@ -113,15 +71,11 @@ import CompareDemographicsCommon from './CompareDemographicsCommon.vue';
 import {deepCloneObject} from '@/utils/common';
 import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
-import CompareDemographicsCommonV2 from '@/components/common/CompareDemographicsCommonV2.vue';
-import {mapState} from 'pinia';
-import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'CompareDemographicModal',
   components: {
     CompareDemographicsCommon,
-    CompareDemographicsCommonV2,
     PrimaryButton,
     TertiaryButton
   },
@@ -140,7 +94,7 @@ export default {
       required: true
     }
   },
-  emits: ['update:selectedRecords','closeCompare'],
+  emits: ['update:selectedRecords','closeCompare', 'refresh-sld-data'],
   data() {
     return {
       compareModalOpen: false,
@@ -148,7 +102,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['config']),
     studentRecords: {
       get: function() {
         return this.selectedRecords;
@@ -156,9 +109,6 @@ export default {
       set: function(value) {
         this.$emit('update:selectedRecords', value);
       }
-    },
-    useEdxRelease() {
-      return !this.config.DISABLE_SDC_FUNCTIONALITY;
     }
   },
   created() {
