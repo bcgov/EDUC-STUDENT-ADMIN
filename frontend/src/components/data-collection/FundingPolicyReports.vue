@@ -43,7 +43,7 @@
   </v-col>
   <v-col v-if="indySchoolsNameNumberFilter != null || districtsNameNumberFilter != null">
     <DetailComponent
-      :config="config"
+      :config="indySchoolsNameNumberFilter != null ? configSchools : configDistricts"
       :collection-object="collectionObject"
       :indy-school-district-object="indySchoolDistrictObject"
       :show-export-btn="true"
@@ -59,7 +59,7 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {sortBy} from 'lodash';
 import DetailComponent from './AllStudents/DetailComponent.vue';
-import {FTE} from '@/utils/sdc/collectionTableConfiguration.js';
+import {FTE_DISTRICT, FTE_SCHOOL} from '@/utils/sdc/collectionTableConfiguration.js';
 
 export default {
   name: 'FundingPolicyReport',
@@ -81,7 +81,8 @@ export default {
       districtsNameNumberFilter: null,
       indySchoolNames: [],
       districtNames: [],
-      config: FTE,
+      configDistricts: FTE_DISTRICT,
+      configSchools: FTE_SCHOOL,
       indySchoolDistrictObject: null,
     };
   },

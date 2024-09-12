@@ -947,6 +947,199 @@ export const FTE = Object.freeze(
   }
 );
 
+export const FTE_DISTRICT = Object.freeze(
+  {
+    tableHeaders: [
+      { title: 'District', key: 'districtName' },
+      { title: 'School', key: 'schoolName' },
+      { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
+      { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
+      { title: 'Birthdate', key: 'dob', subHeader: { title: 'Gender', key: 'gender' } },
+      { title: 'Adult', key: 'isAdult', subHeader: { title: 'Grad', key: 'isGraduated' } },
+      { title: 'Grade', key: 'enrolledGradeCode', subHeader: { title: 'Funding Code', key: 'mappedSchoolFunding' } },
+      { title: 'Courses For Grad', key: 'mappedNoOfCourses', subHeader: { title: 'Support Blocks', key: 'supportBlocks' } },
+      { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInEll' } },
+      { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
+      { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
+    ],
+    summaryReport: [
+      { title: 'Eligible Enrolment & Eligible FTE', endpoint:'enrollment'},
+      { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
+    ],
+    allowedFilters: {
+      warnings: WARNING_FILTER,
+      studentType: STUDENT_TYPE_FILTER,
+      fte: FTE_FILTER,
+      grade: GRADE_FILTER,
+      fundingType: FUNDING_TYPE_FILTER,
+      courses: COURSE_FILTER,
+      support: SUPPORT_BLOCKS_FILTER,
+      fteZero: FTE_ZERO_FILTER,
+      frenchProgram: {
+        ...FRENCH_PROGRAMS_FILTER,
+        filterOptions: [
+          ...FRENCH_PROGRAMS_FILTER.filterOptions,
+          {
+            title: '05 - Programme Francophone',
+            id: 'french05',
+            value: '05'
+          },
+          {
+            title: 'No French Programs',
+            id: 'noFrenchProgram',
+            value: 'noFrenchPrograms'
+          }
+        ]
+      },
+      englishProgram: ENGLISH_PROGRAMS_FILTER,
+      ellYears: ELL_YEARS_FILTER,
+      careerPrograms: {
+        ...CAREER_PROGRAM_FILTER,
+        filterOptions: [
+          ...CAREER_PROGRAM_FILTER.filterOptions,
+          {
+            title: 'No Career Programs',
+            id: 'noCareerProgram',
+            value: 'noCareerPrograms'
+          }
+        ]
+      },
+      careerCode: {
+        ...CAREER_CODE_FILTER,
+        filterOptions: [
+          ...CAREER_CODE_FILTER.filterOptions,
+          {
+            title: 'No Career Code',
+            id: 'noCareerCode',
+            value: 'noCareerCodes'
+          }
+        ]
+      },
+      indigenousPrograms: {
+        ...INDIGENOUS_PROGRAM_FILTER,
+        filterOptions: [
+          ...INDIGENOUS_PROGRAM_FILTER.filterOptions,
+          {
+            title: 'No Indigenous Support Programs',
+            id: 'noIndigenousPrograms',
+            value: 'noIndigenousPrograms'
+          }
+        ]
+      },
+      bandCode: BAND_FILTER,
+      ancestry: ANCESTRY_FILTER,
+      sped: {
+        ...SPED_FILTER,
+        filterOptions: [
+          ...SPED_FILTER.filterOptions,
+          {
+            title: 'No Inclusive Education Category',
+            id: 'noSpedCategory',
+            value: 'noSpedCode'
+          }
+        ]
+      }
+    }
+  }
+);
+
+export const FTE_SCHOOL = Object.freeze(
+  {
+    tableHeaders: [
+      { title: 'School', key: 'schoolName' },
+      { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
+      { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
+      { title: 'Birthdate', key: 'dob', subHeader: { title: 'Gender', key: 'gender' } },
+      { title: 'Adult', key: 'isAdult', subHeader: { title: 'Grad', key: 'isGraduated' } },
+      { title: 'Grade', key: 'enrolledGradeCode', subHeader: { title: 'Funding Code', key: 'mappedSchoolFunding' } },
+      { title: 'Courses For Grad', key: 'mappedNoOfCourses', subHeader: { title: 'Support Blocks', key: 'supportBlocks' } },
+      { title: 'Language Program', key: 'mappedLanguageEnrolledProgram', subHeader: { title: 'Years in ELL', key: 'yearsInEll' } },
+      { title: 'Career Program', key: 'mappedCareerProgram', subHeader: { title: 'Career Code', key: 'mappedCareerProgramCode' } },
+      { title: 'Indigenous Ancestry', key: 'mappedAncestryIndicator', subHeader: { title: 'Band Code', key: 'mappedBandCode' } },
+      { title: 'Indigenous Support Program', key: 'mappedIndigenousEnrolledProgram', subHeader: { title: 'Inclusive Education Category', key: 'mappedSpedCode' } },
+    ],
+    summaryReport: [
+      { title: 'Eligible Enrolment & Eligible FTE', endpoint:'enrollment'},
+      { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
+    ],
+    allowedFilters: {
+      warnings: WARNING_FILTER,
+      studentType: STUDENT_TYPE_FILTER,
+      fte: FTE_FILTER,
+      grade: GRADE_FILTER,
+      fundingType: FUNDING_TYPE_FILTER,
+      courses: COURSE_FILTER,
+      support: SUPPORT_BLOCKS_FILTER,
+      fteZero: FTE_ZERO_FILTER,
+      frenchProgram: {
+        ...FRENCH_PROGRAMS_FILTER,
+        filterOptions: [
+          ...FRENCH_PROGRAMS_FILTER.filterOptions,
+          {
+            title: '05 - Programme Francophone',
+            id: 'french05',
+            value: '05'
+          },
+          {
+            title: 'No French Programs',
+            id: 'noFrenchProgram',
+            value: 'noFrenchPrograms'
+          }
+        ]
+      },
+      englishProgram: ENGLISH_PROGRAMS_FILTER,
+      ellYears: ELL_YEARS_FILTER,
+      careerPrograms: {
+        ...CAREER_PROGRAM_FILTER,
+        filterOptions: [
+          ...CAREER_PROGRAM_FILTER.filterOptions,
+          {
+            title: 'No Career Programs',
+            id: 'noCareerProgram',
+            value: 'noCareerPrograms'
+          }
+        ]
+      },
+      careerCode: {
+        ...CAREER_CODE_FILTER,
+        filterOptions: [
+          ...CAREER_CODE_FILTER.filterOptions,
+          {
+            title: 'No Career Code',
+            id: 'noCareerCode',
+            value: 'noCareerCodes'
+          }
+        ]
+      },
+      indigenousPrograms: {
+        ...INDIGENOUS_PROGRAM_FILTER,
+        filterOptions: [
+          ...INDIGENOUS_PROGRAM_FILTER.filterOptions,
+          {
+            title: 'No Indigenous Support Programs',
+            id: 'noIndigenousPrograms',
+            value: 'noIndigenousPrograms'
+          }
+        ]
+      },
+      bandCode: BAND_FILTER,
+      ancestry: ANCESTRY_FILTER,
+      sped: {
+        ...SPED_FILTER,
+        filterOptions: [
+          ...SPED_FILTER.filterOptions,
+          {
+            title: 'No Inclusive Education Category',
+            id: 'noSpedCategory',
+            value: 'noSpedCode'
+          }
+        ]
+      }
+    }
+  }
+);
+
 export const MIN_REPORTS = Object.freeze(
   {
     fsaReportHeadersforFeb: [
