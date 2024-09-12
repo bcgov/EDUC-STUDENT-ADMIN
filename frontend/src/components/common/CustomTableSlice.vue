@@ -110,7 +110,8 @@
                 </span>
               </div>
               <div v-else-if="column.key === 'districtName'">
-                <span v-if="readOnly">
+                <span v-if="!props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID">-</span>
+                <span v-else-if="readOnly">
                   {{ props.item.raw['districtName'] }}
                 </span>
                 <span v-else>
