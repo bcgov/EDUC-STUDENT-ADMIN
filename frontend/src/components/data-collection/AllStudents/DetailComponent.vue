@@ -103,7 +103,7 @@
   >
     <ViewStudentDetailsComponent
       :selected-student-ids="studentForEdit"
-      :readonly="['PROVDUPES', 'DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode) || isStudentRemoved || readOnly"
+      :readonly="['DUPES_RES', 'COMPLETED'].includes(collectionObject?.collectionStatusCode) || isStudentRemoved || readOnly"
       @reload-students="reloadStudentsFlag = true"
       @close="closeAndLoadStudents"
     />
