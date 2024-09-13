@@ -445,6 +445,18 @@ export const SDC_REPORTS = Object.freeze(
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
       },
+      {
+        label: 'Enroled Headcounts and FTEs By School',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/'
+      },
+      {
+        label: 'Enroled Headcounts and FTEs For CE and OL Schools',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolment-fte-headcounts-for-ce-ol-schools/'
+      },
+      {
+        label: 'Refugee Enroled Headcounts and FTEs',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
+      }
     ]
   }
 );
