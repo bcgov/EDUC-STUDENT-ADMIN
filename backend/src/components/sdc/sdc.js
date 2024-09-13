@@ -281,7 +281,7 @@ async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting sdc school collection student paginated list');
+      await logApiError(e, 'Error getting sdc school collection student paginated slice list');
       return errorResponse(res);
     }
   }
@@ -310,7 +310,9 @@ function createSchoolOrDistrictCriteria(searchParams) {
 function createTabFilter(searchParams) {
   let searchCriteriaList = [];
   let tableKey = 'sdcStudentEnrolledProgramEntities.enrolledProgramCode';
-
+  if (searchParams.label === 'NOT_DELETED') {
+    searchCriteriaList.push({ key: 'sdcSchoolCollectionStudentStatusCode', operation: FILTER_OPERATION.NOT_IN, value: 'DELETED', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  }
   if (searchParams.label === 'FRENCH_PR') {
     searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '05,08,11,14', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }

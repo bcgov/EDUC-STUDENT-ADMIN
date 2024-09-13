@@ -456,7 +456,19 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'Refugee Enroled Headcounts and FTEs',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
-      }
+      },
+      {
+        label: 'Independent School Funding Report - Standard Student',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report/'
+      },
+      {
+        label: 'Independent School Funding Report - Online Learning',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/online-indy-funding-report/'
+      },
+      {
+        label: 'Independent School Funding Report - Non Graduated Adult',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/non-graduated-adult-indy-funding-report/'
+      },
     ]
   }
 );

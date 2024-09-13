@@ -33,6 +33,32 @@ export const WARNING_FILTER = Object.freeze(
   }
 );
 
+export const WARNING_FILTER_REPORTS = Object.freeze(
+  {
+    heading: 'Student Status',
+    id: 'warnings',
+    multiple: true,
+    key: 'warnings',
+    filterOptions: [
+      {
+        title: 'Has Funding Warnings',
+        id: 'hasFundingWarning',
+        value: 'FUNDWARN'
+      },
+      {
+        title: 'Has Info Warnings',
+        id: 'hasInfoWarning',
+        value: 'INFOWARN'
+      },
+      {
+        title: 'Has Errors',
+        id: 'hasErrors',
+        value: 'ERROR'
+      }
+    ]
+  }
+);
+
 export const STUDENT_TYPE_FILTER = Object.freeze(
   {
     heading: 'Student Type',
@@ -949,7 +975,9 @@ export const FTE = Object.freeze(
 
 export const FTE_DISTRICT = Object.freeze(
   {
+    defaultFilter: { label: 'NOT_DELETED', description: 'Student is not deleted' },
     tableHeaders: [
+      { key: 'sdcSchoolCollectionStudentStatusCode' },
       { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
@@ -968,7 +996,7 @@ export const FTE_DISTRICT = Object.freeze(
       { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
     ],
     allowedFilters: {
-      warnings: WARNING_FILTER,
+      warnings: WARNING_FILTER_REPORTS,
       studentType: STUDENT_TYPE_FILTER,
       fte: FTE_FILTER,
       grade: GRADE_FILTER,
@@ -1046,7 +1074,9 @@ export const FTE_DISTRICT = Object.freeze(
 
 export const FTE_SCHOOL = Object.freeze(
   {
+    defaultFilter: { label: 'NOT_DELETED', description: 'Student is not deleted' },
     tableHeaders: [
+      { key: 'sdcSchoolCollectionStudentStatusCode' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },
@@ -1064,7 +1094,7 @@ export const FTE_SCHOOL = Object.freeze(
       { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
     ],
     allowedFilters: {
-      warnings: WARNING_FILTER,
+      warnings: WARNING_FILTER_REPORTS,
       studentType: STUDENT_TYPE_FILTER,
       fte: FTE_FILTER,
       grade: GRADE_FILTER,
