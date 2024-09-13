@@ -243,7 +243,7 @@ export default {
         const filterKey = this.indySchoolDistrictObject.type === 'indy' ? 'schoolNameNumber' : 'districtNameNumber';
         this.filterSearchParams.schoolOrDistrictId = {key: filterKey, value: this.indySchoolDistrictObject.id};
         if (this.indySchoolDistrictObject.type === 'district') {
-          sort = { sdcSchoolCollection: 'DESC' };
+          sort = { sdcSchoolCollection: 'ASC' };
         }
       }
       ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/students-paginated-slice?tableFormat=true`, {

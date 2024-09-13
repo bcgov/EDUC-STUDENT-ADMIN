@@ -351,7 +351,7 @@ function validateFteZeroFilter(filters) {
 }
 
 function validateGradeFilter(filterGrades = []) {
-  const activeGradeCodes = cacheService.getActiveEnrolledGradeCodes();
+  const activeGradeCodes = cacheService.getActiveEnrolledGradeCodes().map(grade => grade.enrolledGradeCode);
   if (filterGrades.length > 0) {
     if (!filterGrades.every(value => activeGradeCodes.includes(value))) {
       log.error('Invalid grade filter.');
