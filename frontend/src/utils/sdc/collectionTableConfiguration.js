@@ -968,7 +968,6 @@ export const FTE_DISTRICT = Object.freeze(
       { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
     ],
     allowedFilters: {
-      warnings: WARNING_FILTER,
       studentType: STUDENT_TYPE_FILTER,
       fte: FTE_FILTER,
       grade: GRADE_FILTER,
@@ -1064,7 +1063,6 @@ export const FTE_SCHOOL = Object.freeze(
       { title: 'Grade Enrolment & FTE per School', endpoint:'grade-enrollment'}
     ],
     allowedFilters: {
-      warnings: WARNING_FILTER,
       studentType: STUDENT_TYPE_FILTER,
       fte: FTE_FILTER,
       grade: GRADE_FILTER,
