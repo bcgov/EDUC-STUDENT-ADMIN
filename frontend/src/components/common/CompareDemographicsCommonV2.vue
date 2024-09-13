@@ -221,7 +221,7 @@
                 density="compact"
                 class="studentCheckbox pa-0 ma-0"
                 color="#606060"
-                :disabled="sldSelectDisabled(students.studentID)"
+                :disabled="sldSelectDisabled(students.studentID, existingMergedStudentIdsMap?.get(students.studentID)?.includes(item.item.raw.assignedStudentId))"
               />
               <div
                 v-else-if="header.value === 'mincode'"
@@ -278,7 +278,7 @@
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ formatDateFromDateTime(item.item.raw[header.value]) }}</span>
-                <span v-if="existingMergedStudentIdsMap?.get(students.pen)?.includes(item.item.raw.assignedStudentId)">
+                <span v-if="existingMergedStudentIdsMap?.get(students.studentID)?.includes(item.item.raw.assignedStudentId)">
                   <v-tooltip
                     bottom
                   >
@@ -634,7 +634,7 @@ export default {
             }
           })
         .then(response => {
-          this.existingMergedStudentIdsMap.set(student?.pen, response.data.map(studentMerges => studentMerges.mergeStudentID));
+          this.existingMergedStudentIdsMap.set(student?.studentID, response.data.map(studentMerges => studentMerges.mergeStudentID));
           ApiService.apiAxios
             .get(Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT + '/byAssignedStudentID', {
               params: {
@@ -643,7 +643,7 @@ export default {
                 sort: {
                   'sdcSchoolCollection.uploadDate': 'DESC'
                 },
-                assignedStudentID: [...this.existingMergedStudentIdsMap.get(student?.pen), student?.studentID],
+                assignedStudentID: [...this.existingMergedStudentIdsMap.get(student?.studentID), student?.studentID],
                 tableFormat: true
               }
             })
@@ -934,9 +934,9 @@ export default {
       }
       return warningMessage;
     },
-    sldSelectDisabled(assignedStudentID) {
+    sldSelectDisabled(assignedStudentID, isMergedSldRecord) {
       const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
-      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID));
+      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID)) || isMergedSldRecord;
     },
     resetSldSelection(){
       this.checkedSldStudents.forEach(record => record.selected = false);
