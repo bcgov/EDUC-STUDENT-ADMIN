@@ -221,7 +221,7 @@
                 density="compact"
                 class="studentCheckbox pa-0 ma-0"
                 color="#606060"
-                :disabled="sldSelectDisabled(students.studentID)"
+                :disabled="sldSelectDisabled(students.studentID, existingMergedStudentIdsMap?.get(students.pen)?.includes(item.item.raw.assignedStudentId))"
               />
               <div
                 v-else-if="header.value === 'mincode'"
@@ -934,9 +934,9 @@ export default {
       }
       return warningMessage;
     },
-    sldSelectDisabled(assignedStudentID) {
+    sldSelectDisabled(assignedStudentID, isMergedSldRecord) {
       const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
-      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID));
+      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID)) || isMergedSldRecord;
     },
     resetSldSelection(){
       this.checkedSldStudents.forEach(record => record.selected = false);
