@@ -13,7 +13,7 @@
       />
     </v-col>
     <v-col
-      v-if="(reportData !== null || displayAllStudents) && selectedReport?.csvDownloadURL"
+      v-if="selectedReport?.csvDownloadURL"
       class="mt-4 ml-4"
     >
       <router-link
@@ -159,6 +159,9 @@ export default {
           this.loadStudents();
         }
       } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
+        this.displayAllStudents = false;
+        this.reportData = null;
+      } else if (this.selectedReport.reportID === 'ENROLED_FUNDING_REPORT') {
         this.displayAllStudents = false;
         this.reportData = null;
       } else {

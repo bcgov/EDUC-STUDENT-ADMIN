@@ -3,7 +3,8 @@ const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
-  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report'];
+  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
+  'inclusive-education-variance-headcounts','enrolled-fte-headcounts', 'enrolment-fte-headcounts-for-ce-ol-schools', 'refugee-enrolment-fte-headcounts'];
 
 async function getMinistrySDCReport(req, res) {
   try {
@@ -53,6 +54,9 @@ function getFileDetails(reportType) {
     'indy-funding-report': { filename: 'IndependentSchoolsFundingReportStandardStudent.csv', contentType: 'text/csv' },
     'online-indy-funding-report': { filename: 'IndependentSchoolsFundingReportOnlineLearning.csv', contentType: 'text/csv' },
     'non-graduated-adult-indy-funding-report': { filename: 'IndependentSchoolsFundingReportNonGraduatedAdult.csv', contentType: 'text/csv' },
+    'enrolled-fte-headcounts': { filename: 'EnroledHeadcountsAndFteReport.csv', contentType: 'text/csv' },
+    'enrolment-fte-headcounts-for-ce-ol-schools': { filename: 'EnroledHeadcountsAndFteReportForCEOLSchools.csv', contentType: 'text/csv' },
+    'refugee-enrolment-fte-headcounts': { filename: 'RefugeeEnroledHeadcountsAndFteReport.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
