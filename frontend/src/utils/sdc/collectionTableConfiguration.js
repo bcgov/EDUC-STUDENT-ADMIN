@@ -949,8 +949,9 @@ export const FTE = Object.freeze(
 
 export const FTE_DISTRICT = Object.freeze(
   {
-    defaultFilter: { label: 'NO_WARN', description: 'Student has no warnings and is not deleted' },
+    defaultFilter: { label: 'NOT_DELETED', description: 'Student is not deleted' },
     tableHeaders: [
+      { key: 'sdcSchoolCollectionStudentStatusCode' },
       { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
@@ -1046,8 +1047,9 @@ export const FTE_DISTRICT = Object.freeze(
 
 export const FTE_SCHOOL = Object.freeze(
   {
-    defaultFilter: { label: 'NO_WARN', description: 'Student has no warnings and is not deleted' },
+    defaultFilter: { label: 'NOT_DELETED', description: 'Student is not deleted' },
     tableHeaders: [
+      { key: 'sdcSchoolCollectionStudentStatusCode' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
       { title: 'Legal Surname, Given (Middle)', key: 'legalName', subHeader: { title: 'Usual Surname, Given (Middle)', key: 'usualName' } },

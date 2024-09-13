@@ -310,8 +310,8 @@ function createSchoolOrDistrictCriteria(searchParams) {
 function createTabFilter(searchParams) {
   let searchCriteriaList = [];
   let tableKey = 'sdcStudentEnrolledProgramEntities.enrolledProgramCode';
-  if (searchParams.label === 'NO_WARN') {
-    searchCriteriaList.push({ key: 'sdcSchoolCollectionStudentStatusCode', operation: FILTER_OPERATION.NONE_IN, value: 'FUNDWARN,INFOWARN,ERROR,DELETED', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+  if (searchParams.label === 'NOT_DELETED') {
+    searchCriteriaList.push({ key: 'sdcSchoolCollectionStudentStatusCode', operation: FILTER_OPERATION.NOT_IN, value: 'DELETED', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }
   if (searchParams.label === 'FRENCH_PR') {
     searchCriteriaList.push({ key: tableKey, operation: FILTER_OPERATION.IN, value: '05,08,11,14', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
