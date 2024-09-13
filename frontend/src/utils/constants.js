@@ -395,7 +395,8 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'FSA Registration Report',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/fsa-registration-report/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/fsa-registration-report/',
+        onlyForCollection: ['FEBRUARY', 'SEPTEMBER'],
       },
       { 
         label: 'School Physical Address Report',
@@ -444,6 +445,23 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
+      },
+      {
+        label: 'Enroled Headcounts and FTEs By School',
+        reportID: 'ENROLED_FUNDING_REPORT',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/'
+      },
+      {
+        label: 'Enroled Headcounts and FTEs For CE and OL Schools',
+        reportID: 'ENROLED_FUNDING_REPORT',
+        onlyForCollection: ['FEBRUARY', 'MAY'],
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolment-fte-headcounts-for-ce-ol-schools/'
+      },
+      {
+        label: 'Refugee Enroled Headcounts and FTEs',
+        reportID: 'ENROLED_FUNDING_REPORT',
+        onlyForCollection: ['FEBRUARY'],
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
       },
       {
         label: 'Independent School Funding Report - Standard Student',
