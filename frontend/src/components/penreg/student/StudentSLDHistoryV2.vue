@@ -166,7 +166,6 @@ export default {
             .then(response => {
               this.sldData = response?.data?.content;
               this.sldData.map(data => {
-                console.log(data);
                 if(this.existingMergedStudentIds.includes(data.assignedStudentId)) {
                   data.toolTipText = `Merged from ${data.assignedPen}`;
                   data.toolTipChipText = 'M';

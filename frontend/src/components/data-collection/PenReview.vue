@@ -26,6 +26,11 @@
               :data="studentList"
               :total-elements="totalElements"
               :is-loading="isLoading"
+              :items-per-page-options="[
+                {value: 15, title: '15'},
+                {value: 25, title: '25'},
+                {value: 50, title: '50'}
+              ]"
               @reload="reload"
               @selections="selectedStudents = $event"
               @editSelectedRow="editStudent"
@@ -137,9 +142,5 @@ export default {
 .table {
   width: none !important;
 }
-
-:deep(.v-data-table-footer__items-per-page) {
-       display: flex;
- }
   </style>
   
