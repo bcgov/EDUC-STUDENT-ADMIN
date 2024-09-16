@@ -872,14 +872,14 @@ async function downloadSdcReport(req, res) {
         message: 'Invalid report type provided'
       });
     }
-    let collectionId;
+    let url;
     if(req.params.sdcDistrictCollectionID){
-      collectionId = req.params.sdcDistrictCollectionID;
+      url = `${config.get('sdc:rootURL')}/reportGeneration/sdcDistrictCollection/${req.params.sdcDistrictCollectionID}/${reportType}`;
     } else {
-      collectionId = req.params.sdcSchoolCollectionID;
+      url = `${config.get('sdc:rootURL')}/reportGeneration/sdcSchoolCollection/${req.params.sdcSchoolCollectionID}/${reportType}`;
     }
 
-    const resData = await getData(`${config.get('sdc:rootURL')}/reportGeneration/${collectionId}/${reportType}`);
+    const resData = await getData(url);
     const fileDetails = getFileDetails(reportType);
 
     setResponseHeaders(res, fileDetails);
