@@ -4,10 +4,12 @@
       v-model:page.sync="pageNumber"
       v-model:items-per-page.sync="pageSize"
       v-model="selected"
+      :class="itemsPerPageOptions.length === 0 ? 'hide-items-per-page' : ''"
       :items-length="totalElements"
       :items="data"
       :headers="headers"
       mobile-breakpoint="0"
+      :items-per-page-options="itemsPerPageOptions"
     >
       <template #top>
         <v-progress-linear
@@ -280,6 +282,10 @@ export default {
     clickable: {
       type: Boolean,
       default: true
+    },
+    itemsPerPageOptions: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow'],
@@ -299,6 +305,11 @@ export default {
     ...mapState(appStore, ['config']),
   },
   watch: {
+    pageSize(newPageSize) {
+      this.masterCheckbox = false;
+      this.selected = [];
+      this.$emit('reload', {pageNumber: 0, pageSize: newPageSize});
+    },
     pageNumber: {
       handler(val) {
         if(val) {
@@ -420,9 +431,9 @@ export default {
     vertical-align: top !important;
  }
 
- :deep(.v-data-table-footer__items-per-page) {
-       display: none;
- }
+:deep(.hide-items-per-page .v-data-table-footer__items-per-page) {
+  display: none;
+}
 
  .hoverTable tr:hover td {
   background-color: #e8e8e8 !important;
