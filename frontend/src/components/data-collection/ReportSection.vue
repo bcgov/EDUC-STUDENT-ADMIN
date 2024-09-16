@@ -103,7 +103,6 @@
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner.vue';
-import {MIN_REPORTS} from '@/utils/sdc/collectionTableConfiguration.js';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 import {Routes} from '@/utils/constants';
 import {isEmpty, omitBy} from 'lodash';
