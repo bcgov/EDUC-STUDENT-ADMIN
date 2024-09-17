@@ -103,7 +103,6 @@
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner.vue';
-import {MIN_REPORTS} from '@/utils/sdc/collectionTableConfiguration.js';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
 import {Routes} from '@/utils/constants';
 import {isEmpty, omitBy} from 'lodash';
@@ -134,7 +133,6 @@ export default {
       headers: [],
       collectionID: this.$route.params.collectionID,
       displayAllStudents: false,
-      allStudentsView: ['FSA Registration Report'],
       filterSearchParams: {
         notSdcSchoolCollectionStudentStatusCode: 'ERROR,DELETED',
         moreFilters: {},
@@ -152,13 +150,7 @@ export default {
   watch: {
     selectedReport() {
       this.displayAllStudents = false;
-      if(this.allStudentsView.includes(this.selectedReport.label)) {
-        this.reportData = null;
-        this.loadHeaders(this.selectedReport.label);
-        if(this.displayAllStudents) {
-          this.loadStudents();
-        }
-      } else if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
+     if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
         this.displayAllStudents = false;
         this.reportData = null;
       } else if (this.selectedReport.reportID === 'ENROLED_FUNDING_REPORT') {
@@ -218,21 +210,6 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
-    },
-    loadHeaders(label) {
-      if(label === 'FSA Registration Report') {
-        if(this.collectionObject?.collectionTypeCode === 'FEBRUARY') {
-          this.config = MIN_REPORTS.fsaReportHeadersforFeb;
-          this.filterSearchParams.grade = 'FSA_FEB_GRADE';
-          this.displayAllStudents = true;
-        } else if(this.collectionObject?.collectionTypeCode === 'SEPTEMBER') {
-          this.config = MIN_REPORTS.fsaReportHeadersforSept;
-          this.filterSearchParams.grade = 'FSA_SEP_GRADE';
-          this.displayAllStudents = true;
-        } else {
-          this.displayAllStudents = false;
-        }
-      }
     },
     loadNext() {
       if (this.canLoadNext) {
