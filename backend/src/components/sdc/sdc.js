@@ -490,6 +490,16 @@ async function getSDCSchoolCollectionDetail(req, res) {
   }
 }
 
+async function getSDCDistrictCollectionDetail(req, res) {
+  try {
+    let sdcDistrictCollectionData = await getData(`${config.get('sdc:districtCollectionURL')}/${req.params.sdcDistrictCollectionID}`);
+    return res.status(HttpStatus.OK).json(sdcDistrictCollectionData);
+  } catch (e) {
+    logApiError(e, 'Error getting sdc district collection detail');
+    return errorResponse(res);
+  }
+}
+
 async function getSDCSchoolCollectionStudentDetail(req, res) {
   try {
     let sdcSchoolCollectionStudentData = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/${req.params.sdcSchoolCollectionStudentID}`);
@@ -873,14 +883,22 @@ async function downloadSdcReport(req, res) {
       });
     }
     let url;
+    let schoolOrDistrictNumber;
     if(req.params.sdcDistrictCollectionID){
       url = `${config.get('sdc:rootURL')}/reportGeneration/sdcDistrictCollection/${req.params.sdcDistrictCollectionID}/${reportType}`;
+      let districtResponse = await getData(`${config.get('sdc:districtCollectionURL')}/${req.params.sdcDistrictCollectionID}`);
+      let districtId = districtResponse.districtID;
+      schoolOrDistrictNumber = cacheService.getDistrictJSONByDistrictId(districtId).districtNumber;
     } else {
       url = `${config.get('sdc:rootURL')}/reportGeneration/sdcSchoolCollection/${req.params.sdcSchoolCollectionID}/${reportType}`;
+      let schoolResponse = await getData(`${config.get('sdc:schoolCollectionURL')}/${req.params.sdcSchoolCollectionID}`);
+      let schoolId = schoolResponse.schoolID;
+      schoolOrDistrictNumber = cacheService.getSchoolBySchoolID(schoolId).mincode;
     }
 
+
     const resData = await getData(url);
-    const fileDetails = getFileDetails(reportType);
+    const fileDetails = getFileDetails(reportType, schoolOrDistrictNumber);
 
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(resData.documentData, 'base64');
@@ -916,10 +934,10 @@ async function getDistrictHeadcounts(req, res) {
   }
 }
 
-function getFileDetails(reportType) {
+function getFileDetails(reportType, schoolOrDistrictNumber) {
   const mappings = {
-    'ALL_STUDENT_DIS_CSV': { filename: 'AllDistrictStudents.csv', contentType: 'text/csv' },
-    'ALL_STUDENT_SCHOOL_CSV': { filename: 'AllSchoolStudents.csv', contentType: 'text/csv' },
+    'ALL_STUDENT_DIS_CSV': { filename: `AllStudents_District_${schoolOrDistrictNumber}`, contentType: 'text/csv' },
+    'ALL_STUDENT_SCHOOL_CSV': { filename: `AllStudents_School_${schoolOrDistrictNumber}`, contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
@@ -939,6 +957,7 @@ module.exports = {
   unsubmitSdcDistrictCollection,
   unsubmitSdcSchoolCollection,
   getSDCSchoolCollectionDetail,
+  getSDCDistrictCollectionDetail,
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
   getInDistrictDuplicates,
