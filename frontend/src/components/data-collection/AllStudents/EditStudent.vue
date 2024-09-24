@@ -930,6 +930,7 @@ export default {
         break;
       case 'MULTI':
       case 'NEW':
+      case 'CONFLICT':
         result.assignedPen = 'Under Review';
         result.tooltip = 'The submitted PEN and student details are similar to multiple student files. Upon file submission, this record will be sent to a PEN Coordinator for review to prevent duplication.';
         break;
