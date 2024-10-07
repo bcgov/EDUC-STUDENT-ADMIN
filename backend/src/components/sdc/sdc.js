@@ -496,6 +496,9 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
     if (sdcSchoolCollectionStudentData?.enrolledProgramCodes) {
       sdcSchoolCollectionStudentData.enrolledProgramCodes = sdcSchoolCollectionStudentData?.enrolledProgramCodes.match(/.{1,2}/g);
     }
+    if (sdcSchoolCollectionStudentData?.numberOfCourses) {
+      sdcSchoolCollectionStudentData.numberOfCourses = formatNumberOfCourses(sdcSchoolCollectionStudentData?.numberOfCourses);
+    }
 
     let school = cacheService.getSchoolBySchoolID(sdcSchoolCollectionStudentData.schoolID);
     sdcSchoolCollectionStudentData.schoolName = getSchoolName(school);
