@@ -50,9 +50,9 @@
             id="searchFiltering"
             class="filter-heading pb-0"
           >
-            Name and ID Filtering
-          </v-col>
-          <v-tooltip content-class="customTooltip">
+            <span>Name and ID Filtering</span>
+
+            <v-tooltip content-class="customTooltip">
             <template #activator="{ props: tooltipProps }">
               <v-icon
                 v-bind="tooltipProps"
@@ -67,6 +67,8 @@
               The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
             </span>
           </v-tooltip>
+          </v-col>
+          
         </v-row>
         <v-row>
           <v-col

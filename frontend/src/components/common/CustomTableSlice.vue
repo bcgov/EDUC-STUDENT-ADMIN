@@ -427,5 +427,6 @@ tr:hover td {
   justify-content: center;
   gap: .5rem;
   padding-bottom: .2rem;
+  padding-top: 1rem;
 }
 </style>
