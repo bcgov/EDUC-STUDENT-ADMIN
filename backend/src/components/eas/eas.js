@@ -17,20 +17,20 @@ async function getAssessmentSessions(req, res) {
 }
 
 async function updateAssessmentSession(req, res) {
-  if (req.params.assessmentSessionID !== req.body.assessmentSessionID) {
+  if (req.params.sessionID !== req.body.sessionID) {
     return res.status(HttpStatus.BAD_REQUEST).json({
-      message: 'The assessmentSessionID in the URL didn\'t match the assessmentSessionID in the request body.'
+      message: 'The sessionID in the URL didn\'t match the sessionID in the request body.'
     });
   }
   try {
     const userInfo = utils.getUser(req);
     const payload = {
-      assessmentSessionID: req.body.assessmentSessionID,
+      sessionID: req.body.sessionID,
       activeFromDate: req.body.activeFromDate,
       activeUntilDate: req.body.activeUntilDate,
       updateUser: userInfo.idir_username
     };
-    const result = await utils.putData(`${config.get('server:eas:assessmentSessionsURL')}/${req.body.assessmentSessionID}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:eas:assessmentSessionsURL')}/${req.body.sessionID}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentSession', 'Error occurred while attempting to save the changes to the assessment session.');

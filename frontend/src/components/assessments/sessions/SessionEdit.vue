@@ -113,7 +113,7 @@ export default {
       this.processing = true;
       await this.validateForm();
       ApiService.apiAxios
-        .put(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`+'/'+this.editSession.assessmentSessionID, this.editSession)
+        .put(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`+'/'+this.editSession.sessionID, this.editSession)
         .then(() => {
           this.setSuccessAlert(
             'Success! The assessment session has been updated.'
