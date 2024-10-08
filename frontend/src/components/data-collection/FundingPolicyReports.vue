@@ -46,6 +46,7 @@
       :config="indySchoolsNameNumberFilter != null ? configSchools : configDistricts"
       :collection-object="collectionObject"
       :indy-school-district-object="indySchoolDistrictObject"
+      :is-district="isDistrict"
       :show-export-btn="true"
       :read-only="true"
     />
@@ -84,6 +85,7 @@ export default {
       configDistricts: FTE_DISTRICT,
       configSchools: FTE_SCHOOL,
       indySchoolDistrictObject: null,
+      isDistrict: false,
     };
   },
   computed: {
@@ -99,8 +101,10 @@ export default {
     setIndySchoolsDistrictsNameNumberFilter(key, $event) {
       if ($event) {
         this.indySchoolDistrictObject = { type: key, id: $event };
+        this.isDistrict = key === 'district';
       } else {
         this.indySchoolDistrictObject = null;
+        this.isDistrict = false;
       }
     },
     setupIndySchoolsDistrictsList() {

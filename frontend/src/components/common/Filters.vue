@@ -53,22 +53,21 @@
             <span>Name and ID Filtering</span>
 
             <v-tooltip content-class="customTooltip">
-            <template #activator="{ props: tooltipProps }">
-              <v-icon
-                v-bind="tooltipProps"
-                size="25"
-                color="#003366"
-                style="align-self: center;"
-              >
-                mdi-help-circle
-              </v-icon>
-            </template>
-            <span id="penLocalIdNameFilterTooltip">
-              The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
-            </span>
-          </v-tooltip>
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-bind="tooltipProps"
+                  size="25"
+                  color="#003366"
+                  style="align-self: center;"
+                >
+                  mdi-help-circle
+                </v-icon>
+              </template>
+              <span id="penLocalIdNameFilterTooltip">
+                The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
+              </span>
+            </v-tooltip>
           </v-col>
-          
         </v-row>
         <v-row>
           <v-col
@@ -194,9 +193,11 @@
             School and District Filtering
           </v-col>
         </v-row>
-        <v-row
-        >
-          <v-col cols="6" class="pt-0">
+        <v-row>
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
             <v-row v-if="false">
               <v-text-field
                 id="searchInput"
@@ -225,7 +226,10 @@
               />
             </slot>
           </v-col>
-          <v-col cols="6" class="pt-0">
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
             <slot
               name="text-search"
             >
@@ -242,6 +246,41 @@
                 item-value="sdcDistrictCollectionID"
                 autocomplete="off"
                 @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
+              />
+            </slot>
+          </v-col>
+        </v-row>
+      </div>
+      <div v-if="isDistrict === true">
+        <v-row>
+          <v-col
+            id="schoolFilters"
+            class="filter-heading pb-0"
+          >
+            School Filtering
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectSchool"
+                v-model="schoolNameNumberFilterForDistrict"
+                variant="underlined"
+                :items="schoolSearchNamesForDistrict"
+                color="#003366"
+                label="School Name or Number"
+                single-line
+                :clearable="true"
+                item-title="schoolCodeName"
+                item-value="sdcSchoolCollectionID"
+                autocomplete="off"
+                @update:model-value="setSchoolNameNumberFilterForDistrict('schoolNameNumber', $event)"
               />
             </slot>
           </v-col>
@@ -282,6 +321,20 @@
               </v-btn>
             </div>
           </v-btn-toggle>
+          <v-col v-if="key === 'bandCode'">
+            <v-autocomplete
+              id="bandCode"
+              v-model="bandCodeValue"
+              label="Band of Residence"
+              variant="underlined"
+              :items="sdcCollection.bandCodes"
+              item-value="bandCode"
+              item-title="dropdownText"
+              class="mt-n7 mb-n8"
+              clearable
+              @update:model-value="setBandCodeFilter('bandResidence', $event)"
+            />
+          </v-col>
           <v-col v-if="key === 'courses'">
             <v-range-slider
               id="courses-slider"
@@ -345,6 +398,7 @@ import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
+import {sdcCollectionStore} from '@/store/modules/sdcCollection';
   
 export default {
   name: 'Filters',
@@ -378,6 +432,11 @@ export default {
       required: false,
       default: null
     },
+    isDistrict: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   emits: ['clearFilters', 'apply-filters', 'close'],
   data() {
@@ -388,6 +447,7 @@ export default {
       courseRange: [0, 15],
       penLocalIdNameFilter: null,
       schoolNameNumberFilter: null,
+      schoolNameNumberFilterForDistrict: null,
       districtNameNumberFilter: null,
       legalFirstName: null,
       legalMiddleNames: null,
@@ -399,7 +459,9 @@ export default {
       assignedPen: null,
       localID: null,
       schoolSearchNames: [],
+      schoolSearchNamesForDistrict: [],
       districtSearchNames: [],
+      sdcCollection: sdcCollectionStore(),
     };
   },
   computed: {
@@ -427,6 +489,9 @@ export default {
     Object.keys(this.filters).forEach(key => {
       this.selected[key] = [];
     });
+    if (this.isDistrict) {
+      this.setupSchoolListForDistrict(this.indySchoolDistrictObject.id);
+    }
   },
   methods: {
     setupSchoolList(){
@@ -444,6 +509,27 @@ export default {
             }
           });
           this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    setupSchoolListForDistrict(sdcDistrictCollectionID){
+      this.schoolSearchNames = [];
+      ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${sdcDistrictCollectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.schoolsMap.get(schoolCollection.schoolID);
+            if (school) {
+              let schoolItem = {
+                schoolCodeName: school.schoolName + ' - ' + school.mincode,
+                schoolID: school.schoolID,
+                districtID: school.districtID
+              };
+              this.schoolSearchNames.push(schoolItem);
+            }
+          });
+          this.schoolSearchNamesForDistrict = sortBy(this.schoolSearchNames, ['schoolCodeName']);
         })
         .catch(error => {
           console.error(error);
@@ -494,6 +580,16 @@ export default {
       }
     },
     setSchoolNameNumberFilter(key, $event) {
+      this.setPenLocalIdNameFilter($event, null);
+      if($event) {
+        this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
+    setSchoolNameNumberFilterForDistrict(key, $event) {
       this.setPenLocalIdNameFilter($event, null);
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
@@ -561,7 +657,20 @@ export default {
     },
     apply() {
       this.$emit('apply-filters', this.selected);
-    }
+    },
+    setBandCodeFilter(key, $event){
+      if (this.penLocalIdNameFilter != null) {
+        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
+        else delete this.selected['penLocalIdNameFilter'];
+      }
+      if($event) {
+        this.selected[key] = [{title: this.sdcCollection.bandCodes.find(value => value.bandCode === $event).dropdownText, value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
   }
 };
 </script>
