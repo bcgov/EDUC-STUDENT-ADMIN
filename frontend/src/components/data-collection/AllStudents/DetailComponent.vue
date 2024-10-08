@@ -88,6 +88,7 @@
         :filters="config.allowedFilters"
         :collection-object="collectionObject"
         :indy-school-district-object="indySchoolDistrictObject"
+        :is-district="isDistrict"
         @apply-filters="applyFilters"
         @clear-filters="clearFilters"
         @close="showFilters= !showFilters"
@@ -145,6 +146,11 @@ export default {
       type: Object,
       required: false,
       default: () => null
+    },
+    isDistrict: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     showExportBtn: {
       type: Boolean,

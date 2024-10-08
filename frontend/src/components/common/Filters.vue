@@ -193,9 +193,11 @@
             School and District Filtering
           </v-col>
         </v-row>
-        <v-row
-        >
-          <v-col cols="6" class="pt-0">
+        <v-row>
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
             <v-row v-if="false">
               <v-text-field
                 id="searchInput"
@@ -224,7 +226,10 @@
               />
             </slot>
           </v-col>
-          <v-col cols="6" class="pt-0">
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
             <slot
               name="text-search"
             >
@@ -241,6 +246,41 @@
                 item-value="sdcDistrictCollectionID"
                 autocomplete="off"
                 @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
+              />
+            </slot>
+          </v-col>
+        </v-row>
+      </div>
+      <div v-if="isDistrict === true">
+        <v-row>
+          <v-col
+            id="schoolFilters"
+            class="filter-heading pb-0"
+          >
+            School Filtering
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectSchool"
+                v-model="schoolNameNumberFilterForDistrict"
+                variant="underlined"
+                :items="schoolSearchNamesForDistrict"
+                color="#003366"
+                label="School Name or Number"
+                single-line
+                :clearable="true"
+                item-title="schoolCodeName"
+                item-value="sdcSchoolCollectionID"
+                autocomplete="off"
+                @update:model-value="setSchoolNameNumberFilterForDistrict('schoolNameNumber', $event)"
               />
             </slot>
           </v-col>
@@ -392,6 +432,11 @@ export default {
       required: false,
       default: null
     },
+    isDistrict: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   emits: ['clearFilters', 'apply-filters', 'close'],
   data() {
@@ -402,6 +447,7 @@ export default {
       courseRange: [0, 15],
       penLocalIdNameFilter: null,
       schoolNameNumberFilter: null,
+      schoolNameNumberFilterForDistrict: null,
       districtNameNumberFilter: null,
       legalFirstName: null,
       legalMiddleNames: null,
@@ -413,6 +459,7 @@ export default {
       assignedPen: null,
       localID: null,
       schoolSearchNames: [],
+      schoolSearchNamesForDistrict: [],
       districtSearchNames: [],
       sdcCollection: sdcCollectionStore(),
     };
@@ -442,6 +489,9 @@ export default {
     Object.keys(this.filters).forEach(key => {
       this.selected[key] = [];
     });
+    if (this.isDistrict) {
+      this.setupSchoolListForDistrict(this.indySchoolDistrictObject.id);
+    }
   },
   methods: {
     setupSchoolList(){
@@ -459,6 +509,27 @@ export default {
             }
           });
           this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    setupSchoolListForDistrict(sdcDistrictCollectionID){
+      this.schoolSearchNames = [];
+      ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${sdcDistrictCollectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.schoolsMap.get(schoolCollection.schoolID);
+            if (school) {
+              let schoolItem = {
+                schoolCodeName: school.schoolName + ' - ' + school.mincode,
+                schoolID: school.schoolID,
+                districtID: school.districtID
+              };
+              this.schoolSearchNames.push(schoolItem);
+            }
+          });
+          this.schoolSearchNamesForDistrict = sortBy(this.schoolSearchNames, ['schoolCodeName']);
         })
         .catch(error => {
           console.error(error);
@@ -509,6 +580,16 @@ export default {
       }
     },
     setSchoolNameNumberFilter(key, $event) {
+      this.setPenLocalIdNameFilter($event, null);
+      if($event) {
+        this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
+    setSchoolNameNumberFilterForDistrict(key, $event) {
       this.setPenLocalIdNameFilter($event, null);
       if($event) {
         this.selected[key] = [{title: 'SchoolNameOrNumber', value: $event}];

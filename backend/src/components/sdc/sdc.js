@@ -861,6 +861,20 @@ async function getSdcDistrictCollections(req, res) {
   }
 }
 
+async function getSdcSchoolCollectionsFromSdcDistrictCollectionID(req, res) {
+  try {
+    const data = await getData(`${config.get('sdc:districtCollectionURL')}/${req.params.sdcDistrictCollectionID}/sdcSchoolCollections`);
+
+    data?.forEach(value => {
+      value.schoolName = getSchoolName(cacheService.getSchoolBySchoolID(value.schoolID));
+    });
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'getSdcSchoolCollectionBySdcDistrictCollectionId', 'error getSdcSchoolCollectionBySdcDistrictCollectionId');
+    return errorResponse(res);
+  }
+}
+
 async function downloadSdcReport(req, res) {
   const reportTypeValues = [
     ['csv_school', 'ALL_STUDENT_SCHOOL_CSV'],
@@ -962,5 +976,6 @@ module.exports = {
   downloadSdcReport,
   updateBandCode,
   moveSld,
-  getDistrictHeadcounts
+  getDistrictHeadcounts,
+  getSdcSchoolCollectionsFromSdcDistrictCollectionID
 };
