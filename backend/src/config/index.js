@@ -186,7 +186,8 @@ nconf.defaults({
     bannerColor: process.env.BANNER_COLOR,
     webSocketURL: process.env.WEB_SOCKET_URL,
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
-    edxURL: process.env.EDX_URL
+    edxURL: process.env.EDX_URL,
+    disableEASFunctionality: process.env.DISABLE_EAS_FUNCTIONALITY === 'true' 
   },
   sdc: {
     rootURL: process.env.SDC_API_URL,
@@ -214,6 +215,10 @@ nconf.defaults({
     programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
     zeroFteReasonCodesURL: process.env.SDC_API_URL + '/zero-fte-reason-codes',
     sdcDuplicateURL: process.env.SDC_API_URL + '/sdc-duplicate'
+  },
+  eas:{
+    rootURL: process.env.EAS_URL,
+    assessmentSessionsURL: process.env.EAS_URL+ '/sessions',
   }
 });
 module.exports = nconf;
