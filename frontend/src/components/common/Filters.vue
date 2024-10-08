@@ -53,22 +53,21 @@
             <span>Name and ID Filtering</span>
 
             <v-tooltip content-class="customTooltip">
-            <template #activator="{ props: tooltipProps }">
-              <v-icon
-                v-bind="tooltipProps"
-                size="25"
-                color="#003366"
-                style="align-self: center;"
-              >
-                mdi-help-circle
-              </v-icon>
-            </template>
-            <span id="penLocalIdNameFilterTooltip">
-              The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
-            </span>
-          </v-tooltip>
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-bind="tooltipProps"
+                  size="25"
+                  color="#003366"
+                  style="align-self: center;"
+                >
+                  mdi-help-circle
+                </v-icon>
+              </template>
+              <span id="penLocalIdNameFilterTooltip">
+                The search button must be used to apply changes to PEN or Local ID or Name searches. All other filters will apply on change without use of the search button.
+              </span>
+            </v-tooltip>
           </v-col>
-          
         </v-row>
         <v-row>
           <v-col
@@ -282,6 +281,20 @@
               </v-btn>
             </div>
           </v-btn-toggle>
+          <v-col v-if="key === 'bandCode'">
+            <v-autocomplete
+              id="bandCode"
+              v-model="bandCodeValue"
+              label="Band of Residence"
+              variant="underlined"
+              :items="sdcCollection.bandCodes"
+              item-value="bandCode"
+              item-title="dropdownText"
+              class="mt-n7 mb-n8"
+              clearable
+              @update:model-value="setBandCodeFilter('bandResidence', $event)"
+            />
+          </v-col>
           <v-col v-if="key === 'courses'">
             <v-range-slider
               id="courses-slider"
@@ -345,6 +358,7 @@ import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
+import {sdcCollectionStore} from '@/store/modules/sdcCollection';
   
 export default {
   name: 'Filters',
@@ -400,6 +414,7 @@ export default {
       localID: null,
       schoolSearchNames: [],
       districtSearchNames: [],
+      sdcCollection: sdcCollectionStore(),
     };
   },
   computed: {
@@ -561,7 +576,20 @@ export default {
     },
     apply() {
       this.$emit('apply-filters', this.selected);
-    }
+    },
+    setBandCodeFilter(key, $event){
+      if (this.penLocalIdNameFilter != null) {
+        if (this.penLocalIdNameFilter.length > 0) this.selected['penLocalIdNameFilter'] = [{title: 'PenOrLocalIdOrName', value: this.penLocalIdNameFilter}];
+        else delete this.selected['penLocalIdNameFilter'];
+      }
+      if($event) {
+        this.selected[key] = [{title: this.sdcCollection.bandCodes.find(value => value.bandCode === $event).dropdownText, value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
   }
 };
 </script>
