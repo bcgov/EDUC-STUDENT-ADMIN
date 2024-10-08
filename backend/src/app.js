@@ -45,6 +45,7 @@ const edxRouter = require('./routes/edx-router');
 const instituteRouter = require('./routes/institute');
 const sdcRouter = require('./routes/sdc');
 const cacheRouter = require('./routes/cache-router');
+const easRouter = require('./routes/eas'); 
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
@@ -214,6 +215,7 @@ apiRouter.use('/edx', edxRouter);
 apiRouter.use('/institute', instituteRouter);
 apiRouter.use('/sdc', sdcRouter);
 apiRouter.use('/cache', cacheRouter);
+apiRouter.use('/eas', easRouter);
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
   log.error(err.stack);

@@ -18,6 +18,7 @@ const instituteRoot = baseRoot + '/institute';
 const cacheRoot = baseRoot + '/cache';
 const sdcRoot = baseRoot + '/sdc';
 const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
+const easRoot = baseRoot + '/eas';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -203,6 +204,10 @@ let object = {
     SDC_VALIDATION_ISSUE_TYPE_CODES: sdcRoot + '/validation-issue-type-codes',
     SDC_PROGRAM_ELIGIBILITY_TYPE_CODES: sdcRoot + '/program-eligibility-issue-codes',
     SDC_ZERO_FTE_REASON_CODES: sdcRoot + '/zero-fte-reason-codes',
+  },
+  eas: {
+    BASE_URL: easRoot,
+    GET_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions'
   }
 };
 
@@ -590,7 +595,9 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_MOVE: 'School Move',
     DATA_COLLECTION: 'Data Collection',
     INVITATIONS: 'EDX Invitations',
-    CLOSE_COLLECTION: 'Close Collection'
+    CLOSE_COLLECTION: 'Close Collection',
+    ASSESSMENTS: 'Assessments',
+    ASSESSMENT_SESSIONS_MANAGEMENT: 'Assessment Sessions',
   }
 );
 

@@ -324,6 +324,17 @@ export default {
           title: PAGE_TITLES.DATA_COLLECTION,
           link: 'sdc-collection',
           authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.STUDENT_DATA_COLLECTION)
+        },
+        {
+          title: PAGE_TITLES.ASSESSMENTS,
+          authorized:  !this.config.DISABLE_EAS_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION),
+          items: [                      
+            {
+              title: 'Sessions',
+              link: 'assessmentsessions',
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION)
+            }
+          ],
         }
       ];
     }

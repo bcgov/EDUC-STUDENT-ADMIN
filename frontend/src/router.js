@@ -52,6 +52,7 @@ import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionP
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 import CollectionView from '@/components/data-collection/CollectionView.vue';
 import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
+import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -495,6 +496,16 @@ const router = createRouter({
           },
         }
       ]
+    },
+    {
+      path: '/assessmentsessions',
+      name: 'assessmentsessions',
+      component: AssessmentSessions,
+      meta: {
+        pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
+        requiresAuth: true,
+        permission: PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION
+      },
     },
     {
       path: '/authority/:authorityID',
