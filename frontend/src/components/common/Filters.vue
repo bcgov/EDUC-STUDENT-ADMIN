@@ -469,6 +469,16 @@ export default {
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
   },
+  watch: {
+    indySchoolDistrictObject: {
+      immediate: true,
+      handler(newVal) {
+        if (this.isDistrict && newVal) {
+          this.setupSchoolListForDistrict(newVal.id);
+        }
+      }
+    }
+  },
   async beforeMount() {
     if (this.schoolRoles.length === 0) {
       await edxStore().getSchoolExchangeRoles();
@@ -489,9 +499,6 @@ export default {
     Object.keys(this.filters).forEach(key => {
       this.selected[key] = [];
     });
-    if (this.isDistrict) {
-      this.setupSchoolListForDistrict(this.indySchoolDistrictObject.id);
-    }
   },
   methods: {
     setupSchoolList(){
@@ -519,15 +526,11 @@ export default {
       ApiService.apiAxios.get(`${Routes.sdc.SDC_DISTRICT_COLLECTION}/${sdcDistrictCollectionID}/sdcSchoolCollections`)
         .then((res) => {
           res.data.forEach(schoolCollection => {
-            const school = this.schoolsMap.get(schoolCollection.schoolID);
-            if (school) {
-              let schoolItem = {
-                schoolCodeName: school.schoolName + ' - ' + school.mincode,
-                schoolID: school.schoolID,
-                districtID: school.districtID
-              };
-              this.schoolSearchNames.push(schoolItem);
-            }
+            let schoolItem = {
+              schoolCodeName: schoolCollection.schoolName,
+              sdcSchoolCollectionID: schoolCollection.sdcSchoolCollectionID,
+            };
+            this.schoolSearchNames.push(schoolItem);
           });
           this.schoolSearchNamesForDistrict = sortBy(this.schoolSearchNames, ['schoolCodeName']);
         })
