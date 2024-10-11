@@ -238,7 +238,7 @@
 
 <script>
 
-import {getDemogValidationResults, constructPenMatchObjectFromSdcStudent} from '../../utils/common';
+import {getDemogValidationResults} from '../../utils/common';
 import {Routes} from '@/utils/constants';
 import Spinner from '../common/Spinner.vue';
 import alertMixin from '@/mixins/alertMixin';
