@@ -565,12 +565,20 @@ async function updateStudentPEN(req, res) {
     payload.updateUser = utils.getUser(req).idir_username;
     payload.enrolledProgramCodes = null;
     payload.penMatchResult = null;
-
+    if (payload?.numberOfCourses) {
+      payload.numberOfCourses = stripNumberFormattingNumberOfCourses(payload.numberOfCourses);
+    }
     const data = await postData(`${config.get('sdc:schoolCollectionStudentURL')}/update-pen/type/${req.params.penCode}`, payload);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'Error updating student PEN');
-    return errorResponse(res);
+    if (e.status === 400 && e.data.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create a provincial duplicate.') {
+      return res.status(HttpStatus.CONFLICT).json({
+        status: HttpStatus.CONFLICT,
+        message: 'Student was not saved because it would create provincial a duplicate.'
+      });
+    }
+    return handleExceptionResponse(e, res); 
   }
 }
 

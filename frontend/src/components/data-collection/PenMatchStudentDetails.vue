@@ -81,7 +81,7 @@
                   :loading="isIssuingNewPen"
                   :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
                   text="Issue new PEN"
-                  @click-action="issueNewPen"
+                  @click-action="togglePENRequestDialog"
                 />
               </v-row>
               <v-row
@@ -150,6 +150,16 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-dialog
+    v-model="showPenRequestDialog"
+    :max-width="600"
+  >
+    <SDCIssueNewPEN
+      :sdc-student="clonedStudentDetail"
+      @cancel="togglePENRequestDialog"
+      @save-new-pen="saveNewPen"
+    />
+  </v-dialog>
 </template>
 <script>
 
@@ -167,6 +177,8 @@ import PenMatchResults from './PenMatchResults.vue';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import _ from 'lodash';
+import SDCIssueNewPEN from './SDCIssueNewPEN.vue';
+import {constructPenMatchObjectFromSdcStudent} from '../../utils/common';
 
 export default {
   name: 'PenMatchStudentDetails',
@@ -174,7 +186,8 @@ export default {
     Spinner,
     StudentDetailsPanel,
     PenMatchResults,
-    PrimaryButton
+    PrimaryButton,
+    SDCIssueNewPEN
   },
   mixins: [alertMixin],
   async beforeRouteUpdate(to, from) {
@@ -210,6 +223,7 @@ export default {
         'MATCH' : '#2E8540',
         'NEW' : '#2E8540',
       },
+      showPenRequestDialog: false,
     };
   },
   beforeUnmount() {
@@ -234,6 +248,9 @@ export default {
   },
   methods: {
     ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
+    togglePENRequestDialog(){
+      this.showPenRequestDialog = !this.showPenRequestDialog;
+    },
     backButtonClick() {
       this.$router.push({name: 'collection-view', query: {penMatch: true}, params: {collectionID: this.activeCollection?.collectionID}});
     },
@@ -281,7 +298,7 @@ export default {
       this.showPossibleMatch = false;
       this.possibleMatches = [];
       try {
-        const result = await getPossibleMatches(this.constructPenMatchObjectFromStudent());
+        const result = await getPossibleMatches(constructPenMatchObjectFromSdcStudent(this.studentDetails));
         this.isIssuePenDisabled = false;
         this.possibleMatches = result.data ?? [];
         await this.checkForDuplicates();
@@ -331,12 +348,13 @@ export default {
         this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
       });
     },
-    async issueNewPen() {
+    async saveNewPen(newPenDetails) {
       this.isIssuingNewPen = true;
-      this.clonedStudentDetail.assignedPen = null;
-      this.clonedStudentDetail.assignedStudentId = null;
+      this.clonedStudentDetail.assignedPen = newPenDetails.assignedPen;
+      this.clonedStudentDetail.assignedStudentId = newPenDetails.assignedstudentId;
       this.updatePEN('NEW').finally(() => {
         this.isIssuingNewPen = false;
+        this.togglePENRequestDialog();
         this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
       });
     },
@@ -344,9 +362,9 @@ export default {
       return ApiService.apiAxios.post(`${Routes.sdc.SDC_SCHOOL_COLLECTION_STUDENT}/${this.clonedStudentDetail.sdcSchoolCollectionStudentID}/update-pen/${type}`, this.clonedStudentDetail)
         .then(() => {
           if(type === 'NEW') {
-            this.setSuccessAlert('Your request to issue new PEN is accepted.');
+            this.setSuccessAlert('PEN updated successfully.');
           } else {
-            this.setSuccessAlert('PEN has been MATCHED successfully');
+            this.setSuccessAlert('PEN has been MATCHED successfully.');
           }
           
           if(!this.nextDisabled) {
@@ -354,29 +372,12 @@ export default {
           }
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while updating PEN. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while updating PEN. Please try again later.');
           console.log(error);
         });
     },
     clickOpenSearch(){
       this.modifySearchDialog = true;
-    },
-    constructPenMatchObjectFromStudent() {
-      return {
-        pen: this.studentDetails.studentPen,
-        localID: this.studentDetails.localID,
-        surname: this.studentDetails.legalLastName,
-        givenName: this.studentDetails.legalFirstName,
-        middleName: this.studentDetails.legalMiddleNames,
-        usualSurname: this.studentDetails.usualLastName,
-        usualGiven: this.studentDetails.usualFirstName,
-        usualMiddleName: this.studentDetails.usualMiddleNames,
-        dob: this.studentDetails.dob,
-        sex: this.studentDetails.gender,
-        enrolledGradeCode: this.studentDetails.enrolledGradeCode,
-        mincode: '00807005',
-        postal: this.studentDetails.postalCode
-      };
     },
     async modifySearchParams(updatedStudent) {
       if(updatedStudent) {

@@ -99,6 +99,24 @@ export function getDemogValidationResults(student) {
   });
 }
 
+export function constructPenMatchObjectFromSdcStudent(student) {
+  return {
+    pen: student.studentPen,
+    localID: student.localID,
+    surname: student.legalLastName,
+    givenName: student.legalFirstName,
+    middleName: student.legalMiddleNames,
+    usualSurname: student.usualLastName,
+    usualGiven: student.usualFirstName,
+    usualMiddleName: student.usualMiddleNames,
+    dob: student.dob,
+    sex: student.gender,
+    enrolledGradeCode: student.enrolledGradeCode,
+    postal: student.postalCode,
+    mincode: student.mincode
+  };
+}
+
 /**
  * this function will only return the below structure
  String possibleMatchID;
