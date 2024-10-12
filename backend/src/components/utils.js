@@ -96,12 +96,12 @@ function formatNumberOfCourses(value) {
 function handleExceptionResponse(e, res) {
   if (e.message === '404' || e.status === '404' || e.status === 404) {
     return res.status(HttpStatus.NOT_FOUND).json();
-  } else if(e.message === '403') {
+  } else if(e.message === '403' ||  e.status === 403) {
     return res.status(HttpStatus.FORBIDDEN).json({
       status: HttpStatus.FORBIDDEN,
       message: 'You do not have permission to access this information'
     });
-  } else if(e.message === '401'){
+  } else if(e.message === '401' ||  e.status === 401){
     return res.status(HttpStatus.UNAUTHORIZED).json({
       status: HttpStatus.UNAUTHORIZED,
       message: 'Token is not valid'

@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse } = require('../utils');
+const { logApiError, getData, errorResponse, handleExceptionResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
 
@@ -12,7 +12,7 @@ async function getAssessmentSessions(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
 

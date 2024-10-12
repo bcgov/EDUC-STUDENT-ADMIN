@@ -92,6 +92,7 @@ export default {
   },
   data() {
     return {
+      topN: 4,
       search: null,
       currentYear: LocalDate.now().year(),
       itemsPerPage: 5,
@@ -114,7 +115,7 @@ export default {
     activeSessions() {
       const orderedSessions = [];
       const allsessions = this.allsessions
-        .filter((session) => session.status === 'OPEN')
+      .filter((session, index) => index < this.topN)
         .map((session) => {
           return {
             ...session,
@@ -129,7 +130,7 @@ export default {
     },
     historicalSessions() {
       return this.allsessions
-        .filter((session) => session.status !== 'OPEN')
+        .filter((session, index) => index >= this.topN)
         .map((session) => {
           return {
             ...session,
