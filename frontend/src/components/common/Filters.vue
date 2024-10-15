@@ -327,7 +327,7 @@
               v-model="bandCodeValue"
               label="Band of Residence"
               variant="underlined"
-              :items="sdcCollection.bandCodes"
+              :items="sortedBandCodes"
               item-value="bandCode"
               item-title="dropdownText"
               class="mt-n7 mb-n8"
@@ -468,6 +468,18 @@ export default {
     ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
+    sortedBandCodes() {
+      return this.sdcCollection.bandCodes.slice().sort((a, b) => {
+        const getBandCode = (str) => {
+          const match = str.match(/\((\d+)\)$/);
+          return match ? parseInt(match[1], 10) : 0;
+        };
+
+        const bandCodeA = getBandCode(a.dropdownText);
+        const bandCodeB = getBandCode(b.dropdownText);
+        return bandCodeA - bandCodeB;
+      });
+    }
   },
   watch: {
     indySchoolDistrictObject: {
