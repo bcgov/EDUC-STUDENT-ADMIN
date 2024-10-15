@@ -486,6 +486,8 @@ export default {
       immediate: true,
       handler(newVal) {
         if (this.isDistrict && newVal) {
+          this.schoolNameNumberFilterForDistrict = null;
+          this.setSchoolNameNumberFilterForDistrict('schoolNameNumber', null);
           this.setupSchoolListForDistrict(newVal.id);
         }
       }
@@ -658,6 +660,7 @@ export default {
       this.courseRange = [...this.courseRangeDefault];
       this.penLocalIdNameFilter = null;
       this.schoolNameNumberFilter = null;
+      this.schoolNameNumberFilterForDistrict = null;
       this.districtNameNumberFilter = null;
       this.legalFirstName = null;
       this.legalMiddleNames = null;
