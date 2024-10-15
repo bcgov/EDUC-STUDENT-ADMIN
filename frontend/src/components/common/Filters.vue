@@ -50,15 +50,14 @@
             id="searchFiltering"
             class="filter-heading pb-0"
           >
-            <span>Name and ID Filtering</span>
-
+            <span>Name and ID</span>
             <v-tooltip content-class="customTooltip">
               <template #activator="{ props: tooltipProps }">
                 <v-icon
                   v-bind="tooltipProps"
                   size="25"
                   color="#003366"
-                  style="align-self: center;"
+                  style="align-self: center; margin-left: .2rem"
                 >
                   mdi-help-circle
                 </v-icon>
@@ -190,7 +189,7 @@
             id="schoolDistrictFilters"
             class="filter-heading pb-0"
           >
-            School and District Filtering
+            School and District
           </v-col>
         </v-row>
         <v-row>
@@ -257,7 +256,7 @@
             id="schoolFilters"
             class="filter-heading pb-0"
           >
-            School Filtering
+            School
           </v-col>
         </v-row>
         <v-row>
