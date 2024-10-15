@@ -50,15 +50,14 @@
             id="searchFiltering"
             class="filter-heading pb-0"
           >
-            <span>Name and ID Filtering</span>
-
+            <span>Name and ID</span>
             <v-tooltip content-class="customTooltip">
               <template #activator="{ props: tooltipProps }">
                 <v-icon
                   v-bind="tooltipProps"
                   size="25"
                   color="#003366"
-                  style="align-self: center;"
+                  style="align-self: center; margin-left: .2rem"
                 >
                   mdi-help-circle
                 </v-icon>
@@ -190,7 +189,7 @@
             id="schoolDistrictFilters"
             class="filter-heading pb-0"
           >
-            School and District Filtering
+            School and District
           </v-col>
         </v-row>
         <v-row>
@@ -257,7 +256,7 @@
             id="schoolFilters"
             class="filter-heading pb-0"
           >
-            School Filtering
+            School
           </v-col>
         </v-row>
         <v-row>
@@ -327,7 +326,7 @@
               v-model="bandCodeValue"
               label="Band of Residence"
               variant="underlined"
-              :items="sdcCollection.bandCodes"
+              :items="sortedBandCodes"
               item-value="bandCode"
               item-title="dropdownText"
               class="mt-n7 mb-n8"
@@ -468,12 +467,26 @@ export default {
     ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     ...mapState(authStore, ['userInfo']),
+    sortedBandCodes() {
+      return this.sdcCollection.bandCodes.slice().sort((a, b) => {
+        const getBandCode = (str) => {
+          const match = str.match(/\((\d+)\)$/);
+          return match ? parseInt(match[1], 10) : 0;
+        };
+
+        const bandCodeA = getBandCode(a.dropdownText);
+        const bandCodeB = getBandCode(b.dropdownText);
+        return bandCodeA - bandCodeB;
+      });
+    }
   },
   watch: {
     indySchoolDistrictObject: {
       immediate: true,
       handler(newVal) {
         if (this.isDistrict && newVal) {
+          this.schoolNameNumberFilterForDistrict = null;
+          this.setSchoolNameNumberFilterForDistrict('schoolNameNumber', null);
           this.setupSchoolListForDistrict(newVal.id);
         }
       }
@@ -646,6 +659,7 @@ export default {
       this.courseRange = [...this.courseRangeDefault];
       this.penLocalIdNameFilter = null;
       this.schoolNameNumberFilter = null;
+      this.schoolNameNumberFilterForDistrict = null;
       this.districtNameNumberFilter = null;
       this.legalFirstName = null;
       this.legalMiddleNames = null;
