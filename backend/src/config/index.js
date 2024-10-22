@@ -151,6 +151,10 @@ nconf.defaults({
       rootURL: process.env.MACRO_API_URL,
       penMacroURL: process.env.MACRO_API_URL + '/pen'
     },
+    eas:{
+      rootURL: process.env.EAS_API_URL,
+      assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions'
+    }
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
@@ -215,10 +219,6 @@ nconf.defaults({
     programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
     zeroFteReasonCodesURL: process.env.SDC_API_URL + '/zero-fte-reason-codes',
     sdcDuplicateURL: process.env.SDC_API_URL + '/sdc-duplicate'
-  },
-  eas:{
-    rootURL: process.env.EAS_API_URL,
-    assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions'
   }
 });
 module.exports = nconf;
