@@ -218,9 +218,7 @@ nconf.defaults({
   },
   eas:{
     rootURL: process.env.EAS_API_URL,
-    assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions',
-    roleAdmin: process.env.EAS_ADMIN,
-
+    assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions'
   }
 });
 module.exports = nconf;
