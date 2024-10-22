@@ -283,7 +283,6 @@ export const authStore = defineStore('auth', {
       await this.setGUMPAnalytics(response.isValidGUMPAnalyticsUser);
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
-
       ApiService.setAuthHeader(response.jwtFrontend);
     }
   }

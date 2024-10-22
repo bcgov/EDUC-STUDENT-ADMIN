@@ -217,8 +217,8 @@ nconf.defaults({
     sdcDuplicateURL: process.env.SDC_API_URL + '/sdc-duplicate'
   },
   eas:{
-    rootURL: process.env.EAS_URL,
-    assessmentSessionsURL: process.env.EAS_URL+ '/sessions',
+    rootURL: process.env.EAS_API_URL,
+    assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions'
   }
 });
 module.exports = nconf;
