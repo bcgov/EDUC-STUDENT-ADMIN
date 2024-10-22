@@ -25,7 +25,9 @@ export const authStore = defineStore('auth', {
     isValidNominalRollUser: localStorage.getItem('isValidNominalRollUser') !== null,
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
-    isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null
+    isAuthorizedWebsocketUser: localStorage.getItem('isAuthorizedWebsocketUser') !== null,
+    isValidEASAdmin: localStorage.getItem('isValidEASAdmin') !== null
+
   }),
   getters: {
     acronymsGet: state => state.acronyms,
@@ -54,7 +56,9 @@ export const authStore = defineStore('auth', {
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
-    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser
+    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
+    EAS_ADMIN: state => state.isValidEASAdmin, //gives access to admin section of navigation menu
+
   },
   actions: {
     //sets Json web token and determines whether user is authenticated
@@ -220,6 +224,15 @@ export const authStore = defineStore('auth', {
         localStorage.removeItem(('isAuthorizedWebsocketUser'));
       }
     },
+    async setEASAdmin(isValidEASAdmin) {
+      if (isValidEASAdmin) {
+        this.isValidEASAdmin = true;
+        localStorage.setItem('isValidEASAdmin', 'true');
+      } else {
+        this.isValidEASAdmin = false;
+        localStorage.removeItem(('isValidEASAdmin'));
+      }
+    },
     async setUserInfo(userInf) {
       if (userInf) {
         this.userInfo = userInf;
@@ -283,6 +296,7 @@ export const authStore = defineStore('auth', {
       await this.setGUMPAnalytics(response.isValidGUMPAnalyticsUser);
       await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
       await this.setAuthorizedWebsocketUser(response.isAuthorizedWebsocketUser);
+      await this.setEASAdmin(response.isValidEASAdmin);
 
       ApiService.setAuthHeader(response.jwtFrontend);
     }
