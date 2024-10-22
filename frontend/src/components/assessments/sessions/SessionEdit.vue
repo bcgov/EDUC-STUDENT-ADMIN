@@ -4,17 +4,7 @@
       Edit Assessment Session
     </v-card-title>
     <v-divider />
-    <v-card-text>
-        <v-row class="pt-3 px-8">
-          <v-text-field
-            id="sessionId"
-            v-model="session.courseSession"
-            label="Session Id"
-            variant="underlined"
-            disabled
-            hide-details="auto"
-          />
-        </v-row>      
+    <v-card-text>              
         <v-form ref="editSessionForm" v-model="isFormValid">  
         <v-row class="pt-5 px-8">
           <DatePicker

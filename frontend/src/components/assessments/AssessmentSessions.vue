@@ -99,7 +99,6 @@ export default {
       pageNumber: 1,
       allsessions: [],
       headers: [
-        { title: 'Session ID', key: 'courseSession' },
         { title: 'Month', key: 'courseMonth' },
         { title: 'Year', key: 'courseYear' },
         { title: 'Open Date', key: 'activeFromDate' },
@@ -122,7 +121,7 @@ export default {
             courseMonth: this.formatMonth(session.courseMonth)
           };
         });
-      allsessions.sort((a, b) => a.courseSession - b.courseSession);
+      allsessions.sort((a, b) => new Date(a.activeUntilDate) - new Date(b.activeUntilDate));
       for (let i = 0; i < allsessions.length; i += 2) {
         orderedSessions.push(allsessions.slice(i, i + 2));
       }
