@@ -64,7 +64,7 @@
       :scrollable="true"
       :persistent="true"
       max-width="40%"
-      min-height="35%"
+      min-height="28%"
     >
       <EditSession
         v-if="editSessionSheet"
@@ -99,8 +99,9 @@ export default {
       pageNumber: 1,
       allsessions: [],
       headers: [
-        { title: 'Month', key: 'courseMonth' },
-        { title: 'Year', key: 'courseYear' },
+        { title: 'School Year', key: 'schoolYear' },
+        { title: 'Course Month', key: 'courseMonth' },
+        { title: 'Course Year', key: 'courseYear' },        
         { title: 'Open Date', key: 'activeFromDate' },
         { title: 'Close Date', key: 'activeUntilDate' },
       ],
@@ -128,7 +129,7 @@ export default {
       return orderedSessions;
     },
     historicalSessions() {
-      return this.allsessions
+      const allsessions = this.allsessions
         .filter((session, index) => index >= this.topN)
         .map((session) => {
           return {
@@ -138,6 +139,8 @@ export default {
             courseMonth: this.formatMonth(session.courseMonth),
           };
         });
+        allsessions.sort((a, b) => new Date(b.activeUntilDate) - new Date(a.activeUntilDate));
+        return allsessions;
     },
     sessionHeaderSlotName() {
       return `column.${this.sessionid}`;
