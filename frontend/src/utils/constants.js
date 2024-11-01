@@ -207,7 +207,9 @@ let object = {
   },
   eas: {
     BASE_URL: easRoot,
-    GET_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions'
+    GET_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions',
+    GET_ASSESSMENT_TYPES: easRoot + '/assessment-types',
+    GET_ASSESSMENT_STUDENTS_PAGINATED: easRoot + '/assessment-registrations/paginated',
   }
 };
 

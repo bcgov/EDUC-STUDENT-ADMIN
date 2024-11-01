@@ -331,7 +331,7 @@ export default {
           items: [                      
             {
               title: 'Sessions',
-              link: 'assessmentsessions',
+              link: 'assessment-sessions',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION)
             }
           ],

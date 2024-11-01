@@ -2,7 +2,25 @@
   <v-container class="containerSetup mb-5">
     <v-row class="pr-4">
       <v-col class="pb-0 mt-4">
-        <h2>Open Assessment Sessions</h2>
+        <div style="display: flex;">
+          <h2>School Year: {{ schoolYear }}</h2>
+          <v-btn
+              variant="text"
+              @click="goToSchoolYearRegistrations()"
+            >
+              <span
+                class="ml-1 pr-2"
+                style="color: #003366"
+              >Continue</span>
+              <v-icon
+                color="#003366"
+                class="ml-n1 mr-1"
+                right
+                icon="mdi-arrow-right"
+                dark
+              />
+            </v-btn>
+        </div>
       </v-col>
     </v-row>
     <v-row 
@@ -93,6 +111,7 @@ export default {
   data() {
     return {
       topN: 4,
+      schoolYear:null,
       search: null,
       currentYear: LocalDate.now().year(),
       itemsPerPage: 5,
@@ -123,6 +142,7 @@ export default {
           };
         });
       allsessions.sort((a, b) => new Date(a.activeUntilDate) - new Date(b.activeUntilDate));
+      this.schoolYear = allsessions[0]?.schoolYear;
       for (let i = 0; i < allsessions.length; i += 2) {
         orderedSessions.push(allsessions.slice(i, i + 2));
       }
@@ -176,6 +196,9 @@ export default {
     },
     formatMonth(month) {
       return moment(month, 'MM').format('MMMM');
+    },
+    goToSchoolYearRegistrations() {
+      this.$router.push({name: 'assessment-session-detail', params: {schoolYear:  this.schoolYear.replace(/\//g, '-'), sessionID: null}});
     }
   },
 };
