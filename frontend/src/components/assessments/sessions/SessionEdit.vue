@@ -24,7 +24,7 @@
             v-model="editSession.activeUntilDate"
             label="Close Date"
             model-type="yyyy-MM-dd'T'00:00:00"
-            :rules="[rules.endDateRule(editSession.activeFromDate, editSession.activeUntilDate), rules.required()]"
+            :rules="[rules.endDateRule(editSession.activeFromDate, editSession.activeUntilDate, 'Close Date cannot be before Open Date'), rules.required()]"
             :allow-teleport="true"
             @update:model-value="validateForm"
             @clear-date="clearCloseDate"
