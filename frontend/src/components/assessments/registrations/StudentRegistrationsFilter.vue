@@ -307,12 +307,11 @@
 <script>
 import alertMixin from '../../../mixins/alertMixin';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import { isEmpty, sortBy } from 'lodash';
+import { isEmpty, sortBy, cloneDeep } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
 import { mapState } from 'pinia';
 import moment from 'moment';
-import { cloneDeep } from 'lodash';
 
 export default {
   name: 'StudentRegistrationsFilter',
