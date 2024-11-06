@@ -179,11 +179,12 @@
         </v-row>
       </div>
       <div v-for="(filter, key) in filters" :key="key">
-        <v-row>
+        <v-row v-if="filter?.heading">
           <v-col :id="filter.id" class="filter-heading">
             {{ filter?.heading }}
           </v-col>
         </v-row>
+        <v-row v-else class="filter-heading"/>
         <v-row>
           <v-btn-toggle
             v-model="selected[key]"
@@ -191,7 +192,7 @@
             rounded="0"
             :multiple="filter?.multiple"
             class="filter-toggle"
-            @update:model-value="setFilter(selected[key], key)"
+            @update:model-value="setFilter(selected[key], key)"            
           >
             <div v-if="filter?.id === 'sessionTypeCode'">
               <span 
@@ -222,66 +223,7 @@
                   {{ option?.title }}
                 </v-btn>
               </span>
-            </div>
-            <div v-else-if="filter?.id === 'proficiencyScore'">
-              <span v-for="(option, i) in filter?.filterOptions" 
-                    :key="option.value"
-              > 
-                <v-btn
-                  :id="option?.id"
-                  :value="option"
-                  class="filter-button"
-                  rounded="lg"
-                >
-                  {{ option?.title }}
-                </v-btn>              
-              </span>   
-              <v-range-slider
-                id="score-slider"
-                v-model="scoreRange"
-                :min="scoreRangeDefault[0]"
-                :max="scoreRangeDefault[1]"
-                :step="1"
-                color="#003366"
-                hide-details
-                :strict="true"
-                thumb-size="15"
-                class="align-center"
-                @end="setScoreRangeFilter('proficienyScoreRange', $event)"
-              >
-                <template #prepend>
-                  <v-text-field
-                    v-model="scoreRange[0]"
-                    hide-details
-                    single-line
-                    type="number"
-                    :step="1"
-                    :min="scoreRangeDefault[0]"
-                    :max="scoreRange[1]"
-                    variant="outlined"
-                    density="compact"
-                    class="slider-text"
-                    :readonly="true"
-                    @update:model-value="setScoreRangeFilter('proficienyScoreRange', scoreRange)"
-                  />
-                </template>
-                <template #append>
-                  <v-text-field
-                    v-model="scoreRange[1]"
-                    hide-details
-                    single-line
-                    type="number"
-                    :min="scoreRange[0]"
-                    :max="scoreRangeDefault[1]"
-                    variant="outlined"
-                    density="compact"
-                    class="slider-text"
-                    :readonly="true"
-                    @update:model-value="setCourseRangeFilter('proficienyScoreRange', scoreRange)"
-                  />
-                </template>
-              </v-range-slider>
-            </div> 
+            </div>            
             <div v-else>
               <span 
                 v-for="(option, i) in filter?.filterOptions" 
@@ -329,6 +271,11 @@ export default {
       type: Object,
       required: true,
       default: null,
+    },
+    initialFilterSelection: {
+      type: Object,
+      required: true,
+      default: null
     }
   },
   emits: ['clear-assessment-filters', 'apply-assessment-filters', 'close-assessment-filter'],
@@ -353,10 +300,11 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
-    ...mapState(authStore, ['userInfo']),
+    ...mapState(authStore, ['userInfo']),    
   },
   watch: {},
   async beforeMount() {
+    this.selected = {...this.initialFilterSelection};
     if (this.schoolMap.size === 0) {
       await appStore().getInstituteCodes();
     }    
@@ -548,14 +496,4 @@ export default {
   height: auto !important;
 }
 
-#score-slider {
-  margin: 0 8px 8px 8px;
-}
-
-.slider-text {
-  width: 5em;
-  font-size: 0.875rem;
-  border-color: #003366;
-  text-align: center;
-}
 </style>

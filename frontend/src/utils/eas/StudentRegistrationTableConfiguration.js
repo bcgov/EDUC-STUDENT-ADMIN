@@ -7,7 +7,7 @@ export const SESSION_CODE_FILTER = Object.freeze(
   {
     heading: 'Session',
     id: 'sessionTypeCode',
-    multiple: true,
+    multiple: false,
     key: 'sessionTypeCode',
     filterOptions: [
     ]
@@ -55,7 +55,7 @@ export const PROFICIENCY_SCORE_FILTER = Object.freeze(
   {
     heading: 'Proficiency Score',
     id: 'proficiencyScore',
-    multiple: true,
+    multiple: false,
     key: 'proficiencyScore',
     filterOptions: [
       {
@@ -67,6 +67,37 @@ export const PROFICIENCY_SCORE_FILTER = Object.freeze(
         title: 'No Results Received',
         id: 'noResults',
         value: 'false'
+      }
+    ]
+  }
+);
+
+export const PROFICIENCY_SCORE_RANGE_FILTER = Object.freeze(
+  {
+    heading: '',
+    id: 'proficiencyScoreValue',
+    multiple: true,
+    key: 'proficiencyScoreValue',
+    filterOptions: [
+      {
+        title: '1',
+        id: '1',
+        value: '1'
+      },
+      {
+        title: '2',
+        id: '2',
+        value: '2'
+      },
+      {
+        title: '3',
+        id: '3',
+        value: '3'
+      },
+      {
+        title: '4',
+        id: '4',
+        value: '4'
       }
     ]
   }
@@ -87,10 +118,11 @@ export const SCHOOL_YEAR_REGISTRATIONS_VIEW = Object.freeze(
       { title: 'Proficiency Score', key: 'proficiencyScore' },
     ],
     allowedFilters: {
-      sessions: SESSION_CODE_FILTER,
+      session: SESSION_CODE_FILTER,
       assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,
       specialCaseCode: SPECIAL_CASE_FILTER,
-      proficienyScore: PROFICIENCY_SCORE_FILTER
+      proficienyScore: PROFICIENCY_SCORE_FILTER,
+      proficienyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER
     }
   });
 
@@ -109,9 +141,11 @@ export const SESSION_REGISTRATIONS_VIEW = Object.freeze(
       { title: 'Proficiency Score', key: 'proficiencyScore' },
     ],
     allowedFilters: {
+      session: SESSION_CODE_FILTER,
       assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,
       specialCaseCode: SPECIAL_CASE_FILTER,
-      proficienyScore: PROFICIENCY_SCORE_FILTER
+      proficienyScore: PROFICIENCY_SCORE_FILTER,
+      proficienyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER      
     }
   });
   

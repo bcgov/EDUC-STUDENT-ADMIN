@@ -2,14 +2,9 @@
   <v-container class="containerSetup" :fluid="true">
     <v-row class="d-flex justify-start">
       <v-col>
-        <h2 class="subjectHeading">School Year {{ schoolYear.replace('-','/') }}</h2>
+        <h2 class="subjectHeading">School Year: {{ schoolYear.replace('-','/') }}</h2>
       </v-col>
-    </v-row>
-    <v-row v-if="sessionID" no-gutters class="mt-1 d-flex justify-start">
-      <v-col>
-        <h4>{{ formatMonth(this.activeSession?.courseMonth) }} {{ activeSession?.courseYear }}</h4>
-      </v-col>
-    </v-row>
+    </v-row>    
     <v-row no-gutters class="mt-2 mb-2 d-flex justify-start">
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2"> mdi-arrow-left </v-icon>
@@ -51,7 +46,6 @@ import StudentRegistrations from './registrations/StudentRegistrations.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '../../utils/constants';
-import moment from 'moment';
 
 export default {
   name: 'AssessmentSessionDetail',
@@ -74,7 +68,6 @@ export default {
   data() {
     return {
       assessmentStudents: [],
-      activeSession: null,
       schoolYearSessions: [],
       isLoading: false,
       tab: ''
@@ -95,12 +88,7 @@ export default {
           {}
         )
         .then((response) => {
-          this.schoolYearSessions = response.data;
-          if (this.sessionID) {
-            this.activeSession = this.schoolYearSessions.find(
-              (session) => session.sessionID === this.sessionID
-            );
-          }
+          this.schoolYearSessions = response.data;          
         })
         .catch((error) => {
           console.error(error);
@@ -108,10 +96,7 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
-    },
+    },    
     backToAssesmentSessions() {
       this.$router.push({ name: 'assessment-sessions' });
     },

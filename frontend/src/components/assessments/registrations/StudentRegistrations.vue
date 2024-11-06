@@ -60,6 +60,7 @@
         <StudentRegistrationsFilter
           :filters="config.allowedFilters"
           :school-year-sessions="schoolYearSessions"
+          :initial-filter-selection="filterSearchParams?.moreFilters"
           @apply-assessment-filters="applyFilters"
           @clear-assessment-filters="clearFilters"
           @close-assessment-filter="showFilters = !showFilters"
@@ -76,6 +77,7 @@ import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { cloneDeep, isEmpty, omitBy } from 'lodash';
 import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
+import moment from 'moment';
 
 export default {
   name: 'StudentRegistrations',
@@ -122,20 +124,27 @@ export default {
     },
   },
   created() {
+    this.applydefaultFilers();
     this.getAssessmentStudents();
   },
   methods: {
+    applydefaultFilers() {
+      if (this.sessionID) {
+        const activeSession = this.schoolYearSessions.find(
+          (session) => session.sessionID === this.sessionID
+        );
+        this.filterSearchParams.moreFilters.session = [
+          { title: moment(activeSession.courseMonth, 'MM').format('MMMM') , id: activeSession.sessionID, value: activeSession.sessionID },
+        ];
+      }      
+    },
     getAssessmentStudents() {
       this.loading = true;
       let sort = {
         assessmentStudentID: 'ASC',
       };
       let assessmentSearchParams = cloneDeep(this.filterSearchParams);
-      if (this.sessionID) {
-        assessmentSearchParams.moreFilters.sessionID = [
-          { title: 'sessionID', id: 'sessionID', value: this.sessionID },
-        ];
-      } else {
+      if (! this.sessionID) {        
         assessmentSearchParams.moreFilters.schoolYear = [
           { title: 'schoolYear', id: 'schoolYear', value: this.schoolYear },
         ];

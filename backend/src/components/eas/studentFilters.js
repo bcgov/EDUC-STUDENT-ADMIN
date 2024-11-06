@@ -7,7 +7,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
   let districtNameNumberFilter = [];
   let schoolNameNumberFilter = [];
   let assessmentCenterNameNumberFilter = [];
-  let scoreRangeList = [];
 
   for (const [key, filter] of Object.entries(searchFilter)) {
     let pValue = filter ? filter.map(filter => filter.value) : null;
@@ -15,12 +14,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     //Default Filter Begin
     if (key === 'schoolYear' && pValue) {
       searchCriteriaList.push({ key: 'assessmentEntity.sessionEntity.schoolYear', value: pValue[0].replace('-', '/'), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
-    }
-
-    if (key === 'sessionID' && pValue) {
-      searchCriteriaList.push({ key: 'assessmentEntity.sessionEntity.sessionID', value: pValue[0], operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
-    }
-    
+    }  
     //Default Filter End
     
     if (key === 'surName' && pValue) {
@@ -50,7 +44,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       assessmentCenterNameNumberFilter = [...schoolNameNumberCriteria];
     }
 
-    if (key === 'sessions' && pValue) {
+    if (key === 'session' && pValue) {
       searchCriteriaList.push({ key: 'assessmentEntity.sessionEntity.sessionID', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
@@ -64,14 +58,14 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
 
     if (key === 'proficienyScore' && pValue) {
       if(JSON.parse(pValue) === true) {
-        searchCriteriaList.push({ key: 'proficiencyScore', value: 0, operation: FILTER_OPERATION.GREATER_THAN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });        
+        searchCriteriaList.push({ key: 'proficiencyScore', value: 0, operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });        
       } else {
-        searchCriteriaList.push({ key: 'proficiencyScore', value:0, operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });        
+        searchCriteriaList.push({ key: 'proficiencyScore', value:0, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });        
       }     
     }
 
-    if (key === 'proficienyScoreRange' && pValue) {
-      scoreRangeList = createScoreRangeFilter(pValue);
+    if (key === 'proficienyScoreValue' && pValue) {
+      searchCriteriaList.push({ key: 'proficiencyScore', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
     }
 
   }
@@ -92,12 +86,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     search.push({
       condition: CONDITION.AND,
       searchCriteriaList: assessmentCenterNameNumberFilter
-    });
-  }
-  if(scoreRangeList.length > 0) {
-    search.push({
-      condition: CONDITION.AND,
-      searchCriteriaList: scoreRangeList
     });
   }
   if (searchCriteriaList.length > 0) {
@@ -151,16 +139,6 @@ function createAssessmentCenterNameNumberSearchCriteria(value) {
   return searchAssessmentCenterCriteriaList;
 }
 
-function createScoreRangeFilter(pValue) {
-  let scoreRangeList = [];
-
-  scoreRangeList.push({key:'proficiencyScore', value: pValue[0][1], operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND});
-  scoreRangeList.push({key:'proficiencyScore', value: pValue[0][0], operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND});
-  if(pValue[0][0] === '0'){
-    scoreRangeList.push({key:'proficiencyScore', value: null, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR});
-  }
-  return scoreRangeList;
-}
 
 module.exports = {
   createMoreFiltersSearchCriteria
