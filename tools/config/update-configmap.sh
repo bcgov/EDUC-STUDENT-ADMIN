@@ -703,22 +703,25 @@ if [ "$envValue" = "dev" ]; then
   bannerColor="#8d28d7"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
   disableSdcFunctionality=false
+  DISABLE_EAS_FUNCTIONALITY=false
 elif [ "$envValue" = "test" ]; then
   bannerEnvironment="TEST"
   bannerColor="#58fe01"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
   disableSdcFunctionality=false
+  DISABLE_EAS_FUNCTIONALITY=false
 else
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
   disableSdcFunctionality=true
   EDUC_EDX_FRONTEND="https://educationdataexchange.gov.bc.ca"
+  DISABLE_EAS_FUNCTIONALITY=true
 fi
 
 BANNER_ENVIRONMENT="$bannerEnvironment"
 BANNER_COLOR="$bannerColor"
 WEB_SOCKET_URL="wss://$SERVER_FRONTEND/api/socket"
 IS_RATE_LIMIT_ENABLED=true
-DISABLE_EAS_FUNCTIONALITY=true
+
 RATE_LIMIT_WINDOW_IN_SEC="60"
 RATE_LIMIT_LIMIT="1000"
 

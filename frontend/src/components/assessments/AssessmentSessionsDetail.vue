@@ -1,23 +1,19 @@
 <template>
   <v-container class="containerSetup" :fluid="true">
-    <v-row v-if="sessionID" class="d-flex justify-start">
+    <v-row class="d-flex justify-start">
       <v-col>
-        <h2 class="subjectHeading">
-          {{ formatMonth(this.activeSession?.courseMonth) }}
-          {{ activeSession?.courseYear }} Session
-        </h2>
-      </v-col>      
+        <h2 class="subjectHeading">School Year {{ schoolYear.replace('-','/') }}</h2>
+      </v-col>
     </v-row>
-    <v-row v-else class="d-flex justify-start">
+    <v-row v-if="sessionID" no-gutters class="mt-1 d-flex justify-start">
       <v-col>
-        <h2 class="subjectHeading">School Year {{ schoolYear }}</h2>
+        <h4>{{ formatMonth(this.activeSession?.courseMonth) }} {{ activeSession?.courseYear }}</h4>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-2 mb-2 d-flex justify-start">
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2"> mdi-arrow-left </v-icon>
-        <a class="ml-1" @click="backToAssesmentSessions()"
-          >Return to Assessment Sessions</a>
+        <a class="ml-1" @click="backToAssesmentSessions()">Return to Assessment Sessions</a>
       </v-col>
     </v-row>
     <v-row no-gutters>
@@ -38,29 +34,12 @@
           <v-tab :value="3"> Reports </v-tab>
         </v-tabs>
         <v-window v-model="tab">
-          <v-window-item
-            :value="1"
-            transition="false"
-            reverse-transition="false"
-          >
-            <StudentRegistrations
-              :school-year="schoolYear"
-              :session-ID="sessionID"
-              :school-year-sessions="schoolYearSessions"
-            />
+          <v-window-item :value="1" transition="false" reverse-transition="false">
+            <StudentRegistrations v-if="schoolYearSessions.length > 0" :school-year="schoolYear"
+                                  :school-year-sessions="schoolYearSessions" :session-ID="sessionID" />
           </v-window-item>
-          <v-window-item
-            :value="2"
-            transition="false"
-            reverse-transition="false"
-          >
-          </v-window-item>
-          <v-window-item
-            :value="3"
-            transition="false"
-            reverse-transition="false"
-          >
-          </v-window-item>
+          <v-window-item :value="2" transition="false" reverse-transition="false"/>
+          <v-window-item :value="3" transition="false" reverse-transition="false"/>
         </v-window>
       </v-col>
     </v-row>
@@ -102,11 +81,12 @@ export default {
     };
   },
   computed: {},
-  created() {
+  created() {    
+    this.loading = true;
     this.getAllSessionsforYear();
   },
   methods: {
-    getAllSessionsforYear() {
+    async  getAllSessionsforYear() {
       this.loading = true;
       ApiService.apiAxios
         .get(
@@ -117,9 +97,9 @@ export default {
         .then((response) => {
           this.schoolYearSessions = response.data;
           if (this.sessionID) {
-            this.activeSession = this.schoolYearSessions.filter(
+            this.activeSession = this.schoolYearSessions.find(
               (session) => session.sessionID === this.sessionID
-            )[0];
+            );
           }
         })
         .catch((error) => {

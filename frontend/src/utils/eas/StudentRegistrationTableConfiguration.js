@@ -3,6 +3,17 @@
  */
 
 
+export const SESSION_CODE_FILTER = Object.freeze(
+  {
+    heading: 'Session',
+    id: 'sessionTypeCode',
+    multiple: true,
+    key: 'sessionTypeCode',
+    filterOptions: [
+    ]
+  }
+);
+
 export const ASSESSMENT_TYPE_CODE_FILTER = Object.freeze(
   {
     heading: 'Assessment / Course',
@@ -61,9 +72,9 @@ export const PROFICIENCY_SCORE_FILTER = Object.freeze(
   }
 );
 
-export const REGISTRATIONS = Object.freeze(
+export const SCHOOL_YEAR_REGISTRATIONS_VIEW = Object.freeze(
   {
-    schoolTableHeaders: [
+    tableHeaders: [
       { title: 'Session', key: 'sessionName'},
       { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
@@ -73,9 +84,20 @@ export const REGISTRATIONS = Object.freeze(
       { title: 'Surname', key: 'surName' },
       { title: 'Course Name (Code)', key: 'assessmentTypeName' },
       { title: 'Special Case', key: 'provincialSpecialCaseName' },
-      { title: 'Proficiency Score', key: 'finalPercentage' },
+      { title: 'Proficiency Score', key: 'proficiencyScore' },
     ],
-    sessionTableHeaders: [
+    allowedFilters: {
+      sessions: SESSION_CODE_FILTER,
+      assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,
+      specialCaseCode: SPECIAL_CASE_FILTER,
+      proficienyScore: PROFICIENCY_SCORE_FILTER
+    }
+  });
+
+
+export const SESSION_REGISTRATIONS_VIEW = Object.freeze(
+  {
+    tableHeaders: [
       { title: 'District', key: 'districtName' },
       { title: 'School', key: 'schoolName' },
       { title: 'Assessment Center', key: 'assessmentCenterName' },
@@ -84,7 +106,7 @@ export const REGISTRATIONS = Object.freeze(
       { title: 'Surname', key: 'surName' },
       { title: 'Course Name (Code)', key: 'assessmentTypeName' },
       { title: 'Special Case', key: 'provincialSpecialCaseName' },
-      { title: 'Proficiency Score', key: 'finalPercentage' },
+      { title: 'Proficiency Score', key: 'proficiencyScore' },
     ],
     allowedFilters: {
       assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,

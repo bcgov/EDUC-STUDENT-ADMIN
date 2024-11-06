@@ -33,7 +33,7 @@
         <v-row>
           <v-col cols="12">
             <StudentRegistrationsCustomTable
-              :headers="this.sessionID ? config.sessionTableHeaders : config.schoolTableHeaders"
+              :headers="config.tableHeaders"
               :data="assessmentStudents"
               :total-elements="totalElements"
               :is-loading="isLoading"
@@ -59,6 +59,7 @@
       >
         <StudentRegistrationsFilter
           :filters="config.allowedFilters"
+          :school-year-sessions="schoolYearSessions"
           @apply-assessment-filters="applyFilters"
           @clear-assessment-filters="clearFilters"
           @close-assessment-filter="showFilters = !showFilters"
@@ -70,7 +71,7 @@
 
 <script>
 import StudentRegistrationsCustomTable from './StudentRegistrationsCustomTable.vue';
-import { REGISTRATIONS } from '@/utils/eas/StudentRegistrationTableConfiguration.js';
+import { SCHOOL_YEAR_REGISTRATIONS_VIEW, SESSION_REGISTRATIONS_VIEW } from '@/utils/eas/StudentRegistrationTableConfiguration.js';
 import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { cloneDeep, isEmpty, omitBy } from 'lodash';
@@ -95,18 +96,17 @@ export default {
     schoolYearSessions: {
       type: Object,
       required: true,
-    },
+    }    
   },
   emits: [],
   data() {
     return {
-      config: REGISTRATIONS,
+      config: this.sessionID ? SESSION_REGISTRATIONS_VIEW :  SCHOOL_YEAR_REGISTRATIONS_VIEW ,
       assessmentStudents: [],
       filterSearchParams: {
         moreFilters: {},
       },
       showFilters: null,
-      reloadRegistratinsFlag: false,
       isLoading: false,
       totalElements: 0,
       pageNumber: 1,
@@ -118,11 +118,7 @@ export default {
   },
   computed: {
     filterCount() {
-      return (
-        Object.values(this.filterSearchParams.moreFilters)
-          .filter((filter) => !!filter)
-          .reduce((total, filter) => total.concat(filter), []).length - 1
-      );
+      return Object.values(this.filterSearchParams.moreFilters).filter(filter => !!filter ).reduce((total, filter) => total.concat(filter), []).length;
     },
   },
   created() {
@@ -134,12 +130,13 @@ export default {
       let sort = {
         assessmentStudentID: 'ASC',
       };
+      let assessmentSearchParams = cloneDeep(this.filterSearchParams);
       if (this.sessionID) {
-        this.filterSearchParams.moreFilters.sessionID = [
+        assessmentSearchParams.moreFilters.sessionID = [
           { title: 'sessionID', id: 'sessionID', value: this.sessionID },
         ];
       } else {
-        this.filterSearchParams.moreFilters.schoolYear = [
+        assessmentSearchParams.moreFilters.schoolYear = [
           { title: 'schoolYear', id: 'schoolYear', value: this.schoolYear },
         ];
       }
@@ -148,7 +145,7 @@ export default {
           params: {
             pageNumber: this.pageNumber - 1,
             pageSize: this.pageSize,
-            searchParams: omitBy(this.filterSearchParams, isEmpty),
+            searchParams: omitBy(assessmentSearchParams, isEmpty),
             sort: sort,
           },
         })

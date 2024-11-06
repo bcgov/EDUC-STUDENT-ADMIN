@@ -29,7 +29,7 @@
             @click-action="clear"
           />
         </v-col>
-        <v-col v-if="showStudentSearch" class="d-flex justify-end">
+        <v-col class="d-flex justify-end">
           <PrimaryButton
             id="applyPenLocalIdNameFilter"
             large-icon
@@ -39,7 +39,7 @@
           />
         </v-col>
       </v-row>
-      <div v-if="showStudentSearch">
+      <div >
         <v-row class="d-flex justify-space-around">
           <v-col id="searchFiltering" class="filter-heading pb-0">
             <span>Name and ID</span>
@@ -97,7 +97,7 @@
       <div >
         <v-row>
           <v-col id="schoolDistrictFilters" class="filter-heading pb-0">
-            School and District
+            District, School and Assessment Center
           </v-col>
         </v-row>
         <v-row>
@@ -110,8 +110,12 @@
                 color="primary"
                 variant="underlined"
               />
-            </v-row>
-            <slot name="text-search">
+            </v-row>            
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="pt-0">
+            <slot name="text-search">   
               <v-autocomplete
                 id="selectDistrict"
                 v-model="districtNameNumberFilter"
@@ -122,16 +126,14 @@
                 single-line
                 :clearable="true"
                 item-title="districtCodeName"
-                item-value="districtCodeName"
+                item-value="districtCodeValue"
                 autocomplete="off"
-                @update:model-value="
-                  setDistrictNameNumberFilter('districtNameNumber', $event)
-                "
+                @update:model-value="setDistrictNameNumberFilter('districtNameNumber', $event)"
               />
             </slot>
           </v-col>
         </v-row>
-      <v-row>
+        <v-row>
           <v-col cols="12" class="pt-0">
             <slot name="text-search">              
               <v-autocomplete
@@ -144,7 +146,7 @@
                 single-line
                 :clearable="true"
                 item-title="schoolCodeName"
-                item-value="schoolCodeName"
+                item-value="schoolCodeValue"
                 autocomplete="off"
                 @update:model-value="
                   setSchoolNameNumberFilter('schoolNameNumber', $event)
@@ -160,13 +162,13 @@
                 id="selectSchool"
                 v-model="assessmentCenterNameNumberFilter"
                 variant="underlined"
-                :items="schoolSearchNames"
+                :items="assessmentCenterSearchNames"
                 color="#003366"
                 label="Assessment Center Name or Number"
                 single-line
                 :clearable="true"
                 item-title="schoolCodeName"
-                item-value="schoolCodeName"
+                item-value="schoolCodeValue"
                 autocomplete="off"
                 @update:model-value="
                   setAssessmentCenterNameNumberFilter('assessmentCenterNameNumber', $event)
@@ -191,16 +193,110 @@
             class="filter-toggle"
             @update:model-value="setFilter(selected[key], key)"
           >
-            <div v-for="(option, i) in filter?.filterOptions" :key="i">
-              <v-btn
-                :id="option?.id"
-                :value="option"
-                class="filter-button"
-                rounded="lg"
+            <div v-if="filter?.id === 'sessionTypeCode'">
+              <span 
+                v-for="(option, i) in sessionSearchNames" 
+                :key="option.value"
               >
-                {{ option?.title }}
-              </v-btn>
+                <v-btn
+                  :id="option?.id"
+                  :value="option"
+                  class="filter-button"
+                  rounded="lg"
+                >
+                  {{ option?.title }}
+                </v-btn>
+              </span>
             </div>
+            <div v-else-if="filter?.id === 'assessmentTypeCode'">
+              <span 
+                v-for="(option, i) in assessmentTypeSearchNames"
+                :key="option.value"
+              >
+                <v-btn
+                  :id="option?.id"
+                  :value="option"
+                  class="filter-button"
+                  rounded="lg"
+                >
+                  {{ option?.title }}
+                </v-btn>
+              </span>
+            </div>
+            <div v-else-if="filter?.id === 'proficiencyScore'">
+              <span v-for="(option, i) in filter?.filterOptions" 
+                    :key="option.value"
+              > 
+                <v-btn
+                  :id="option?.id"
+                  :value="option"
+                  class="filter-button"
+                  rounded="lg"
+                >
+                  {{ option?.title }}
+                </v-btn>              
+              </span>   
+              <v-range-slider
+                id="score-slider"
+                v-model="scoreRange"
+                :min="scoreRangeDefault[0]"
+                :max="scoreRangeDefault[1]"
+                :step="1"
+                color="#003366"
+                hide-details
+                :strict="true"
+                thumb-size="15"
+                class="align-center"
+                @end="setScoreRangeFilter('proficienyScoreRange', $event)"
+              >
+                <template #prepend>
+                  <v-text-field
+                    v-model="scoreRange[0]"
+                    hide-details
+                    single-line
+                    type="number"
+                    :step="1"
+                    :min="scoreRangeDefault[0]"
+                    :max="scoreRange[1]"
+                    variant="outlined"
+                    density="compact"
+                    class="slider-text"
+                    :readonly="true"
+                    @update:model-value="setScoreRangeFilter('proficienyScoreRange', scoreRange)"
+                  />
+                </template>
+                <template #append>
+                  <v-text-field
+                    v-model="scoreRange[1]"
+                    hide-details
+                    single-line
+                    type="number"
+                    :min="scoreRange[0]"
+                    :max="scoreRangeDefault[1]"
+                    variant="outlined"
+                    density="compact"
+                    class="slider-text"
+                    :readonly="true"
+                    @update:model-value="setCourseRangeFilter('proficienyScoreRange', scoreRange)"
+                  />
+                </template>
+              </v-range-slider>
+            </div> 
+            <div v-else>
+              <span 
+                v-for="(option, i) in filter?.filterOptions" 
+                :key="option.value"
+              >
+                <v-btn
+                  :id="option?.id"
+                  :value="option"
+                  class="filter-button"
+                  rounded="lg"
+                >
+                  {{ option?.title }}
+                </v-btn>
+              </span>
+            </div>   
           </v-btn-toggle>
         </v-row>
       </div>
@@ -211,12 +307,12 @@
 <script>
 import alertMixin from '../../../mixins/alertMixin';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import ApiService from '@/common/apiService';
-import { Routes } from '@/utils/constants';
 import { isEmpty, sortBy } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
 import { mapState } from 'pinia';
+import moment from 'moment';
+import { cloneDeep } from 'lodash';
 
 export default {
   name: 'StudentRegistrationsFilter',
@@ -230,37 +326,29 @@ export default {
       required: true,
       default: null,
     },
-    school: {
+    schoolYearSessions: {
       type: Object,
-      required: false,
+      required: true,
       default: null,
-    },
-    district: {
-      type: Object,
-      required: false,
-      default: null,
-    },
-    showStudentSearch: {
-      type: Boolean,
-      required: false,
-      default: true,
     }
   },
   emits: ['clear-assessment-filters', 'apply-assessment-filters', 'close-assessment-filter'],
   data() {
     return {
       selected: {},
+      scoreRangeDefault: [0, 4],
+      scoreRange: [0, 4],
       surName: null,
       pen: null,
       localID: null,
-      specialCaseCodes: [],
-      attemptCounts: [],
-      proficiencyScoreCodes: [],
       districtSearchNames: [],
       schoolSearchNames: [],
-      assessmentTypeSearchNames: [],
+      assessmentCenterSearchNames: [],
+      sessionSearchNames: [],
+      assessmentTypeSearchNames: [],      
+      specialCaseCodes: [],
+      districtNameNumberFilter: null,    
       schoolNameNumberFilter: null,
-      districtNameNumberFilter: null,
       assessmentCenterNameNumberFilter: null,
     };
   },
@@ -272,13 +360,12 @@ export default {
   async beforeMount() {
     if (this.schoolMap.size === 0) {
       await appStore().getInstituteCodes();
-    }
+    }    
   },
   created() {
     authStore()
       .getUserInfo()
       .then(() => {
-        this.isDistrictUser = true;
         appStore()
           .getInstituteCodes()
           .then(() => {
@@ -289,37 +376,58 @@ export default {
       });
     Object.keys(this.filters).forEach((key) => {
       this.selected[key] = [];
-    });
+    });   
+    this.setupAssessmentSessions(); 
   },
   methods: {
     close() {
       this.$emit('close-assessment-filter');
     },
+    setupAssessmentSessions() {
+      this.sessionSearchNames = [];
+      this.schoolYearSessions.forEach(session => {
+        this.sessionSearchNames.push({title: this.formatMonth(session.courseMonth), id: session.sessionID, value: session.sessionID});
+        session.assessments.forEach(assessment => {
+          this.assessmentTypeSearchNames.push({title: assessment.assessmentTypeName, id: assessment.assessmentTypeCode, value: assessment.assessmentTypeCode});
+        });
+      });
+    },
     setupSchoolList() {
       this.schoolSearchNames = [];
-      this.schoolMap.forEach((school) => {
+      this.schoolMap?.forEach((school) => {
         this.schoolSearchNames.push({
           schoolCodeName: school.schoolName + ' - ' + school.mincode,
+          schoolCodeValue: school.schoolID
         });
       });
-      this.schoolSearchNames = sortBy(this.schoolSearchNames, [
-        'schoolCodeName',
-      ]);
+      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+      this.assessmentCenterSearchNames = cloneDeep(this.schoolSearchNames);
     },
-    setupDistrictList() {
+    setupDistrictList(){
       this.districtSearchNames = [];
-      this.districtMap.forEach((district) => {
+      this.districtMap?.forEach((district) => {
         this.districtSearchNames.push({
           districtCodeName: district.name + ' - ' + district.districtNumber,
+          districtCodeValue: district.districtId,
         });
       });
-      this.districtSearchNames = sortBy(this.districtSearchNames, [
-        'districtCodeName',
-      ]);
-    },    
+      this.districtSearchNames = sortBy(this.districtSearchNames, ['districtCodeName']);
+    }, 
+    setupSchoolListByDistrict(districtID) {
+      this.schoolSearchNames = [];
+      this.schoolNameNumberFilter = null;
+      this.schoolMap?.forEach((school) => {
+        if(school.districtID === districtID) {
+          this.schoolSearchNames.push({
+            schoolCodeName: school.schoolName + ' - ' + school.mincode,
+            schoolCodeValue: school.schoolID
+          });
+        }
+      });
+      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+    }, 
     setPenLocalIdNameFilter($event, val) {
       const keys = ['surName', 'pen', 'localID'];
-
       keys.forEach((key) => {
         if (this[key] != null) {
           if (this[key].length > 0) {
@@ -330,6 +438,17 @@ export default {
         }
       });
       if ($event && val === 'click') {
+        this.apply();
+      }
+    },
+    setDistrictNameNumberFilter(key, $event) {
+      this.setPenLocalIdNameFilter($event, null);
+      this.setupSchoolListByDistrict($event);
+      if ($event) {
+        this.selected[key] = [{ title: 'DistrictNameOrNumber', value: $event }];
+        this.apply();
+      } else {
+        delete this.selected[key];
         this.apply();
       }
     },
@@ -353,16 +472,6 @@ export default {
         this.apply();
       }
     },
-    setDistrictNameNumberFilter(key, $event) {
-      this.setPenLocalIdNameFilter($event, null);
-      if ($event) {
-        this.selected[key] = [{ title: 'DistrictNameOrNumber', value: $event }];
-        this.apply();
-      } else {
-        delete this.selected[key];
-        this.apply();
-      }
-    },
     setFilter(val, key) {
       this.setPenLocalIdNameFilter(null, null);
       if (val && !isEmpty(val)) {
@@ -373,20 +482,42 @@ export default {
         this.apply();
       }
     },
+    setScoreRangeFilter(key, $event){
+      this.setPenLocalIdNameFilter($event, null);
+      if($event) {
+        let scoreFilterTitle;
+        if($event[0] === this.scoreRangeDefault[0]){
+          scoreFilterTitle = + $event[1] + ' courses or less';
+        } else if ($event[1] === this.scoreRangeDefault[1]) {
+          scoreFilterTitle = $event[0] + ' courses or more';
+        } else {
+          scoreFilterTitle = 'Between ' + $event[0] + ' and ' + $event[1] + ' courses';
+        }
+        this.selected[key] = [{title: scoreFilterTitle, value: $event}];
+        this.apply();
+      } else {
+        delete this.selected[key];
+        this.apply();
+      }
+    },
     clear() {
       this.selected = {};
       this.penLocalIdNameFilter = null;
-      this.schoolNameNumberFilter = null;
-      this.schoolNameNumberFilterForDistrict = null;
       this.districtNameNumberFilter = null;
+      this.schoolNameNumberFilter = null;
+      this.assessmentCenterNameNumberFilter = null;
       this.surName = null;
       this.pen = null;
       this.localID = null;
+      this.scoreRange = [...this.scoreRangeDefault];
       this.$emit('clear-assessment-filters');
     },
     apply() {
       this.$emit('apply-assessment-filters', this.selected);
     },
+    formatMonth(month) {
+      return moment(month, 'MM').format('MMMM');
+    }
   },
 };
 </script>
@@ -418,7 +549,7 @@ export default {
   height: auto !important;
 }
 
-#courses-slider {
+#score-slider {
   margin: 0 8px 8px 8px;
 }
 
@@ -426,5 +557,6 @@ export default {
   width: 5em;
   font-size: 0.875rem;
   border-color: #003366;
+  text-align: center;
 }
 </style>

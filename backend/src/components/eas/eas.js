@@ -21,10 +21,15 @@ async function getAssessmentSessions(req, res) {
 async function getAssessmentSessionsBySchoolYear(req, res) {
   try {
     const url = `${config.get('server:eas:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
-    const data = await getData(url);
+    let data = await getData(url);
+    data.forEach(session => {
+      session.assessments.forEach(assessment => {
+        assessment.assessmentTypeName = cacheService.getAssessmentTypeLabelByCode(assessment.assessmentTypeCode)+' ('+assessment.assessmentTypeCode+')';
+      });
+    });
     return res.status(200).json(data);
   } catch (e) {
-    logApiError(e, 'getSessions', 'Error occurred while attempting to GET sessions.');
+    logApiError(e, 'getSessions', 'Error occurred while attempting to GET sessions by school year.');
     return handleExceptionResponse(e, res);
   }
 }
@@ -71,29 +76,29 @@ async function getAssessmentStudentsPaginated(req, res) {
       }
     };
 
-
     let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/paginated`, params);
 
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
       return res.status(HttpStatus.OK).json(result);
     }
-    
     data?.content.forEach(value => {
       let school = cacheService.getSchoolBySchoolID(value.schoolID);
-      let assessmentCenter = cacheService.getSchoolBySchoolID(value.assessmentCenter);
+      let assessmentCenter = cacheService.getSchoolBySchoolID(value.assessmentCenterID);
       let district = cacheService.getDistrictJSONByDistrictId(school.districtID);
+
       value.schoolNumber = school.mincode;
       value.schoolName = getSchoolName(school);
-      value.districtName = getDistrictName(district);
-      value.districtNumber = district.districtNumber;
       value.districtID = school.districtID;
-      value.mincode = cacheService.getSchoolBySchoolID(value.schoolID)?.mincode;
+      value.districtNumber = district.districtNumber;
+      value.districtName = getDistrictName(district);    
       value.assessmentCenterNumber = assessmentCenter.mincode;
       value.assessmentCenterName = getSchoolName(assessmentCenter);
+
       value.assessmentTypeName = cacheService.getAssessmentTypeLabelByCode(value.assessmentTypeCode)+' ('+value.assessmentTypeCode+')';
       value.provincialSpecialCaseName = cacheService.getSpecialCaseTypeLabelByCode(value.provincialSpecialCaseCode);
       value.sessionName = moment(value.courseMonth, 'MM').format('MMMM') +' '+value.courseYear;
+
     });
     return res.status(200).json(data);
   } catch (e) {
