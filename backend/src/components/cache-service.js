@@ -237,10 +237,13 @@ const cacheService = {
   async loadAllAssessmentTypeCodesToMap() {
     log.debug('Loading all assessment Type Codes during start up');
     await retry(async () => {
-      const assessmentTypeCodesResponse = await getData(config.get('server:eas:assessmentTypeCodeURL'));
-      assessmentTypeCodesResponse.forEach(entry => {
-        assessmentTypeCodesMap.set(entry.assessmentTypeCode, entry.label);   
-      });      
+      const assessmentTypeCodesResponse = await getData(config.get('server:eas:assessmentTypeCodeURL'));      
+      if (assessmentTypeCodesResponse && assessmentTypeCodesResponse.length > 0) {
+        assessmentTypeCodesMap.clear(); // reset the value.
+        assessmentTypeCodesResponse.forEach(entry => {
+          assessmentTypeCodesMap.set(entry.assessmentTypeCode, entry.label);   
+        });      
+      }
       log.info(`Loaded ${assessmentTypeCodesMap.size} assessmentTypeCodes.`);
     }, {
       retries: 50
@@ -250,10 +253,13 @@ const cacheService = {
   async loadAllSpecialCaseTypeCodesToMap() {
     log.debug('Loading all specialcase Type Codes during start up');
     await retry(async () => {
-      const provincialSpecialCaseTypeCodesResponse = await getData(config.get('server:eas:assessmentSpecialCaseTypeCodeURL'));
-      provincialSpecialCaseTypeCodesResponse.forEach(entry => {
-        assessmentSpecialCaseTypeCodesMap.set(entry.provincialSpecialCaseCode, entry.label);   
-      });       
+      const provincialSpecialCaseTypeCodesResponse = await getData(config.get('server:eas:assessmentSpecialCaseTypeCodeURL'));      
+      if (provincialSpecialCaseTypeCodesResponse && provincialSpecialCaseTypeCodesResponse.length > 0) {
+        assessmentSpecialCaseTypeCodesMap.clear(); // reset the value.
+        provincialSpecialCaseTypeCodesResponse.forEach(entry => {
+          assessmentSpecialCaseTypeCodesMap.set(entry.provincialSpecialCaseCode, entry.label);   
+        });      
+      } 
       log.info(`Loaded ${assessmentSpecialCaseTypeCodesMap.size} assessmentSpecialCaseTypeCodes.`);
     }, {
       retries: 50

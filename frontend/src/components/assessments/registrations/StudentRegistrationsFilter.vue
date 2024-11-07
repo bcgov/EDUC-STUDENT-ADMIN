@@ -332,10 +332,14 @@ export default {
     },
     setupAssessmentSessions() {
       this.sessionSearchNames = [];
+      this.assessmentTypeSearchNames = [];
       this.schoolYearSessions.forEach(session => {
         this.sessionSearchNames.push({title: this.formatMonth(session.courseMonth), id: session.sessionID, value: session.sessionID});
         session.assessments.forEach(assessment => {
-          this.assessmentTypeSearchNames.push({title: assessment.assessmentTypeName, id: assessment.assessmentTypeCode, value: assessment.assessmentTypeCode});
+          let existingItem = this.assessmentTypeSearchNames.find(item => item.id === assessment.assessmentTypeCode);
+          if (!existingItem) {
+            this.assessmentTypeSearchNames.push({title: assessment.assessmentTypeName, id: assessment.assessmentTypeCode, value: assessment.assessmentTypeCode});
+          }
         });
       });
     },
