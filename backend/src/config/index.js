@@ -154,8 +154,9 @@ nconf.defaults({
     eas:{
       rootURL: process.env.EAS_API_URL,
       assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions',
-      assessmentTypesURL: process.env.EAS_API_URL+ '/assessments',
-      assessmentStudentsURL: process.env.EAS_API_URL+ '/students',
+      assessmentTypeCodeURL: process.env.EAS_API_URL+ '/assessment-types',
+      assessmentSpecialCaseTypeCodeURL: process.env.EAS_API_URL+ '/assessment-specialcase-types',
+      assessmentStudentsURL: process.env.EAS_API_URL+ '/student',
     }
   },
   oidc: {
