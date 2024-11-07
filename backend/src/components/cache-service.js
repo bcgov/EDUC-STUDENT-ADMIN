@@ -32,6 +32,9 @@ let specialEducationCodesMap = new Map();
 let duplicateResolutionCodesMap = new Map();
 let programDuplicateTypeCodesMap = new Map();
 
+let assessmentTypeCodesMap = new Map();
+let assessmentSpecialCaseTypeCodesMap = new Map();
+
 const cacheService = {
 
   async loadAllSchoolsToMap() {
@@ -229,6 +232,40 @@ const cacheService = {
 
 
     };
+  },
+
+  async loadAllAssessmentTypeCodesToMap() {
+    log.debug('Loading all assessment Type Codes during start up');
+    await retry(async () => {
+      const assessmentTypeCodesResponse = await getData(config.get('server:eas:assessmentTypeCodeURL'));
+      assessmentTypeCodesResponse.forEach(entry => {
+        assessmentTypeCodesMap.set(entry.assessmentTypeCode, entry.label);   
+      });      
+      log.info(`Loaded ${assessmentTypeCodesMap.size} assessmentTypeCodes.`);
+    }, {
+      retries: 50
+    });
+  },
+
+  async loadAllSpecialCaseTypeCodesToMap() {
+    log.debug('Loading all specialcase Type Codes during start up');
+    await retry(async () => {
+      const provincialSpecialCaseTypeCodesResponse = await getData(config.get('server:eas:assessmentSpecialCaseTypeCodeURL'));
+      provincialSpecialCaseTypeCodesResponse.forEach(entry => {
+        assessmentSpecialCaseTypeCodesMap.set(entry.provincialSpecialCaseCode, entry.label);   
+      });       
+      log.info(`Loaded ${assessmentSpecialCaseTypeCodesMap.size} assessmentSpecialCaseTypeCodes.`);
+    }, {
+      retries: 50
+    });
+  },
+
+  getAssessmentTypeLabelByCode(assessmentTypeCode) {
+    return assessmentTypeCodesMap.get(assessmentTypeCode);
+  },
+
+  getSpecialCaseTypeLabelByCode(specialCaseTypeCode) {
+    return assessmentSpecialCaseTypeCodesMap.get(specialCaseTypeCode);
   },
 
   async loadDataToCache(cacheKey,url){

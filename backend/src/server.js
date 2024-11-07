@@ -175,6 +175,18 @@ if(!config.get('frontendConfig').disableSdcFunctionality) {
   });
 }
 
+cacheService.loadAllAssessmentTypeCodesToMap().then(() => {
+  log.info('Loaded AssessmentTypeCodes data to memory');
+}).catch((e) => {
+  log.error('Error loading AssessmentTypeCodes during boot .', e);
+});
+cacheService.loadAllSpecialCaseTypeCodesToMap().then(() => {
+  log.info('Loaded SpecialCaseTypeCodes data to memory');
+}).catch((e) => {
+  log.error('Error loading SpecialCaseTypeCodes during boot .', e);
+});
+
+
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');
 }).catch((e) => {

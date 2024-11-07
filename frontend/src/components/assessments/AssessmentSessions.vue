@@ -2,7 +2,25 @@
   <v-container class="containerSetup mb-5">
     <v-row class="pr-4">
       <v-col class="pb-0 mt-4">
-        <h2>Open Assessment Sessions</h2>
+        <div style="display: flex;">
+          <h2>School Year: {{ schoolYear }}</h2>
+          <v-btn
+            variant="text"
+            @click="goToSchoolYearRegistrations()"
+          >
+            <span
+              class="ml-1 pr-2"
+              style="color: #003366"
+            >View all Open Sessions in the current school year</span>
+            <v-icon
+              color="#003366"
+              class="ml-n1 mr-1"
+              right
+              icon="mdi-arrow-right"
+              dark
+            />
+          </v-btn>
+        </div>
       </v-col>
     </v-row>
     <v-row 
@@ -40,11 +58,11 @@
           { value: 25, title: '25' },
           { value: 50, title: '50' },
           { value: 100, title: '100' },
-          { value: -1, title: 'All' }
         ]"
         :hover="true"
         class="fill-height"
         style="border-radius: 0"
+        @click:row="goToSessionRegistrations"
       >
         <template #top>
           <v-text-field
@@ -81,7 +99,6 @@ import SessionCard from './sessions/SessionCard.vue';
 import EditSession from './sessions/SessionEdit.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '../../utils/constants';
-import { LocalDate } from '@js-joda/core';
 import moment from 'moment';
 
 export default {
@@ -93,8 +110,8 @@ export default {
   data() {
     return {
       topN: 4,
-      search: null,
-      currentYear: LocalDate.now().year(),
+      schoolYear: null,
+      search: null,      
       itemsPerPage: 5,
       pageNumber: 1,
       allsessions: [],
@@ -115,14 +132,14 @@ export default {
     activeSessions() {
       const orderedSessions = [];
       const allsessions = this.allsessions
-      .filter((session, index) => index < this.topN)
+        .filter((session, index) => index < this.topN)
         .map((session) => {
           return {
             ...session,
             courseMonth: this.formatMonth(session.courseMonth)
           };
-        });
-      allsessions.sort((a, b) => new Date(a.activeUntilDate) - new Date(b.activeUntilDate));
+        });   
+      allsessions.sort((a, b) => new Date(a.activeUntilDate) - new Date(b.activeUntilDate));   
       for (let i = 0; i < allsessions.length; i += 2) {
         orderedSessions.push(allsessions.slice(i, i + 2));
       }
@@ -131,20 +148,19 @@ export default {
     historicalSessions() {
       const allsessions = this.allsessions
         .filter((session, index) => index >= this.topN)
-        .map((session) => {
+        .map((entry) => {
           return {
-            ...session,
-            activeFromDate: this.formattoDate(session.activeFromDate),
-            activeUntilDate: this.formattoDate(session.activeUntilDate),
-            courseMonth: this.formatMonth(session.courseMonth),
+            ...entry,
+            activeFromDate: this.formattoDate(entry.activeFromDate),
+            activeUntilDate: this.formattoDate(entry.activeUntilDate),
+            courseMonth: this.formatMonth(entry.courseMonth),
           };
         });
-        allsessions.sort((a, b) => new Date(b.activeUntilDate) - new Date(a.activeUntilDate));
-        return allsessions;
+      return allsessions;
     },
     sessionHeaderSlotName() {
       return `column.${this.sessionid}`;
-    },
+    } 
   },
   created() {
     this.getAllAssessmentSessions();
@@ -155,7 +171,10 @@ export default {
       ApiService.apiAxios
         .get(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`, {})
         .then((response) => {
-          this.allsessions = response.data;
+          this.allsessions = response.data.sort((a, b) => new Date(b.activeUntilDate) - new Date(a.activeUntilDate));
+          if(this.allsessions.length >0) {
+            this.schoolYear = this.allsessions[0].schoolYear;
+          }
         })
         .catch((error) => {
           console.error(error);
@@ -163,7 +182,7 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
+    },    
     sessionEditSuccess() {
       this.getAllAssessmentSessions();
     },
@@ -176,6 +195,12 @@ export default {
     },
     formatMonth(month) {
       return moment(month, 'MM').format('MMMM');
+    },
+    goToSchoolYearRegistrations() {
+      this.$router.push({name: 'assessment-session-detail', params: {schoolYear:  this.schoolYear?.replace(/\//g, '-'), sessionID: null}});
+    },
+    goToSessionRegistrations(e, { item }) {
+      this.$router.push({name: 'assessment-session-detail', params: {schoolYear:  item?.raw?.schoolYear?.replace(/\//g, '-'), sessionID: item?.raw?.sessionID}});
     }
   },
 };
