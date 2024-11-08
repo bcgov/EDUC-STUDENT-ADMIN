@@ -14,7 +14,7 @@ router.get('/assessment-sessions', passport.authenticate('jwt', {session: false}
 router.get('/assessment-sessions/school-year/:schoolYear', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION), extendSession, getAssessmentSessionsBySchoolYear);
 router.put('/assessment-sessions/:sessionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION), extendSession, updateAssessmentSession);
 
-router.get('/assessment-registrations/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION), extendSession, getAssessmentStudentsPaginated);
+router.get('/assessment-registrations/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_EAS_STUDENT_PERMISSION), extendSession, getAssessmentStudentsPaginated);
 
 
 module.exports = router;
