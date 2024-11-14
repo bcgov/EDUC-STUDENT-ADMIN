@@ -209,7 +209,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(sdcCollectionStore, ['duplicateResolutionCodesMap', 'collectionTypeCodesMap']),
+    ...mapState(sdcCollectionStore, ['collectionTypeCodesMap']),
     isResolveRemainingDuplicatesButtonDisabled() {
       return this.nonAllowableDuplicates?.length === 0 && this.nonAllowableProgramDuplicates?.length === 0;
     },
@@ -217,7 +217,6 @@ export default {
   async created() {
     await this.getSdcSchoolCollections();
     await this.getSdcDistrictCollectionMonitoring();
-    await sdcCollectionStore().getDuplicateResolutionCodesMap();
     sdcCollectionStore().getCodes().then(() => {
       this.loadStudents();
     });

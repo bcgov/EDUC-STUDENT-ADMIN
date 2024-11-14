@@ -5,7 +5,6 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
   id: 'sdcCollection',
   state: () => ({
     districtCollectionStatusCodesMap: new Map(),
-    duplicateResolutionCodesMap: new Map(),
     schoolCollectionStatusCodesMap: new Map(),
     bandCodesMap: new Map(),
     bandCodes: [],
@@ -40,11 +39,7 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
         this.districtCollectionStatusCodesMap.set(districtCollectionCode.sdcDistrictCollectionStatusCode, districtCollectionCode);
       });
     },
-    setDuplicateResolutionCodes(duplicateResolutionCodes) {
-      duplicateResolutionCodes.forEach(issue => {
-        this.duplicateResolutionCodesMap.set(issue.duplicateResolutionCode, issue);
-      });
-    },
+
     setSchoolCollectionStatusCodes(schoolCollectionStatusCodes){
       schoolCollectionStatusCodes.forEach(schoolCollectionCode => {
         this.schoolCollectionStatusCodesMap.set(schoolCollectionCode.sdcSchoolCollectionStatusCode, schoolCollectionCode);
@@ -161,12 +156,6 @@ export const sdcCollectionStore = defineStore('sdcCollection', {
         ApiService.getAllDistrictCollectionStatusCodes().then((res) => this.setDistrictCollectionStatusCodes(res.data));
       }
       return this.districtCollectionStatusCodesMap;
-    },
-    async getDuplicateResolutionCodesMap() {
-      if(this.duplicateResolutionCodesMap.size === 0) {
-        ApiService.getAllDuplicateResolutionCodes().then((res) => this.setDuplicateResolutionCodes(res.data));
-      }
-      return this.duplicateResolutionCodesMap;
     },
     async getSchoolCollectionStatusCodeMap() {
       if(this.schoolCollectionStatusCodesMap.size === 0) {

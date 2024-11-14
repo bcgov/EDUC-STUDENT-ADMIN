@@ -163,11 +163,6 @@ if(!config.get('frontendConfig').disableSdcFunctionality) {
   }).catch((e) => {
     log.error('Error loading SDC_SPECIAL_ED_CODES data during boot.', e);
   });
-  cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_DUPLICATE_RESOLUTION_CODES, 'sdc:duplicateResolutionCodesURL').then(() => {
-    log.info('Loaded SDC_DUPLICATE_RESOLUTION_CODES data to memory');
-  }).catch((e) => {
-    log.error('Error loading SDC_DUPLICATE_RESOLUTION_CODES data during boot.', e);
-  });
   cacheService.loadDataToCache(constants.CACHE_KEYS.SDC_PROGRAM_DUPLICATE_TYPE_CODES, 'sdc:programDuplicateTypeCodesURL').then(() => {
     log.info('Loaded SDC_PROGRAM_DUPLICATE_TYPE_CODES data to memory');
   }).catch((e) => {

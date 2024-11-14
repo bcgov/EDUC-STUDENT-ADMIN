@@ -252,34 +252,6 @@
             @click="unsubmitSdcSchoolCollection(item.raw.sdcSchoolCollectionId)"
           />
         </template>
-        <template #item.unresolvedEnrollmentDuplicates="{ item }">
-          <v-progress-circular
-            v-if="isLoadingDuplicates"
-            color="primary"
-            indeterminate
-          />
-          <a
-            v-else-if="item.raw.unresolvedEnrollmentDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
-            @click="showDuplicates(item.raw.sdcSchoolCollectionId, 'Enrollment Duplicates')"
-          >
-            {{ item.raw.unresolvedEnrollmentDuplicates }}
-          </a>
-          <span v-else>{{ item.raw.unresolvedEnrollmentDuplicates }}</span>
-        </template>
-        <template #item.unresolvedProgramDuplicates="{ item }">
-          <v-progress-circular
-            v-if="isLoadingDuplicates"
-            color="primary"
-            indeterminate
-          />
-          <a
-            v-else-if="item.raw.unresolvedProgramDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
-            @click="showDuplicates(item.raw.sdcSchoolCollectionId, 'Program Duplicates')"
-          >
-            {{ item.raw.unresolvedProgramDuplicates }}
-          </a>
-          <span v-else>{{ item.raw.unresolvedProgramDuplicates }}</span>
-        </template>
         <template #item.contact="{ item }">
           <a
             target="_blank"
@@ -291,19 +263,6 @@
       </v-data-table>
     </v-col>
   </v-row>
-  <v-bottom-sheet
-    v-model="openDuplicateView"
-    :no-click-animation="true"
-    :scrollable="true"
-    :persistent="true"
-  >
-    <ProvincialDuplicates
-      :collection-object="collectionObject"
-      :sdc-duplicates="selectedSchoolsDuplicates?.sdcDuplicates"
-      :default-tab="defaultTab"
-      @close-sheet="openDuplicateView = false"
-    />
-  </v-bottom-sheet>
   <ConfirmationDialog ref="confirmRemovalOfCollection">
     <template #message>
       <p>Are you sure that you would like to unsubmit the selected SDC School Collection?</p>
@@ -325,11 +284,10 @@ import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import alertMixin from '@/mixins/alertMixin';
 import {authStore} from '@/store/modules/auth';
-import ProvincialDuplicates from '@/components/data-collection/provincialDuplicates/ProvincialDuplicates.vue';
 
 export default defineComponent({
   name: 'IndySchoolMonitoring',
-  components: {ProvincialDuplicates, ConfirmationDialog, Spinner, Filters},
+  components: {ConfirmationDialog, Spinner, Filters},
   mixins: [alertMixin],
   props: {
     collectionObject: {
@@ -386,14 +344,9 @@ export default defineComponent({
           value: item => item.uploadDate ? item.infoWarnings : '-'
         },
         {
-          title: 'Enrollment Duplicates',
+          title: 'Unresolved Duplicates',
           align: 'center',
-          key: 'unresolvedEnrollmentDuplicates'
-        },
-        {
-          title: 'Program Duplicates',
-          align: 'center',
-          key: 'unresolvedProgramDuplicates'
+          key: 'unresolvedDuplicates'
         },
         {
           title: 'School Status',
@@ -460,9 +413,6 @@ export default defineComponent({
     });
     this.schoolCollectionStatusCodes = await sdcCollectionStore().getSchoolCollectionStatusCodeMap();
     this.getSdcSchoolCollections();
-    if(this.collectionObject.collectionStatusCode === 'INPROGRESS' ) {
-      this.getProvincialDuplicateCounts();
-    }
   },
   methods: {
     applyFilters($event) {
@@ -525,22 +475,6 @@ export default defineComponent({
       const dateTime = LocalDateTime.parse(inputDateTime);
       return dateTime.format(DateTimeFormatter.ofPattern('yyyy/MM/dd HH:mm:ss'));
     },
-    async getProvincialDuplicateCounts() {
-      this.isLoadingDuplicates = true;
-      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/sdc-duplicate/all-school-provincial-in-flight/${this.collectionObject.collectionID}`).then(response => {
-        this.generatedDuplicateResponse = response?.data;
-        this.monitorSdcSchoolCollectionsResponse?.monitorSdcSchoolCollections.forEach(school => {
-          let schoolDuplicates = this.generatedDuplicateResponse[school.sdcSchoolCollectionId];
-          school.unresolvedEnrollmentDuplicates = schoolDuplicates ? schoolDuplicates?.numEnrollmentDuplicates : 0;
-          school.unresolvedProgramDuplicates = schoolDuplicates ? schoolDuplicates?.numProgramDuplicates : 0;
-        });
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get duplicate counts. Please try again later.');
-      }).finally(() => {
-        this.isLoadingDuplicates = false;
-      });
-    },
     async getSdcSchoolCollections(){
       this.isLoading = true;
       await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/indySdcSchoolCollectionMonitoring`, {
@@ -568,14 +502,9 @@ export default defineComponent({
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while unsubmitting school collection. Please try again later.');
         });
     },
-    showDuplicates(sdcSchoolCollectionID, defaultTab) {
-      this.selectedSchoolsDuplicates = this.generatedDuplicateResponse[sdcSchoolCollectionID];
-      this.defaultTab = defaultTab;
-      this.openDuplicateView = true;
-    },
     toggleFilters() {
       this.showFilters = !this.showFilters;
-    }
+    },
   }
 });
 </script>

@@ -727,42 +727,6 @@ async function resolveDuplicates(req, res) {
   }
 }
 
-async function getInFlightDistrictProvincialDuplicates(req, res) {
-  try {
-    const params = {
-      params: {
-        instituteType: 'district'
-      }
-    };
-    const data = await getData(`${config.get('sdc:sdcDuplicateURL')}/all-provincial-in-flight/${req.params.collectionID}`, params);
-    Object.values(data).forEach(districtDuplicates => {
-      districtDuplicates.sdcDuplicates = setDuplicatesForDisplay(districtDuplicates?.sdcDuplicates);
-    });
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    logApiError(e, 'Error finding duplicates in the collection');
-    return errorResponse(res);
-  }
-}
-
-async function getInFlightSchoolProvincialDuplicates(req, res) {
-  try {
-    const params = {
-      params: {
-        instituteType: 'school'
-      }
-    };
-    const data = await getData(`${config.get('sdc:sdcDuplicateURL')}/all-provincial-in-flight/${req.params.collectionID}`, params);
-    Object.values(data).forEach(districtDuplicates => {
-      districtDuplicates.sdcDuplicates = setDuplicatesForDisplay(districtDuplicates?.sdcDuplicates);
-    });
-    return res.status(HttpStatus.OK).json(data);
-  } catch (e) {
-    logApiError(e, 'Error finding duplicates in the collection');
-    return errorResponse(res);
-  }
-}
-
 async function closeCollection(req, res) {
   try {
     const incomingBody = req.body;
@@ -973,8 +937,6 @@ module.exports = {
   resolveDuplicates,
   postProvincialDuplicates,
   resolveRemainingDuplicates,
-  getInFlightDistrictProvincialDuplicates,
-  getInFlightSchoolProvincialDuplicates,
   closeCollection,
   getCollectionPaginated,
   getCollectionByID,

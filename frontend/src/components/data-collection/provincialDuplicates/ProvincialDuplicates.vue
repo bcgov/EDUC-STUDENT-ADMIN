@@ -98,7 +98,6 @@ export default defineComponent({
       nonAllowableDuplicates: [],
       nonAllowableProgramDuplicates: [],
       isLoading: false,
-      duplicateResolutionCodesMap: null,
       tab: this.defaultTab,
       tabs: [
         'Enrollment Duplicates',
@@ -107,7 +106,6 @@ export default defineComponent({
     };
   },
   async created() {
-    this.duplicateResolutionCodesMap = sdcCollectionStore().getDuplicateResolutionCodesMap();
     await this.setDuplicateVariables(this.sdcDuplicates);
   },
   methods: {
