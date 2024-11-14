@@ -121,8 +121,8 @@ export const SCHOOL_YEAR_REGISTRATIONS_VIEW = Object.freeze(
       session: SESSION_CODE_FILTER,
       assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,
       specialCaseCode: SPECIAL_CASE_FILTER,
-      proficienyScore: PROFICIENCY_SCORE_FILTER,
-      proficienyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER
+      proficiencyScore: PROFICIENCY_SCORE_FILTER,
+      proficiencyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER
     }
   });
 
@@ -144,8 +144,8 @@ export const SESSION_REGISTRATIONS_VIEW = Object.freeze(
       session: SESSION_CODE_FILTER,
       assessmentTypeCode: ASSESSMENT_TYPE_CODE_FILTER,
       specialCaseCode: SPECIAL_CASE_FILTER,
-      proficienyScore: PROFICIENCY_SCORE_FILTER,
-      proficienyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER      
+      proficiencyScore: PROFICIENCY_SCORE_FILTER,
+      proficiencyScoreValue: PROFICIENCY_SCORE_RANGE_FILTER      
     }
   });
   

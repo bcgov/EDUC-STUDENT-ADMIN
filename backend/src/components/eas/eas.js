@@ -11,6 +11,9 @@ async function getAssessmentSessions(req, res) {
   try {
     const url = `${config.get('server:eas:assessmentSessionsURL')}`;
     const data = await getData(url);
+    data.forEach(session => {
+      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date();      
+    });
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
