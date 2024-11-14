@@ -109,7 +109,6 @@ export default {
   },
   data() {
     return {
-      topN: 4,
       schoolYear: null,
       search: null,      
       itemsPerPage: 5,
@@ -132,7 +131,7 @@ export default {
     activeSessions() {
       const orderedSessions = [];
       const allsessions = this.allsessions
-        .filter((session, index) => index < this.topN)
+        .filter(session => session.isOpen)
         .map((session) => {
           return {
             ...session,
@@ -147,7 +146,7 @@ export default {
     },
     historicalSessions() {
       const allsessions = this.allsessions
-        .filter((session, index) => index >= this.topN)
+        .filter(session => !session.isOpen)
         .map((entry) => {
           return {
             ...entry,

@@ -56,7 +56,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       searchCriteriaList.push({ key: 'provincialSpecialCaseCode', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
 
-    if (key === 'proficienyScore' && pValue) {
+    if (key === 'proficiencyScore' && pValue) {
       if(JSON.parse(pValue) === true) {
         searchCriteriaList.push({ key: 'proficiencyScore', value: 0, operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });        
       } else {
@@ -64,7 +64,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       }     
     }
 
-    if (key === 'proficienyScoreValue' && pValue) {
+    if (key === 'proficiencyScoreValue' && pValue) {
       searchCriteriaList.push({ key: 'proficiencyScore', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
     }
 
