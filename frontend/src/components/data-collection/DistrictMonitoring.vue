@@ -62,50 +62,9 @@
             View
           </a>
         </template>
-        <template #item.unresolvedEnrollmentDuplicates="{ item }">
-          <v-progress-circular
-            v-if="isLoadingDuplicates"
-            color="primary"
-            indeterminate
-          />
-          <a
-            v-else-if="item.raw.unresolvedEnrollmentDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
-            @click="showDuplicates(item.raw.sdcDistrictCollectionId, 'Enrollment Duplicates')"
-          >
-            {{ item.raw.unresolvedEnrollmentDuplicates }}
-          </a>
-          <span v-else>{{ item.raw.unresolvedEnrollmentDuplicates }}</span>
-        </template>
-        <template #item.unresolvedProgramDuplicates="{ item }">
-          <v-progress-circular
-            v-if="isLoadingDuplicates"
-            color="primary"
-            indeterminate
-          />
-          <a
-            v-else-if="item.raw.unresolvedProgramDuplicates !== 0 && collectionObject.collectionStatusCode === 'INPROGRESS'"
-            @click="showDuplicates(item.raw.sdcDistrictCollectionId, 'Program Duplicates')"
-          >
-            {{ item.raw.unresolvedProgramDuplicates }}
-          </a>
-          <span v-else>{{ item.raw.unresolvedProgramDuplicates }}</span>
-        </template>
       </v-data-table>
     </v-col>
   </v-row>
-  <v-bottom-sheet
-    v-model="openDuplicateView"
-    :no-click-animation="true"
-    :scrollable="true"
-    :persistent="true"
-  >
-    <ProvincialDuplicates
-      :collection-object="collectionObject"
-      :sdc-duplicates="selectedDistrictsDuplicates?.sdcDuplicates"
-      :default-tab="defaultTab"
-      @close-sheet="openDuplicateView = false"
-    />
-  </v-bottom-sheet>
   <ConfirmationDialog ref="confirmRemovalOfCollection">
     <template #message>
       <p>Are you sure that you would like to unsubmit the selected SDC District Collection?</p>
@@ -124,11 +83,10 @@ import alertMixin from '@/mixins/alertMixin';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
 import {sanitizeUrl} from '@braintree/sanitize-url';
-import ProvincialDuplicates from './provincialDuplicates/ProvincialDuplicates.vue';
 
 export default defineComponent({
   name: 'DistrictMonitoring',
-  components: { ConfirmationDialog, ProvincialDuplicates, Spinner },
+  components: { ConfirmationDialog, Spinner },
   mixins: [alertMixin],
   props: {
     collectionObject: {
@@ -160,14 +118,9 @@ export default defineComponent({
           value: item => this.districtCollectionStatusCodesMap.get(item.sdcDistrictCollectionStatusCode)?.label
         },
         {
-          title: 'Enrollment Duplicates',
+          title: 'Unresolved Duplicates',
           align: 'center',
-          key: 'unresolvedEnrollmentDuplicates'
-        },
-        {
-          title: 'Program Duplicates',
-          align: 'center',
-          key: 'unresolvedProgramDuplicates'
+          key: 'unresolvedDuplicates'
         },
         {
           title: 'Unsubmit',
@@ -202,30 +155,11 @@ export default defineComponent({
     });
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
     this.getSdcDistrictCollectionMonitoring();
-    if(this.collectionObject.collectionStatusCode === 'INPROGRESS' ) {
-      this.getProvincialDuplicateCounts();
-    }
   },
   methods: {
     openDistrictContacts(districtId) {
       let route = this.$router.resolve({name: 'districtDetails', query: {contact: true}, params: {districtID: districtId}});
       window.open(route.href, '_blank');
-    },
-    async getProvincialDuplicateCounts() {
-      this.isLoadingDuplicates = true;
-      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/sdc-duplicate/all-district-provincial-in-flight/${this.collectionObject.collectionID}`).then(response => {
-        this.generatedDuplicateResponse = response?.data;
-        this.monitorSdcDistrictCollectionsResponse.forEach(district => {
-          let districtDuplicates = this.generatedDuplicateResponse[district.sdcDistrictCollectionId];
-          district.unresolvedEnrollmentDuplicates = districtDuplicates ? districtDuplicates?.numEnrollmentDuplicates : 0;
-          district.unresolvedProgramDuplicates = districtDuplicates ? districtDuplicates?.numProgramDuplicates : 0;
-        });
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get duplicate counts. Please try again later.');
-      }).finally(() => {
-        this.isLoadingDuplicates = false;
-      });
     },
     async getSdcDistrictCollectionMonitoring() {
       this.isLoading = true;
@@ -257,11 +191,6 @@ export default defineComponent({
     safeURL(districtID, sdcDistrictCollectionId) {
       return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user.userGuid.toLowerCase()}`);
     },
-    showDuplicates(sdcDistrictCollectionID, defaultTab) {
-      this.selectedDistrictsDuplicates = this.generatedDuplicateResponse[sdcDistrictCollectionID];
-      this.defaultTab = defaultTab;
-      this.openDuplicateView = true;
-    }
   }
 });
 </script>

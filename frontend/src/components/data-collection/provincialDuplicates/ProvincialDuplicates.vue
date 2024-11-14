@@ -70,7 +70,6 @@
 <script>
 import {defineComponent} from 'vue';
 import alertMixin from '@/mixins/alertMixin';
-import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import Spinner from '../../common/Spinner.vue';
 import DuplicateTab from './DuplicateTab.vue';
 
@@ -98,7 +97,6 @@ export default defineComponent({
       nonAllowableDuplicates: [],
       nonAllowableProgramDuplicates: [],
       isLoading: false,
-      duplicateResolutionCodesMap: null,
       tab: this.defaultTab,
       tabs: [
         'Enrollment Duplicates',
@@ -107,7 +105,6 @@ export default defineComponent({
     };
   },
   async created() {
-    this.duplicateResolutionCodesMap = sdcCollectionStore().getDuplicateResolutionCodesMap();
     await this.setDuplicateVariables(this.sdcDuplicates);
   },
   methods: {

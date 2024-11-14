@@ -216,7 +216,6 @@ nconf.defaults({
     districtCollectionStatusCodesURL: process.env.SDC_API_URL + '/district-collection-status-codes',
     schoolCollectionStatusCodesURL: process.env.SDC_API_URL + '/school-collection-status-codes',
     districtCollectionURL: process.env.SDC_API_URL + '/sdcDistrictCollection',
-    duplicateResolutionCodesURL: process.env.SDC_API_URL + '/duplicate-resolution-codes',
     schoolFundingCodesURL: process.env.SDC_API_URL + '/funding-codes',
     programDuplicateTypeCodesURL: process.env.SDC_API_URL + '/program-duplicate-type-codes',
     programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
