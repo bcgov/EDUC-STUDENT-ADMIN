@@ -70,7 +70,6 @@
 <script>
 import {defineComponent} from 'vue';
 import alertMixin from '@/mixins/alertMixin';
-import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import Spinner from '../../common/Spinner.vue';
 import DuplicateTab from './DuplicateTab.vue';
 
