@@ -376,7 +376,7 @@ export default {
       ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/close-collection`, this.newCollection)
         .then(() => {
           this.setSuccessAlert('Your request to close the current collection is accepted.');
-          this.$router.push({name: 'sdc-collection'});
+          this.$router.push({name: 'sdc-collection', query: {collectionClosed: true}});
         })
         .catch(error => {
           console.error(error);

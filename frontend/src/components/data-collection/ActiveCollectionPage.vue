@@ -189,6 +189,7 @@ export default {
           try {
             const eventMessage = 'New Collection is now OPEN. Please refresh your screen.';
             this.setSuccessAlert(eventMessage);
+            this.$router.replace({'query': null});
           } catch (e) {
             console.error(e);
           }
@@ -198,10 +199,17 @@ export default {
   },
   created() {
     sdcCollectionStore().getCollectionTypeCodesMap();
-    this.getActiveCollection();
     this.getHistoricCollections();
+    this.checkStatus();
   },
   methods:{
+    checkStatus() {
+      if(this.$route.query?.collectionClosed){
+        this.collectionObject = null;
+      } else {
+        this.getActiveCollection();
+      }
+    },
     getActiveCollection(){
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`)
         .then(response => {
