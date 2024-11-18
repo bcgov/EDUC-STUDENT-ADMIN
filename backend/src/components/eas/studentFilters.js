@@ -17,6 +17,10 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }  
     //Default Filter End
     
+    if (key === 'givenName' && pValue) {
+      searchCriteriaList.push({ key: 'givenName', value: pValue.toString(), operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
     if (key === 'surName' && pValue) {
       searchCriteriaList.push({ key: 'surName', value: pValue.toString(), operation: FILTER_OPERATION.CONTAINS_IGNORE_CASE, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }

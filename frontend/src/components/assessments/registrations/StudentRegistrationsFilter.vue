@@ -63,7 +63,16 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col class="py-0" cols="12">
+          <v-col class="py-0" cols="6">
+            <v-text-field
+              id="searchInput"
+              v-model="givenName"
+              label="Given Name"
+              color="primary"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col class="py-0" cols="6">
             <v-text-field
               id="searchInput"
               v-model="surName"
@@ -284,6 +293,7 @@ export default {
       selected: {},
       scoreRangeDefault: [0, 4],
       scoreRange: [0, 4],
+      givenName: null,
       surName: null,
       pen: null,
       localID: null,
@@ -378,7 +388,7 @@ export default {
       this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
     }, 
     setPenLocalIdNameFilter($event, val) {
-      const keys = ['surName', 'pen', 'localID'];
+      const keys = ['givenName', 'surName', 'pen', 'localID'];
       keys.forEach((key) => {
         if (this[key] != null) {
           if (this[key].length > 0) {
@@ -457,6 +467,7 @@ export default {
       this.districtNameNumberFilter = null;
       this.schoolNameNumberFilter = null;
       this.assessmentCenterNameNumberFilter = null;
+      this.givenName = null;
       this.surName = null;
       this.pen = null;
       this.localID = null;
