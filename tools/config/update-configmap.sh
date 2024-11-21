@@ -577,7 +577,7 @@ echo Assigning permissions to EAS_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EAS_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$manageSessionsPermissionJson]"
+  -d "[$manageSessionsPermissionJson, $viewEasStudentsPermissionJson]"
 
 echo
 echo Retrieving client ID for student-admin-soam
