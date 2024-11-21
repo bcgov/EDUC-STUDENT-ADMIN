@@ -553,20 +553,6 @@ manageSessionsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/
   -H "Authorization: Bearer $TKN")
 
 echo
-echo Creating EAS_ADMIN role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EAS_ADMIN\",\"description\" : \"Allows access to EAS administration\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Assigning permissions to EAS_ADMIN role 
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EAS_ADMIN/composites" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "[$manageSessionsPermissionJson]"
-
-echo
 echo Creating VIEW_EAS_STUDENT_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -580,18 +566,18 @@ viewEasStudentsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms
   -H "Authorization: Bearer $TKN")
 
 echo
-echo Creating EAS_STUDENT_ASSESSMENT role
+echo Creating EAS_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EAS_STUDENT_ASSESSMENT\",\"description\" : \"Allows access to edit or update student assessments\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+  -d "{\"name\" : \"EAS_ADMIN\",\"description\" : \"Allows access to EAS administration\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
-echo Assigning permissions to EAS_STUDENT_ASSESSMENT role
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EAS_STUDENT_ASSESSMENT/composites" \
+echo Assigning permissions to EAS_ADMIN role 
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EAS_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewEasStudentsPermissionJson]"  
+  -d "[$manageSessionsPermissionJson]"
 
 echo
 echo Retrieving client ID for student-admin-soam
