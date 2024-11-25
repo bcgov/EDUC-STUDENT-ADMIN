@@ -650,10 +650,10 @@ else
 fi
 
 echo Fetching public key from SOAM
-fullKey=$(curl -sX GET "https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID" \
+fullKey=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/keys" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  | jq -r '.keys | .[] | select(has("public_key")) | .public_key')
+  | jq -r '.keys | .[] | select(has("publicKey")) | .publicKey')
 
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $fullKey -----END PUBLIC KEY-----"
 newline=$'\n'
