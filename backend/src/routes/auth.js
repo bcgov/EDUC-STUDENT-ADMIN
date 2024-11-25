@@ -39,6 +39,7 @@ router.get('/error', (_req, res) => {
 
 //redirects to the SSO login screen
 router.get('/login', passport.authenticate('oidc', {
+  scope: ['openid', 'profile'],
   failureRedirect: 'error'
 }));
 
