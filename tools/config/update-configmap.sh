@@ -653,7 +653,7 @@ echo Fetching public key from SOAM
 fullKey=$(curl -sX GET "https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  | jq -r '.keys | .[] | select(has("publicKey")) | .publicKey')
+  | jq -r '.keys | .[] | select(has("public_key")) | .public_key')
 
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $fullKey -----END PUBLIC KEY-----"
 newline=$'\n'
