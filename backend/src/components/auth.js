@@ -283,6 +283,7 @@ const auth = {
           client_id: config.get('oidc:serviceClientId'),
           client_secret: config.get('oidc:serviceClientSecret'),
           grant_type: 'client_credentials',
+          scope: 'openid profile'
         }), {
           headers: {
             Accept: 'application/json',
@@ -291,7 +292,6 @@ const auth = {
           }
         }
       );
-
 
       log.verbose('getServiceAccountToken Res', safeStringify(response.data));
 
