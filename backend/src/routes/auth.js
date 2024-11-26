@@ -53,9 +53,9 @@ router.get('/logout', async (req, res, next) => {
       req.session.destroy();
       let retUrl;
       if (req.query && req.query.sessionExpired) {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
       } else {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout' + '&client_id=' + config.get('oidc:clientId'));
       }
       res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
     });
