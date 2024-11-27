@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, handleExceptionResponse } = require('../utils');
+const { logApiError, getData, handleExceptionResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
 const config = require('../../config');
