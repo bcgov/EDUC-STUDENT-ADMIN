@@ -34,18 +34,15 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }
 
     if (key === 'districtNameNumber' && pValue) {
-      let districtNameNumberCriteria = createDistrictNameNumberSearchCriteria(pValue.toString());
-      districtNameNumberFilter = [...districtNameNumberCriteria];
+      searchCriteriaList.push({ key: 'districtID', value: pValue.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
     if (key === 'schoolNameNumber' && pValue) {
-      let schoolNameNumberCriteria = createSchoolNameNumberSearchCriteria(pValue.toString());
-      schoolNameNumberFilter = [...schoolNameNumberCriteria];
+      searchCriteriaList.push({ key: 'schoolID', value: pValue.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
     if (key === 'assessmentCenterNameNumber' && pValue) {
-      let schoolNameNumberCriteria = createAssessmentCenterNameNumberSearchCriteria(pValue.toString());
-      assessmentCenterNameNumberFilter = [...schoolNameNumberCriteria];
+      searchCriteriaList.push({ key: 'assessmentCenterID', value: pValue.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
     if (key === 'session' && pValue) {
@@ -99,48 +96,6 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     });
   }
   return search;
-}
-
-function createDistrictNameNumberSearchCriteria(value) {
-  const searchDistrictCriteriaList = [];
-
-  searchDistrictCriteriaList.push({
-    key: 'districtID',
-    operation: FILTER_OPERATION.EQUAL,
-    value: value,
-    valueType: VALUE_TYPE.UUID,
-    condition: CONDITION.AND
-  });
-
-  return searchDistrictCriteriaList;
-}
-
-function createSchoolNameNumberSearchCriteria(value) {
-  const searchSchoolCriteriaList = [];
-
-  searchSchoolCriteriaList.push({
-    key: 'schoolID',
-    operation: FILTER_OPERATION.EQUAL,
-    value: value,
-    valueType: VALUE_TYPE.UUID,
-    condition: CONDITION.AND
-  });
-
-  return searchSchoolCriteriaList;
-}
-
-function createAssessmentCenterNameNumberSearchCriteria(value) {
-  const searchAssessmentCenterCriteriaList = [];
-
-  searchAssessmentCenterCriteriaList.push({
-    key: 'assessmentCenterID',
-    operation: FILTER_OPERATION.EQUAL,
-    value: value,
-    valueType: VALUE_TYPE.UUID,
-    condition: CONDITION.AND
-  });
-
-  return searchAssessmentCenterCriteriaList;
 }
 
 
