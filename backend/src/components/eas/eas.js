@@ -58,7 +58,7 @@ async function updateAssessmentSession(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentSession', 'Error occurred while attempting to save the changes to the assessment session.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
 
@@ -93,7 +93,7 @@ async function getAssessmentStudentsPaginated(req, res) {
       res.status(HttpStatus.OK).json(null);
     } else {
       await logApiError(e, 'Error getting eas assessment student paginated list');
-      return errorResponse(res);
+      return handleExceptionResponse(e, res);
     }
   }
 }
@@ -108,7 +108,7 @@ async function getAssessmentStudentByID(req, res) {
       res.status(HttpStatus.OK).json(null);
     } else {
       await logApiError(e, 'Error getting eas assessment student');
-      return errorResponse(res);
+      return handleExceptionResponse(e, res);
     }
   }
 }
@@ -131,9 +131,20 @@ async function updateAssessmentStudentByID(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentStudent', 'Error occurred while attempting to save the changes to the assessment student registration.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
+
+async function deleteAssessmentStudentByID(req, res) {  
+  try {
+    const result = await utils.deleteData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'deleteAssessmentStudentByID', 'Error occurred while attempting to delete the assessment student registration.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 
 function includeAssessmentStudentProps(assessmentStudent) {
   if(assessmentStudent) {
@@ -172,7 +183,7 @@ function getAssessmentSpecialCases(req, res) {
     return res.status(HttpStatus.OK).json(Object.fromEntries(codes));
   } catch (e) {
     logApiError(e, 'getAssessmentSpecialCases', 'Error occurred while attempting to get specialcase types.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
 
@@ -184,5 +195,6 @@ module.exports = {
   getAssessmentStudentsPaginated,
   getAssessmentStudentByID,
   updateAssessmentStudentByID,
+  deleteAssessmentStudentByID,
   getAssessmentSpecialCases
 };

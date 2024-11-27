@@ -220,7 +220,7 @@
       >
         <v-col class="d-flex justify-end mr-3 mt-3">
           <v-btn 
-            v-if="isSessionEditable && !hasProficiencyScore()"
+            v-if="isSessionEditable && !assessmentStudentDetailCopy.provincialSpecialCaseCode && !hasProficiencyScore()"
             id="removeRecord"
             color="#003366"
             large-icon
@@ -261,14 +261,13 @@ import {
   setFailureAlert,
   setSuccessAlert,
 } from '../../../composable/alertComposable';
-import { sortBy } from 'lodash';
+import { sortBy, cloneDeep } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
 import { mapState } from 'pinia';
 import {easStore} from '@/store/modules/eas';
 import { PROFICIENCY_SCORE_RANGE_FILTER } from '@/utils/eas/StudentRegistrationTableConfiguration.js';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
-
 import moment from 'moment';
 
 export default {
@@ -315,6 +314,7 @@ export default {
       proficiencyScoreSearchNames: [],
       selectedAssessmentStudentID: null,
       studentRegistrationDetailsFormValid: false,
+      assessmentStudentDetailCopy: {},
       assessmentStudentDetail: {},
       loadingCount: 0,
       isActive: false,
@@ -467,7 +467,7 @@ export default {
       return [];
     },  
     hasProficiencyScore() {
-      return this.assessmentStudentDetail.proficiencyScore && Number(this.assessmentStudentDetail.proficiencyScore) > 0;
+      return this.assessmentStudentDetail.proficiencyScore;
     }, 
     getAssessmentStudentDetail(assessmentStudentID) {
       this.loadingCount += 1;
@@ -475,6 +475,7 @@ export default {
       ApiService.apiAxios.get(`${Routes.eas.ASSESSMENT_STUDENTS}/${assessmentStudentID}`)
         .then(response => {
           this.assessmentStudentDetail = response.data;
+          this.assessmentStudentDetailCopy = cloneDeep(this.assessmentStudentDetail);
           this.refreshAssessmentTypes(this.assessmentStudentDetail.sessionID);
           this.setupActiveFlag();
           this.setupSpecialCaseCodes();     
@@ -524,9 +525,26 @@ export default {
     },
     deleteStudentRegistration() {
       const confirmation = this.$refs.confirmRemoveStudentRegistration.open('Confirm Removal of Student Registration', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Remove', rejectText: 'Cancel'});
-      if (!confirmation) {
-        return;
-      }
+      confirmation.then((result) => {
+        if (result) {
+          this.loadingCount += 1;
+          ApiService.apiAxios.delete(`${Routes.eas.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID)
+            .then(() => {
+              setSuccessAlert('Success! The student registration details have been deleted.');   
+              this.$emit('reset-student-registration-pagination');
+            }).catch((error) => {
+              console.error(error);
+              setFailureAlert(
+                error?.response?.data?.message
+                  ? error?.response?.data?.message
+                  : 'An error occurred while trying to delete student registration details. Please try again later.'
+              );
+            }).finally(() => {
+              this.loadingCount -= 1;
+              this.$emit('reset-student-registration-parent');
+            });
+        } 
+      });
     },
     validateForm() {
       this.$refs?.registrationDetailsForm?.validate();
