@@ -141,6 +141,7 @@ export default {
   getAllActiveHomeLanguageSpokenCodes:getCodes(`${Routes.sdc.SDC_HOME_LANGUAGE_SPOKEN_CODES}?active=true`),
   getAllActiveSchoolFundingCodes:getCodes(`${Routes.sdc.SDC_SCHOOL_FUNDING_CODES}?active=true`),
   getAllActiveSpecialEdCodes:getCodes(`${Routes.sdc.SDC_SPECIAL_ED_CODES}?active=true`),
+  getAllEASSpecialCaseCodes:getCodes(`${Routes.eas.GET_ASSESSMENT_SPECIALCASE_TYPES}`),
   async getConfig() {
     try {
       const response = await apiAxios.get(Routes.CONFIG);

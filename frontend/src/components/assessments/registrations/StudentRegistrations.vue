@@ -10,6 +10,14 @@
           </v-col>
           <v-col cols="8" class="d-flex justify-end">
             <v-btn
+                id="addStudentReg"
+                color="#003366"
+                text="Add Record"
+                class="mr-1 mb-1"
+                variant="outlined"
+                @click="openCreateStudentRegDialog"
+            />
+            <v-btn
               id="filters"
               color="#003366"
               text="Filter"
@@ -67,6 +75,21 @@
         />
       </v-navigation-drawer>
     </v-row>
+    <v-dialog
+        v-model="newStudentRegSheet"
+        :inset="true"
+        :no-click-animation="true"
+        :scrollable="true"
+        :persistent="true"
+        width="40%"
+    >
+      <AddStudentRegistration
+          :session-id="sessionID"
+          :school-year-sessions="schoolYearSessions"
+          @reload-student-registrations="reloadStudentRegistrationsFlag = true"
+          @close-student-registration="closeEditAndLoadStudentRegistrations"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
@@ -78,10 +101,16 @@ import { Routes } from '@/utils/constants';
 import { cloneDeep, isEmpty, omitBy } from 'lodash';
 import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
 import moment from 'moment';
+import AddStudent from "@/components/common/AddStudent.vue";
+import InviteUserPage from "@/components/secure-message/InviteUserPage.vue";
+import AddStudentRegistration from "@/components/assessments/registrations/AddStudentRegistration.vue";
 
 export default {
   name: 'StudentRegistrations',
   components: {
+    AddStudentRegistration,
+    InviteUserPage,
+    AddStudent,
     StudentRegistrationsCustomTable,
     StudentRegistrationsFilter,
   },
@@ -109,6 +138,7 @@ export default {
         moreFilters: {},
       },
       showFilters: null,
+      newStudentRegSheet: false,
       isLoading: false,
       totalElements: 0,
       pageNumber: 1,
@@ -116,6 +146,7 @@ export default {
       canLoadNext: false,
       canLoadPrevious: false,
       resetFlag: false,
+      reloadStudentRegistrationsFlag: false,
     };
   },
   computed: {
@@ -124,11 +155,11 @@ export default {
     },
   },
   created() {
-    this.applydefaultFilers();
+    this.applyDefaultFilters();
     this.getAssessmentStudents();
   },
   methods: {
-    applydefaultFilers() {
+    applyDefaultFilters() {
       if (this.sessionID) {
         const activeSession = this.schoolYearSessions.find(
           (session) => session.sessionID === this.sessionID
@@ -171,6 +202,13 @@ export default {
           this.loading = false;
         });
     },
+    closeEditAndLoadStudentRegistrations() {
+      this.editStudentRegistrationSheet = !this.editStudentRegistrationSheet;
+      if (this.reloadStudentRegistrationsFlag === true) {
+        this.getAssessmentStudents();
+      }
+      this.reloadStudentRegistrationsFlag = false;
+    },
     applyFilters($event) {
       this.filterSearchParams.moreFilters = cloneDeep($event);
       this.pageNumber = 1;
@@ -183,6 +221,12 @@ export default {
     },
     toggleFilters() {
       this.showFilters = !this.showFilters;
+    },
+    openCreateStudentRegDialog() {
+      this.newStudentRegSheet = !this.newStudentRegSheet;
+    },
+    closeNewStudentRegModal() {
+      this.newStudentRegSheet = false;
     },
     loadNext() {
       if (this.canLoadNext) {
@@ -201,15 +245,6 @@ export default {
 </script>
 
 <style scoped>
-.search-box {
-  background: rgb(235, 237, 239);
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.filter-col {
-  color: #7f7f7f;
-}
 
 .bold {
   font-weight: bold;

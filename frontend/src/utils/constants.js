@@ -209,6 +209,7 @@ let object = {
     GET_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions',
     GET_ASSESSMENT_TYPES: easRoot + '/assessment-types',
     GET_ASSESSMENT_STUDENTS_PAGINATED: easRoot + '/assessment-registrations/paginated',
+    GET_ASSESSMENT_SPECIALCASE_TYPES: easRoot + '/assessment-specialcase-types',
   }
 };
 
