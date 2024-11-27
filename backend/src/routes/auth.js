@@ -45,6 +45,7 @@ router.get('/login', passport.authenticate('oidc', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
+  let idToken = req?.session?.passport?.user?.idToken;
   if (req?.session?.passport?.user) {
     req.logout(function(err) {
       if (err) {
@@ -55,7 +56,7 @@ router.get('/logout', async (req, res, next) => {
       if (req.query && req.query.sessionExpired) {
         retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
       } else {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout' + '&client_id=' + config.get('oidc:clientId'));
+        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout' + '&id_token_hint=' + idToken);
       }
       res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
     });

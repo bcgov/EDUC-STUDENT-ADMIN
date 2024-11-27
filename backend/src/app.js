@@ -149,7 +149,7 @@ auth.getOidcDiscovery().then(discovery => {
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
     scope: discovery.scopes_supported,
     kc_idp_hint: config.get('server:idirIDPHint')
-  }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
+  }, (_issuer, profile, _context, idToken, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
@@ -158,6 +158,7 @@ auth.getOidcDiscovery().then(discovery => {
     //set access and refresh tokens
     profile.jwtFrontend = auth.generateUiToken();
     profile.jwt = accessToken;
+    profile.idToken = idToken;
     profile.refreshToken = refreshToken;
     return done(null, profile);
   }));
