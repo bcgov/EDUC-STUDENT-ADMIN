@@ -24,10 +24,8 @@ export default {
   },
   async mounted() {
     await this.checkAndLogoutUserOnSessionExpiry();
-
   },
   methods: {
-
     async checkAndLogoutUserOnSessionExpiry() {
       if (this.isAuthenticated) {
         try {
