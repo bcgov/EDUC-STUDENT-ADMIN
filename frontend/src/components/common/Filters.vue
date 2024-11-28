@@ -183,6 +183,41 @@
           </v-col>
         </v-row>
       </div>
+      <div v-if="schoolUiFilter">
+        <v-row>
+          <v-col
+            id="schoolDistrictFilters"
+            class="filter-heading pb-0"
+          >
+            School
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="6"
+            class="pt-0"
+          >
+            <slot
+              name="text-search"
+            >
+              <v-autocomplete
+                id="selectSchool"
+                v-model="schoolNameNumberFilter"
+                variant="underlined"
+                :items="schoolSearchNames"
+                color="#003366"
+                label="School Name or Number"
+                single-line
+                :clearable="true"
+                item-title="schoolCodeName"
+                item-value="schoolID"
+                autocomplete="off"
+                @update:model-value="setSchoolNameNumberFilter('schoolNameNumber', $event)"
+              />
+            </slot>
+          </v-col>
+        </v-row>
+      </div>
       <div v-if="indySchoolDistrictObject == null">
         <v-row>
           <v-col
@@ -197,15 +232,6 @@
             cols="6"
             class="pt-0"
           >
-            <v-row v-if="false">
-              <v-text-field
-                id="searchInput"
-                v-model="penLocalIdNameFilter"
-                label="PEN or Local ID or Name"
-                color="primary"
-                variant="underlined"
-              />
-            </v-row>
             <slot
               name="text-search"
             >
@@ -436,6 +462,11 @@ export default {
       required: false,
       default: false
     },
+    schoolUiFilter : {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   emits: ['clearFilters', 'apply-filters', 'close'],
   data() {
@@ -524,6 +555,7 @@ export default {
               let schoolItem = {
                 schoolCodeName: school.schoolName + ' - ' + school.mincode,
                 sdcSchoolCollectionID: schoolCollection.sdcSchoolCollectionID,
+                schoolID: school.schoolID,
               };
               this.schoolSearchNames.push(schoolItem);
             }

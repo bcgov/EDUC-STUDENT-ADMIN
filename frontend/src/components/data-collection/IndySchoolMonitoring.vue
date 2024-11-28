@@ -159,6 +159,8 @@
       :filters="allowedFilters"
       :school="school"
       :show-student-search="false"
+      :indy-school-district-object="indySchoolDistrictObject"
+      :school-ui-filter="schoolUiFilter"
       @apply-filters="applyFilters"
       @clear-filters="clearFilters"
       @close="toggleFilters()"
@@ -194,7 +196,7 @@
         id="recordsFound"
         class="bold"
       >
-        Records Found:  {{ monitorSdcSchoolCollectionsResponse?.monitorSdcSchoolCollections?.length }}
+        Records Found:  {{ filteredItems?.length }}
       </span>
     </v-col>
     <v-col
@@ -374,7 +376,9 @@ export default defineComponent({
       school: {},
       user: null,
       schoolCollectionStatusCodes: null,
-      selectedSchoolsDuplicates: []
+      selectedSchoolsDuplicates: [],
+      indySchoolDistrictObject: {},
+      schoolUiFilter: true
     };
   },
   computed: {
@@ -385,10 +389,10 @@ export default defineComponent({
       return Object.values(this.filters).filter(filter => !!filter).reduce((acc, filter) => acc.concat(filter), []).length;
     },
     filteredItems() {
-      const { schoolFilter, issuesFilter, uploadDataFilter } = this.filters || {};
+      const { schoolNameNumber, issuesFilter, uploadDataFilter } = this.filters || {};
 
       return this.monitorSdcSchoolCollectionsResponse?.monitorSdcSchoolCollections?.filter(school => {
-        if (schoolFilter && school.schoolId !== schoolFilter) {
+        if (schoolNameNumber && schoolNameNumber[0]?.value && school.schoolId !== schoolNameNumber[0]?.value) {
           return false;
         }
         if (issuesFilter?.length > 0 && !this.filterForErrorsOrWarnings(school)) {
@@ -417,7 +421,6 @@ export default defineComponent({
   methods: {
     applyFilters($event) {
       this.filters = cloneDeep($event);
-      this.filters.schoolFilter = this.filters.schoolNameNumber ? this.filters.schoolNameNumber[0]?.value : '';
     },
     openSchoolContacts(schoolId) {
       let route = this.$router.resolve({name: 'schoolDetails', query: {contact: true}, params: {schoolID: schoolId}});
