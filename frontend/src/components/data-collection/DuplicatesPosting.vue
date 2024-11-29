@@ -38,6 +38,20 @@
             @click="resolveRemainingDuplicates"
           />
         </v-row>
+        <v-row>
+          <v-col
+            v-if="isPostProvincialDuplicatesButtonDisabled"
+          >
+            <router-link
+              id="downloadReport"
+              :to="{ path: postedDupesReport + collectionID}"
+              target="_blank"
+            >
+              <v-icon>mdi-tray-arrow-down</v-icon>
+              Download Posted Duplicates CSV
+            </router-link>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -202,6 +216,7 @@ export default {
         duplicationResolutionDueDate: null,
         signoffDueDate: null
       },
+      postedDupesReport: Routes.POSTED_DUPES_REPORT,
       monitorSdcDistrictCollectionsResponse: [],
       monitorSdcSchoolCollectionsResponse: [],
       isPostProvincialDuplicatesButtonDisabled: false,

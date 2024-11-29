@@ -30,6 +30,7 @@ let object = {
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
   CONFIG: baseRoot + '/config',
   SDC_MINISTRY_REPORTS: ministrySDCReportsRoot,
+  POSTED_DUPES_REPORT: ministrySDCReportsRoot + '/download/headcount/posted-duplicates/',
 
   digitalIdentity: {
     ROOT_ENDPOINT: digitalIDRoot,
