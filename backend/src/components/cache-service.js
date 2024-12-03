@@ -384,7 +384,7 @@ const cacheService = {
       return {...item, dropdownText:`${item.label}`};
     });
     schoolCollectionStatusCodes.forEach((statusCode => {
-      schoolCollectionStatusCodesMap.set(statusCode, statusCode.label);
+      schoolCollectionStatusCodesMap.set(statusCode.sdcSchoolCollectionStatusCode, statusCode);
     }));
     return schoolCollectionStatusCodesMap;
   },
