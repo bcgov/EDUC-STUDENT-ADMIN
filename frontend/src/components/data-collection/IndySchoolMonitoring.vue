@@ -111,7 +111,7 @@
           >
             <v-card-item class="pb-0">
               <v-card-title class="column-header">
-                Submitted to District
+                Submitted 
               </v-card-title>
             </v-card-item>
             <v-card-text>
@@ -353,8 +353,8 @@ export default defineComponent({
         {
           title: 'School Status',
           align: 'center',
-          key: 'schoolStatus',
-          value: item => this.schoolCollectionStatusCodes.get(item.schoolStatus).label
+          key: 'schoolStatusDesc',
+          value: item => item.schoolStatusDesc
         },
         {
           title: 'Unsubmit',

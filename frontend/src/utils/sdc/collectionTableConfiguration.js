@@ -778,18 +778,18 @@ export const MONITORING = Object.freeze(
         ]
       },
       submittedFilter: {
-        heading: 'Submitted to District',
+        heading: 'Submitted',
         id: 'submittedFilter',
         multiple: false,
         key: 'submittedFilter',
         filterOptions: [
           {
-            title: 'Submitted to District',
+            title: 'Submitted',
             id: 'submittedToDistrict',
             value: 'submittedToDistrict'
           },
           {
-            title: 'Not Submitted to District',
+            title: 'Not Submitted',
             id: 'notSubmittedToDistrict',
             value: 'notSubmittedToDistrict'
           }
