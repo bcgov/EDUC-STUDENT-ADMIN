@@ -66,8 +66,10 @@
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import { appStore } from '@/store/modules/app';
 import ReportSection from '@/components/data-collection/ReportSection.vue';
 import {SDC_REPORTS} from '@/utils/constants';
+import {LocalDate, LocalDateTime} from '@js-joda/core';
 
 export default {
   name: 'Reports',
@@ -90,13 +92,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo'])
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['config']),
   },
   created() {
     this.setOriginalReportTab();
     this.publicReports = this.getActiveReports(SDC_REPORTS.publicReports);
     this.independentReports = this.getActiveReports(SDC_REPORTS.independentReports);
-    this.headcountsReports = this.getActiveReports(SDC_REPORTS.headcountReports);
+    this.headcountsReports = this.visibleHeadcountsReports(SDC_REPORTS.headcountReports); 
   },
   methods: {
     getActiveReports(reports){
@@ -105,7 +108,14 @@ export default {
           return false;
         }
         return true;
-      });
+      });    
+    },
+    visibleHeadcountsReports(reports) {
+      const activeReports = this.getActiveReports(reports);
+      return this.isMigratedCollection() ? activeReports.filter((report) => report.label !== 'Refugee Enroled Headcounts and FTEs') : activeReports;
+    },    
+    isMigratedCollection() { //we don't show refugee reports for collections before EDX go live
+      return LocalDateTime.parse(this.collectionObject?.createDate).toLocalDate().isBefore(LocalDate.parse(this.config.SLD_MIGRATION_DATE));
     },
     setOriginalReportTab(){
       if(this.hasAccessToPublicReports()){
