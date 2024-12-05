@@ -147,7 +147,7 @@ auth.getOidcDiscovery().then(discovery => {
     clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
-    scope: discovery.scopes_supported,
+    scope: 'openid profile',
     kc_idp_hint: config.get('server:idirIDPHint')
   }, (_issuer, profile, _context, idToken, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
