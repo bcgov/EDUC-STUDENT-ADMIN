@@ -220,7 +220,9 @@ export default {
       sdcDistrictCollectionsNotSubmitted: null,
       sdcSchoolCollectionsNotSubmitted: null,
       isPostProvincialDuplicatesButtonDisabled: false,
-      isCloseCollectionButtonDisabled: false
+      isCloseCollectionButtonDisabled: false,
+      sdcSchoolCollectionsNotCompleted: false,
+      sdcDistrictCollectionsNotCompleted: false
     };
   },
   computed: {
@@ -251,6 +253,7 @@ export default {
           this.sdcSchoolCollectionsNotSubmitted = res.data.filter(schools => 
           schools.sdcSchoolCollectionStatusCode !== 'SUBMITTED' && schools.sdcSchoolCollectionStatusCode !== 'COMPLETED' && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_POST'
           && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_VRFD')?.length;
+          this.sdcSchoolCollectionsNotCompleted = res.data.filter(schools => schools.sdcSchoolCollectionStatusCode !== 'COMPLETED')?.length;
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get indy school collections. Please try again later.');
@@ -266,6 +269,7 @@ export default {
           this.sdcDistrictCollectionsNotSubmitted = res.data.filter(district => 
           district.sdcDistrictCollectionStatusCode !== 'SUBMITTED' && district.sdcDistrictCollectionStatusCode !== 'COMPLETED' && district.sdcDistrictCollectionStatusCode !== 'P_DUP_POST'
           && district.sdcDistrictCollectionStatusCode !== 'P_DUP_VRFD')?.length;
+          this.sdcDistrictCollectionsNotCompleted = res.data.filter(district => district.sdcDistrictCollectionStatusCode !== 'COMPLETED')?.length;
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get sdc district collections. Please try again later.');
@@ -279,7 +283,7 @@ export default {
     },
     checkIsCloseCollectionButtonDisabled() {
       if(this.collectionObject?.collectionTypeCode !== 'JULY') {
-        this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0;
+        this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotCompleted > 0 || this.sdcSchoolCollectionsNotCompleted > 0;
       }
     },
     getProvincialDuplicates(){
