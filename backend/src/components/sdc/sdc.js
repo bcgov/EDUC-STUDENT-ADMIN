@@ -682,11 +682,8 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
         status: HttpStatus.CONFLICT,
         message: 'The student you are attempting to update is already being saved by another user. Please refresh your screen and try again.'
       });
-    } else if (e.status === 400 && e.data.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create a provincial duplicate.') {
-      return res.status(HttpStatus.CONFLICT).json({
-        status: HttpStatus.CONFLICT,
-        message: 'Student was not saved because it would create provincial a duplicate.'
-      });
+    } else if (e?.status === 400) {
+      return res.status(HttpStatus.BAD_REQUEST).json(e?.data?.message);
     }
     return handleExceptionResponse(e, res);
   }
