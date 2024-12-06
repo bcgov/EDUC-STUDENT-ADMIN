@@ -340,7 +340,8 @@ function validateFteZeroFilter(filters) {
     'INDYADULT',
     'INACTIVE',
     'DISTDUP',
-    'AUTHDUP'
+    'AUTHDUP',
+    'ZEROCRS'
   ];
   if (filters.length > 0) {
     if (!filters.every(value => fteZeroCategories.includes(value))) {

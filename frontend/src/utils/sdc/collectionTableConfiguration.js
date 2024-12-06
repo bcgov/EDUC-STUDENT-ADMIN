@@ -305,6 +305,11 @@ export const FTE_ZERO_FILTER = Object.freeze(
         title: 'Authority already received funding',
         id: 'authdup',
         value: 'AUTHDUP'
+      },
+      {
+        title: 'Student Reported Without Courses',
+        id: 'zerocrs',
+        value: 'ZEROCRS'
       }
     ]
   }
