@@ -5,7 +5,7 @@
     </v-col>
   </v-row>
   <v-row
-    v-else
+    v-else-if="!isHistoricalCollection()"
     class="mt-n6"
   >
     <v-spacer />
@@ -168,6 +168,7 @@
   </v-navigation-drawer>
   <v-row
     v-if="!isLoading"
+    :class="isHistoricalCollection() ? 'mt-2' : ''"
     justify="end"
     no-gutters
   >
@@ -417,10 +418,31 @@ export default defineComponent({
     });
     this.schoolCollectionStatusCodes = await sdcCollectionStore().getSchoolCollectionStatusCodeMap();
     this.getSdcSchoolCollections();
+    this.setHistoricalHeaders();
   },
   methods: {
     applyFilters($event) {
       this.filters = cloneDeep($event);
+    },
+    setHistoricalHeaders(){
+      if(this.isHistoricalCollection()){
+        this.headers = [
+          {
+            title: 'School',
+            align: 'start',
+            key: 'schoolTitle',
+            value: item => { return { title: item.schoolTitle, sdcSchoolCollectionId: item.sdcSchoolCollectionId }; }
+          },
+          {
+            title: 'Contact',
+            align: 'center',
+            key: 'contact'
+          }
+        ];
+      }
+    },
+    isHistoricalCollection(){
+      return this.collectionObject?.collectionStatusCode === 'COMPLETED';
     },
     openSchoolContacts(schoolId) {
       let route = this.$router.resolve({name: 'schoolDetails', query: {contact: true}, params: {schoolID: schoolId}});
