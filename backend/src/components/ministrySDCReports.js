@@ -4,7 +4,7 @@ const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
   'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
-  'inclusive-education-variance-headcounts','enrolled-fte-headcounts', 'enrolment-fte-headcounts-for-ce-ol-schools', 'refugee-enrolment-fte-headcounts'];
+  'inclusive-education-variance-headcounts','enrolled-fte-headcounts', 'enrolment-fte-headcounts-for-ce-ol-schools', 'refugee-enrolment-fte-headcounts','posted-duplicates'];
 
 async function getMinistrySDCReport(req, res) {
   try {
@@ -57,6 +57,7 @@ function getFileDetails(reportType) {
     'enrolled-fte-headcounts': { filename: 'EnroledHeadcountsAndFteReport.csv', contentType: 'text/csv' },
     'enrolment-fte-headcounts-for-ce-ol-schools': { filename: 'EnroledHeadcountsAndFteReportForCEOLSchools.csv', contentType: 'text/csv' },
     'refugee-enrolment-fte-headcounts': { filename: 'RefugeeEnroledHeadcountsAndFteReport.csv', contentType: 'text/csv' },
+    'posted-duplicates': { filename: 'PostedDuplicatesReport.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];

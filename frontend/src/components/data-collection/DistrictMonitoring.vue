@@ -155,11 +155,31 @@ export default defineComponent({
     });
     await sdcCollectionStore().getDistrictCollectionStatusCodeMap();
     this.getSdcDistrictCollectionMonitoring();
+    this.setHistoricalHeaders();
   },
   methods: {
     openDistrictContacts(districtId) {
       let route = this.$router.resolve({name: 'districtDetails', query: {contact: true}, params: {districtID: districtId}});
       window.open(route.href, '_blank');
+    },
+    setHistoricalHeaders(){
+      if(this.isHistoricalCollection()){
+        this.headers = [
+          {
+            title: 'District',
+            align: 'start',
+            key: 'districtTitle'
+          },
+          {
+            title: 'Contact',
+            align: 'start',
+            key: 'contact'
+          }
+        ];
+      }
+    },
+    isHistoricalCollection(){
+      return this.collectionObject?.collectionStatusCode === 'COMPLETED';
     },
     async getSdcDistrictCollectionMonitoring() {
       this.isLoading = true;

@@ -66,11 +66,18 @@ async function getSdcDistrictCollectionMonitoringByCollectionId(req, res) {
 async function getIndySdcSchoolCollectionMonitoringByCollectionId(req, res) {
   try {
     const data = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/monitorIndySdcSchoolCollections`);
+    let statusCodeMap = cacheService.getActiveSchoolCollectionStatusCodesMap();
+    data.monitorSdcSchoolCollections = data?.monitorSdcSchoolCollections.map(school => getSchoolStatusDescription(school, statusCodeMap));
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     await logApiError(e, 'Error retrieving the indy school collection monitoring stats');
     return errorResponse(res);
   }
+}
+
+function getSchoolStatusDescription(school, statusCodeMap) {
+  school.schoolStatusDesc = school.schoolStatus !== null && school.schoolStatus !== '' && school.schoolStatus === 'SUBMITTED' ? 'Submitted' : statusCodeMap.get(school?.schoolStatus).label;
+  return school;
 }
 
 async function unsubmitSdcDistrictCollection(req, res) {
@@ -675,11 +682,8 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
         status: HttpStatus.CONFLICT,
         message: 'The student you are attempting to update is already being saved by another user. Please refresh your screen and try again.'
       });
-    } else if (e.status === 400 && e.data.message === 'SdcSchoolCollectionStudent was not saved to the database because it would create a provincial duplicate.') {
-      return res.status(HttpStatus.CONFLICT).json({
-        status: HttpStatus.CONFLICT,
-        message: 'Student was not saved because it would create provincial a duplicate.'
-      });
+    } else if (e?.status === 400) {
+      return res.status(HttpStatus.BAD_REQUEST).json(e?.data?.message);
     }
     return handleExceptionResponse(e, res);
   }

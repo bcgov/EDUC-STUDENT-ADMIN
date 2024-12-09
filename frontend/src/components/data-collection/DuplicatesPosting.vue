@@ -16,7 +16,7 @@
       <v-col>
         <h4>Province Duplicates Posting</h4>
         <br>
-        <p v-if="isPostProvincialDuplicatesButtonDisabled">
+        <p v-if="collectionObject?.collectionStatusCode !== 'PROVDUPES'">
           The Province Duplicates can be posted once all school districts and independent schools have submitted their 1701 data, and there are no outstanding PEN fixes.
         </p>
         <br>
@@ -37,6 +37,20 @@
             :disabled="isResolveRemainingDuplicatesButtonDisabled"
             @click="resolveRemainingDuplicates"
           />
+        </v-row>
+        <v-row>
+          <v-col
+            v-if="isPostProvincialDuplicatesButtonDisabled"
+          >
+            <router-link
+              id="downloadReport"
+              :to="{ path: postedDupesReport + collectionID}"
+              target="_blank"
+            >
+              <v-icon>mdi-tray-arrow-down</v-icon>
+              Download Posted Duplicates CSV
+            </router-link>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -202,10 +216,13 @@ export default {
         duplicationResolutionDueDate: null,
         signoffDueDate: null
       },
-      monitorSdcDistrictCollectionsResponse: [],
-      monitorSdcSchoolCollectionsResponse: [],
+      postedDupesReport: Routes.POSTED_DUPES_REPORT,
+      sdcDistrictCollectionsNotSubmitted: null,
+      sdcSchoolCollectionsNotSubmitted: null,
       isPostProvincialDuplicatesButtonDisabled: false,
-      isCloseCollectionButtonDisabled: false
+      isCloseCollectionButtonDisabled: false,
+      sdcSchoolCollectionsNotCompleted: false,
+      sdcDistrictCollectionsNotCompleted: false
     };
   },
   computed: {
@@ -220,57 +237,60 @@ export default {
     sdcCollectionStore().getCodes().then(() => {
       this.loadStudents();
     });
-    this.getProvincialDuplicates();
     sdcCollectionStore().getCollectionTypeCodesMap().finally(() => {
       this.getActiveCollection();
     });
-
+    this.getProvincialDuplicates();
     this.checkIsPostProvincialDuplicatesButtonDisabled();
     this.checkIsCloseCollectionButtonDisabled();
   },
   methods: {
     async getSdcSchoolCollections(){
       this.isLoading = true;
-      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/indySdcSchoolCollectionMonitoring`, {
-      }).then(response => {
-        this.monitorSdcSchoolCollectionsResponse = response?.data.monitorSdcSchoolCollections;
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get indy school collections. Please try again later.');
-      }).finally(() => {
-        this.isLoading = false;
-      });
+
+      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          this.sdcSchoolCollectionsNotSubmitted = res.data.filter(schools => 
+          schools.sdcSchoolCollectionStatusCode !== 'SUBMITTED' && schools.sdcSchoolCollectionStatusCode !== 'COMPLETED' && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_POST'
+          && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_VRFD')?.length;
+          this.sdcSchoolCollectionsNotCompleted = res.data.filter(schools => schools.sdcSchoolCollectionStatusCode !== 'COMPLETED')?.length;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get indy school collections. Please try again later.');
+        }).finally(() => {
+          this.isLoading = false;
+        });
     },
     async getSdcDistrictCollectionMonitoring() {
       this.isLoading = true;
-      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcDistrictCollectionMonitoring`, {
-      }).then(response => {
-        this.monitorSdcDistrictCollectionsResponse = response?.data;
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get sdc district collections. Please try again later.');
-      }).finally(() => {
-        this.isLoading = false;
-      });
+
+      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcDistrictCollections`)
+        .then((res) => {
+          this.sdcDistrictCollectionsNotSubmitted = res.data.filter(district => 
+          district.sdcDistrictCollectionStatusCode !== 'SUBMITTED' && district.sdcDistrictCollectionStatusCode !== 'COMPLETED' && district.sdcDistrictCollectionStatusCode !== 'P_DUP_POST'
+          && district.sdcDistrictCollectionStatusCode !== 'P_DUP_VRFD')?.length;
+          this.sdcDistrictCollectionsNotCompleted = res.data.filter(district => district.sdcDistrictCollectionStatusCode !== 'COMPLETED')?.length;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get sdc district collections. Please try again later.');
+        }).finally(() => {
+          this.isLoading = false;
+        });
     },
     checkIsPostProvincialDuplicatesButtonDisabled() {
-      const districtsNotSubmittedCount = this.monitorSdcDistrictCollectionsResponse.filter(response => response.sdcDistrictCollectionStatusCode !== 'SUBMITTED').length;
-      const indieSchoolsNotSubmittedCount = this.monitorSdcSchoolCollectionsResponse.filter(response => response.schoolStatus !== 'SUBMITTED').length;
       const allPenFixesResolved = this.totalPenFixElements === 0;
-
-      this.isPostProvincialDuplicatesButtonDisabled = districtsNotSubmittedCount > 0 || indieSchoolsNotSubmittedCount > 0 || !allPenFixesResolved;
+      this.isPostProvincialDuplicatesButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0 || !allPenFixesResolved;
     },
     checkIsCloseCollectionButtonDisabled() {
-      const districtsNotCompletedCount = this.monitorSdcDistrictCollectionsResponse.filter(response => response.sdcDistrictCollectionStatusCode !== 'COMPLETED').length;
-      const indieSchoolsNotCompletedCount = this.monitorSdcSchoolCollectionsResponse.filter(response => response.schoolStatus !== 'COMPLETED').length;
-
-      this.isCloseCollectionButtonDisabled = districtsNotCompletedCount > 0 || indieSchoolsNotCompletedCount > 0;
+      if(this.collectionObject?.collectionTypeCode !== 'JULY') {
+        this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotCompleted > 0 || this.sdcSchoolCollectionsNotCompleted > 0;
+      }
     },
     getProvincialDuplicates(){
       this.isLoading = true;
       ApiService.apiAxios.get(Routes.sdc.BASE_URL + '/collection/'+ this.collectionID + '/provincial-duplicates').then(response => {
-        this.nonAllowableDuplicates = response.data?.enrollmentDuplicates?.NON_ALLOW;
-        this.nonAllowableProgramDuplicates = response.data?.programDuplicates?.NON_ALLOW;
+        this.nonAllowableDuplicates = response?.data?.enrollmentDuplicates;
+        this.nonAllowableProgramDuplicates = response?.data?.programDuplicates;
       }).catch(error => {
         console.error(error);
         this.setFailureAlert(error.response?.data?.message || error.message);

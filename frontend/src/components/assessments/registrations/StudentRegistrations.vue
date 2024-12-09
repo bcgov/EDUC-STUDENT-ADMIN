@@ -78,6 +78,21 @@
       </v-navigation-drawer>
     </v-row>
     <v-dialog
+      v-model="editStudentRegistrationSheet"
+      :inset="true"
+      :no-click-animation="true"
+      :scrollable="true"
+      :persistent="true"
+      width="40%"
+    >
+      <StudentRegistrationDetail
+        :selected-student-registration-id="studentRegistrationForEdit?.assessmentStudentID"
+        :school-year-sessions="schoolYearSessions"
+        @reload-student-registrations="reloadStudentRegistrationsFlag = true"
+        @close-student-registration="closeEditAndLoadStudentRegistrations"
+      />
+    </v-dialog>
+    <v-dialog
         v-model="newStudentRegistrationSheet"
         :inset="true"
         :no-click-animation="true"
@@ -193,14 +208,7 @@ export default {
       }
       this.reloadStudentRegistrationsFlag = false;
     },
-    closeNewAndLoadStudentRegistrations(){
-      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
-      if(this.reloadStudentRegistrationsFlag === true){
-        this.getAssessmentStudents();
-      }
-      this.reloadStudentRegistrationsFlag = false;
-    },
-    applyDefaultFilters() {
+    applydefaultFilers() {
       if (this.sessionID) {
         const activeSession = this.schoolYearSessions.find(
           (session) => session.sessionID === this.sessionID

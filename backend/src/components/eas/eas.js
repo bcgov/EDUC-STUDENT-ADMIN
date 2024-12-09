@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, handleExceptionResponse } = require('../utils');
+const { logApiError, getData, handleExceptionResponse } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
 const config = require('../../config');
@@ -26,7 +26,7 @@ async function getAssessmentSessionsBySchoolYear(req, res) {
     const url = `${config.get('server:eas:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
     let data = await getData(url);
     data.forEach(session => {
-      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date(); 
+      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date();
       session.assessments.forEach(assessment => {
         let assessmentType = cacheService.getAssessmentTypeByCode(assessment.assessmentTypeCode);
         assessment.assessmentTypeName = assessmentType.label+' ('+assessment.assessmentTypeCode+')';
@@ -58,13 +58,13 @@ async function updateAssessmentSession(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentSession', 'Error occurred while attempting to save the changes to the assessment session.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
 
-async function getAssessmentStudentsPaginated(req, res) { 
+async function getAssessmentStudentsPaginated(req, res) {
   try {
-    const search = [];    
+    const search = [];
     if (req.query.searchParams?.['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
@@ -93,22 +93,22 @@ async function getAssessmentStudentsPaginated(req, res) {
       res.status(HttpStatus.OK).json(null);
     } else {
       await logApiError(e, 'Error getting eas assessment student paginated list');
-      return errorResponse(res);
+      return handleExceptionResponse(e, res);
     }
   }
 }
 
 async function getAssessmentStudentByID(req, res) {
-  try {    
+  try {
 
-    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);       
+    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
     return res.status(200).json(includeAssessmentStudentProps(data));
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
       await logApiError(e, 'Error getting eas assessment student');
-      return errorResponse(res);
+      return handleExceptionResponse(e, res);
     }
   }
 }
@@ -121,7 +121,7 @@ async function updateAssessmentStudentByID(req, res) {
   }
   try {
     const userInfo = utils.getUser(req);
-    const payload = { 
+    const payload = {
       ...req.body,
       updateUser: userInfo.idir_username,
       updateDate: null,
@@ -131,9 +131,20 @@ async function updateAssessmentStudentByID(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentStudent', 'Error occurred while attempting to save the changes to the assessment student registration.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
+
+async function deleteAssessmentStudentByID(req, res) {
+  try {
+    const result = await utils.deleteData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'deleteAssessmentStudentByID', 'Error occurred while attempting to delete the assessment student registration.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 
 function includeAssessmentStudentProps(assessmentStudent) {
   if(assessmentStudent) {
@@ -146,10 +157,10 @@ function includeAssessmentStudentProps(assessmentStudent) {
       assessmentStudent.districtID = school.districtID;
       assessmentStudent.districtName_desc = getDistrictName(district);
     }
-    
+
     if(assessmentCenter) {
       assessmentStudent.assessmentCenterName_desc = getSchoolName(assessmentCenter);
-    }    
+    }
 
     assessmentStudent.assessmentTypeName_desc = cacheService.getAssessmentTypeByCode(assessmentStudent.assessmentTypeCode).label+' ('+assessmentStudent.assessmentTypeCode+')';
     assessmentStudent.provincialSpecialCaseName_desc = assessmentStudent.provincialSpecialCaseCode ? cacheService.getSpecialCaseTypeLabelByCode(assessmentStudent.provincialSpecialCaseCode) : null;
@@ -166,13 +177,13 @@ function getDistrictName(district) {
   return district.districtNumber + ' - ' + district.name;
 }
 
-function getAssessmentSpecialCases(req, res) {  
+function getAssessmentSpecialCases(req, res) {
   try {
     const codes = cacheService.getAllAssessmentSpecialCases();
     return res.status(HttpStatus.OK).json(Object.fromEntries(codes));
   } catch (e) {
     logApiError(e, 'getAssessmentSpecialCases', 'Error occurred while attempting to get specialcase types.');
-    return errorResponse(res);
+    return handleExceptionResponse(e, res);
   }
 }
 
@@ -184,5 +195,6 @@ module.exports = {
   getAssessmentStudentsPaginated,
   getAssessmentStudentByID,
   updateAssessmentStudentByID,
+  deleteAssessmentStudentByID,
   getAssessmentSpecialCases
 };

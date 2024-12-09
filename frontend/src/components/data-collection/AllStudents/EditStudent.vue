@@ -764,7 +764,7 @@ export default {
           }
         }).catch(error => {
           console.error(error);
-          setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to update student details. Please try again later.');
+          setFailureAlert(error?.response?.data ? error?.response?.data : 'An error occurred while trying to update student details. Please try again later.');
         }).finally(() => {
           this.loadingCount -= 1;
           this.$emit('reset-parent');
