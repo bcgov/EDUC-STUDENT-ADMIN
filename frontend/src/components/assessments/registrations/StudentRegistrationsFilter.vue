@@ -211,7 +211,7 @@
                 <v-btn
                   :id="option?.id"
                   :value="option"
-                  class="filter-button"
+                  :class="selected['session']?.find(entry => entry.id === option.id) ? 'filter-button-active' : 'filter-button'"
                   rounded="lg"
                 >
                   {{ option?.title }}
@@ -232,7 +232,22 @@
                   {{ option?.title }}
                 </v-btn>
               </span>
-            </div>            
+            </div>     
+            <div v-else-if="filter?.id === 'specialCaseCode'">
+              <span 
+                v-for="(option, i) in specialCaseSearchNames"
+                :key="option.value"
+              >
+                <v-btn
+                  :id="option?.id"
+                  :value="option"
+                  class="filter-button"
+                  rounded="lg"
+                >
+                  {{ option?.title }}
+                </v-btn>
+              </span>
+            </div>        
             <div v-else>
               <span 
                 v-for="(option, i) in filter?.filterOptions" 
@@ -261,6 +276,8 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import { isEmpty, sortBy, cloneDeep } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
+import {easStore} from '@/store/modules/eas';
+
 import { mapState } from 'pinia';
 import moment from 'moment';
 
@@ -302,7 +319,7 @@ export default {
       assessmentCenterSearchNames: [],
       sessionSearchNames: [],
       assessmentTypeSearchNames: [],      
-      specialCaseCodes: [],
+      specialCaseSearchNames: [],
       districtNameNumberFilter: null,    
       schoolNameNumberFilter: null,
       assessmentCenterNameNumberFilter: null,
@@ -311,6 +328,7 @@ export default {
   computed: {
     ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
     ...mapState(authStore, ['userInfo']),    
+    ...mapState(easStore, ['specialCaseCodes']),
   },
   watch: {},
   async beforeMount() {
@@ -330,6 +348,12 @@ export default {
             this.setupDistrictList();
             this.loading = false;
           });
+        easStore()
+          .getSpecialCaseCodes()
+          .then(() => {            
+            this.setupSpecialCaseCodes();     
+            this.loading = false;
+          });
       });
     Object.keys(this.filters).forEach((key) => {
       this.selected[key] = [];
@@ -337,6 +361,7 @@ export default {
     this.setupAssessmentSessions(); 
   },
   methods: {
+    
     close() {
       this.$emit('close-assessment-filter');
     },
@@ -344,14 +369,29 @@ export default {
       this.sessionSearchNames = [];
       this.assessmentTypeSearchNames = [];
       this.schoolYearSessions.forEach(session => {
-        this.sessionSearchNames.push({title: this.formatMonth(session.courseMonth), id: session.sessionID, value: session.sessionID});
+        this.sessionSearchNames.push({
+          id: session.sessionID,
+          courseMonth: parseInt(session.courseMonth),
+          courseYear: parseInt(session.courseYear),
+          title: this.formatMonth(session.courseMonth),
+          value: session.sessionID
+        });        
         session.assessments.forEach(assessment => {
           let existingItem = this.assessmentTypeSearchNames.find(item => item.id === assessment.assessmentTypeCode);
           if (!existingItem) {
-            this.assessmentTypeSearchNames.push({title: assessment.assessmentTypeName, id: assessment.assessmentTypeCode, value: assessment.assessmentTypeCode});
+            this.assessmentTypeSearchNames.push({title: assessment.assessmentTypeName, id: assessment.assessmentTypeCode, value: assessment.assessmentTypeCode, displayOrder: assessment.displayOrder});
           }
         });
       });
+      this.sessionSearchNames = sortBy(this.sessionSearchNames, ['courseYear','courseMonth']); 
+      this.assessmentTypeSearchNames = sortBy(this.assessmentTypeSearchNames, ['displayOrder']); 
+    },
+    setupSpecialCaseCodes() {
+      this.specialCaseSearchNames = [];
+      Object.keys(this.specialCaseCodes).forEach(key => {
+        this.specialCaseSearchNames.push({title: this.specialCaseCodes[key], id: key, value: key});
+      });
+      this.specialCaseSearchNames = sortBy(this.specialCaseSearchNames, ['title']); 
     },
     setupSchoolList() {
       this.schoolSearchNames = [];
@@ -442,25 +482,7 @@ export default {
         delete this.selected[key];
         this.apply();
       }
-    },
-    setScoreRangeFilter(key, $event){
-      this.setPenLocalIdNameFilter($event, null);
-      if($event) {
-        let scoreFilterTitle;
-        if($event[0] === this.scoreRangeDefault[0]){
-          scoreFilterTitle = + $event[1] + ' courses or less';
-        } else if ($event[1] === this.scoreRangeDefault[1]) {
-          scoreFilterTitle = $event[0] + ' courses or more';
-        } else {
-          scoreFilterTitle = 'Between ' + $event[0] + ' and ' + $event[1] + ' courses';
-        }
-        this.selected[key] = [{title: scoreFilterTitle, value: $event}];
-        this.apply();
-      } else {
-        delete this.selected[key];
-        this.apply();
-      }
-    },
+    },    
     clear() {
       this.selected = {};
       this.penLocalIdNameFilter = null;
@@ -503,6 +525,14 @@ export default {
   padding: 5px;
   margin: 0 8px 8px 8px;
   border: 1px solid #003366;
+}
+
+.filter-button-active {
+padding: 5px;
+margin: 0 8px 8px 8px; 
+background-color: rgb(0, 51, 102); 
+color: rgb(255, 255, 255); 
+caret-color: rgb(255, 255, 255);
 }
 
 .filter-toggle {

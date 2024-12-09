@@ -45,7 +45,9 @@ router.get('/login', passport.authenticate('oidc', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
-  if (req?.session?.passport?.user) {
+  let primaryURL = config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend');
+  let idToken = req?.session?.passport?.user?.idToken;
+  if (idToken) {
     req.logout(function(err) {
       if (err) {
         return next(err);
@@ -53,18 +55,20 @@ router.get('/logout', async (req, res, next) => {
       req.session.destroy();
       let retUrl;
       if (req.query && req.query.sessionExpired) {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
+        retUrl = encodeURIComponent(primaryURL + '/session-expired' + '&id_token_hint=' + idToken);
       } else {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout' + '&client_id=' + config.get('oidc:clientId'));
+        retUrl = encodeURIComponent(primaryURL + '/logout' + '&id_token_hint=' + idToken);
       }
       res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
     });
   }else {
+    let retUrl;
     if (req.query && req.query.sessionExpired) {
-      res.redirect(config.get('server:frontend') + '/session-expired');
+      retUrl = encodeURIComponent(primaryURL + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
     } else {
-      res.redirect(config.get('server:frontend') + '/logout');
+      retUrl = encodeURIComponent(primaryURL + '/logout' + '&client_id=' + config.get('oidc:clientId'));
     }
+    res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
   }
 });
 

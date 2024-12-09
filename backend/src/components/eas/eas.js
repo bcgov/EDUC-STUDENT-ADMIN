@@ -26,8 +26,11 @@ async function getAssessmentSessionsBySchoolYear(req, res) {
     const url = `${config.get('server:eas:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
     let data = await getData(url);
     data.forEach(session => {
+      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date(); 
       session.assessments.forEach(assessment => {
-        assessment.assessmentTypeName = cacheService.getAssessmentTypeLabelByCode(assessment.assessmentTypeCode)+' ('+assessment.assessmentTypeCode+')';
+        let assessmentType = cacheService.getAssessmentTypeByCode(assessment.assessmentTypeCode);
+        assessment.assessmentTypeName = assessmentType.label+' ('+assessment.assessmentTypeCode+')';
+        assessment.displayOrder = assessmentType.displayOrder;
       });
     });
     return res.status(200).json(data);
@@ -59,17 +62,15 @@ async function updateAssessmentSession(req, res) {
   }
 }
 
-async function getAssessmentStudentsPaginated(req, res) {
+async function getAssessmentStudentsPaginated(req, res) { 
   try {
-    const search = [];
-    
+    const search = [];    
     if (req.query.searchParams?.['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
         search.push(criteria);
       });
     }
-
     const params = {
       params: {
         pageNumber: req.query.pageNumber,
@@ -78,30 +79,13 @@ async function getAssessmentStudentsPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-
-    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/paginated`, params);
-
+    let data =  await getData(`${config.get('server:eas:assessmentStudentsURL')}/paginated`, params);
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
       return res.status(HttpStatus.OK).json(result);
     }
     data?.content.forEach(value => {
-      let school = cacheService.getSchoolBySchoolID(value.schoolID);
-      let assessmentCenter = cacheService.getSchoolBySchoolID(value.assessmentCenterID);
-      let district = cacheService.getDistrictJSONByDistrictId(school.districtID);
-
-      value.schoolNumber = school.mincode;
-      value.schoolName = getSchoolName(school);
-      value.districtID = school.districtID;
-      value.districtNumber = district.districtNumber;
-      value.districtName = getDistrictName(district);    
-      value.assessmentCenterNumber = assessmentCenter.mincode;
-      value.assessmentCenterName = getSchoolName(assessmentCenter);
-
-      value.assessmentTypeName = cacheService.getAssessmentTypeLabelByCode(value.assessmentTypeCode)+' ('+value.assessmentTypeCode+')';
-      value.provincialSpecialCaseName = cacheService.getSpecialCaseTypeLabelByCode(value.provincialSpecialCaseCode);
-      value.sessionName = moment(value.courseMonth, 'MM').format('MMMM') +' '+value.courseYear;
-
+      includeAssessmentStudentProps(value);
     });
     return res.status(200).json(data);
   } catch (e) {
@@ -114,6 +98,66 @@ async function getAssessmentStudentsPaginated(req, res) {
   }
 }
 
+async function getAssessmentStudentByID(req, res) {
+  try {    
+
+    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);       
+    return res.status(200).json(includeAssessmentStudentProps(data));
+  } catch (e) {
+    if (e?.status === 404) {
+      res.status(HttpStatus.OK).json(null);
+    } else {
+      await logApiError(e, 'Error getting eas assessment student');
+      return errorResponse(res);
+    }
+  }
+}
+
+async function updateAssessmentStudentByID(req, res) {
+  if (req.params.assessmentStudentID !== req.body.assessmentStudentID) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'The assessmentStudentID in the URL didn\'t match the assessmentStudentID in the request body.'
+    });
+  }
+  try {
+    const userInfo = utils.getUser(req);
+    const payload = { 
+      ...req.body,
+      updateUser: userInfo.idir_username,
+      updateDate: null,
+      createDate: null
+    };
+    const result = await utils.putData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`, payload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateAssessmentStudent', 'Error occurred while attempting to save the changes to the assessment student registration.');
+    return errorResponse(res);
+  }
+}
+
+function includeAssessmentStudentProps(assessmentStudent) {
+  if(assessmentStudent) {
+    let school = cacheService.getSchoolBySchoolID(assessmentStudent.schoolID);
+    let assessmentCenter = assessmentStudent.assessmentCenterID ? cacheService.getSchoolBySchoolID(assessmentStudent.assessmentCenterID) : null;
+    let district = cacheService.getDistrictJSONByDistrictId(school.districtID);
+
+    if(school && district) {
+      assessmentStudent.schoolName_desc = getSchoolName(school);
+      assessmentStudent.districtID = school.districtID;
+      assessmentStudent.districtName_desc = getDistrictName(district);
+    }
+    
+    if(assessmentCenter) {
+      assessmentStudent.assessmentCenterName_desc = getSchoolName(assessmentCenter);
+    }    
+
+    assessmentStudent.assessmentTypeName_desc = cacheService.getAssessmentTypeByCode(assessmentStudent.assessmentTypeCode).label+' ('+assessmentStudent.assessmentTypeCode+')';
+    assessmentStudent.provincialSpecialCaseName_desc = assessmentStudent.provincialSpecialCaseCode ? cacheService.getSpecialCaseTypeLabelByCode(assessmentStudent.provincialSpecialCaseCode) : null;
+    assessmentStudent.sessionName_desc = moment(assessmentStudent.courseMonth, 'MM').format('MMMM') +' '+assessmentStudent.courseYear;
+  }
+  return assessmentStudent;
+}
+
 function getSchoolName(school) {
   return school.mincode + ' - ' + school.schoolName;
 }
@@ -122,9 +166,23 @@ function getDistrictName(district) {
   return district.districtNumber + ' - ' + district.name;
 }
 
+function getAssessmentSpecialCases(req, res) {  
+  try {
+    const codes = cacheService.getAllAssessmentSpecialCases();
+    return res.status(HttpStatus.OK).json(Object.fromEntries(codes));
+  } catch (e) {
+    logApiError(e, 'getAssessmentSpecialCases', 'Error occurred while attempting to get specialcase types.');
+    return errorResponse(res);
+  }
+}
+
+
 module.exports = {
   getAssessmentSessions,
   getAssessmentSessionsBySchoolYear,
   updateAssessmentSession,
-  getAssessmentStudentsPaginated
+  getAssessmentStudentsPaginated,
+  getAssessmentStudentByID,
+  updateAssessmentStudentByID,
+  getAssessmentSpecialCases
 };

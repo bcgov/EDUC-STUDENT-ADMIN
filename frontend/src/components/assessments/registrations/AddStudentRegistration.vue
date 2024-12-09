@@ -5,14 +5,6 @@
         <v-col class="d-flex justify-start"> Add Assessment Registration</v-col>
         <v-col class="d-flex justify-end">
           <v-btn
-              id="saveRecord"
-              color="#003366"
-              text="Save"
-              class="mr-1"
-              :disabled="!addStudentRegistrationFormValid"
-              @click="saveStudentRegistration"
-          />
-          <v-btn
               id="cancel"
               color="white"
               text="Close"
@@ -25,7 +17,7 @@
       </v-row>
     </v-card-title>
 
-    <v-card-text class="mt-0" :class="functionType !== 'add' ? 'mb-12' : 'mb-2'">
+    <v-card-text class="mt-0 mb-6">
       <v-row v-if="isLoading()">
         <v-col class="d-flex justify-center">
           <Spinner :flat="true" style="margin-bottom: 15.5rem" />
@@ -36,73 +28,21 @@
           <v-form ref="addRegistrationForm" v-model="addStudentRegistrationFormValid">
             <v-row>
               <v-col cols="6">
-                <v-autocomplete
+                <v-select
                     id="Session"
-                    v-model="newStudentDetail.sessionID"
+                    v-model="selectedSessionID"
                     variant="underlined"
                     :items="sessionSearchNames"
                     label="Session"
                     item-title="sessionCodeName"
                     item-value="sessionCodeValue"
-                    autocomplete="off"
-                    :color="getFieldColor()"
-                    :class="!isActive ? 'readonly-text' : 'fieldtext'"
+                    :disabled="!!this.sessionID"
                     :rules="[rules.required()]"
                     @update:model-value="refreshAssessmentTypes($event)"
                 />
-
-                <v-autocomplete
-                    id="School"
-                    v-model="newStudentDetail.schoolID"
-                    variant="underlined"
-                    :items="schoolSearchNames"
-                    label="School"
-                    item-title="schoolCodeName"
-                    item-value="schoolCodeValue"
-                    autocomplete="off"
-                    :color="getFieldColor()"
-                    :rules="[rules.required()]"
-                />
-
-                <v-text-field
-                    id="PEN"
-                    v-model="newStudentDetail.pen"
-                    label="Personal Education Number (PEN)"
-                    variant="underlined"
-                    :maxlength="25"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
-
-                <v-text-field
-                    id="LocalID"
-                    v-model="newStudentDetail.localID"
-                    label="Local ID"
-                    variant="underlined"
-                    :maxlength="25"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
-
-                <v-text-field
-                    id="SurName"
-                    v-model="newStudentDetail.surName"
-                    label="Student's Legal Last Name"
-                    variant="underlined"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
-                <v-text-field
-                    id="SurName"
-                    v-model="newStudentDetail.givenName"
-                    label="Student's Legal First Name"
-                    variant="underlined"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
                 <v-autocomplete
                     id="AssessmentCourse"
-                    v-model="newStudentDetail.assessmentTypeName_desc"
+                    v-model="newStudentDetail.assessmentID"
                     variant="underlined"
                     :items="assessmentTypeSearchNames"
                     label="Assessment/Course"
@@ -111,6 +51,7 @@
                     autocomplete="off"
                     :color="getFieldColor()"
                     :rules="[rules.required()]"
+                    :disabled="!sessionID && !selectedSessionID"
                     @update:model-value="syncAssessmentValue($event)"
                 />
                 <v-autocomplete
@@ -124,6 +65,52 @@
                     item-value="schoolCodeValue"
                     autocomplete="off"
                     density="compact"
+                    :color="getFieldColor()"
+                    :rules="[rules.required()]"
+                />
+                <v-text-field
+                    id="PEN"
+                    v-model="newStudentDetail.pen"
+                    label="Personal Education Number (PEN)"
+                    variant="underlined"
+                    :maxlength="25"
+                    density="compact"
+                    :rules="[rules.required()]"
+                />
+                <v-text-field
+                    id="LocalID"
+                    v-model="newStudentDetail.localID"
+                    label="Local ID"
+                    variant="underlined"
+                    :maxlength="25"
+                    density="compact"
+                    :rules="[rules.required()]"
+                />
+                <v-text-field
+                    id="SurName"
+                    v-model="newStudentDetail.surName"
+                    label="Student's Legal Last Name"
+                    variant="underlined"
+                    density="compact"
+                    :rules="[rules.required()]"
+                />
+                <v-text-field
+                    id="GivenName"
+                    v-model="newStudentDetail.givenName"
+                    label="Student's Legal First Name"
+                    variant="underlined"
+                    density="compact"
+                    :rules="[rules.required()]"
+                />
+                <v-autocomplete
+                    id="School"
+                    v-model="newStudentDetail.schoolID"
+                    variant="underlined"
+                    :items="schoolSearchNames"
+                    label="School"
+                    item-title="schoolCodeName"
+                    item-value="schoolCodeValue"
+                    autocomplete="off"
                     :color="getFieldColor()"
                     :rules="[rules.required()]"
                 />
@@ -142,13 +129,16 @@
           </v-form>
         </v-col>
       </div>
+      <v-row cols="24" class="justify-end">
+        <v-btn
+            id="saveRecord"
+            color="#003366"
+            text="Save"
+            :disabled="!addStudentRegistrationFormValid"
+            @click="saveStudentRegistration"
+        />
+      </v-row>
     </v-card-text>
-
-    <ConfirmationDialog ref="confirmRemoveStudentRegistration">
-      <template #message>
-        <p>Are you sure you want to remove this student registration from the session?</p>
-      </template>
-    </ConfirmationDialog>
   </v-card>
 </template>
 
@@ -186,14 +176,9 @@ export default {
       type: Boolean,
       required: false,
       default: false,
-    },
-    functionType: {
-      type: String,
-      required: false,
-      default: null
-    },
+    }
   },
-  emits: ['form-validity','reload-student-registrations', 'close-student-registration'],
+  emits: ['form-validity','reload-student-registrations', 'close-new-student-registration'],
   data() {
     return {
       rules: Rules,
@@ -215,6 +200,7 @@ export default {
         proficiencyScore: null,
         provincialSpecialCaseCode: null,
       },
+      selectedSessionID: null,
       studentRegistrationValidationIssues: [],
       loadingCount: 0,
       isActive: false
@@ -246,8 +232,12 @@ export default {
   },
   created() {
     this.setupSchoolList();
-    this.setupAssessmentSessions();
+    this.setupSessions();
     this.setupSpecialCaseCodes();
+    if(this.sessionID){
+      this.selectedSessionID = this.sessionID;
+      this.refreshAssessmentTypes(this.sessionID);
+    }
   },
   methods: {
     isLoading(){
@@ -262,7 +252,7 @@ export default {
       });
       this.assessmentCenterSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
     },
-    setupAssessmentSessions() {
+    setupSessions() {
       let sessions = [];
       this.schoolYearSessions?.forEach((session) => {
         sessions.push({
@@ -276,7 +266,6 @@ export default {
     },
     setupSpecialCaseCodes() {
       let specialCases = [];
-      console.log("SPECIAL CASE CODES>>>>>>>>>>>", this.specialCaseCodes)
       Object.keys(this.specialCaseCodes).forEach(key => {
         specialCases.push({
           specialCaseCodeName: this.specialCaseCodes[key],
@@ -289,7 +278,6 @@ export default {
       let session = this.schoolYearSessions.find(session => session.sessionID === $event);
       let assessmentTypes = [];
       let assessmentID = null;
-      console.log("SESSIONS>>>", session)
       session?.assessments.forEach((assessment) => {
         if(assessment.assessmentTypeName === this.newStudentDetail.assessmentTypeName_desc) {
           assessmentID = assessment.assessmentID;
@@ -336,7 +324,7 @@ export default {
           })
           .finally(() => {
             this.loadingCount -= 1;
-            this.$emit('close-student-registration');
+            this.$emit('close-new-student-registration');
           });
     },
     validateForm() {
@@ -349,7 +337,7 @@ export default {
       return !this.isActive ? '#7f7f7f' : '#003366';
     },
     cancel() {
-      this.$emit('close-student-registration');
+      this.$emit('close-new-student-registration');
     },
   },
 };

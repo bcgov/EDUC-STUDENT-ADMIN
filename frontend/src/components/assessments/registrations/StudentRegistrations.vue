@@ -48,6 +48,8 @@
               :reset="resetFlag"
               :can-load-next="canLoadNext"
               :can-load-previous="canLoadPrevious"
+              @reload-registrations="reload"
+              @editSelectedRow="editRegistration"
               @loadNext="loadNext"
               @loadPrevious="loadPrevious"
             />
@@ -76,7 +78,7 @@
       </v-navigation-drawer>
     </v-row>
     <v-dialog
-        v-model="newStudentRegSheet"
+        v-model="newStudentRegistrationSheet"
         :inset="true"
         :no-click-animation="true"
         :scrollable="true"
@@ -87,7 +89,23 @@
           :session-id="sessionID"
           :school-year-sessions="schoolYearSessions"
           @reload-student-registrations="reloadStudentRegistrationsFlag = true"
-          @close-student-registration="closeEditAndLoadStudentRegistrations"
+          @close-new-student-registration="closeNewAndLoadStudentRegistrations"
+          @update:sessionID="sessionID = $event"
+      />
+    </v-dialog>
+    <v-dialog
+      v-model="editStudentRegistrationSheet"
+      :inset="true"
+      :no-click-animation="true"
+      :scrollable="true"
+      :persistent="true"
+      width="40%"
+    >
+      <StudentRegistrationDetail
+        :selected-student-registration-id="studentRegistrationForEdit?.assessmentStudentID"
+        :school-year-sessions="schoolYearSessions"
+        @reload-student-registrations="reloadStudentRegistrationsFlag = true"
+        @close-student-registration="closeEditAndLoadStudentRegistrations"
       />
     </v-dialog>
   </v-container>
@@ -100,6 +118,8 @@ import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { cloneDeep, isEmpty, omitBy } from 'lodash';
 import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
+import StudentRegistrationDetail from './StudentRegistrationDetail.vue';
+
 import moment from 'moment';
 import AddStudent from "@/components/common/AddStudent.vue";
 import InviteUserPage from "@/components/secure-message/InviteUserPage.vue";
@@ -113,6 +133,7 @@ export default {
     AddStudent,
     StudentRegistrationsCustomTable,
     StudentRegistrationsFilter,
+    StudentRegistrationDetail
   },
   props: {
     schoolYear: {
@@ -138,7 +159,7 @@ export default {
         moreFilters: {},
       },
       showFilters: null,
-      newStudentRegSheet: false,
+      newStudentRegistrationSheet: false,
       isLoading: false,
       totalElements: 0,
       pageNumber: 1,
@@ -146,7 +167,9 @@ export default {
       canLoadNext: false,
       canLoadPrevious: false,
       resetFlag: false,
+      studentRegistrationForEdit: null,
       reloadStudentRegistrationsFlag: false,
+      editStudentRegistrationSheet: false,
     };
   },
   computed: {
@@ -159,6 +182,24 @@ export default {
     this.getAssessmentStudents();
   },
   methods: {
+    editRegistration($event) {
+      this.studentRegistrationForEdit = cloneDeep($event);
+      this.editStudentRegistrationSheet = true;
+    },
+    closeEditAndLoadStudentRegistrations() {
+      this.editStudentRegistrationSheet = !this.editStudentRegistrationSheet;
+      if (this.reloadStudentRegistrationsFlag === true) {
+        this.getAssessmentStudents();
+      }
+      this.reloadStudentRegistrationsFlag = false;
+    },
+    closeNewAndLoadStudentRegistrations(){
+      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
+      if(this.reloadStudentRegistrationsFlag === true){
+        this.getAssessmentStudents();
+      }
+      this.reloadStudentRegistrationsFlag = false;
+    },
     applyDefaultFilters() {
       if (this.sessionID) {
         const activeSession = this.schoolYearSessions.find(
@@ -202,13 +243,6 @@ export default {
           this.loading = false;
         });
     },
-    closeEditAndLoadStudentRegistrations() {
-      this.editStudentRegistrationSheet = !this.editStudentRegistrationSheet;
-      if (this.reloadStudentRegistrationsFlag === true) {
-        this.getAssessmentStudents();
-      }
-      this.reloadStudentRegistrationsFlag = false;
-    },
     applyFilters($event) {
       this.filterSearchParams.moreFilters = cloneDeep($event);
       this.pageNumber = 1;
@@ -223,10 +257,10 @@ export default {
       this.showFilters = !this.showFilters;
     },
     openCreateStudentRegDialog() {
-      this.newStudentRegSheet = !this.newStudentRegSheet;
+      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
     },
     closeNewStudentRegModal() {
-      this.newStudentRegSheet = false;
+      this.newStudentRegistrationSheet = false;
     },
     loadNext() {
       if (this.canLoadNext) {
@@ -239,12 +273,29 @@ export default {
         this.pageNumber -= 1;
         this.getAssessmentStudents();
       }
+    },
+    reload(value) {
+      if(value?.pageSize) {
+        this.pageSize = value?.pageSize;
+      } else if(value?.pageNumber) {
+        this.pageNumber = value?.pageNumber;
+      }
+      this.getAssessmentStudents();
     }
   },
 };
 </script>
 
 <style scoped>
+.search-box {
+  background: rgb(235, 237, 239);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.filter-col {
+  color: #7f7f7f;
+}
 
 .bold {
   font-weight: bold;

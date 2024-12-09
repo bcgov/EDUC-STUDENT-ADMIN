@@ -240,7 +240,7 @@ const cacheService = {
       if (assessmentTypeCodesResponse && assessmentTypeCodesResponse.length > 0) {
         assessmentTypeCodesMap.clear(); // reset the value.
         assessmentTypeCodesResponse.forEach(entry => {
-          assessmentTypeCodesMap.set(entry.assessmentTypeCode, entry.label);   
+          assessmentTypeCodesMap.set(entry.assessmentTypeCode, {'label': entry.label, 'displayOrder': entry.displayOrder });   
         });      
       }
       log.info(`Loaded ${assessmentTypeCodesMap.size} assessmentTypeCodes.`);
@@ -265,12 +265,16 @@ const cacheService = {
     });
   },
 
-  getAssessmentTypeLabelByCode(assessmentTypeCode) {
+  getAssessmentTypeByCode(assessmentTypeCode) {
     return assessmentTypeCodesMap.get(assessmentTypeCode);
   },
 
   getSpecialCaseTypeLabelByCode(specialCaseTypeCode) {
     return assessmentSpecialCaseTypeCodesMap.get(specialCaseTypeCode);
+  },
+
+  getAllAssessmentSpecialCases(){         
+    return assessmentSpecialCaseTypeCodesMap;
   },
 
   async loadDataToCache(cacheKey,url){

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import {Routes} from '../utils/constants';
+import {Routes} from '@/utils/constants';
 import {authStore} from '@/store/modules/auth';
 
 export default {
@@ -56,7 +56,7 @@ export default {
   },
   created() {
     const auStore = authStore();
-    auStore.setJwtToken();
+    auStore.logoutState();
   },
   methods: {
     clearStorage() {
