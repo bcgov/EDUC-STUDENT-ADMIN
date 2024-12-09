@@ -228,19 +228,17 @@ export default {
   computed: {
     ...mapState(sdcCollectionStore, ['collectionTypeCodesMap']),
     isResolveRemainingDuplicatesButtonDisabled() {
-      return this.nonAllowableDuplicates?.length === 0 && this.nonAllowableProgramDuplicates?.length === 0;
+      return !this.nonAllowableDuplicates?.length > 0 && !this.nonAllowableProgramDuplicates?.length > 0;
     },
   },
   async created() {
+    this.getProvincialDuplicates();
     await this.getSdcSchoolCollections();
     await this.getSdcDistrictCollectionMonitoring();
-    sdcCollectionStore().getCodes().then(() => {
-      this.loadStudents();
-    });
+    await this.loadStudents();
     sdcCollectionStore().getCollectionTypeCodesMap().finally(() => {
       this.getActiveCollection();
     });
-    this.getProvincialDuplicates();
     this.checkIsPostProvincialDuplicatesButtonDisabled();
     this.checkIsCloseCollectionButtonDisabled();
   },
@@ -278,8 +276,7 @@ export default {
         });
     },
     checkIsPostProvincialDuplicatesButtonDisabled() {
-      const allPenFixesResolved = this.totalPenFixElements === 0;
-      this.isPostProvincialDuplicatesButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0 || !allPenFixesResolved;
+      this.isPostProvincialDuplicatesButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0 || this.totalPenFixElements > 0;
     },
     checkIsCloseCollectionButtonDisabled() {
       if(this.collectionObject?.collectionTypeCode !== 'JULY') {
@@ -327,9 +324,9 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while resolving remaining duplicates. Please try again later.');
         });
     },
-    loadStudents() {
+    async loadStudents() {
       this.isLoading = true;
-      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated?tableFormat=true`, {
+      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,
