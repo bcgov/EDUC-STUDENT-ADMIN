@@ -40,7 +40,7 @@
         </v-row>
         <v-row>
           <v-col
-            v-if="isPostProvincialDuplicatesButtonDisabled"
+            v-if="collectionObject?.collectionStatusCode === 'PROVDUPES' || collectionObject?.collectionStatusCode === 'DUPES_RES'"
           >
             <router-link
               id="downloadReport"
@@ -228,19 +228,16 @@ export default {
   computed: {
     ...mapState(sdcCollectionStore, ['collectionTypeCodesMap']),
     isResolveRemainingDuplicatesButtonDisabled() {
-      return this.nonAllowableDuplicates?.length === 0 && this.nonAllowableProgramDuplicates?.length === 0;
+      return this.collectionObject?.collectionStatusCode !== 'PROVDUPES';
     },
   },
   async created() {
     await this.getSdcSchoolCollections();
     await this.getSdcDistrictCollectionMonitoring();
-    sdcCollectionStore().getCodes().then(() => {
-      this.loadStudents();
-    });
+    await this.loadStudents();
     sdcCollectionStore().getCollectionTypeCodesMap().finally(() => {
       this.getActiveCollection();
     });
-    this.getProvincialDuplicates();
     this.checkIsPostProvincialDuplicatesButtonDisabled();
     this.checkIsCloseCollectionButtonDisabled();
   },
@@ -278,26 +275,13 @@ export default {
         });
     },
     checkIsPostProvincialDuplicatesButtonDisabled() {
-      const allPenFixesResolved = this.totalPenFixElements === 0;
-      this.isPostProvincialDuplicatesButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0 || !allPenFixesResolved;
+      this.isPostProvincialDuplicatesButtonDisabled = this.sdcDistrictCollectionsNotSubmitted > 0 || this.sdcSchoolCollectionsNotSubmitted > 0 
+      || this.totalPenFixElements > 0 || this.collectionObject?.collectionStatusCode === 'PROVDUPES' || this.collectionObject?.collectionStatusCode === 'DUPES_RES';
     },
     checkIsCloseCollectionButtonDisabled() {
       if(this.collectionObject?.collectionTypeCode !== 'JULY') {
         this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotCompleted > 0 || this.sdcSchoolCollectionsNotCompleted > 0;
       }
-    },
-    getProvincialDuplicates(){
-      this.isLoading = true;
-      ApiService.apiAxios.get(Routes.sdc.BASE_URL + '/collection/'+ this.collectionID + '/provincial-duplicates').then(response => {
-        this.nonAllowableDuplicates = response?.data?.enrollmentDuplicates;
-        this.nonAllowableProgramDuplicates = response?.data?.programDuplicates;
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-        this.apiError = true;
-      }).finally(() => {
-        this.isLoading = false;
-      });
     },
     async postProvincialDuplicates() {
       const confirmation = await this.$refs.confirmPostProvincialDuplicates.open('Confirm Posting of Province Duplicates for the Collection.', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Confirm', rejectText: 'Cancel'});
@@ -327,9 +311,9 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while resolving remaining duplicates. Please try again later.');
         });
     },
-    loadStudents() {
+    async loadStudents() {
       this.isLoading = true;
-      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated?tableFormat=true`, {
+      await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/students-paginated?tableFormat=true`, {
         params: {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,
