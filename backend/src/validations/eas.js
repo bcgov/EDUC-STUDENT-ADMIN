@@ -1,4 +1,4 @@
-const { object, string, boolean, number } = require('yup');
+const { object, string, boolean, number, array } = require('yup');
 const { baseRequestSchema } = require('./base');
 
 const putStudentAssessmentSchema = object({
@@ -22,6 +22,13 @@ const putStudentAssessmentSchema = object({
     numberOfAttempts: number().nullable().optional(),
     courseMonth: number().optional(),
     courseYear: number().optional(),
+    assessmentStudentValidationIssues: array().of(object({
+      assessmentStudentValidationIssueID:string().nullable().optional(),
+      assessmentStudentID:string().nullable().optional(),
+      validationIssueSeverityCode:string().nullable().optional(),
+      validationIssueCode:string().nullable().optional(),
+      validationIssueFieldCode:string().nullable().optional()
+    }).concat(baseRequestSchema)).nullable().optional()
   }).concat(baseRequestSchema).noUnknown(),
   params: object({
     studentAssessmentID: string().nonNullable(),
