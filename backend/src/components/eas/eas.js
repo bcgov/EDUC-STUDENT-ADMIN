@@ -113,6 +113,25 @@ async function getAssessmentStudentByID(req, res) {
   }
 }
 
+async function postAssessmentStudent(req, res){
+  try {
+    const userInfo = utils.getUser(req);
+    req.body.districtID = cacheService.getSchoolBySchoolID(req.body.schoolID).districtID;
+    const payload = {
+      ...req.body,
+      updateUser: userInfo.idir_username,
+      updateDate: null,
+      createDate: null
+    };
+    console.log("payload", payload)
+    const result = await utils.postData(`${config.get('server:eas:assessmentStudentsURL')}`, payload);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'postAssessmentStudent', 'Error occurred while attempting to create the assessment student registration.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function updateAssessmentStudentByID(req, res) {
   if (req.params.assessmentStudentID !== req.body.assessmentStudentID) {
     return res.status(HttpStatus.BAD_REQUEST).json({
@@ -196,5 +215,6 @@ module.exports = {
   getAssessmentStudentByID,
   updateAssessmentStudentByID,
   deleteAssessmentStudentByID,
-  getAssessmentSpecialCases
+  getAssessmentSpecialCases,
+  postAssessmentStudent
 };

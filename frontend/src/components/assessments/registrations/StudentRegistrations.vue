@@ -193,7 +193,7 @@ export default {
     },
   },
   created() {
-    this.applyDefaultFilters();
+    this.applydefaultFilers();
     this.getAssessmentStudents();
   },
   methods: {
@@ -204,6 +204,13 @@ export default {
     closeEditAndLoadStudentRegistrations() {
       this.editStudentRegistrationSheet = !this.editStudentRegistrationSheet;
       if (this.reloadStudentRegistrationsFlag === true) {
+        this.getAssessmentStudents();
+      }
+      this.reloadStudentRegistrationsFlag = false;
+    },
+    closeNewAndLoadStudentRegistrations(){
+      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
+      if(this.reloadStudentRegistrationsFlag === true){
         this.getAssessmentStudents();
       }
       this.reloadStudentRegistrationsFlag = false;

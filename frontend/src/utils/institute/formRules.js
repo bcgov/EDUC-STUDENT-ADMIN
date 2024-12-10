@@ -189,6 +189,10 @@ const minLength = ( length, message = 'Must be at least ${length} characters') =
   return v => !v || v.length === length || message;
 };
 
+const penIsValid = (message = 'PEN must be a 9 digit number') => {
+  return v => !v || /^\d{9}$/.test(v) || message;
+};
+
 export {
   email,
   endDateRule,
@@ -207,4 +211,5 @@ export {
   requiredWithOtherFieldValues,
   requiredIf,
   website,
+  penIsValid
 };

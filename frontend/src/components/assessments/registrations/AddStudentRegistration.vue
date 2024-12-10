@@ -62,11 +62,10 @@
                     label="Assessment Center"
                     :clearable="true"
                     item-title="schoolCodeName"
-                    item-value="schoolCodeValue"
+                    item-value="schoolID"
                     autocomplete="off"
                     density="compact"
                     :color="getFieldColor()"
-                    :rules="[rules.required()]"
                 />
                 <v-text-field
                     id="PEN"
@@ -75,7 +74,7 @@
                     variant="underlined"
                     :maxlength="25"
                     density="compact"
-                    :rules="[rules.required()]"
+                    :rules="[rules.required(), rules.penIsValid()]"
                 />
                 <v-text-field
                     id="LocalID"
@@ -84,7 +83,7 @@
                     variant="underlined"
                     :maxlength="25"
                     density="compact"
-                    :rules="[rules.required()]"
+                    :rules="[rules.required(), rules.number()]"
                 />
                 <v-text-field
                     id="SurName"
@@ -104,12 +103,12 @@
                 />
                 <v-autocomplete
                     id="School"
-                    v-model="newStudentDetail.schoolID"
                     variant="underlined"
+                    v-model="newStudentDetail.schoolID"
                     :items="schoolSearchNames"
                     label="School"
                     item-title="schoolCodeName"
-                    item-value="schoolCodeValue"
+                    item-value="schoolID"
                     autocomplete="off"
                     :color="getFieldColor()"
                     :rules="[rules.required()]"
@@ -154,6 +153,7 @@ import * as Rules from "@/utils/institute/formRules.js";
 import {appStore} from "@/store/modules/app";
 import {easStore} from "@/store/modules/eas"
 import {Routes} from "@/utils/constants";
+import ApiService from "@/common/apiService";
 
 export default {
   name: 'AddStudentRegistration',
@@ -207,7 +207,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['schoolMap', 'config']),
+    ...mapState(appStore, ['activeSchools', 'schoolMap', 'config']),
     ...mapState(easStore, ['specialCaseCodes']),
   },
   watch: {
@@ -226,9 +226,10 @@ export default {
   },
   async beforeMount() {
     this.selected = {...this.initialFilterSelection};
-    if (this.schoolMap.size === 0) {
+    if (this.activeSchools.size === 0) {
       await appStore().getInstituteCodes();
     }
+    console.log("activeSchools", this.activeSchools);
   },
   created() {
     this.setupSchoolList();
@@ -244,13 +245,14 @@ export default {
       return this.loadingCount > 0;
     },
     setupSchoolList() {
-      this.schoolMap?.forEach((school) => {
+      this.activeSchools?.forEach((school) => {
         this.schoolSearchNames.push({
           schoolCodeName: school.schoolName + ' - ' + school.mincode,
-          schoolCodeValue: school.schoolID
+          schoolID: school.schoolID,
         });
       });
       this.assessmentCenterSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
     },
     setupSessions() {
       let sessions = [];
@@ -278,17 +280,19 @@ export default {
       let session = this.schoolYearSessions.find(session => session.sessionID === $event);
       let assessmentTypes = [];
       let assessmentID = null;
+      console.log("assessments", session?.assessments);
       session?.assessments.forEach((assessment) => {
         if(assessment.assessmentTypeName === this.newStudentDetail.assessmentTypeName_desc) {
           assessmentID = assessment.assessmentID;
         }
         assessmentTypes.push({
           assessmentCodeName: assessment.assessmentTypeName,
-          assessmentCodeValue: assessment.assessmentTypeName,
+          assessmentCodeValue: assessment.assessmentID,
           displayOrder: assessment.displayOrder
         });
       });
       this.assessmentTypeSearchNames = sortBy(assessmentTypes, ['displayOrder']);
+      console.log("assessmentTypeSearchNames", this.assessmentTypeSearchNames)
       if(assessmentID) {
         this.newStudentDetail.assessmentID = assessmentID;
       } else {
@@ -305,7 +309,8 @@ export default {
     },
     saveStudentRegistration() {
       this.loadingCount += 1;
-      Routes.apiAxios
+      console.log("this.studentDetail", this.newStudentDetail)
+      ApiService.apiAxios
           .post(
               `${Routes.eas.ASSESSMENT_STUDENTS}`,
               this.newStudentDetail
