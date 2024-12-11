@@ -214,7 +214,7 @@ export default {
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`)
         .then(response => {
           this.collectionObject = response.data;
-          let createTimestamp = Date.parse(response.data.openDate);
+          let createTimestamp = Date.parse(response.data.submissionDueDate);
           this.year = new Date(createTimestamp).getFullYear();
 
           let lowercaseCollectionType = response.data.collectionTypeCode.toLowerCase();
