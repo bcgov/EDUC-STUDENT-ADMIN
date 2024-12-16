@@ -189,7 +189,6 @@ cacheService.loadAllAuthoritiesToMap().then(() => {
 });
 cacheService.loadAllDocumentTypeCodesToMap().then(() => {
   log.info('Loaded document type codes to memory');
-  log.info(">>>>>>>>>>>>>>>>>>>>EAS disabled: ", config.get('frontendConfig').disableEASFunctionality)
 }).catch((e) => {
   log.error('Error loading document type codes during boot .', e);
 });

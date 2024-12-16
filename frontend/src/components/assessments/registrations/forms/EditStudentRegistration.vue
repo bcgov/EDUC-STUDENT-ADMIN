@@ -322,7 +322,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, [ 'schoolMap', 'activeSchools']),
+    ...mapState(appStore, [ 'activeSchools', 'activeSchools']),
     ...mapState(easStore, ['specialCaseCodes']),
     ...mapState(authStore, ['userInfo']),
 
@@ -380,8 +380,7 @@ export default {
     },
     setupSchoolList() {
       this.schoolSearchNames = [];
-      let schoolCollection = this.isActive ? this.activeSchools : this.schoolMap;
-      schoolCollection?.forEach((school) => {
+      this.activeSchools.forEach((school) => {
         this.schoolSearchNames.push({
           schoolCodeName: school.schoolName + ' - ' + school.mincode,
           schoolCodeValue: school.schoolID

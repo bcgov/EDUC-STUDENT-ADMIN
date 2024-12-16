@@ -78,26 +78,11 @@
       </v-navigation-drawer>
     </v-row>
     <v-bottom-sheet
-      v-model="editStudentRegistrationSheet"
-      :inset="true"
-      :no-click-animation="true"
-      :scrollable="true"
-      :persistent="true"
-    >
-      <StudentRegistrationDetail
-        :selected-student-registration-id="studentRegistrationForEdit?.assessmentStudentID"
-        :school-year-sessions="schoolYearSessions"
-        @reload-student-registrations="reloadStudentRegistrationsFlag = true"
-        @close-student-registration="closeEditAndLoadStudentRegistrations"
-      />
-    </v-dialog>
-    <v-dialog
         v-model="newStudentRegistrationSheet"
         :inset="true"
         :no-click-animation="true"
-        :scrollable="true"
         :persistent="true"
-        width="40%"
+        max-height="90vh"
     >
       <AddStudentRegistration
           :session-id="sessionID"
@@ -106,14 +91,13 @@
           @close-new-student-registration="closeNewAndLoadStudentRegistrations"
           @update:sessionID="sessionID = $event"
       />
-    </v-dialog>
-    <v-dialog
+    </v-bottom-sheet>
+    <v-bottom-sheet
       v-model="editStudentRegistrationSheet"
       :inset="true"
       :no-click-animation="true"
       :scrollable="true"
       :persistent="true"
-      width="40%"
     >
       <StudentRegistrationDetail
         :selected-student-registration-id="studentRegistrationForEdit?.assessmentStudentID"

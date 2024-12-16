@@ -24,126 +24,163 @@
         </v-col>
       </v-row>
       <div v-else ref="topDiv">
-        <v-col class="pt-0" cols="12">
-          <v-form ref="addRegistrationForm" v-model="addStudentRegistrationFormValid">
-            <v-row>
-              <v-col cols="6">
-                <v-select
-                    id="Session"
-                    v-model="selectedSessionID"
-                    variant="underlined"
-                    :items="sessionSearchNames"
-                    label="Session"
-                    item-title="sessionCodeName"
-                    item-value="sessionCodeValue"
-                    :disabled="!!this.sessionID"
-                    :rules="[rules.required()]"
-                    @update:model-value="refreshAssessmentTypes($event)"
-                />
-                <v-autocomplete
-                    id="AssessmentCourse"
-                    v-model="newStudentDetail.assessmentID"
-                    variant="underlined"
-                    :items="assessmentTypeSearchNames"
-                    label="Assessment/Course"
-                    item-title="assessmentCodeName"
-                    item-value="assessmentCodeValue"
-                    autocomplete="off"
-                    :color="getFieldColor()"
-                    :rules="[rules.required()]"
-                    :disabled="!sessionID && !selectedSessionID"
-                    @update:model-value="syncAssessmentValue($event)"
-                />
-                <v-autocomplete
-                    id="AssessmentCenter"
-                    v-model="newStudentDetail.assessmentCenterID"
-                    variant="underlined"
-                    :items="assessmentCenterSearchNames"
-                    label="Assessment Center"
-                    :clearable="true"
-                    item-title="schoolCodeName"
-                    item-value="schoolID"
-                    autocomplete="off"
-                    density="compact"
-                    :color="getFieldColor()"
-                />
-                <v-text-field
-                    id="PEN"
-                    v-model="newStudentDetail.pen"
-                    label="Personal Education Number (PEN)"
-                    variant="underlined"
-                    :maxlength="25"
-                    density="compact"
-                    :rules="[rules.required(), rules.penIsValid()]"
-                />
-                <v-text-field
-                    id="LocalID"
-                    v-model="newStudentDetail.localID"
-                    label="Local ID"
-                    variant="underlined"
-                    :maxlength="25"
-                    density="compact"
-                    :rules="[rules.required(), rules.number()]"
-                />
-                <v-text-field
-                    id="SurName"
-                    v-model="newStudentDetail.surName"
-                    label="Student's Legal Last Name"
-                    variant="underlined"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
-                <v-text-field
-                    id="GivenName"
-                    v-model="newStudentDetail.givenName"
-                    label="Student's Legal First Name"
-                    variant="underlined"
-                    density="compact"
-                    :rules="[rules.required()]"
-                />
-                <v-autocomplete
-                    id="School"
-                    variant="underlined"
-                    v-model="newStudentDetail.schoolID"
-                    :items="schoolSearchNames"
-                    label="School"
-                    item-title="schoolCodeName"
-                    item-value="schoolID"
-                    autocomplete="off"
-                    :color="getFieldColor()"
-                    :rules="[rules.required()]"
-                />
-                <v-autocomplete
-                    id="SpecialCase"
-                    v-model="newStudentDetail.provincialSpecialCaseName"
-                    label="Special Case"
-                    variant="underlined"
-                    :items="specialCaseSearchNames"
-                    item-title="specialCaseCodeName"
-                    item-value="specialCaseCodeValue"
-                    :color="getFieldColor()"
+        <v-row class="d-flex">
+          <v-col :cols = "this.newStudentDetail.assessmentStudentValidationIssues.length > 0 ? 6 : 12">
+            <v-form ref="addRegistrationForm" v-model="addStudentRegistrationFormValid">
+              <v-row>
+                <v-col>
+                  <v-select
+                      id="Session"
+                      v-model="selectedSessionID"
+                      variant="underlined"
+                      :items="sessionSearchNames"
+                      label="Session"
+                      item-title="sessionCodeName"
+                      item-value="sessionCodeValue"
+                      :disabled="!!this.sessionID"
+                      :rules="[rules.required()]"
+                      @update:model-value="refreshAssessmentTypes($event)"
+                  />
+                  <v-autocomplete
+                      id="AssessmentCourse"
+                      v-model="newStudentDetail.assessmentID"
+                      variant="underlined"
+                      :items="assessmentTypeSearchNames"
+                      label="Assessment/Course"
+                      item-title="assessmentCodeName"
+                      item-value="assessmentCodeValue"
+                      autocomplete="off"
+                      :rules="[rules.required()]"
+                      :disabled="!sessionID && !selectedSessionID"
+                      @update:model-value="syncAssessmentValue($event)"
+                  />
+                  <v-autocomplete
+                      id="AssessmentCenter"
+                      v-model="newStudentDetail.assessmentCenterID"
+                      variant="underlined"
+                      :items="assessmentCenterSearchNames"
+                      label="Assessment Center"
+                      :clearable="true"
+                      item-title="schoolCodeName"
+                      item-value="schoolID"
+                      autocomplete="off"
+                      density="compact"
+                  />
+                  <v-text-field
+                      id="PEN"
+                      v-model="newStudentDetail.pen"
+                      label="Personal Education Number (PEN)"
+                      variant="underlined"
+                      :maxlength="25"
+                      density="compact"
+                      :rules="[rules.required(), rules.penIsValid()]"
+                  />
+                  <v-text-field
+                      id="SurName"
+                      v-model="newStudentDetail.surName"
+                      label="Student's Legal Last Name"
+                      variant="underlined"
+                      density="compact"
+                      :rules="[rules.required()]"
+                  />
+                  <v-text-field
+                      id="GivenName"
+                      v-model="newStudentDetail.givenName"
+                      label="Student's Legal First Name"
+                      variant="underlined"
+                      density="compact"
+                      :rules="[rules.required()]"
+                  />
+                  <v-autocomplete
+                      id="School"
+                      variant="underlined"
+                      v-model="newStudentDetail.schoolID"
+                      :items="schoolSearchNames"
+                      label="School"
+                      item-title="schoolCodeName"
+                      item-value="schoolID"
+                      autocomplete="off"
+                      :rules="[rules.required()]"
+                  />
+                  <v-autocomplete
+                      id="SpecialCase"
+                      v-model="newStudentDetail.provincialSpecialCaseName"
+                      label="Special Case"
+                      variant="underlined"
+                      :items="specialCaseSearchNames"
+                      item-title="specialCaseCodeName"
+                      item-value="specialCaseCodeValue"
+                  />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-col>
+          <v-col cols="12" md="6" v-if="newStudentDetail?.assessmentStudentValidationIssues?.length > 0">
+            <v-row v-if="hasError">
+              <v-col>
+                <v-alert
+                    type="warning"
+                    variant="tonal"
+                    text="Warning! Updates to student details will not be saved until all errors are fixed."
                 />
               </v-col>
             </v-row>
-          </v-form>
-        </v-col>
+            <v-row>
+              <v-col class="pl-0">
+                <div class="timeline-container">
+                <v-timeline
+                    side="end"
+                    density="compact"
+                    style="margin-left: 1em"
+                    align="start"
+                    truncate-line="start"
+                >
+                  <v-timeline-item
+                      v-for="(issue) in newStudentDetail.assessmentStudentValidationIssues"
+                      dot-color="white"
+                      fill-dot
+                      icon-color="#d90606"
+                      icon="mdi-alert-circle-outline"
+                      size="large"
+                      width="100%"
+                  >
+                    <v-row class="mt-n1">
+                      <v-col>
+                        <h3 class="validation-issue">
+                          {{ issue.validationLabel }}
+                        </h3>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col>
+                        <span> {{issue.validationMessage}}</span>
+                      </v-col>
+                    </v-row>
+                  </v-timeline-item>
+                </v-timeline>
+                </div>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
       </div>
       <v-row cols="24" class="justify-end">
         <v-btn
             id="saveRecord"
             color="#003366"
-            text="Save"
+            text="Validate & Save"
             :disabled="!addStudentRegistrationFormValid"
             @click="saveStudentRegistration"
         />
       </v-row>
+
     </v-card-text>
   </v-card>
 </template>
 
 <script>
 
-import {setFailureAlert, setSuccessAlert,} from '@/components/composable/alertComposable';
+import {setFailureAlert, setSuccessAlert, setWarningAlert,} from '@/components/composable/alertComposable';
 import { sortBy } from 'lodash';
 import { mapState } from 'pinia';
 import moment from 'moment';
@@ -188,6 +225,7 @@ export default {
       assessmentCenterSearchNames: [],
       specialCaseSearchNames: [],
       addStudentRegistrationFormValid: false,
+      hasError: false,
       newStudentDetail: {
         assessmentID: null,
         schoolID: null,
@@ -199,6 +237,7 @@ export default {
         isElectronicExam: null,
         proficiencyScore: null,
         provincialSpecialCaseCode: null,
+        assessmentStudentValidationIssues: []
       },
       selectedSessionID: null,
       studentRegistrationValidationIssues: [],
@@ -207,7 +246,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['activeSchools', 'schoolMap', 'config']),
+    ...mapState(appStore, ['activeSchools', 'config']),
     ...mapState(easStore, ['specialCaseCodes']),
   },
   watch: {
@@ -229,7 +268,6 @@ export default {
     if (this.activeSchools.size === 0) {
       await appStore().getInstituteCodes();
     }
-    console.log("activeSchools", this.activeSchools);
   },
   created() {
     this.setupSchoolList();
@@ -280,7 +318,6 @@ export default {
       let session = this.schoolYearSessions.find(session => session.sessionID === $event);
       let assessmentTypes = [];
       let assessmentID = null;
-      console.log("assessments", session?.assessments);
       session?.assessments.forEach((assessment) => {
         if(assessment.assessmentTypeName === this.newStudentDetail.assessmentTypeName_desc) {
           assessmentID = assessment.assessmentID;
@@ -292,7 +329,6 @@ export default {
         });
       });
       this.assessmentTypeSearchNames = sortBy(assessmentTypes, ['displayOrder']);
-      console.log("assessmentTypeSearchNames", this.assessmentTypeSearchNames)
       if(assessmentID) {
         this.newStudentDetail.assessmentID = assessmentID;
       } else {
@@ -309,15 +345,25 @@ export default {
     },
     saveStudentRegistration() {
       this.loadingCount += 1;
-      console.log("this.studentDetail", this.newStudentDetail)
+
       ApiService.apiAxios
           .post(
               `${Routes.eas.ASSESSMENT_STUDENTS}`,
               this.newStudentDetail
           )
-          .then(() => {
-            setSuccessAlert('Success! The new student registration has been created.');
-            this.$emit('reload-student-registrations');
+          .then((res) => {
+            this.newStudentDetail = res.data;
+            console.log(this.newStudentDetail.assessmentStudentValidationIssues)
+            if(this.newStudentDetail.assessmentStudentValidationIssues){
+              setWarningAlert('Warning! Updates to student details will not be saved until all errors are fixed.', res.data.assessmentStudentValidationIssues);
+              this.hasError = true;
+            } else if(!this.newStudentDetail.assessmentStudentValidationIssues) {
+              console.log("found success");
+              this.hasError = false;
+              setSuccessAlert('Success! The new student registration has been created.');
+              this.$emit('close-new-student-registration');
+            }
+            this.loadingCount -= 1;
           })
           .catch((error) => {
             console.error(error);
@@ -327,19 +373,14 @@ export default {
                     : 'An error occurred while trying to update student registration details. Please try again later.'
             );
           })
-          .finally(() => {
-            this.loadingCount -= 1;
-            this.$emit('close-new-student-registration');
-          });
+
+      this.loadingCount -= 1;
     },
     validateForm() {
       this.$refs?.addRegistrationForm?.validate();
     },
     formatMonth(month) {
       return moment(month, 'MM').format('MMMM');
-    },
-    getFieldColor() {
-      return !this.isActive ? '#7f7f7f' : '#003366';
     },
     cancel() {
       this.$emit('close-new-student-registration');
@@ -354,10 +395,8 @@ export default {
   font-size: medium !important;
   font-weight: bolder !important;
 }
-.v-row {
-  margin-bottom: 16px;
+.validation-issue{
+  color: #d90606;
 }
-.v-col {
-  padding: 0 8px;
-}
+
 </style>
