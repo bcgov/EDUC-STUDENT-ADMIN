@@ -119,8 +119,6 @@ import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
 import StudentRegistrationDetail from './StudentRegistrationDetail.vue';
 
 import moment from 'moment';
-import AddStudent from "@/components/common/AddStudent.vue";
-import InviteUserPage from "@/components/secure-message/InviteUserPage.vue";
 import AddStudentRegistration from "@/components/assessments/registrations/AddStudentRegistration.vue";
 
 export default {

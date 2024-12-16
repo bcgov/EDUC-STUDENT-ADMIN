@@ -181,7 +181,7 @@
 
 <script>
 
-import {setFailureAlert, setSuccessAlert, setWarningAlert,} from '@/components/composable/alertComposable';
+import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
 import { sortBy } from 'lodash';
 import { mapState } from 'pinia';
 import moment from 'moment';
