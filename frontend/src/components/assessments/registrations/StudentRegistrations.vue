@@ -127,8 +127,6 @@ export default {
   name: 'StudentRegistrations',
   components: {
     AddStudentRegistration,
-    InviteUserPage,
-    AddStudent,
     StudentRegistrationsCustomTable,
     StudentRegistrationsFilter,
     StudentRegistrationDetail

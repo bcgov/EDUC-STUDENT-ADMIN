@@ -136,7 +136,8 @@
                     truncate-line="start"
                 >
                   <v-timeline-item
-                      v-for="(issue) in newStudentDetail.assessmentStudentValidationIssues"
+                      v-for="(issue, index) in newStudentDetail.assessmentStudentValidationIssues"
+                      :key="index"
                       dot-color="white"
                       fill-dot
                       icon-color="#d90606"
@@ -184,7 +185,6 @@ import {setFailureAlert, setSuccessAlert, setWarningAlert,} from '@/components/c
 import { sortBy } from 'lodash';
 import { mapState } from 'pinia';
 import moment from 'moment';
-import ConfirmationDialog from "@/components/util/ConfirmationDialog.vue";
 import Spinner from "@/components/common/Spinner.vue";
 import * as Rules from "@/utils/institute/formRules.js";
 import {appStore} from "@/store/modules/app";
@@ -195,7 +195,6 @@ import ApiService from "@/common/apiService";
 export default {
   name: 'AddStudentRegistration',
   components: {
-    ConfirmationDialog,
     Spinner
   },
   props: {
@@ -355,7 +354,6 @@ export default {
             this.newStudentDetail = res.data;
             console.log(this.newStudentDetail.assessmentStudentValidationIssues)
             if(this.newStudentDetail.assessmentStudentValidationIssues){
-              setWarningAlert('Warning! Updates to student details will not be saved until all errors are fixed.', res.data.assessmentStudentValidationIssues);
               this.hasError = true;
             } else if(!this.newStudentDetail.assessmentStudentValidationIssues) {
               console.log("found success");
