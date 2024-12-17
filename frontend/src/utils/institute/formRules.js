@@ -215,8 +215,8 @@ const penIsValid = (message = 'PEN is invalid') => {
 
     const doubledEvens = [];
     const doubledEvenString = (parseInt(fullEvenString, 10) * 2).toString();
-    for (let i = 0; i < doubledEvenString.length; i++) {
-      doubledEvens.push(parseInt(doubledEvenString[i], 10));
+    for (const digit of doubledEvenString) {
+      doubledEvens.push(parseInt(digit, 10));
     }
 
     const sumEvens = doubledEvens.reduce((acc, val) => acc + val, 0);
