@@ -322,7 +322,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, [ 'schoolMap', 'activeSchools']),
+    ...mapState(appStore, [ 'activeSchools', 'activeSchools']),
     ...mapState(easStore, ['specialCaseCodes']),
     ...mapState(authStore, ['userInfo']),
 
@@ -380,8 +380,7 @@ export default {
     },
     setupSchoolList() {
       this.schoolSearchNames = [];
-      let schoolCollection = this.isActive ? this.activeSchools : this.schoolMap;
-      schoolCollection?.forEach((school) => {
+      this.activeSchools.forEach((school) => {
         this.schoolSearchNames.push({
           schoolCodeName: school.schoolName + ' - ' + school.mincode,
           schoolCodeValue: school.schoolID
@@ -530,7 +529,7 @@ export default {
           this.loadingCount += 1;
           ApiService.apiAxios.delete(`${Routes.eas.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID)
             .then(() => {
-              setSuccessAlert('Success! The student registration details have been deleted.');   
+              setSuccessAlert('Success! The student registration details have been deleted.');
               this.$emit('reset-student-registration-pagination');
             }).catch((error) => {
               console.error(error);
@@ -543,7 +542,7 @@ export default {
               this.loadingCount -= 1;
               this.$emit('reset-student-registration-parent');
             });
-        } 
+        }
       });
     },
     validateForm() {

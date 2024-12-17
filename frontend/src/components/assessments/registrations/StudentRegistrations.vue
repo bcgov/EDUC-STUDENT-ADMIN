@@ -10,6 +10,14 @@
           </v-col>
           <v-col cols="8" class="d-flex justify-end">
             <v-btn
+                id="addStudentReg"
+                color="#003366"
+                text="Add Record"
+                class="mr-1 mb-1"
+                variant="outlined"
+                @click="openCreateStudentRegDialog"
+            />
+            <v-btn
               id="filters"
               color="#003366"
               text="Filter"
@@ -70,13 +78,28 @@
       </v-navigation-drawer>
     </v-row>
     <v-bottom-sheet
+        v-model="newStudentRegistrationSheet"
+        :inset="true"
+        :no-click-animation="true"
+        :persistent="true"
+        max-height="90vh"
+    >
+      <AddStudentRegistration
+          :session-id="sessionID"
+          :school-year-sessions="schoolYearSessions"
+          @reload-student-registrations="reloadStudentRegistrationsFlag = true"
+          @close-new-student-registration="closeNewAndLoadStudentRegistrations"
+          @update:sessionID="sessionID = $event"
+      />
+    </v-bottom-sheet>
+    <v-bottom-sheet
       v-model="editStudentRegistrationSheet"
       :inset="true"
       :no-click-animation="true"
       :scrollable="true"
       :persistent="true"
     >
-      <StudentRegistrationDetail        
+      <StudentRegistrationDetail
         :selected-student-registration-id="studentRegistrationForEdit?.assessmentStudentID"
         :school-year-sessions="schoolYearSessions"
         @reload-student-registrations="reloadStudentRegistrationsFlag = true"
@@ -96,10 +119,12 @@ import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
 import StudentRegistrationDetail from './StudentRegistrationDetail.vue';
 
 import moment from 'moment';
+import AddStudentRegistration from "@/components/assessments/registrations/forms/AddStudentRegistration.vue";
 
 export default {
   name: 'StudentRegistrations',
   components: {
+    AddStudentRegistration,
     StudentRegistrationsCustomTable,
     StudentRegistrationsFilter,
     StudentRegistrationDetail
@@ -128,6 +153,7 @@ export default {
         moreFilters: {},
       },
       showFilters: null,
+      newStudentRegistrationSheet: false,
       isLoading: false,
       totalElements: 0,
       pageNumber: 1,
@@ -157,6 +183,13 @@ export default {
     closeEditAndLoadStudentRegistrations() {
       this.editStudentRegistrationSheet = !this.editStudentRegistrationSheet;
       if (this.reloadStudentRegistrationsFlag === true) {
+        this.getAssessmentStudents();
+      }
+      this.reloadStudentRegistrationsFlag = false;
+    },
+    closeNewAndLoadStudentRegistrations(){
+      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
+      if(this.reloadStudentRegistrationsFlag === true){
         this.getAssessmentStudents();
       }
       this.reloadStudentRegistrationsFlag = false;
@@ -216,6 +249,12 @@ export default {
     },
     toggleFilters() {
       this.showFilters = !this.showFilters;
+    },
+    openCreateStudentRegDialog() {
+      this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
+    },
+    closeNewStudentRegModal() {
+      this.newStudentRegistrationSheet = false;
     },
     loadNext() {
       if (this.canLoadNext) {

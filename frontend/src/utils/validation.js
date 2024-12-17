@@ -119,21 +119,6 @@ export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
  * @param date2       iso date format   'yyyy-MM-ddThh:mm:ss'
  * @returns {boolean}
  */
-export function isOlderThan(date1, date2) {
-  try {
-    const dateObject1 = new Date(date1);
-    const dateObject2 = new Date(date2);
-    if(dateObject1.getTime() < dateObject2.getTime()){
-      return true;
-    }
-  }
-  catch(err){
-    //Do nothing
-    console.log(err);
-  }
-  return false;
-}
-
 
 export function isNotEmptyInputParams(obj) {
   const groups = groupBy(Object.values(obj), isPlainObject);

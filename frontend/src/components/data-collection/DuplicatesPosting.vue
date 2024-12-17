@@ -166,14 +166,14 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import Spinner from '../common/Spinner.vue';
-import {PEN_MATCHING} from '../../utils/sdc/collectionTableConfiguration';
+import {PEN_MATCHING} from '@/utils/sdc/collectionTableConfiguration';
 import {isEmpty, omitBy} from 'lodash';
 import {formatCollectionTypeCode} from '@/utils/format';
 import {findUpcomingDateForCollectionClosure} from '@/utils/dateHelpers.js';
 import DatePicker from '@/components/util/DatePicker.vue';
 import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
-import {COLLECTION_TYPE_CODE_MAPPING} from '../../utils/sdc/collectionTypecode';
+import {COLLECTION_TYPE_CODE_MAPPING} from '@/utils/sdc/collectionTypecode';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {

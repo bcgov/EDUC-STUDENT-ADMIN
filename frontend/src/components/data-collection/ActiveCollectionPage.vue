@@ -132,7 +132,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import {notificationsStore} from '@/store/modules/notifications';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 
@@ -204,17 +204,19 @@ export default {
   methods:{
     getActiveCollection(){
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`)
-        .then(response => {
-          this.collectionObject = response.data;
-          let createTimestamp = Date.parse(response.data.submissionDueDate);
-          this.year = new Date(createTimestamp).getFullYear();
+          .then(response => {
+            this.collectionObject = response.data;
 
-          let lowercaseCollectionType = response.data.collectionTypeCode.toLowerCase();
-          this.collectionType = lowercaseCollectionType.replace(lowercaseCollectionType[0], lowercaseCollectionType[0].toUpperCase());
-          this.collectionID = response.data.collectionID;
-          this.snapshotDate = response.data.snapshotDate.replaceAll('-', '/');
-          this.submissionDueDate = response.data.submissionDueDate.replaceAll('-', '/');
-        });
+            let createTimestamp = LocalDate.parse(response.data.submissionDueDate);
+            this.year = createTimestamp.year();
+
+            let lowercaseCollectionType = response.data.collectionTypeCode.toLowerCase();
+            this.collectionType = lowercaseCollectionType.replace(lowercaseCollectionType[0], lowercaseCollectionType[0].toUpperCase());
+            this.collectionID = response.data.collectionID;
+
+            this.snapshotDate = LocalDate.parse(response.data.snapshotDate).format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+            this.submissionDueDate = LocalDate.parse(response.data.submissionDueDate).format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+          });
     },
     getHistoricCollections() {
       this.searchLoading = true;

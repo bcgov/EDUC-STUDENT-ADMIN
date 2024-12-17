@@ -6,14 +6,21 @@ const config = require('../../config');
 const cacheService = require('../cache-service');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
 const moment = require('moment');
+const {LocalDate, DateTimeFormatter} = require("@js-joda/core");
 
 async function getAssessmentSessions(req, res) {
   try {
     const url = `${config.get('server:eas:assessmentSessionsURL')}`;
     const data = await getData(url);
+    const today = LocalDate.now();
+    const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
     data.forEach(session => {
-      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date();      
+      const activeFromDate = LocalDate.parse(session.activeFromDate, formatter);
+      const activeUntilDate = LocalDate.parse(session.activeUntilDate, formatter);
+      session.isOpen = activeFromDate.isBefore(today) && activeUntilDate.isAfter(today);
     });
+
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
@@ -25,11 +32,17 @@ async function getAssessmentSessionsBySchoolYear(req, res) {
   try {
     const url = `${config.get('server:eas:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
     let data = await getData(url);
+    const today = LocalDate.now();
+    const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
     data.forEach(session => {
-      session.isOpen =  new Date(session.activeFromDate) <= new Date() && new Date(session.activeUntilDate) >= new Date(); 
+      const activeFromDate = LocalDate.parse(session.activeFromDate, formatter);
+      const activeUntilDate = LocalDate.parse(session.activeUntilDate, formatter);
+      session.isOpen = activeFromDate.isBefore(today) && activeUntilDate.isAfter(today);
+
       session.assessments.forEach(assessment => {
         let assessmentType = cacheService.getAssessmentTypeByCode(assessment.assessmentTypeCode);
-        assessment.assessmentTypeName = assessmentType.label+' ('+assessment.assessmentTypeCode+')';
+        assessment.assessmentTypeName = assessmentType.label + ' (' + assessment.assessmentTypeCode + ')';
         assessment.displayOrder = assessmentType.displayOrder;
       });
     });
@@ -62,9 +75,9 @@ async function updateAssessmentSession(req, res) {
   }
 }
 
-async function getAssessmentStudentsPaginated(req, res) { 
+async function getAssessmentStudentsPaginated(req, res) {
   try {
-    const search = [];    
+    const search = [];
     if (req.query.searchParams?.['moreFilters']) {
       let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams['moreFilters']);
       criteriaArray.forEach(criteria => {
@@ -99,9 +112,9 @@ async function getAssessmentStudentsPaginated(req, res) {
 }
 
 async function getAssessmentStudentByID(req, res) {
-  try {    
+  try {
 
-    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);       
+    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
     return res.status(200).json(includeAssessmentStudentProps(data));
   } catch (e) {
     if (e?.status === 404) {
@@ -113,6 +126,25 @@ async function getAssessmentStudentByID(req, res) {
   }
 }
 
+async function postAssessmentStudent(req, res){
+  try {
+    const userInfo = utils.getUser(req);
+    req.body.districtID = cacheService.getSchoolBySchoolID(req.body.schoolID).districtID;
+    const payload = {
+      ...req.body,
+      updateUser: userInfo.idir_username,
+      updateDate: null,
+      createDate: null
+    };
+    console.log("payload", payload)
+    const result = await utils.postData(`${config.get('server:eas:assessmentStudentsURL')}`, payload);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'postAssessmentStudent', 'Error occurred while attempting to create the assessment student registration.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function updateAssessmentStudentByID(req, res) {
   if (req.params.assessmentStudentID !== req.body.assessmentStudentID) {
     return res.status(HttpStatus.BAD_REQUEST).json({
@@ -121,7 +153,7 @@ async function updateAssessmentStudentByID(req, res) {
   }
   try {
     const userInfo = utils.getUser(req);
-    const payload = { 
+    const payload = {
       ...req.body,
       updateUser: userInfo.idir_username,
       updateDate: null,
@@ -135,7 +167,7 @@ async function updateAssessmentStudentByID(req, res) {
   }
 }
 
-async function deleteAssessmentStudentByID(req, res) {  
+async function deleteAssessmentStudentByID(req, res) {
   try {
     const result = await utils.deleteData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
     return res.status(HttpStatus.OK).json(result);
@@ -157,10 +189,10 @@ function includeAssessmentStudentProps(assessmentStudent) {
       assessmentStudent.districtID = school.districtID;
       assessmentStudent.districtName_desc = getDistrictName(district);
     }
-    
+
     if(assessmentCenter) {
       assessmentStudent.assessmentCenterName_desc = getSchoolName(assessmentCenter);
-    }    
+    }
 
     assessmentStudent.assessmentTypeName_desc = cacheService.getAssessmentTypeByCode(assessmentStudent.assessmentTypeCode).label+' ('+assessmentStudent.assessmentTypeCode+')';
     assessmentStudent.provincialSpecialCaseName_desc = assessmentStudent.provincialSpecialCaseCode ? cacheService.getSpecialCaseTypeLabelByCode(assessmentStudent.provincialSpecialCaseCode) : null;
@@ -177,7 +209,7 @@ function getDistrictName(district) {
   return district.districtNumber + ' - ' + district.name;
 }
 
-function getAssessmentSpecialCases(req, res) {  
+function getAssessmentSpecialCases(req, res) {
   try {
     const codes = cacheService.getAllAssessmentSpecialCases();
     return res.status(HttpStatus.OK).json(Object.fromEntries(codes));
@@ -196,5 +228,6 @@ module.exports = {
   getAssessmentStudentByID,
   updateAssessmentStudentByID,
   deleteAssessmentStudentByID,
-  getAssessmentSpecialCases
+  getAssessmentSpecialCases,
+  postAssessmentStudent
 };
