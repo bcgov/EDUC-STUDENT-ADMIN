@@ -1,3 +1,5 @@
+'use strict';
+const log = require('../components/logger');
 const validate = (schema) => async (req, res, next) => {
   try {
     await schema.validate({
@@ -9,6 +11,7 @@ const validate = (schema) => async (req, res, next) => {
     });
     next();
   } catch (e) {
+    log.error('Error running schema validation .', e);
     return res.status(400).send(e.message);
   }
 };
