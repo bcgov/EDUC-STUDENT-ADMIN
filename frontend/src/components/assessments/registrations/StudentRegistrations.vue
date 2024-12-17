@@ -119,7 +119,7 @@ import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
 import StudentRegistrationDetail from './StudentRegistrationDetail.vue';
 
 import moment from 'moment';
-import AddStudentRegistration from "@/components/assessments/registrations/AddStudentRegistration.vue";
+import AddStudentRegistration from "@/components/assessments/registrations/forms/AddStudentRegistration.vue";
 
 export default {
   name: 'StudentRegistrations',

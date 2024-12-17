@@ -189,8 +189,44 @@ const minLength = ( length, message = 'Must be at least ${length} characters') =
   return v => !v || v.length === length || message;
 };
 
-const penIsValid = (message = 'PEN must be a 9 digit number') => {
-  return v => !v || /^\d{9}$/.test(v) || message;
+const penIsValid = (message = 'PEN is invalid') => {
+  return v => {
+    if (!v) return true; // Allow empty values
+
+    if (v.length !== 9 || !/^-?\d+(?:\.\d+)?$/.test(v)) {
+      return message;
+    }
+
+    const odds = [];
+    const evens = [];
+    for (let i = 0; i < v.length - 1; i++) {
+      const number = parseInt(v[i], 10);
+      if (i % 2 === 0) {
+        odds.push(number);
+      } else {
+        evens.push(number);
+      }
+    }
+
+    const sumOdds = odds.reduce((acc, val) => acc + val, 0);
+
+    let fullEvenString = "";
+    evens.forEach(num => fullEvenString += num);
+
+    const doubledEvens = [];
+    const doubledEvenString = (parseInt(fullEvenString, 10) * 2).toString();
+    for (let i = 0; i < doubledEvenString.length; i++) {
+      doubledEvens.push(parseInt(doubledEvenString[i], 10));
+    }
+
+    const sumEvens = doubledEvens.reduce((acc, val) => acc + val, 0);
+
+    const finalSum = sumEvens + sumOdds;
+    const checkDigit = v[8];
+
+    return ((finalSum % 10 === 0 && checkDigit === "0") ||
+        (10 - finalSum % 10 === parseInt(checkDigit, 10))) || message;
+  };
 };
 
 export {
