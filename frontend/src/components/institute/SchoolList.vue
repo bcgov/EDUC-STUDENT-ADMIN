@@ -436,6 +436,7 @@ import {edxStore} from '@/store/modules/edx';
 import {instituteStore} from '@/store/modules/institute';
 import {notificationsStore} from '@/store/modules/notifications';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {DateTimeFormatter, LocalDate} from "@js-joda/core";
 
 export default {
   name: 'SchoolListPage',
@@ -789,6 +790,8 @@ export default {
     sortByNameValue,
     getPrincipalsName(contacts) {
       let oldestPrincipal = null;
+      const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
       for (const contact of contacts) {
         if (contact.schoolContactTypeCode !== 'PRINCIPAL') {
           continue;
@@ -796,7 +799,8 @@ export default {
         if (!isContactCurrent(contact)) {
           continue;
         }
-        if ((oldestPrincipal !== null) && (new Date(oldestPrincipal.effectiveDate) < new Date(contact.effectiveDate))) {
+        if ((oldestPrincipal !== null) &&
+            (LocalDate.parse(oldestPrincipal.effectiveDate, formatter).isBefore(LocalDate.parse(contact.effectiveDate, formatter)))) {
           continue;
         }
         oldestPrincipal = contact;

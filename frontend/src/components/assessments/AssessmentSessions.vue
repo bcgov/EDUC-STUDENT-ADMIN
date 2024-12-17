@@ -98,8 +98,9 @@
 import SessionCard from './sessions/SessionCard.vue';
 import EditSession from './sessions/SessionEdit.vue';
 import ApiService from '../../common/apiService';
-import { Routes } from '../../utils/constants';
+import { Routes } from '@/utils/constants';
 import moment from 'moment';
+import {DateTimeFormatter, LocalDate} from "@js-joda/core";
 
 export default {
   name: 'AssessmentSessions',
@@ -113,7 +114,7 @@ export default {
       search: null,      
       itemsPerPage: 5,
       pageNumber: 1,
-      allsessions: [],
+      allSessions: [],
       headers: [
         { title: 'School Year', key: 'schoolYear' },
         { title: 'Course Month', key: 'courseMonth' },
@@ -130,22 +131,30 @@ export default {
   computed: {
     activeSessions() {
       const orderedSessions = [];
-      const allsessions = this.allsessions
-        .filter(session => session.schoolYear === this.schoolYear)
-        .map((session) => {
-          return {
-            ...session,
-            courseMonth: this.formatMonth(session.courseMonth)
-          };
-        });   
-      allsessions.sort((a, b) => new Date(a.activeUntilDate) - new Date(b.activeUntilDate));   
-      for (let i = 0; i < allsessions.length; i += 2) {
-        orderedSessions.push(allsessions.slice(i, i + 2));
+      const allSessions = this.allSessions
+          .filter(session => session.schoolYear === this.schoolYear)
+          .map((session) => {
+            return {
+              ...session,
+              courseMonth: this.formatMonth(session.courseMonth)
+            };
+          });
+
+      const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+      allSessions.sort((a, b) => {
+        const dateA = LocalDate.parse(a.activeUntilDate, formatter);
+        const dateB = LocalDate.parse(b.activeUntilDate, formatter);
+        return dateA.compareTo(dateB);
+      });
+
+      for (let i = 0; i < allSessions.length; i += 2) {
+        orderedSessions.push(allSessions.slice(i, i + 2));
       }
       return orderedSessions;
     },
     historicalSessions() {
-      const allsessions = this.allsessions
+      const allSessions = this.allSessions
         .filter(session => session.schoolYear !== this.schoolYear)
         .map((entry) => {
           return {
@@ -155,7 +164,7 @@ export default {
             courseMonth: this.formatMonth(entry.courseMonth),
           };
         });
-      return allsessions;
+      return allSessions;
     },
     sessionHeaderSlotName() {
       return `column.${this.sessionid}`;
@@ -168,20 +177,27 @@ export default {
     getAllAssessmentSessions() {
       this.loading = true;
       ApiService.apiAxios
-        .get(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`, {})
-        .then((response) => {
-          this.allsessions = response.data.sort((a, b) => new Date(b.activeUntilDate) - new Date(a.activeUntilDate));
-          if(this.allsessions.length >0) {
-            this.schoolYear = this.allsessions[0].schoolYear;
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },    
+          .get(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`, {})
+          .then((response) => {
+            const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+            this.allSessions = response.data.sort((a, b) => {
+              const dateA = LocalDate.parse(a.activeUntilDate, formatter);
+              const dateB = LocalDate.parse(b.activeUntilDate, formatter);
+              return dateB.compareTo(dateA);
+            });
+            if (this.allSessions.length > 0) {
+              this.schoolYear = this.allSessions[0].schoolYear;
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+    },
+
     sessionEditSuccess() {
       this.getAllAssessmentSessions();
     },
