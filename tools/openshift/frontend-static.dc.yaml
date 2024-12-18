@@ -11,9 +11,6 @@ objects:
   kind: DeploymentConfig
   metadata:
     annotations:
-      haproxy.router.openshift.io/balance: roundrobin
-      haproxy.router.openshift.io/disable_cookies: 'true'
-      haproxy.router.openshift.io/timeout: 120s
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp:
     labels:
@@ -105,6 +102,9 @@ objects:
   kind: Route
   metadata:
     annotations:
+      haproxy.router.openshift.io/balance: roundrobin
+      haproxy.router.openshift.io/disable_cookies: 'true'
+      haproxy.router.openshift.io/timeout: 120s
       openshift.io/host.generated: 'true'
     labels:
       app: "${APP_NAME}-${BRANCH}"
