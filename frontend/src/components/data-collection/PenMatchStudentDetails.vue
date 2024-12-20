@@ -76,6 +76,14 @@
                   @click-action="[clickOpenSearch(), openSearchDemographicsModal()]"
                 />
                 <PrimaryButton
+                  id="modify-search-action"
+                  :secondary="true"
+                  class="mx-2"
+                  text="Manually assign PEN"
+                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
+                  @click-action="togglePENMatchDialog"
+                />                
+                <PrimaryButton
                   id="issue-pen-action"
                   class="mr-2"
                   :loading="isIssuingNewPen"
@@ -160,6 +168,20 @@
       @save-new-pen="saveNewPen"
     />
   </v-dialog>
+  <v-dialog
+    v-model="showPenMatchDialog"
+    :max-width="600"
+  >
+    <AddStudent
+      style="min-width: 35em"
+      :institute-type-value="{}"
+      :additional-student-add-warning="addStudentWarningMessage"
+      :primary-button-name="'Use PEN'"
+      @addStudent="matchStudent"
+      @close:form="togglePENMatchDialog"
+      @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage"
+    />
+  </v-dialog>
 </template>
 <script>
 
@@ -179,6 +201,7 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import _ from 'lodash';
 import SDCIssueNewPEN from './SDCIssueNewPEN.vue';
 import {constructPenMatchObjectFromSdcStudent} from '../../utils/common';
+import AddStudent from '../common/AddStudent.vue';
 
 export default {
   name: 'PenMatchStudentDetails',
@@ -187,7 +210,8 @@ export default {
     StudentDetailsPanel,
     PenMatchResults,
     PrimaryButton,
-    SDCIssueNewPEN
+    SDCIssueNewPEN,
+    AddStudent,
   },
   mixins: [alertMixin],
   async beforeRouteUpdate(to, from) {
@@ -224,6 +248,8 @@ export default {
         'NEW' : '#2E8540',
       },
       showPenRequestDialog: false,
+      showPenMatchDialog: false,
+      addStudentWarningMessage: '',
     };
   },
   beforeUnmount() {
@@ -250,6 +276,12 @@ export default {
     ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
     togglePENRequestDialog(){
       this.showPenRequestDialog = !this.showPenRequestDialog;
+    },
+    togglePENMatchDialog(){
+      this.showPenMatchDialog = !this.showPenMatchDialog;
+    },
+    updateAddStudentWarningMessage(newValue) {
+      this.addStudentWarningMessage = newValue;
     },
     backButtonClick() {
       this.$router.push({name: 'collection-view', query: {penMatch: true}, params: {collectionID: this.activeCollection?.collectionID}});

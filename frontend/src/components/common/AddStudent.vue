@@ -78,9 +78,9 @@
         />
         <PrimaryButton
           id="addStudentToNewMessageBtn"
+          :width="primaryButtonName === 'Add' ? '5rem' : '10rem'"
           :disabled="!studentExist"
-          text="Add"
-          width="5rem"
+          :text="primaryButtonName"          
           @click-action="addStudentToMessage"
         />
       </v-col>
@@ -114,6 +114,11 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    primaryButtonName: {
+      type: String,
+      default: 'Add',
+      required: false
     }
   },
   data() {
