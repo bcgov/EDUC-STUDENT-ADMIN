@@ -194,7 +194,7 @@ nconf.defaults({
     webSocketURL: process.env.WEB_SOCKET_URL,
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
     edxURL: process.env.EDX_URL,
-    disableEASFunctionality: false,
+    disableEASFunctionality: process.env.DISABLE_EAS_FUNCTIONALITY === 'true',
     sldMigrationDate: process.env.SLD_MIGRATION_DATE
   },
   sdc: {
