@@ -30,7 +30,7 @@
       <v-row>
         <v-col class="d-flex justify-center">
           <span class="mr-1">
-            Please choose the session and click the link below to select your
+            Please choose the session and click the button below to select your
             Assessment Keys for upload and processing.</span>
         </v-col>
       </v-row>
