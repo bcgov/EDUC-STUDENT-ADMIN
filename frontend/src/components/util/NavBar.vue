@@ -333,6 +333,11 @@ export default {
               title: 'Sessions',
               link: 'assessment-sessions',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION)
+            },
+            {
+              title: 'Data Exchange',
+              link: 'assessment-data-exchange',
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_ASSESSMENT_KEYS_PERMISSION)
             }
           ],
         }

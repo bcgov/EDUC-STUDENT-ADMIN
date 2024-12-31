@@ -36,6 +36,19 @@ const putStudentAssessmentSchema = object({
   query: object().noUnknown(),
 }).noUnknown();
 
+const fileUploadSchema =  object({
+  body:object({
+    fileName: string().nonNullable(),
+    fileContents: string().nonNullable(),
+    fileType: string().nonNullable()
+  }).concat(baseRequestSchema).noUnknown(),
+  params: object({
+    sessionID: string().nonNullable()
+  }).noUnknown(),
+  query: object().noUnknown(),
+}).noUnknown();
+
 module.exports = {
   putStudentAssessmentSchema,
+  fileUploadSchema
 };

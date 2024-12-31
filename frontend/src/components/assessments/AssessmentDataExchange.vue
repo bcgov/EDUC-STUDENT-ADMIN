@@ -2,13 +2,9 @@
   <v-container class="containerSetup" :fluid="true">
     <v-row class="d-flex justify-start">
       <v-col>
-        <h2 class="subjectHeading">School Year: {{ schoolYear.replace('-','/') }}</h2>
-      </v-col>
-    </v-row>    
-    <v-row no-gutters class="mt-2 mb-2 d-flex justify-start">
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon small color="#1976d2"> mdi-arrow-left </v-icon>
-        <a class="ml-1" @click="backToAssesmentSessions()">Return to Assessment Sessions</a>
+        <h2 class="subjectHeading">
+          School Year: {{ schoolYear?.replace("-", "/") }}
+        </h2>
       </v-col>
     </v-row>
     <v-row no-gutters>
@@ -24,71 +20,79 @@
     <v-row v-else>
       <v-col class="border">
         <v-tabs v-model="tab" color="#38598a">
-          <v-tab :value="1"> Registrations and Results </v-tab>
-          <v-tab :value="2"> Special Case Requests </v-tab>
-          <v-tab :value="3"> Reports </v-tab>
+          <v-tab :value="1">Assessment Keys</v-tab>
+          <v-tab :value="2">Assessment Results</v-tab>
         </v-tabs>
         <v-window v-model="tab">
-          <v-window-item :value="1" transition="false" reverse-transition="false">
-            <StudentRegistrations v-if="schoolYearSessions.length > 0" :school-year="schoolYear"
-                                  :school-year-sessions="schoolYearSessions" :session-ID="sessionID" />
+          <v-window-item
+            :value="1"
+            transition="false"
+            reverse-transition="false"
+          >
+            <AssessmentKeyUpload 
+              v-if="activeSessions?.length > 0"
+              :school-year="schoolYear"
+              :school-year-sessions="activeSessions"
+            />
           </v-window-item>
-          <v-window-item :value="2" transition="false" reverse-transition="false"/>
-          <v-window-item :value="3" transition="false" reverse-transition="false"/>
+          <v-window-item
+            :value="2"
+            transition="false"
+            reverse-transition="false"
+          />
+          <v-window-item
+            :value="3"
+            transition="false"
+            reverse-transition="false"
+          />
         </v-window>
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
-import alertMixin from '../../mixins/alertMixin';
-import StudentRegistrations from './registrations/StudentRegistrations.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '../../utils/constants';
+import AssessmentKeyUpload from './data-exchange/AssessmentKeyUpload.vue';
+import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 
 export default {
   name: 'AssessmentSessionDetail',
   components: {
-    StudentRegistrations,
     Spinner,
+    AssessmentKeyUpload,
   },
-  mixins: [alertMixin],
-  props: {
-    schoolYear: {
-      type: String,
-      required: true,
-    },
-    sessionID: {
-      type: String,
-      required: false,
-      default: null,
-    },
-  },
+  mixins: [],
+  props: {},
   data() {
     return {
-      assessmentStudents: [],
-      schoolYearSessions: [],
+      activeSessions: [],
+      schoolYear: null,
       isLoading: false,
-      tab: ''
+      tab: '',
     };
   },
   computed: {},
-  created() {    
+  created() {
     this.loading = true;
-    this.getAllSessionsforYear();
+    this.getActiveSessions();
   },
   methods: {
-    async  getAllSessionsforYear() {
+    async getActiveSessions() {
       this.loading = true;
+      const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
       ApiService.apiAxios
-        .get(
-          `${Routes.eas.EAS_ASSESSMENT_SESSIONS}/school-year/` +
-            this.schoolYear,
-          {}
-        )
+        .get(`${Routes.eas.EAS_ASSESSMENT_SESSIONS}`, {})
         .then((response) => {
-          this.schoolYearSessions = response.data;          
+          const allSessions = response.data;
+          allSessions.sort((a, b) => {
+            const dateA = LocalDate.parse(a.activeUntilDate, formatter);
+            const dateB = LocalDate.parse(b.activeUntilDate, formatter);
+            return dateB.compareTo(dateA);
+          });
+          this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;
+          this.activeSessions = allSessions.filter((session) => session.schoolYear === this.schoolYear);
         })
         .catch((error) => {
           console.error(error);
@@ -96,7 +100,7 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },    
+    },
     backToAssesmentSessions() {
       this.$router.push({ name: 'assessment-sessions' });
     },

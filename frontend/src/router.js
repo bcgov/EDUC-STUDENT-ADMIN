@@ -54,6 +54,7 @@ import CollectionView from '@/components/data-collection/CollectionView.vue';
 import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
 import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue';
 import AssessmentSessionDetail from '@/components/assessments/AssessmentSessionsDetail.vue';
+import AssessmentDataExchange from '@/components/assessments/AssessmentDataExchange.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -517,6 +518,16 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
         requiresAuth: true,
         permission: PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION
+      },
+    },
+    {
+      path: '/assessment-data-exchange',
+      name: 'assessment-data-exchange',
+      component: AssessmentDataExchange,
+      meta: {
+        pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
+        requiresAuth: true,
+        permission: PERMISSION.MANAGE_EAS_ASSESSMENT_KEYS_PERMISSION
       },
     },
     {
