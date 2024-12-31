@@ -207,11 +207,13 @@ let object = {
   },
   eas: {
     BASE_URL: easRoot,
-    GET_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions',
+    EAS_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions',
     GET_ASSESSMENT_TYPES: easRoot + '/assessment-types',
     GET_ASSESSMENT_SPECIALCASE_TYPES: easRoot + '/assessment-specialcase-types',
     ASSESSMENT_STUDENTS: easRoot + '/assessment-registrations/student',
     GET_ASSESSMENT_STUDENTS_PAGINATED: easRoot + '/assessment-registrations/paginated',
+    EAS_ASSESSMENT_KEYS: easRoot + '/assessment-keys',
+
   }
 };
 
@@ -602,6 +604,7 @@ export const PAGE_TITLES = Object.freeze(
     CLOSE_COLLECTION: 'Close Collection',
     ASSESSMENTS: 'Assessments',
     ASSESSMENT_SESSIONS_MANAGEMENT: 'Assessment Sessions',
+    ASSESSMENT_DATA_EXCHANGE: 'Assessment Data Exchange',
   }
 );
 
@@ -748,3 +751,9 @@ export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
 );
 
 export const EDX_SAGA_REQUEST_DELAY_MILLISECONDS = 2000;
+
+export const FILE_UPLOAD_STATUS = Object.freeze({
+  PENDING: 'Pending',
+  UPLOADED: 'Upload Successful',
+  ERROR: 'Error'
+});

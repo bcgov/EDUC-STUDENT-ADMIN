@@ -177,7 +177,7 @@ export default {
     getAllAssessmentSessions() {
       this.loading = true;
       ApiService.apiAxios
-          .get(`${Routes.eas.GET_ASSESSMENT_SESSIONS}`, {})
+          .get(`${Routes.eas.EAS_ASSESSMENT_SESSIONS}`, {})
           .then((response) => {
             const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
