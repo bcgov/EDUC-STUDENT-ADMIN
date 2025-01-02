@@ -172,7 +172,7 @@ export default {
     },
   },
   created() {
-    this.applydefaultFilers();
+    this.applyDefaultFilters();
     this.getAssessmentStudents();
   },
   methods: {
@@ -194,7 +194,7 @@ export default {
       }
       this.reloadStudentRegistrationsFlag = false;
     },
-    applydefaultFilers() {
+    applyDefaultFilters() {
       if (this.sessionID) {
         const activeSession = this.schoolYearSessions.find(
           (session) => session.sessionID === this.sessionID
@@ -252,9 +252,6 @@ export default {
     },
     openCreateStudentRegDialog() {
       this.newStudentRegistrationSheet = !this.newStudentRegistrationSheet;
-    },
-    closeNewStudentRegModal() {
-      this.newStudentRegistrationSheet = false;
     },
     loadNext() {
       if (this.canLoadNext) {

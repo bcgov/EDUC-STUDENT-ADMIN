@@ -247,5 +247,5 @@ export {
   requiredWithOtherFieldValues,
   requiredIf,
   website,
-  penIsValid
+  penIsValid,
 };
