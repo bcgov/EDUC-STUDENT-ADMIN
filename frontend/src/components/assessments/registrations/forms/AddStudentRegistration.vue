@@ -25,7 +25,7 @@
       </v-row>
       <div v-else ref="topDiv">
         <v-row class="d-flex">
-          <v-col :cols = "this.newStudentDetail.assessmentStudentValidationIssues.length > 0 ? 6 : 12">
+          <v-col :cols = "hasError ? 6 : 12">
             <v-form ref="addRegistrationForm" v-model="addStudentRegistrationFormValid">
               <v-row>
                 <v-col>
@@ -74,6 +74,15 @@
                       :maxlength="25"
                       density="compact"
                       :rules="[rules.required(), rules.penIsValid()]"
+                  />
+                  <v-text-field
+                      id="LocalID"
+                      v-model="newStudentDetail.localID"
+                      label="Local ID"
+                      variant="underlined"
+                      :maxlength="25"
+                      density="compact"
+                      :rules="[rules.required(), rules.number()]"
                   />
                   <v-text-field
                       id="SurName"
@@ -344,19 +353,19 @@ export default {
     },
     saveStudentRegistration() {
       this.loadingCount += 1;
-
+      const postAssessmentStudentDetail = Object.fromEntries(
+          Object.entries(this.newStudentDetail).filter(([key]) => !key.endsWith('_desc'))
+      );
       ApiService.apiAxios
           .post(
               `${Routes.eas.ASSESSMENT_STUDENTS}`,
-              this.newStudentDetail
+              postAssessmentStudentDetail
           )
           .then((res) => {
             this.newStudentDetail = res.data;
-            console.log(this.newStudentDetail.assessmentStudentValidationIssues)
             if(this.newStudentDetail.assessmentStudentValidationIssues){
               this.hasError = true;
             } else if(!this.newStudentDetail.assessmentStudentValidationIssues) {
-              console.log("found success");
               this.hasError = false;
               setSuccessAlert('Success! The new student registration has been created.');
               this.$emit('close-new-student-registration');
