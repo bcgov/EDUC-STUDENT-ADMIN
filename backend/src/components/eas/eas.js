@@ -200,7 +200,6 @@ async function uploadAssessmentKeyFile(req, res) {
   }
 }
 
-
 function includeAssessmentStudentProps(assessmentStudent) {
   if(assessmentStudent) {
     let school = cacheService.getSchoolBySchoolID(assessmentStudent.schoolID);
