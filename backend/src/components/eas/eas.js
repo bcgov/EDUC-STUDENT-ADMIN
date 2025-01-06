@@ -6,7 +6,8 @@ const config = require('../../config');
 const cacheService = require('../cache-service');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
 const moment = require('moment');
-const {LocalDate, DateTimeFormatter} = require("@js-joda/core");
+const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
+const log = require('../logger');
 
 async function getAssessmentSessions(req, res) {
   try {
@@ -136,7 +137,6 @@ async function postAssessmentStudent(req, res){
       updateDate: null,
       createDate: null
     };
-    console.log("payload", payload)
     const result = await utils.postData(`${config.get('server:eas:assessmentStudentsURL')}`, payload);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -173,6 +173,29 @@ async function deleteAssessmentStudentByID(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'deleteAssessmentStudentByID', 'Error occurred while attempting to delete the assessment student registration.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function uploadAssessmentKeyFile(req, res) {
+  try {
+    const userInfo = utils.getUser(req);
+    let createUpdateUser =  userInfo.idir_username;
+    const payload = {
+      fileContents: req.body.fileContents,
+      fileName: req.body.fileName,
+      fileType: req.body.fileType,
+      createUser: createUpdateUser,
+      updateUser: createUpdateUser
+    };
+    let data = await utils.postData(`${config.get('server:eas:assessmentKeyURL')}/${req.params.sessionID}/file`, payload, null, userInfo.idir_username);  
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    console.log(JSON.stringify(e));
+    if (e.status === 400) {
+      return res.status(HttpStatus.BAD_REQUEST).json(e.data.subErrors[0].message);
+    }
+    log.error('uploadAssessmentKeyFile Error', e.stack);
     return handleExceptionResponse(e, res);
   }
 }
@@ -228,5 +251,6 @@ module.exports = {
   updateAssessmentStudentByID,
   deleteAssessmentStudentByID,
   getAssessmentSpecialCases,
-  postAssessmentStudent
+  postAssessmentStudent,
+  uploadAssessmentKeyFile
 };

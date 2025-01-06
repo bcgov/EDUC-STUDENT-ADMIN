@@ -157,6 +157,7 @@ nconf.defaults({
       assessmentTypeCodeURL: process.env.EAS_API_URL+ '/assessment-types',
       assessmentSpecialCaseTypeCodeURL: process.env.EAS_API_URL+ '/assessment-specialcase-types',
       assessmentStudentsURL: process.env.EAS_API_URL+ '/student',
+      assessmentKeyURL: process.env.EAS_API_URL+ '/assessment-keys',
     }
   },
   oidc: {
@@ -222,6 +223,10 @@ nconf.defaults({
     programEligibilityTypeCodesURL: process.env.SDC_API_URL + '/program-eligibility-issue-codes',
     zeroFteReasonCodesURL: process.env.SDC_API_URL + '/zero-fte-reason-codes',
     sdcDuplicateURL: process.env.SDC_API_URL + '/sdc-duplicate'
+  },
+  clamav: {
+    host: process.env.CLAMAV_HOST,
+    port: process.env.CLAMAV_PORT,
   }
 });
 module.exports = nconf;
