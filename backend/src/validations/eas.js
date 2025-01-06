@@ -86,6 +86,6 @@ const postStudentAssessmentSchema = object({
 
 module.exports = {
   putStudentAssessmentSchema,
-  fileUploadSchema
+  fileUploadSchema,
   postStudentAssessmentSchema
 };
