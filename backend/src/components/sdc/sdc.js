@@ -378,6 +378,8 @@ function mapPenMatchResult(penMatchResult) {
     return 'Review Requested';
   case 'MULTI':
     return 'Multiple PEN Matches';
+  case 'CONFLICT':
+    return 'Conflict';
   default:
     return penMatchResult;
   }
@@ -435,7 +437,7 @@ function createAssignedPENSearchCriteria(searchParams) {
   let searchCriteriaList = [];
 
   if(searchParams.label === 'REVIEW_PEN') {
-    searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'MULTI,INREVIEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'MULTI,INREVIEW,CONFLICT', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   } else if(searchParams.label === 'NEW_PEN') {
     searchCriteriaList.push({ key: 'penMatchResult', operation: FILTER_OPERATION.IN, value: 'NEW', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
   }
