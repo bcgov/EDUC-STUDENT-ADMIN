@@ -246,6 +246,7 @@ export default {
         'MULTI' : '#7737BD',
         'MATCH' : '#2E8540',
         'NEW' : '#2E8540',
+        'CONFLICT' : '#7737BD'
       },
       showPenRequestDialog: false,
       showPenMatchDialog: false,
@@ -304,9 +305,6 @@ export default {
       this.setNavigationPage(index);
       this.$router.push({name: 'student-detail', params: {studentID: this.selectedIDs[index]}});
     },
-    navigate() {
-      this.getSdcSchoolCollectionStudentDetail(this.selectedIDs[this.page - 1]);
-    },
     isLoading() {
       return this.loadingCount > 0;
     },
@@ -342,7 +340,6 @@ export default {
           });
         }
         this.title = `${this.possibleMatches.length || 0} Matches`;
-        this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
       } catch (error) {
         console.log(error);
         this.setFailureAlert('PEN Match API call failed, please try again.');
@@ -377,7 +374,11 @@ export default {
       this.clonedStudentDetail.assignedStudentId = matchedStudent.studentID;
       this.updatePEN('MATCH').finally(() => {
         this.isMatchingToStudentRecord = false;
-        this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
+        if(!this.nextDisabled) {
+          this.clickNextBtn();
+        } else {
+          this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
+        }
       });
     },
     async saveNewPen(newPenDetails) {
@@ -387,7 +388,11 @@ export default {
       this.updatePEN('NEW').finally(() => {
         this.isIssuingNewPen = false;
         this.togglePENRequestDialog();
-        this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
+        if(!this.nextDisabled) {
+          this.clickNextBtn();
+        } else {
+          this.getSdcSchoolCollectionStudentDetail(this.$route.params.studentID);
+        }
       });
     },
     async updatePEN(type) {
@@ -397,10 +402,6 @@ export default {
             this.setSuccessAlert('PEN updated successfully.');
           } else {
             this.setSuccessAlert('PEN has been MATCHED successfully.');
-          }
-          
-          if(!this.nextDisabled) {
-              this.clickNextBtn();
           }
         })
         .catch(error => {
@@ -431,6 +432,8 @@ export default {
           return 'Review Requested';
         case 'MULTI':
           return 'Multiple PEN Matches';
+        case 'CONFLICT':
+          return 'Conflict';
         case 'NEW':
           return 'New PEN Assigned';
         case 'MATCH':
