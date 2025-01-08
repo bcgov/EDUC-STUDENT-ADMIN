@@ -3,7 +3,7 @@ const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
-  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
+  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report-all', 'indy-funding-report-funded', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
   'inclusive-education-variance-headcounts','enrolled-fte-headcounts', 'enrolment-fte-headcounts-for-ce-ol-schools', 'refugee-enrolment-fte-headcounts','posted-duplicates'];
 
 async function getMinistrySDCReport(req, res) {
