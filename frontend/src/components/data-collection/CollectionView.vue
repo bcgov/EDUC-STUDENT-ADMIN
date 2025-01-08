@@ -128,7 +128,10 @@
             transition="false"
             reverse-transition="false"
           >
-            <DuplicatesPosting :collection-object="collectionObject"/>
+            <DuplicatesPosting
+              :collection-object="collectionObject"
+              @refresh-collection-object="getCollectionByID"
+            />
           </v-window-item>
           <v-window-item
             :value="6"
@@ -179,24 +182,27 @@ export default {
   },
   data() {
     return {
+      requestCount: 0,
       registerNextEvent: false,
       collectionObject: {},
       collectionType: null,
       collectionYear: null,
       isCollectionActive: false,
-      isLoading: true,
       tab: ''
     };
   },
   computed: {
-    ...mapState(authStore, ['userInfo'])
+    ...mapState(authStore, ['userInfo']),
+    isLoading() {
+      return this.requestCount > 0;
+    }
   },
   async created() {
+    this.requestCount += 1;
     await sdcCollectionStore().getCollectionTypeCodesMap();
     await this.getActiveCollection();
-    await this.getCollectionByID().then(() => {
-      this.isLoading = !this.isLoading;
-    });
+    await this.getCollectionByID();
+    this.requestCount -= 1;
     this.setTab();
   },
   methods: {
@@ -212,23 +218,32 @@ export default {
           || hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
     },
     async getActiveCollection() {
+      this.requestCount += 1;
       ApiService.apiAxios.get(`${Routes.sdc.ACTIVE_COLLECTION}`).then((response) => {
         this.isCollectionActive = response.data.collectionID === this.collectionID;
+      }).finally(() => {
+        this.requestCount -= 1;
       });
     },
     async getCollectionByID() {
-      if(this.activeCollection == null) {
-        const response = await ApiService.apiAxios.get(`${Routes.sdc.COLLECTION}/` + this.collectionID);
-        this.collectionObject = response.data;
-
-        this.collectionType = formatCollectionTypeCode(this.collectionObject.collectionTypeCode);
-        this.collectionYear = this.collectionObject.snapshotDate.slice(0, 4);
-      }
+      this.requestCount += 1;
+      ApiService.apiAxios.get(`${Routes.sdc.COLLECTION}/${this.collectionID}`)
+        .then((response) => {
+          this.collectionObject = response.data;
+          this.collectionType = formatCollectionTypeCode(this.collectionObject.collectionTypeCode);
+          this.collectionYear = this.collectionObject.snapshotDate.slice(0, 4);
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        })
+        .finally(() => {
+          this.requestCount -= 1;
+        });
     },
     next() {
       this.registerNextEvent = true;
     },
-
     navigationCompleted() {
       this.registerNextEvent = false;
     },
