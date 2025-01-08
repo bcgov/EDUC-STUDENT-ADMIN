@@ -186,6 +186,7 @@ export default {
       required: true
     }
   },
+  emits: ['refreshCollectionObject'],
   data() {
     return {
       edxURL: '',
@@ -248,7 +249,7 @@ export default {
       await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcSchoolCollections`)
         .then((res) => {
           this.sdcSchoolCollectionsNotSubmitted = res.data.filter(schools => 
-          schools.sdcSchoolCollectionStatusCode !== 'SUBMITTED' && schools.sdcSchoolCollectionStatusCode !== 'COMPLETED' && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_POST'
+            schools.sdcSchoolCollectionStatusCode !== 'SUBMITTED' && schools.sdcSchoolCollectionStatusCode !== 'COMPLETED' && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_POST'
           && schools.sdcSchoolCollectionStatusCode !== 'P_DUP_VRFD')?.length;
           this.sdcSchoolCollectionsNotCompleted = res.data.filter(schools => schools.sdcSchoolCollectionStatusCode !== 'COMPLETED')?.length;
         }).catch(error => {
@@ -264,7 +265,7 @@ export default {
       await ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionObject.collectionID}/sdcDistrictCollections`)
         .then((res) => {
           this.sdcDistrictCollectionsNotSubmitted = res.data.filter(district => 
-          district.sdcDistrictCollectionStatusCode !== 'SUBMITTED' && district.sdcDistrictCollectionStatusCode !== 'COMPLETED' && district.sdcDistrictCollectionStatusCode !== 'P_DUP_POST'
+            district.sdcDistrictCollectionStatusCode !== 'SUBMITTED' && district.sdcDistrictCollectionStatusCode !== 'COMPLETED' && district.sdcDistrictCollectionStatusCode !== 'P_DUP_POST'
           && district.sdcDistrictCollectionStatusCode !== 'P_DUP_VRFD')?.length;
           this.sdcDistrictCollectionsNotCompleted = res.data.filter(district => district.sdcDistrictCollectionStatusCode !== 'COMPLETED')?.length;
         }).catch(error => {
@@ -302,6 +303,7 @@ export default {
       if (!confirmation) {
         return;
       }
+      this.isLoading = true;
       ApiService.apiAxios.post(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/resolve-duplicates`)
         .then(() => {
           this.setSuccessAlert('Remaining Duplicates Resolved Successfully.');
@@ -309,6 +311,9 @@ export default {
         .catch(error => {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while resolving remaining duplicates. Please try again later.');
+        }).finally(() => {
+          this.$emit('refreshCollectionObject');
+          this.isLoading = false;
         });
     },
     async loadStudents() {
