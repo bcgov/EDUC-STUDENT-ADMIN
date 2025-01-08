@@ -99,7 +99,7 @@ export default {
     this.setOriginalReportTab();
     this.publicReports = this.getActiveReports(SDC_REPORTS.publicReports);
     this.independentReports = this.getActiveReports(SDC_REPORTS.independentReports);
-    this.headcountsReports = this.visibleHeadcountsReports(SDC_REPORTS.headcountReports); 
+    this.headcountsReports = this.visibleHeadcountsReports(SDC_REPORTS.headcountReports);
   },
   methods: {
     getActiveReports(reports){

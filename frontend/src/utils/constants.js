@@ -452,7 +452,7 @@ export const SDC_REPORTS = Object.freeze(
         label: 'School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
-      }, 
+      },
       {
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
@@ -475,11 +475,11 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
       },
       {
-        label: 'Independent School Funding Report - Standard Student (All)',
+        label: 'Independent School Funding Report - Standard Student - All',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-all/'
       },
       {
-        label: 'Independent School Funding Report - Standard Student (Funded Only)',
+        label: 'Independent School Funding Report - Standard Student - Funded Only',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-funded/'
       },
       {
