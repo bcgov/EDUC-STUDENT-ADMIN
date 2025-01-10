@@ -768,7 +768,7 @@ else
   disableSdcFunctionality=true
   EDUC_EDX_FRONTEND="https://educationdataexchange.gov.bc.ca"
   DISABLE_EAS_FUNCTIONALITY=true
-  sldMigrationDate="2025-02-01"
+  sldMigrationDate="2025-01-17"
 fi
 
 BANNER_ENVIRONMENT="$bannerEnvironment"
