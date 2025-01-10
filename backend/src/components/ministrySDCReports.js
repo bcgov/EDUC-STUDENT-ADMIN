@@ -3,7 +3,7 @@ const { logApiError, errorResponse, getData } = require('./utils');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
-  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report-all', 'indy-funding-report-funded', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
+  'offshore-enrollment-headcounts', 'offshore-languages-headcounts', 'indy-inclusive-ed-funding-headcounts', 'indy-funding-report-all', 'inclusive-education-variances-all', 'indy-funding-report-funded', 'online-indy-funding-report', 'non-graduated-adult-indy-funding-report',
   'inclusive-education-variance-headcounts','enrolled-fte-headcounts', 'enrolment-fte-headcounts-for-ce-ol-schools', 'refugee-enrolment-fte-headcounts','posted-duplicates'];
 
 async function getMinistrySDCReport(req, res) {
@@ -52,6 +52,7 @@ function getFileDetails(reportType) {
     'offshore-languages-headcounts': { filename: 'OffshoreSpokenLanguageHeadcounts.csv', contentType: 'text/csv' },
     'indy-inclusive-ed-funding-headcounts': { filename: 'IndependentSchoolsInclusiveEdFundingHeadcounts.csv', contentType: 'text/csv' },
     'indy-funding-report-all': { filename: 'IndependentSchoolsFundingReportStandardStudentAll.csv', contentType: 'text/csv' },
+    'inclusive-education-variances-all': { filename: 'InclusiveEducationVariancesAllDistricts.csv', contentType: 'text/csv' },
     'indy-funding-report-funded': { filename: 'IndependentSchoolsFundingReportStandardStudentFunded.csv', contentType: 'text/csv' },
     'online-indy-funding-report': { filename: 'IndependentSchoolsFundingReportOnlineLearning.csv', contentType: 'text/csv' },
     'non-graduated-adult-indy-funding-report': { filename: 'IndependentSchoolsFundingReportNonGraduatedAdult.csv', contentType: 'text/csv' },

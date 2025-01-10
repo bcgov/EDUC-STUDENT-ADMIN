@@ -475,6 +475,10 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
       },
       {
+        label: 'Inclusive Education Variances - All Districts',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variances-all/'
+      },
+      {
         label: 'Independent School Funding Report - Standard Student - All',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-all/'
       },
