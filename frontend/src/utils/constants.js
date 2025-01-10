@@ -476,6 +476,7 @@ export const SDC_REPORTS = Object.freeze(
       },
       {
         label: 'Inclusive Education Variances - All Districts',
+        onlyForCollection: ['FEBRUARY'],
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variances-all/'
       },
       {
