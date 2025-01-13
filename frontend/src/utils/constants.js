@@ -463,12 +463,6 @@ export const SDC_REPORTS = Object.freeze(
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/'
       },
       {
-        label: 'Enroled Headcounts and FTEs For CE and OL Schools',
-        reportID: 'ENROLED_FUNDING_REPORT',
-        onlyForCollection: ['FEBRUARY', 'MAY'],
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolment-fte-headcounts-for-ce-ol-schools/'
-      },
-      {
         label: 'Refugee Enroled Headcounts and FTEs',
         reportID: 'ENROLED_FUNDING_REPORT',
         onlyForCollection: ['FEBRUARY'],
