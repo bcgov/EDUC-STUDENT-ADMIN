@@ -402,98 +402,117 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'All Students by District',
         reportID: 'FUNDING_POLICY_REPORT_DISTRICT',
+        description:'All Students by District description'
       },
       {
         label: 'FSA Registration Report',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/fsa-registration-report/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/fsa-registration-report/',
         onlyForCollection: ['FEBRUARY', 'SEPTEMBER'],
+        description: 'FSA Registration Report description'
       },
       { 
         label: 'School Physical Address Report',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-address-report/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/',
+        description: 'School Physical Address Report description'
       }
     ],
     independentReports: [
       {
         label: 'All Students by Independent School',
         reportID: 'FUNDING_POLICY_REPORT_INDY',
+        description: 'All Students by Independent School description'
       }
     ],
     headcountReports: [
       {
         label: 'Independent School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-school-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-enrollment-headcounts/',
+        description: 'This report calculates the total enrolment headcounts for each independent school, including independent First Nations schools, broken down by grade.'
       },
       {
         label: 'Independent School Inclusive Education Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-enrollment-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-enrollment-headcounts/',
+        description: 'This report calculates the total headcounts of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1,2,3), and further broken down by sub-category (A – Physically  Dependent, B – Deafblind, etc.).'
       },
       {
         label: 'Independent School Inclusive Education Funding Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-funding-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-funding-headcounts/',
-        onlyForCollection: ['FEBRUARY']
+        onlyForCollection: ['FEBRUARY'],
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1,2,3) and detail the September total, the February total, the resulting net change between the two, and the positive change of designated students who joined the school since the previous September collection. This report is only run for the February collection.'
       },
       {
         label: 'Offshore School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-enrollment-headcounts/',
+        description: 'This report calculates the total enrolment headcounts for each offshore school, broken down by grade.'
       },
       {
         label: 'Offshore Spoken Language Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/offshore-languages-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-languages-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/offshore-languages-headcounts/',
+        description: 'This report calculates the student headcounts for each offshore school, broken down by the language that students speak at home.'
       },
       {
         label: 'School Enrolment Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-enrollment-headcounts/',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-enrollment-headcounts/',
+        description: 'This report calculates the total enrolment headcounts for every school the Ministry serves (including public, independent, offshore, and independent First Nation schools). The headcounts are broken down by grade. The report includes additional information, such as each school’s district number, school number, facility type (standard, continuing education, etc.), and grade range that the school offers.'
       },
       {
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations within a particular school district.  The headcounts are broken down by Inclusive Education level (1,2,3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.), as well as by grade level. The report shows the headcounts (both totals and various breakdown categories) for the district in the September collection and the February collection to detail how the student population with Inclusive Education designations has changed between the two collections.  This report is only run for the February collection and cannot be downloaded.'
       },
       {
         label: 'Enroled Headcounts and FTEs By School',
         reportID: 'ENROLED_FUNDING_REPORT',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/',
+        description: 'Enroled Headcounts and FTEs by School description'
       },
       {
         label: 'Enroled Headcounts and FTEs For CE and OL Schools',
         reportID: 'ENROLED_FUNDING_REPORT',
         onlyForCollection: ['FEBRUARY', 'MAY'],
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolment-fte-headcounts-for-ce-ol-schools/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolment-fte-headcounts-for-ce-ol-schools/',
+        description: 'Enroled Headcounts and FTEs for CE and OL School description'
       },
       {
         label: 'Refugee Enroled Headcounts and FTEs',
         reportID: 'ENROLED_FUNDING_REPORT',
         onlyForCollection: ['FEBRUARY'],
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/',
+        description: 'Refugee Enroled Heacounts and FTEs description'
       },
       {
         label: 'Inclusive Education Variances - All Districts',
         onlyForCollection: ['FEBRUARY'],
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variances-all/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variances-all/',
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations across all school districts.  The headcounts are broken down by Inclusive Education level (1,2,3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.) in September and February, before providing the resulting variance between the two collections with the same breakdown structure. This data is shown district by district. This report is only run for the February collection (comparing against the previous September collection) and can only viewed by downloading it. '
       },
       {
         label: 'Independent School Funding Report - Standard Student - All',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-all/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-all/',
+        description: 'Independent School Funding Report description'
       },
       {
         label: 'Independent School Funding Report - Standard Student - Funded Only',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-funded/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-funded/',
+        description: 'Independent School Funding Report - Standard Student - Funded Only description'
       },
       {
         label: 'Independent School Funding Report - Online Learning',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/online-indy-funding-report/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/online-indy-funding-report/',
+        description: 'Independent School Funding Report - Online Learning description'
       },
       {
         label: 'Independent School Funding Report - Non Graduated Adult',
-        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/non-graduated-adult-indy-funding-report/'
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/non-graduated-adult-indy-funding-report/',
+        description: 'Independent School Funding Report - Non Graduated Adult description'
       },
     ]
   }

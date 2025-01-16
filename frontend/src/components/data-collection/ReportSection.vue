@@ -12,19 +12,6 @@
         return-object
       />
     </v-col>
-    <v-col
-      v-if="selectedReport?.csvDownloadURL"
-      class="mt-4 ml-4"
-    >
-      <router-link
-        id="downloadReport"
-        :to="{ path: selectedReport.csvDownloadURL + collectionID}"
-        target="_blank"
-      >
-        <v-icon>mdi-tray-arrow-down</v-icon>
-        Download CSV
-      </router-link>
-    </v-col>
   </v-row>
 
   <v-row
@@ -32,11 +19,31 @@
     no-gutters
   >
     <v-col>
+      <p
+        style="font-style: italic"
+        class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
+      <span
+          v-if="selectedReport?.csvDownloadURL"
+          class="mt-4 pb-4"
+      >
+        <router-link
+            id="downloadReport"
+            :to="{ path: selectedReport.csvDownloadURL + collectionID}"
+            target="_blank"
+        >
+          <v-icon>mdi-tray-arrow-down</v-icon>
+          Download CSV
+        </router-link>
+      </span>
       <v-text-field
         v-model="search"
         label="Search"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
+        class="pt-2"
         clearable
         hide-details
         single-line
@@ -51,6 +58,12 @@
   </v-row>
   <v-row v-if="!displayAllStudents && reportData !== null && selectedReport?.url">
     <v-col>
+      <p
+          style="font-style: italic"
+          class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
       <v-data-table
         id="dataTable"
         :search="search"
@@ -64,6 +77,12 @@
   </v-row>
   <v-row v-if="displayAllStudents">
     <v-col>
+      <p
+          style="font-style: italic"
+          class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
       <CustomTableSlice
         :headers="config"
         :data="studentList"
@@ -78,18 +97,36 @@
   </v-row>
   <v-row>
     <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_INDY'">
+      <p
+          style="font-style: italic"
+          class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
       <FundingPolicyReport
         :collection-object="collectionObject"
         :collection-type="selectedReport?.reportID"
       />
     </v-col>
     <v-col v-if="selectedReport?.reportID === 'FUNDING_POLICY_REPORT_DISTRICT'">
+      <p
+          style="font-style: italic"
+          class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
       <FundingPolicyReport
         :collection-object="collectionObject"
         :collection-type="selectedReport?.reportID"
       />
     </v-col>
     <v-col v-if="selectedReport?.reportID === 'INCLUSIVE_EDUCATION_VARIANCE'">
+      <p
+          style="font-style: italic"
+          class="pb-4"
+      >
+        {{selectedReport.description}}
+      </p>
       <InclusiveEducationVarianceReport
         :collection-object="collectionObject"
         :collection-type="selectedReport?.reportID"
