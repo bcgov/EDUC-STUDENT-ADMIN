@@ -12,31 +12,42 @@
         return-object
       />
     </v-col>
-    <v-col
-      v-if="selectedReport?.csvDownloadURL"
-      class="mt-4 ml-4"
-    >
-      <router-link
-        id="downloadReport"
-        :to="{ path: selectedReport.csvDownloadURL + collectionID}"
-        target="_blank"
+  </v-row>
+  <v-row v-if="selectedReport?.description">
+    <v-col>
+      <p
+          style="font-style: italic"
+          class="pb-4"
       >
-        <v-icon>mdi-tray-arrow-down</v-icon>
-        Download CSV
-      </router-link>
+        {{selectedReport.description}}
+      </p>
     </v-col>
   </v-row>
+  <v-row v-if="selectedReport?.csvDownloadURL" class="mt-2 mb-4">
+    <span
 
+    >
+          <router-link
+              id="downloadReport"
+              :to="{ path: selectedReport.csvDownloadURL + collectionID}"
+              target="_blank"
+          >
+            <v-icon>mdi-tray-arrow-down</v-icon>
+            Download CSV
+          </router-link>
+        </span>
+  </v-row>
   <v-row
     v-if="(reportData !== null || displayAllStudents) && selectedReport?.url"
     no-gutters
   >
-    <v-col>
+  <v-col>
       <v-text-field
         v-model="search"
         label="Search"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
+        class="pt-2"
         clearable
         hide-details
         single-line
