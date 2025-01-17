@@ -13,7 +13,7 @@
       />
     </v-col>
   </v-row>
-  <v-row>
+  <v-row v-if="selectedReport?.description">
     <v-col>
       <p
           style="font-style: italic"
@@ -22,6 +22,20 @@
         {{selectedReport.description}}
       </p>
     </v-col>
+  </v-row>
+  <v-row v-if="selectedReport?.csvDownloadURL" class="mt-2 mb-4">
+    <span
+
+    >
+          <router-link
+              id="downloadReport"
+              :to="{ path: selectedReport.csvDownloadURL + collectionID}"
+              target="_blank"
+          >
+            <v-icon>mdi-tray-arrow-down</v-icon>
+            Download CSV
+          </router-link>
+        </span>
   </v-row>
   <v-row
     v-if="(reportData !== null || displayAllStudents) && selectedReport?.url"
@@ -61,12 +75,6 @@
   </v-row>
   <v-row v-if="displayAllStudents">
     <v-col>
-      <p
-          style="font-style: italic"
-          class="pb-4"
-      >
-        {{selectedReport.description}}
-      </p>
       <CustomTableSlice
         :headers="config"
         :data="studentList"
@@ -98,19 +106,6 @@
         :collection-type="selectedReport?.reportID"
       />
     </v-col>
-    <span
-        v-if="selectedReport?.csvDownloadURL"
-        class="mt-4 pb-4"
-    >
-        <router-link
-            id="downloadReport"
-            :to="{ path: selectedReport.csvDownloadURL + collectionID}"
-            target="_blank"
-        >
-          <v-icon>mdi-tray-arrow-down</v-icon>
-          Download CSV
-        </router-link>
-      </span>
   </v-row>
 </template>
 
@@ -176,9 +171,6 @@ export default {
         this.getReportData();
       }
     }
-  },
-  created(){
-    console.log("reportList>>>", this.reportList)
   },
   methods: {
     async getReportData() {
