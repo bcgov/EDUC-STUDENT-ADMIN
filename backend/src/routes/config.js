@@ -15,7 +15,7 @@ async function getConfig(req, res) {
     WEB_SOCKET_URL: frontendConfig.webSocketURL,
     DISABLE_SDC_FUNCTIONALITY: frontendConfig.disableSdcFunctionality,
     EDX_URL: frontendConfig.edxURL,
-    DISABLE_EAS_FUNCTIONALITY: 'disableEASFunctionality' in frontendConfig ?  frontendConfig.disableEASFunctionality : true,
+    DISABLE_EAS_FUNCTIONALITY: frontendConfig.disableEASFunctionality,
     SLD_MIGRATION_DATE: frontendConfig.sldMigrationDate
   };
   return res.status(HttpStatus.OK).json(frontConfig);
