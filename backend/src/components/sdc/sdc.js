@@ -210,6 +210,60 @@ async function getSDCSchoolCollectionStudentPaginated(req, res) {
   }
 }
 
+async function getSDCSchoolCollectionStudentSldHistoryPaginated(req, res) {
+  try {
+    const search = [];
+    if(req.query.searchParams) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createSearchCriteria(req.query.searchParams)
+      });
+    }
+
+    if(req.query.assignedStudentID) {
+      search.push({
+        condition: null,
+        searchCriteriaList: [{ key: 'assignedStudentId', value: req.query.assignedStudentID.join(','), operation: FILTER_OPERATION.IN_NOT_DISTINCT, valueType: VALUE_TYPE.UUID }]
+      });
+    }
+
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      }
+    };
+
+    let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated-sld-history`, params);
+    if (req?.query?.returnKey) {
+      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      return res.status(HttpStatus.OK).json(result);
+    }
+
+    if(req?.query?.tableFormat){
+      data.content = data?.content.map(toTableRow);
+    }
+
+    data?.content.forEach(value => {
+      let school = cacheService.getSchoolBySchoolID(value.schoolID);
+      value.schoolName = getSchoolName(school);
+      value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
+      value.districtID = school.districtID;
+    });
+
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e?.status === 404) {
+      res.status(HttpStatus.OK).json(null);
+    } else {
+      await logApiError(e, 'Error getting sdc school collection student paginated list');
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
   try {
     const search = [];
@@ -953,5 +1007,6 @@ module.exports = {
   updateBandCode,
   moveSld,
   getDistrictHeadcounts,
-  getSdcSchoolCollectionsFromSdcDistrictCollectionID
+  getSdcSchoolCollectionsFromSdcDistrictCollectionID,
+  getSDCSchoolCollectionStudentSldHistoryPaginated
 };

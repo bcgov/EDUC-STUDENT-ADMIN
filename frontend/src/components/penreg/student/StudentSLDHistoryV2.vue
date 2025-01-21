@@ -32,6 +32,7 @@
         :highlight-changes="true"
         :show-links="false"
         :clickable="false"
+        @reload="reload"
       >
         <template #toolTip="{ toolTipText, chipText }">
           <v-tooltip>
@@ -81,7 +82,7 @@ export default {
   data() {
     return {
       tableHeaders: [
-        {title: 'Date', value: 'updateDate', key: 'updateDate', sortable: false, tooltip: 'Activity Date'},
+        {title: 'Date', value: 'snapshotDate', key: 'snapshotDate', sortable: false, tooltip: 'Activity Date'},
         { title: 'District', key: 'districtName' },
         { title: 'School', key: 'schoolName' },
         { title: 'Assigned PEN', key: 'assignedPen', subHeader: { title: 'Local ID', key: 'localID' } },
@@ -140,6 +141,14 @@ export default {
     getStudentName(student) {
       return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
+    reload(value) {
+      if(value?.pageSize) {
+        this.pageSize = value?.pageSize;
+      } else if(value?.pageNumber) {
+        this.pageNumber = value?.pageNumber;
+      }
+      this.retrieveStudentSLDData();
+    },
     retrieveStudentSLDData() {
       this.loading = true;
       ApiService.apiAxios
@@ -157,7 +166,7 @@ export default {
                 pageNumber: this.pageNumber - 1,
                 pageSize: this.pageSize,
                 sort: {
-                  'sdcSchoolCollection.uploadDate': 'DESC'
+                  'sdcSchoolCollection.collectionEntity.snapshotDate': 'DESC'
                 },
                 assignedStudentID: [...this.existingMergedStudentIds, this.student.studentID],
                 tableFormat: true

@@ -174,6 +174,9 @@
                 <div v-else-if="column.key === 'updateDate'">
                   <span>{{ formatDateFromDateTime(props.item.raw[column.key]) }}</span>
                 </div>
+                <div v-else-if="column.key === 'snapshotDate'">
+                  <span>{{ formatSnapshotDate(props.item.raw[column.key]) }}</span>
+                </div>
                 <span v-else-if="column.key === 'resolution'">
                   <slot
                     :sdc-school-collection-student="props.item.raw"
@@ -238,7 +241,7 @@ import {appStore} from '@/store/modules/app';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import {sanitizeUrl} from '@braintree/sanitize-url';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {DateTimeFormatter, LocalDateTime, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'CustomTable',
@@ -383,6 +386,10 @@ export default {
     },
     formatDateFromDateTime(inputDate) {
       const date = LocalDateTime.parse(inputDate);
+      return date.format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+    },
+    formatSnapshotDate(inputDate) {
+      const date = LocalDate.parse(inputDate);
       return date.format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
     },
     getSdcStudentStatusIconColor(status) {
