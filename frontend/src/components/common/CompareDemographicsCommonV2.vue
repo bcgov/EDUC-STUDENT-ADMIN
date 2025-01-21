@@ -274,7 +274,7 @@
                 />
               </div>
               <div
-                v-else-if="header.value === 'updateDate'"
+                v-else-if="header.value === 'snapshotDate'"
                 :class="existSldUsualName(item.item.raw)? 'flex-column-div' : 'flex-row-div'"
               >
                 <span class="top-field-item">{{ formatDateFromDateTime(item.item.raw[header.value]) }}</span>
@@ -399,7 +399,7 @@ import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {notificationsStore} from '@/store/modules/notifications';
 import {studentStore} from '@/store/modules/student';
 import _ from 'lodash';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'CompareDemographicsCommonV2',
@@ -440,7 +440,7 @@ export default {
       ],
       headers: [
         { id: 'table-checkbox', type: 'select', key: 'checkbox', sortable: false },
-        {text: 'Date', value: 'updateDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
+        {text: 'Date', value: 'snapshotDate', key: 'snapshotDate', sortable: false, tooltip: 'Activity Date'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
         {text: 'Surname', value: 'legalLastName', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
         {text: 'Given', value: 'legalFirstName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
@@ -616,7 +616,7 @@ export default {
       }
     },
     formatDateFromDateTime(inputDate) {
-      const date = LocalDateTime.parse(inputDate);
+      const date = LocalDate.parse(inputDate);
       return date.format(DateTimeFormatter.ofPattern('yyyy/MM/dd'));
     },
     formatDob,
@@ -641,7 +641,7 @@ export default {
                 pageNumber: 0,
                 pageSize: this.pageSize,
                 sort: {
-                  'sdcSchoolCollection.uploadDate': 'DESC'
+                  'sdcSchoolCollection.collectionEntity.snapshotDate': 'DESC'
                 },
                 assignedStudentID: [...this.existingMergedStudentIdsMap.get(student?.studentID), student?.studentID],
                 tableFormat: true
