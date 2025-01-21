@@ -765,7 +765,7 @@ elif [ "$envValue" = "test" ]; then
   sldMigrationDate="2021-07-30"
 else
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
-  disableSdcFunctionality=true
+  disableSdcFunctionality=false
   EDUC_EDX_FRONTEND="https://educationdataexchange.gov.bc.ca"
   disableEASFunctionality=true
   sldMigrationDate="2025-01-17"
