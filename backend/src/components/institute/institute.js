@@ -1143,8 +1143,15 @@ function createSchoolSearchCriteria(searchParams){
     if(key === 'schoolReportingRequirementCode'){
       searchCriteriaList.push({key: 'schoolReportingRequirementCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
     }
+    if(key === 'issueTranscripts'){
+      searchCriteriaList.push({key: 'canIssueTranscripts', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.BOOLEAN, condition: CONDITION.AND});
+    }
+    if(key === 'issueCertificates'){
+      searchCriteriaList.push({key: 'canIssueCertificates', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.BOOLEAN, condition: CONDITION.AND});
+    }
   });
 
+  console.log('Search list: ' + JSON.stringify(searchParams));
   return searchCriteriaList;
 }
 

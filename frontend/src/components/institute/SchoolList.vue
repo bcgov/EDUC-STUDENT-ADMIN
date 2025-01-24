@@ -128,7 +128,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="2"
                 class="d-flex justify-start"
               >
                 <v-select
@@ -145,7 +145,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="2"
                 class="d-flex justify-start"
               >
                 <v-select
@@ -154,9 +154,26 @@
                   :clearable="true"
                   :items="schoolFacilityTypes"
                   variant="underlined"
+                  :disabled="!activeFacilityTypeCodes || !schoolCategoryTypeFilter"
                   item-title="label"
                   item-value="facilityTypeCode"
                   label="Facility Type"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="2"
+                class="d-flex justify-start"
+              >
+                <v-select
+                  id="issue-transcripts-select-field"
+                  v-model="issueTranscriptsFilter"
+                  :clearable="true"
+                  :items="issueCertAndTranscriptTypes"
+                  variant="underlined"
+                  item-title="title"
+                  item-value="value"
+                  label="Issue Transcripts?"
                 />
               </v-col>
             </v-row>
@@ -205,7 +222,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="4"
+                md="3"
                 class="d-flex justify-start"
               >
                 <v-autocomplete
@@ -247,7 +264,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="4"
+                md="3"
                 class="d-flex justify-start"
               >
                 <v-autocomplete
@@ -260,6 +277,22 @@
                   :items="schoolReportingRequirementTypeCodes"
                   :clearable="true"
                   @update:model-value="searchButtonClick"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="2"
+                class="d-flex justify-start"
+              >
+                <v-select
+                  id="issue-certificates-select-field"
+                  v-model="issueCertificatesFilter"
+                  :clearable="true"
+                  :items="issueCertAndTranscriptTypes"
+                  variant="underlined"
+                  item-title="title"
+                  item-value="value"
+                  label="Issue Certificates?"
                 />
               </v-col>
               <v-col class="d-flex justify-end">
@@ -436,7 +469,7 @@ import {edxStore} from '@/store/modules/edx';
 import {instituteStore} from '@/store/modules/institute';
 import {notificationsStore} from '@/store/modules/notifications';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
-import {DateTimeFormatter, LocalDate} from "@js-joda/core";
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'SchoolListPage',
@@ -488,6 +521,8 @@ export default {
       schoolStatusFilter: null,
       schoolCategoryTypes: [],
       schoolCategoryTypeFilter: null,
+      issueTranscriptsFilter: null,
+      issueCertificatesFilter: null,
       schoolFacilityTypeFilter: null,
       loadingSchools: true,
       newSchoolSheet: false,
@@ -510,6 +545,13 @@ export default {
       }
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolCategoryTypeFilter]?.map(schoolCatFacilityTypeCode => this.activeFacilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       return sortBy(facilityTypes, ['displayOrder']);
+    },
+    issueCertAndTranscriptTypes() {
+      let issueTypes = [
+        {title: 'Yes', value: true, align: 'start'},
+        {title: 'No', value: false, align: 'start'}
+      ];
+      return issueTypes;
     },
     getSheetWidth() {
       return 30;
@@ -580,6 +622,8 @@ export default {
       this.schoolStatusFilter = this.schoolSearchParams.status;
       this.schoolFacilityTypeFilter = this.schoolSearchParams.facilityType;
       this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
+      this.issueTranscriptsFilter = this.schoolSearchParams.issueTranscripts;
+      this.issueCertificatesFilter = this.schoolSearchParams.issueCertificates;
       this.schoolReportingRequirementCodeFilter = this.schoolSearchParams.schoolReportingRequirementCode;
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
@@ -691,6 +735,8 @@ export default {
       this.schoolSearchParams.facilityType = null;
       this.schoolSearchParams.schoolCategory = null;
       this.schoolSearchParams.schoolReportingRequirementCode = null;
+      this.schoolSearchParams.issueTranscripts = null;
+      this.schoolSearchParams.issueCertificates = null;
       this.schoolSearchParams.pageNumber = 1;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
@@ -701,6 +747,8 @@ export default {
         || this.schoolSearchParams.status
         || this.schoolSearchParams.facilityType
         || this.schoolSearchParams.schoolCategory
+        || this.schoolSearchParams.issueTranscripts
+        || this.schoolSearchParams.issueCertificates
         || this.schoolSearchParams.schoolReportingRequirementCode;
     },
     getSchoolList() {
@@ -732,6 +780,11 @@ export default {
       this.headerSearchParams.type = this.schoolFacilityTypeFilter;
       this.headerSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
 
+      let cleanSearch = omitBy(this.headerSearchParams, isEmpty);
+
+      cleanSearch.issueTranscripts = this.issueTranscriptsFilter;
+      cleanSearch.issueCertificates = this.issueCertificatesFilter;
+
       ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
         params: {
           pageNumber: this.pageNumber - 1,
@@ -739,7 +792,7 @@ export default {
           sort: {
             schoolNumber: 'ASC'
           },
-          searchParams: omitBy(this.headerSearchParams, isEmpty),
+          searchParams: cleanSearch
         }
       }).then(response => {
         this.schools = [];
@@ -765,6 +818,8 @@ export default {
       this.schoolSearchParams.status = this.schoolStatusFilter;
       this.schoolSearchParams.facilityType = this.schoolFacilityTypeFilter;
       this.schoolSearchParams.schoolCategory = this.schoolCategoryTypeFilter;
+      this.schoolSearchParams.issueTranscripts = this.issueTranscriptsFilter;
+      this.schoolSearchParams.issueCertificates = this.issueCertificatesFilter;
       this.schoolSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
       this.schoolSearchParams.pageNumber = this.pageNumber;
       this.setSchoolSearchParams(this.schoolSearchParams);
@@ -826,7 +881,8 @@ export default {
     searchEnabled() {
       return (this.schoolCodeNameFilter !== '' && this.schoolCodeNameFilter !== null) || (this.schoolStatusFilter !== '' && this.schoolStatusFilter !== null)
         || (this.schoolFacilityTypeFilter !== '' && this.schoolFacilityTypeFilter !== null) || (this.districtCodeNameFilter !== '' && this.districtCodeNameFilter !== null)
-        || (this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null) || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
+        || (this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null) || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null)
+        || (this.issueTranscriptsFilter !== '' && this.issueTranscriptsFilter !== null)|| (this.issueCertificatesFilter !== '' && this.issueCertificatesFilter !== null);
     },
     backButtonClick() {
       router.push({name: 'home'});
@@ -839,6 +895,8 @@ export default {
       this.schoolStatusFilter = null;
       this.schoolFacilityTypeFilter = null;
       this.schoolCategoryTypeFilter = null;
+      this.issueTranscriptsFilter = null;
+      this.issueCertificatesFilter = null;
       this.schoolReportingRequirementCodeFilter = null;
 
       this.headerSearchParams.schoolNumber = null;
@@ -887,8 +945,8 @@ export default {
 }
 
 .containerSetup {
-    padding-right: 20em !important;
-    padding-left: 20em !important;
+    padding-right: 12em !important;
+    padding-left: 12em !important;
 }
 
 .hoverTable:hover {
