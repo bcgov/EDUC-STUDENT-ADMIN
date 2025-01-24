@@ -107,6 +107,12 @@
                     studentDetails?.assignedPen
                   }}</strong></span>
                 </span>
+                <span v-else-if="studentDetails?.studentPen" class="mt-1">
+                  <span class="mr-3">Provided PEN:</span>
+                  <span style="color: #2E8540"><strong>{{
+                      studentDetails?.studentPen
+                    }}</strong></span>
+                </span>
               </v-row>
             </template>
           </StudentDetailsPanel>
