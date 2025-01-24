@@ -107,6 +107,15 @@
                     studentDetails?.assignedPen
                   }}</strong></span>
                 </span>
+                <span
+                  v-else-if="studentDetails?.studentPen"
+                  class="mt-1"
+                >
+                  <span class="mr-3">Provided PEN:</span>
+                  <span><strong>{{
+                    studentDetails?.studentPen
+                  }}</strong></span>
+                </span>
               </v-row>
             </template>
           </StudentDetailsPanel>
@@ -428,18 +437,18 @@ export default {
     },
     mapPenMatchResult(penMatchResult) {
       switch(penMatchResult) {
-        case 'INREVIEW':
-          return 'Review Requested';
-        case 'MULTI':
-          return 'Multiple PEN Matches';
-        case 'CONFLICT':
-          return 'Conflict';
-        case 'NEW':
-          return 'New PEN Assigned';
-        case 'MATCH':
-          return 'PEN Matched';
-        default:
-          return penMatchResult;
+      case 'INREVIEW':
+        return 'Review Requested';
+      case 'MULTI':
+        return 'Multiple PEN Matches';
+      case 'CONFLICT':
+        return 'Conflict';
+      case 'NEW':
+        return 'New PEN Assigned';
+      case 'MATCH':
+        return 'PEN Matched';
+      default:
+        return penMatchResult;
       }
     }
   }
