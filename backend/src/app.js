@@ -162,6 +162,30 @@ auth.getOidcDiscovery().then(discovery => {
     profile.refreshToken = refreshToken;
     return done(null, profile);
   }));
+
+  passport.use('oidcIDIRSilent', new OidcStrategy({
+    issuer: discovery.issuer,
+    authorizationURL: discovery.authorization_endpoint,
+    tokenURL: discovery.token_endpoint,
+    userInfoURL: discovery['userinfo_endpoint'],
+    clientID: config.get('oidc:clientId'),
+    clientSecret: config.get('oidc:clientSecret'),
+    callbackURL: config.get('server:frontend') + '/api/auth/callback',
+    scope: 'openid profile',
+    kc_idp_hint: config.get('server:idirIDPHint')
+  }, (_issuer, profile, _context, idToken, accessToken, refreshToken, done) => {
+    if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
+        (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
+      return done('No access token', null);
+    }
+    //Generate token for frontend validation
+    //set access and refresh tokens
+    profile.jwtFrontend = auth.generateUiToken();
+    profile.jwt = accessToken;
+    profile.idToken = idToken;
+    profile.refreshToken = refreshToken;
+    return done(null, profile);
+  }));
   //JWT strategy is used for authorization
   passport.use('jwt', new JWTStrategy({
     algorithms: ['RS256'],
