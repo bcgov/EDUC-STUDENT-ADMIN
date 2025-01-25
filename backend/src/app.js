@@ -170,7 +170,7 @@ auth.getOidcDiscovery().then(discovery => {
     userInfoURL: discovery['userinfo_endpoint'],
     clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
-    callbackURL: config.get('server:frontend') + '/api/auth/callback',
+    callbackURL: config.get('server:frontend') + '/api/auth/callback_idir_silent_sdc',
     scope: 'openid profile',
     kc_idp_hint: config.get('server:idirIDPHint')
   }, (_issuer, profile, _context, idToken, accessToken, refreshToken, done) => {

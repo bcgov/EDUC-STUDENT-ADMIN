@@ -70,19 +70,15 @@ router.get(
   '/callback_idir_silent_sdc',
   passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile' }),
   async (req, res) => {
-    if(!req.session.passport.user._json.idir_guid){
+    if(!req.session?.passport?.user?.username){
       await res.redirect(config.get('server:frontend') + '/unauthorized');
       return;
     }
     let idir_guid = req.session.passport.user.username;
     const client = redis.getRedisClient();
-    let schoolSearch = await client.get(idir_guid + '::schoolSearch');
+    // let schoolSearch = await client.get(idir_guid + '::schoolSearch');
     await client.del(idir_guid + '::schoolSearch');
-    if(schoolSearch === true){
-      res.redirect(config.get('server:frontend') + '/studentSearch/basic' );
-    }else{
-      res.redirect(config.get('server:frontend'));
-    }
+    res.redirect(config.get('server:frontend') + '/studentSearch/basic' );
   },
 );
 
