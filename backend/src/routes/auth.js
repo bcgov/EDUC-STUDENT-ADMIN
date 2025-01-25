@@ -67,7 +67,7 @@ router.get('/silent_idir_login', async function (req, res, next) {
 
 
 router.get(
-  '/callback_idir_silent_sdc',
+  '/callback_idir_silent',
   passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile' }),
   async (req, res) => {
     if(!req.session?.passport?.user?.username){
