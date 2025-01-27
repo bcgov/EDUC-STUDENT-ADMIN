@@ -8,12 +8,17 @@ const jsonwebtoken = require('jsonwebtoken');
 const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
+const redis = require('../util/redis/redis-client');
 const {v4: uuidv4} = require('uuid');
 const permUtils = require('../components/permissionUtils');
 const {
   body,
   validationResult
 } = require('express-validator');
+const UnauthorizedRsp = {
+  error: 'Unauthorized',
+  error_description: 'Not logged in'
+};
 
 const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics]);
 const isValidWebSocketUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch]);
@@ -42,6 +47,40 @@ router.get('/login', passport.authenticate('oidc', {
   scope: ['openid', 'profile'],
   failureRedirect: 'error'
 }));
+
+router.get('/silent_idir_login', async function (req, res, next) {
+  const client = redis.getRedisClient();
+
+  if(!req.query.idir_guid){
+    res.status(401).json(UnauthorizedRsp);
+  }
+  let idir_guid = req.query.idir_guid;
+  if(req.query.schoolSearch){
+    await client.set(idir_guid + '::schoolSearch', true);
+  }else{
+    res.status(401).json(UnauthorizedRsp);
+  }
+
+  const authenticator = passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile' });
+  authenticator(req, res, next);
+});
+
+
+router.get(
+  '/callback_idir_silent',
+  passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile' }),
+  async (req, res) => {
+    if(!req.session?.passport?.user?.username){
+      await res.redirect(config.get('server:frontend') + '/unauthorized');
+      return;
+    }
+    let idir_guid = req.session.passport.user.username;
+    const client = redis.getRedisClient();
+    // let schoolSearch = await client.get(idir_guid + '::schoolSearch');
+    await client.del(idir_guid + '::schoolSearch');
+    res.redirect(config.get('server:frontend') + '/studentSearch/basic' );
+  },
+);
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
