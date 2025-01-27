@@ -436,14 +436,14 @@ export const SDC_REPORTS = Object.freeze(
         label: 'Independent School Inclusive Education Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-enrollment-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-enrollment-headcounts/',
-        description: 'This report calculates the total headcounts of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1,2,3), and further broken down by sub-category (A – Physically  Dependent, B – Deafblind, etc.).'
+        description: 'This report calculates the total headcounts of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1, 2, 3), and further broken down by sub-category (A – Physically  Dependent, B – Deafblind, etc.).'
       },
       {
         label: 'Independent School Inclusive Education Funding Headcounts',
         url: object.SDC_MINISTRY_REPORTS + '/headcount/indy-inclusive-ed-funding-headcounts/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-inclusive-ed-funding-headcounts/',
         onlyForCollection: ['FEBRUARY'],
-        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1,2,3) and detail the September total, the February total, the resulting net change between the two, and the positive change of designated students who joined the school since the previous September collection. This report is only run for the February collection.'
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations in each independent school, including indendent First Nations schools. The headcounts are broken down by Inclusive Education level (1, 2, 3) and detail the September total, the February total, the resulting net change between the two, and the positive change of designated students who joined the school since the previous September collection. This report is only run for the February collection.'
       },
       {
         label: 'Offshore School Enrolment Headcounts',
@@ -466,41 +466,41 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'Eligible Inclusive Education Variance Headcounts',
         reportID: 'INCLUSIVE_EDUCATION_VARIANCE',
-        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations within a particular school district.  The headcounts are broken down by Inclusive Education level (1,2,3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.), as well as by grade level. The report shows the headcounts (both totals and various breakdown categories) for the district in the September collection and the February collection to detail how the student population with Inclusive Education designations has changed between the two collections. This report is only run for the February collection and cannot be downloaded.'
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations within a particular school district.  The headcounts are broken down by Inclusive Education level (1, 2, 3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.), as well as by grade level. The report shows the headcounts (both totals and various breakdown categories) for the district in the September collection and the February collection to detail how the student population with Inclusive Education designations has changed between the two collections. This report is only run for the February collection and cannot be downloaded.'
       },
       {
         label: 'Enroled Headcounts and FTEs By School',
         reportID: 'ENROLED_FUNDING_REPORT',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/enrolled-fte-headcounts/',
-        description: 'This report calculates the overall headcounts and funded FTEs for all public schools (including standard, continuing education, POLs, and alternate program schools), broken down by grade. Additional information includes a grade-by-grade breakdown of the headcounts for inclusive education levels, ELL, Indigenous ancestry, and French programs for every grade level in each schoo. The report can only be viewed by downloading it.'
+        description: 'This report calculates the overall headcounts and funded FTEs for all public schools (including standard, continuing education, POLs, and alternate program schools), broken down by grade. Additional information includes a grade-by-grade breakdown of the headcounts for inclusive education levels, ELL, Indigenous ancestry, and French programs for every grade level in each school. The report can only be viewed by downloading it.'
       },
       {
         label: 'Refugee Enroled Headcounts and FTEs',
         reportID: 'ENROLED_FUNDING_REPORT',
         onlyForCollection: ['FEBRUARY'],
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/refugee-enrolment-fte-headcounts/',
-        description: 'This report calculates the overall refugee headcounts and funded FTEs for each public school, broken down by grade. It includes public schools with the faility type of standard school or alternate programs. The funded FTEs section has refugee enrollment for each grade, and the headcount section has both the refugee and ELL enrollment for each grade. This report is only run for the February collection and can only be viewed by downloading it.'
+        description: 'This report calculates the overall refugee headcounts and funded FTEs for each public school, broken down by grade. It includes public schools with the facility type of standard school or alternate programs. The funded FTEs section has refugee enrollment for each grade, and the headcount section has both the refugee and ELL enrollment for each grade. This report is only run for the February collection and can only be viewed by downloading it.'
       },
       {
         label: 'Inclusive Education Variances - All Districts',
         onlyForCollection: ['FEBRUARY'],
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/inclusive-education-variances-all/',
-        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations across all school districts.  The headcounts are broken down by Inclusive Education level (1,2,3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.) in September and February, before providing the resulting variance between the two collections with the same breakdown structure. This data is shown district by district. This report is only run for the February collection (comparing against the previous September collection) and can only viewed by downloading it. '
+        description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations across all school districts. The headcounts are broken down by Inclusive Education level (1, 2, 3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.) in September and February, before providing the resulting variance between the two collections with the same breakdown structure. This data is shown district by district. This report is only run for the February collection (comparing against the previous September collection) and can only viewed by downloading it. '
       },
       {
         label: 'Independent School Funding Report - Standard Student - All',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-all/',
-        description: 'This report showcases the funding groups (1,2,3, or 4), headcounts, and FTEs for each independent school, broken down by grade. The report includes school totals for headcounts and FTEs. Each school has a funding group identified per grade offered at the school. This report can only be viewed by downloading it.'
+        description: 'This report showcases the funding groups (1, 2, 3, or 4), headcounts, and FTEs for each independent school, broken down by grade. The report includes school totals for headcounts and FTEs. Each school has a funding group identified per grade offered at the school. This report can only be viewed by downloading it.'
       },
       {
         label: 'Independent School Funding Report - Standard Student - Funded Only',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-funding-report-funded/',
-        description: 'This report calculates the funding groups (1,2,3, or 4), headcounts, and funded FTEs for each independent school, broken down by grade. In this report, grades with funding groups 3 or 4 are not included in the FTE totals. The report includes school totals for headcounts and funded FTEs. Each school has a single funding group that applies to every grade that the school offers. This report can only be viewed by downloading it.'
+        description: 'This report calculates the funding groups (1, 2, 3, or 4), headcounts, and funded FTEs for each independent school, broken down by grade. In this report, grades with funding groups 3 or 4 are not included in the FTE totals. The report includes school totals for headcounts and funded FTEs. Each school has a single funding group that applies to every grade that the school offers. This report can only be viewed by downloading it.'
       },
       {
         label: 'Independent School Funding Report - Online Learning',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/online-indy-funding-report/',
-        description: 'This report calculates the funding groups (1,2,3, or 4), headcounts, and FTEs for each online learning independent school, broken down by grade. The report includes school totals for headcounts and FTEs. Each school has a funding group identified per grade offered at the school. This report can only be viewed by downloading it.'
+        description: 'This report calculates the funding groups (1, 2, 3, or 4), headcounts, and FTEs for each online learning independent school, broken down by grade. The report includes school totals for headcounts and FTEs. Each school has a funding group identified per grade offered at the school. This report can only be viewed by downloading it.'
       },
       {
         label: 'Independent School Funding Report - Non Graduated Adult',
