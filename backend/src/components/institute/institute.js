@@ -1151,7 +1151,6 @@ function createSchoolSearchCriteria(searchParams){
     }
   });
 
-  console.log('Search list: ' + JSON.stringify(searchParams));
   return searchCriteriaList;
 }
 
