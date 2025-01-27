@@ -55,8 +55,8 @@ router.get('/silent_idir_login', async function (req, res, next) {
     res.status(401).json(UnauthorizedRsp);
   }
   let idir_guid = req.query.idir_guid;
-  if(req.query.schoolSearch){
-    await client.set(idir_guid + '::schoolSearch', true);
+  if(req.query.studentSearch){
+    await client.set(idir_guid + '::studentSearch', true);
   }else{
     res.status(401).json(UnauthorizedRsp);
   }
@@ -76,8 +76,8 @@ router.get(
     }
     let idir_guid = req.session.passport.user.username;
     const client = redis.getRedisClient();
-    // let schoolSearch = await client.get(idir_guid + '::schoolSearch');
-    await client.del(idir_guid + '::schoolSearch');
+    // let studentSearch = await client.get(idir_guid + '::studentSearch');
+    await client.del(idir_guid + '::studentSearch');
     res.redirect(config.get('server:frontend') + '/studentSearch/basic' );
   },
 );
