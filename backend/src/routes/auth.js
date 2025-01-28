@@ -9,7 +9,7 @@ const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
 const redis = require('../util/redis/redis-client');
-const {v4: uuidv4} = require('uuid');
+const {v4: uuidv4, validate} = require('uuid');
 const permUtils = require('../components/permissionUtils');
 const {
   body,
@@ -55,8 +55,15 @@ router.get('/silent_idir_login', async function (req, res, next) {
     res.status(401).json(UnauthorizedRsp);
   }
   let idir_guid = req.query.idir_guid;
-  if(req.query.studentSearch){
-    await client.set(idir_guid + '::studentSearch', true);
+  if(req.query.schoolSearch){
+    await client.set(idir_guid + '::schoolSearch', true, {EX: 1800});
+  }else if(req.query.schoolDetails && req.query.schoolID){
+    let schoolID = req.query.schoolID;
+    if (!validate(schoolID)) {
+      res.status(401).json(UnauthorizedRsp);
+    }
+    await client.set(idir_guid + '::schoolDetails', true, {EX: 1800});
+    await client.set(idir_guid + '::schoolID', schoolID, {EX: 1800});
   }else{
     res.status(401).json(UnauthorizedRsp);
   }
@@ -76,9 +83,21 @@ router.get(
     }
     let idir_guid = req.session.passport.user.username;
     const client = redis.getRedisClient();
-    // let studentSearch = await client.get(idir_guid + '::studentSearch');
-    await client.del(idir_guid + '::studentSearch');
-    res.redirect(config.get('server:frontend') + '/studentSearch/basic' );
+    let schoolSearch = await client.get(idir_guid + '::schoolSearch');
+    let schoolDetails = await client.get(idir_guid + '::schoolDetails');
+    let schoolID = await client.get(idir_guid + '::schoolID');
+
+    await client.del(idir_guid + '::schoolSearch');
+    await client.del(idir_guid + '::schoolDetails');
+    await client.del(idir_guid + '::schoolID');
+
+    if(schoolSearch){
+      res.redirect(config.get('server:frontend') + '/institute/school' );
+    }else if(schoolDetails){
+      res.redirect(config.get('server:frontend') + '/institute/school/' + schoolID + '/details' );
+    }
+
+    res.status(401).json(UnauthorizedRsp);
   },
 );
 
