@@ -747,15 +747,14 @@ export default {
         || this.schoolSearchParams.status
         || this.schoolSearchParams.facilityType
         || this.schoolSearchParams.schoolCategory
-        || this.schoolSearchParams.issueTranscripts
-        || this.schoolSearchParams.issueCertificates
+        || (this.schoolSearchParams.issueTranscripts || this.schoolSearchParams.issueTranscripts === false)
+        || (this.schoolSearchParams.issueCertificates || this.schoolSearchParams.issueCertificates === false)
         || this.schoolSearchParams.schoolReportingRequirementCode;
     },
     getSchoolList() {
       this.loadingTable = true;
       this.requests = [];
       this.schools = [];
-
 
       if (this.schoolCodeNameFilter !== null && this.schoolCodeNameFilter !== '') {
         this.headerSearchParams.schoolID = this.schoolCodeNameFilter;
