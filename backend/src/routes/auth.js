@@ -56,14 +56,14 @@ router.get('/silent_idir_login', async function (req, res, next) {
   }
   let idir_guid = req.query.idir_guid;
   if(req.query.schoolSearch){
-    await client.set(idir_guid + '::schoolSearch', true, {EX: 1800});
+    await client.set(idir_guid + '::schoolSearch', true, 'EX', 1800);
   }else if(req.query.schoolDetails && req.query.schoolID){
     let schoolID = req.query.schoolID;
     if (!validate(schoolID)) {
       res.status(401).json(UnauthorizedRsp);
     }
-    await client.set(idir_guid + '::schoolDetails', true, {EX: 1800});
-    await client.set(idir_guid + '::schoolID', schoolID, {EX: 1800});
+    await client.set(idir_guid + '::schoolDetails', true, 'EX', 1800);
+    await client.set(idir_guid + '::schoolID', schoolID, 'EX', 1800);
   }else{
     res.status(401).json(UnauthorizedRsp);
   }
