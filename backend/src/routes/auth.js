@@ -9,7 +9,8 @@ const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
 const redis = require('../util/redis/redis-client');
-const {v4: uuidv4, validate} = require('uuid');
+const {v4: uuidv4} = require('uuid');
+const {v4: validate } = require('uuid');
 const permUtils = require('../components/permissionUtils');
 const {
   body,
@@ -60,7 +61,7 @@ router.get('/silent_idir_login', async function (req, res, next) {
   }else if(req.query.schoolDetails && req.query.schoolID){
     let schoolID = req.query.schoolID;
     if (!validate(schoolID)) {
-      res.status(401).json(UnauthorizedRsp);
+      res.status(401).json('Invalid School ID.');
     }
     await client.set(idir_guid + '::schoolDetails', true, 'EX', 1800);
     await client.set(idir_guid + '::schoolID', schoolID, 'EX', 1800);
@@ -95,9 +96,9 @@ router.get(
       res.redirect(config.get('server:frontend') + '/institute/school' );
     }else if(schoolDetails){
       res.redirect(config.get('server:frontend') + '/institute/school/' + schoolID + '/details' );
+    }else{
+      res.status(401).json(UnauthorizedRsp);
     }
-
-    res.status(401).json(UnauthorizedRsp);
   },
 );
 
