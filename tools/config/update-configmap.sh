@@ -222,6 +222,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"VIEW_STUDENT_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to view Student Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating VIEW_GRAD_DATA_COLLECTION_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_GRAD_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to view Grad Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Creating EDIT_GRAD_DATA_COLLECTION_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"EDIT_GRAD_DATA_COLLECTION_PERMISSION\",\"description\" : \"Permission to edit Grad Data Collection\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
 echo Creating EDIT_STUDENT_DATA_COLLECTION_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -348,6 +362,18 @@ viewRegistrationContactsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/adm
 echo
 echo Retrieving VIEW_STUDENT_DATA_COLLECTION_PERMISSION permission
 viewStudentDataCollectionPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_STUDENT_DATA_COLLECTION_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving VIEW_GRAD_DATA_COLLECTION_PERMISSION permission
+viewGradDataCollectionPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_GRAD_DATA_COLLECTION_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Retrieving EDIT_GRAD_DATA_COLLECTION_PERMISSION permission
+editGradDataCollectionPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_GRAD_DATA_COLLECTION_PERMISSION" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
@@ -538,6 +564,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/STUDEN
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
   -d "[$viewStudentDataCollectionPermissionJson, $editStudentDataCollectionPermissionJson]"
+
+echo
+echo Creating GRAD_DATA_COLLECTION_ADMIN role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"GRAD_DATA_COLLECTION_ADMIN\",\"description\" : \"Allows access to edit or update Grad Data Collections\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to GRAD_DATA_COLLECTION_ADMIN role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/GRAD_DATA_COLLECTION_ADMIN/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewGradDataCollectionPermissionJson, $editGradDataCollectionPermissionJson]"
 
 echo
 echo Creating MANAGE_EAS_SESSIONS_PERMISSION permission
