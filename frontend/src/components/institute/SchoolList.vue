@@ -128,7 +128,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="2"
+                md="3"
                 class="d-flex justify-start"
               >
                 <v-select
@@ -145,7 +145,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="2"
+                md="3"
                 class="d-flex justify-start"
               >
                 <v-select
@@ -158,22 +158,6 @@
                   item-title="label"
                   item-value="facilityTypeCode"
                   label="Facility Type"
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                md="2"
-                class="d-flex justify-start"
-              >
-                <v-select
-                  id="issue-transcripts-select-field"
-                  v-model="issueTranscriptsFilter"
-                  :clearable="true"
-                  :items="issueCertAndTranscriptTypes"
-                  variant="underlined"
-                  item-title="title"
-                  item-value="value"
-                  label="Issue Transcripts?"
                 />
               </v-col>
             </v-row>
@@ -222,7 +206,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="4"
                 class="d-flex justify-start"
               >
                 <v-autocomplete
@@ -264,7 +248,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="4"
                 class="d-flex justify-start"
               >
                 <v-autocomplete
@@ -277,6 +261,24 @@
                   :items="schoolReportingRequirementTypeCodes"
                   :clearable="true"
                   @update:model-value="searchButtonClick"
+                />
+              </v-col>
+            </v-row>
+            <v-row class="mt-n6">
+              <v-col
+                cols="12"
+                md="2"
+                class="d-flex justify-start"
+              >
+                <v-select
+                  id="issue-transcripts-select-field"
+                  v-model="issueTranscriptsFilter"
+                  :clearable="true"
+                  :items="issueCertAndTranscriptTypes"
+                  variant="underlined"
+                  item-title="title"
+                  item-value="value"
+                  label="Issue Transcripts?"
                 />
               </v-col>
               <v-col
@@ -295,7 +297,23 @@
                   label="Issue Certificates?"
                 />
               </v-col>
-              <v-col class="d-flex justify-end">
+              <v-col
+                cols="12"
+                md="3"
+                class="d-flex justify-start"
+              >
+                <v-select
+                  id="grade-select-field"
+                  v-model="gradeFilter"
+                  :clearable="true"
+                  :items="schoolGradeTypes"
+                  variant="underlined"
+                  item-title="label"
+                  item-value="schoolGradeCode"
+                  label="Grade"
+                />
+              </v-col>
+              <v-col class="d-flex justify-end mt-5">
                 <PrimaryButton
                   id="user-search-button"
                   text="Clear"
@@ -521,8 +539,10 @@ export default {
       schoolStatusFilter: null,
       schoolCategoryTypes: [],
       schoolCategoryTypeFilter: null,
+      schoolGradeTypes: [],
       issueTranscriptsFilter: null,
       issueCertificatesFilter: null,
+      gradeFilter: null,
       schoolFacilityTypeFilter: null,
       loadingSchools: true,
       newSchoolSheet: false,
@@ -538,7 +558,7 @@ export default {
     ...mapState(appStore, ['schoolsMap']),
     ...mapState(edxStore, ['schoolSearchParams']),
     ...mapState(notificationsStore, ['notification']),
-    ...mapState(instituteStore, ['facilityTypeCodes', 'activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'gradeCodes']),
     schoolFacilityTypes() {
       if (!this.activeFacilityTypeCodes || !this.schoolCategoryTypeFilter) {
         return [];
@@ -547,11 +567,10 @@ export default {
       return sortBy(facilityTypes, ['displayOrder']);
     },
     issueCertAndTranscriptTypes() {
-      let issueTypes = [
+      return [
         {title: 'Yes', value: true, align: 'start'},
         {title: 'No', value: false, align: 'start'}
       ];
-      return issueTypes;
     },
     getSheetWidth() {
       return 30;
@@ -611,6 +630,10 @@ export default {
     if (this.hasSearchValue()) {
       this.getSchoolList();
     }
+    instStore.getAllGradeCodes().then(() => {
+      this.schoolGradeTypes = sortBy(this.gradeCodes, ['displayOrder']);
+      console.log('Grades: ' + JSON.stringify(this.schoolGradeTypes));
+    });
   },
   methods: {
     hasRequiredPermission,
@@ -624,9 +647,11 @@ export default {
       this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
       this.issueTranscriptsFilter = this.schoolSearchParams.issueTranscripts;
       this.issueCertificatesFilter = this.schoolSearchParams.issueCertificates;
+      this.gradeFilter = this.schoolSearchParams.grade;
       this.schoolReportingRequirementCodeFilter = this.schoolSearchParams.schoolReportingRequirementCode;
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
+
     isOpenNotClosingAuthority,
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {
@@ -747,6 +772,7 @@ export default {
         || this.schoolSearchParams.status
         || this.schoolSearchParams.facilityType
         || this.schoolSearchParams.schoolCategory
+        || this.schoolSearchParams.grade
         || (this.schoolSearchParams.issueTranscripts || this.schoolSearchParams.issueTranscripts === false)
         || (this.schoolSearchParams.issueCertificates || this.schoolSearchParams.issueCertificates === false)
         || this.schoolSearchParams.schoolReportingRequirementCode;
@@ -777,6 +803,7 @@ export default {
       this.headerSearchParams.status = this.schoolStatusFilter;
       this.headerSearchParams.category = this.schoolCategoryTypeFilter;
       this.headerSearchParams.type = this.schoolFacilityTypeFilter;
+      this.headerSearchParams.gradeCode = this.gradeFilter;
       this.headerSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
 
       let cleanSearch = omitBy(this.headerSearchParams, isEmpty);
@@ -819,6 +846,7 @@ export default {
       this.schoolSearchParams.schoolCategory = this.schoolCategoryTypeFilter;
       this.schoolSearchParams.issueTranscripts = this.issueTranscriptsFilter;
       this.schoolSearchParams.issueCertificates = this.issueCertificatesFilter;
+      this.schoolSearchParams.grade = this.gradeFilter;
       this.schoolSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
       this.schoolSearchParams.pageNumber = this.pageNumber;
       this.setSchoolSearchParams(this.schoolSearchParams);
@@ -881,7 +909,8 @@ export default {
       return (this.schoolCodeNameFilter !== '' && this.schoolCodeNameFilter !== null) || (this.schoolStatusFilter !== '' && this.schoolStatusFilter !== null)
         || (this.schoolFacilityTypeFilter !== '' && this.schoolFacilityTypeFilter !== null) || (this.districtCodeNameFilter !== '' && this.districtCodeNameFilter !== null)
         || (this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null) || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null)
-        || (this.issueTranscriptsFilter !== '' && this.issueTranscriptsFilter !== null)|| (this.issueCertificatesFilter !== '' && this.issueCertificatesFilter !== null);
+        || (this.issueTranscriptsFilter !== '' && this.issueTranscriptsFilter !== null) || (this.issueCertificatesFilter !== '' && this.issueCertificatesFilter !== null)
+        || (this.gradeFilter !== '' && this.gradeFilter !== null);
     },
     backButtonClick() {
       router.push({name: 'home'});
@@ -896,6 +925,7 @@ export default {
       this.schoolCategoryTypeFilter = null;
       this.issueTranscriptsFilter = null;
       this.issueCertificatesFilter = null;
+      this.gradeFilter = null;
       this.schoolReportingRequirementCodeFilter = null;
 
       this.headerSearchParams.schoolNumber = null;

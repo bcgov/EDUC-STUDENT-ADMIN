@@ -1143,6 +1143,9 @@ function createSchoolSearchCriteria(searchParams){
     if(key === 'schoolReportingRequirementCode'){
       searchCriteriaList.push({key: 'schoolReportingRequirementCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
     }
+    if(key === 'gradeCode'){
+      searchCriteriaList.push({key: 'grades.schoolGradeCode', operation: FILTER_OPERATION.IN, value: pValue.toString(), valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
     if(key === 'issueTranscripts'){
       searchCriteriaList.push({key: 'canIssueTranscripts', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.BOOLEAN, condition: CONDITION.AND});
     }

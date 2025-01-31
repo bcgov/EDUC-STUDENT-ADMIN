@@ -29,6 +29,7 @@ export const edxStore = defineStore('edx', {
         schoolReportingRequirementCode: null,
         issueTranscripts: null,
         issueCertificates: null,
+        grade: null,
         pageNumber: 1
       },
   }),
