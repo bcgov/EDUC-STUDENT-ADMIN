@@ -310,7 +310,7 @@
                   variant="underlined"
                   item-title="label"
                   item-value="schoolGradeCode"
-                  label="Grades Offered"
+                  label="Grade Offered"
                 />
               </v-col>
               <v-col class="d-flex justify-end mt-5">
