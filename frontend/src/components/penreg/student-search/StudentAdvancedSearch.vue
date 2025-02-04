@@ -351,7 +351,7 @@
             />
           </v-col>
           <v-col cols="2">
-            <v-tooltip left>
+            <v-tooltip location="start">
               <template #activator="{ props }">
                 <v-icon
                   size="25"
