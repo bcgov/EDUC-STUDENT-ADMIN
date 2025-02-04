@@ -131,10 +131,10 @@
                 >{{ item.item.raw[header.topValue] }}</a>
                 <v-tooltip
                   v-else-if="header.topValue === 'mincode'"
-                  right
+                  location="end"
                 >
-                  <template #activator="{ on }">
-                    <span>{{ item.item.raw[header.topValue] }}</span>
+                  <template #activator="{ props }">
+                    <span v-bind="props">{{ item.item.raw[header.topValue] }}</span>
                   </template>
                   <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>

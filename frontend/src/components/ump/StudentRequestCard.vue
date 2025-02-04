@@ -33,7 +33,7 @@
           v-if="request.recordedPen"
           v-model="clipboard"
           class="mb-2"
-          right
+          location="end"
         >
           <template #activator="{ }">
             <PrimaryButton

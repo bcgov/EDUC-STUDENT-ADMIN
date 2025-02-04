@@ -78,9 +78,9 @@
           </a>
         </template>
         <template #[`item.matchedReason`]="props">
-          <v-tooltip bottom>
-            <template #activator="{ on }">
-              <span>{{ props.value }}</span>
+          <v-tooltip location="bottom">
+            <template #activator="{ props: tooltipProps }">
+              <span v-bind="tooltipProps">{{ props.value }}</span>
             </template>
             <span>{{ matchReasonLabel(props.value) }}</span>
           </v-tooltip>

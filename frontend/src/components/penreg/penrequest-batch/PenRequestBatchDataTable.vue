@@ -80,7 +80,7 @@
                 />
                 <v-tooltip
                   v-if="item.item.raw.sagaInProgress"
-                  bottom
+                  location="bottom"
                 >
                   <template #activator="{ props }">
                     <v-icon
@@ -127,13 +127,14 @@
               <span v-else>{{ formatTableColumn(header.format, item.item.raw[header.value]) }}</span>
               <v-tooltip
                 v-if="header.value==='mincode' && isUnarchived(item.item.raw)"
-                right
+                location="end"
               >
-                <template #activator="{ on }">
+                <template #activator="{ props }">
                   <v-icon
                     small
                     color="#2E8540"
                     class="ml-1"
+                    v-bind="props"
                   >
                     {{ isUnarchivedBatchChanged(item.item.raw) ? 'mdi-sync' : 'mdi-lock-open-outline' }}
                   </v-icon>
@@ -144,10 +145,11 @@
                 v-if="header.value==='mincode' && isRearchived(item.item.raw)"
                 right
               >
-                <template #activator="{ on }">
+                <template #activator="{ props }">
                   <v-icon
                     color="#2E8540"
                     class="ml-1"
+                    v-bind="props"
                   >
                     {{ 'preview' }}
                   </v-icon>
