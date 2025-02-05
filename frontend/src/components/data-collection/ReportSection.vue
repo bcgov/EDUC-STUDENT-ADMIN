@@ -1,6 +1,6 @@
 <template>
   <v-row no-gutters>
-    <v-col cols="4">
+    <v-col cols="5">
       <v-select
         id="reportListDropdown"
         v-model="selectedReport"
@@ -16,32 +16,33 @@
   <v-row v-if="selectedReport?.description">
     <v-col>
       <p
-          style="font-style: italic"
-          class="pb-4"
+        style="font-style: italic"
+        class="pb-4"
       >
-        {{selectedReport.description}}
+        {{ selectedReport.description }}
       </p>
     </v-col>
   </v-row>
-  <v-row v-if="selectedReport?.csvDownloadURL" class="mt-2 mb-4">
-    <span
-
-    >
-          <router-link
-              id="downloadReport"
-              :to="{ path: selectedReport.csvDownloadURL + collectionID}"
-              target="_blank"
-          >
-            <v-icon>mdi-tray-arrow-down</v-icon>
-            Download CSV
-          </router-link>
-        </span>
+  <v-row
+    v-if="selectedReport?.csvDownloadURL"
+    class="mt-2 mb-4"
+  >
+    <span>
+      <router-link
+        id="downloadReport"
+        :to="{ path: selectedReport.csvDownloadURL + collectionID}"
+        target="_blank"
+      >
+        <v-icon>mdi-tray-arrow-down</v-icon>
+        Download CSV
+      </router-link>
+    </span>
   </v-row>
   <v-row
     v-if="(reportData !== null || displayAllStudents) && selectedReport?.url"
     no-gutters
   >
-  <v-col>
+    <v-col>
       <v-text-field
         v-model="search"
         label="Search"
@@ -161,7 +162,7 @@ export default {
   watch: {
     selectedReport() {
       this.displayAllStudents = false;
-     if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
+      if (this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_INDY' || this.selectedReport.reportID === 'FUNDING_POLICY_REPORT_DISTRICT' || this.selectedReport.reportID === 'INCLUSIVE_EDUCATION_VARIANCE') {
         this.displayAllStudents = false;
         this.reportData = null;
       } else if (this.selectedReport.reportID === 'ENROLED_FUNDING_REPORT') {
