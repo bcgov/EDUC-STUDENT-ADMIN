@@ -36,7 +36,7 @@
         </v-col>
       </v-row>
       <v-row
-        class="pt-3 px-3"
+        class="px-3"
       >
         <v-col class="pt-0">
           <v-row no-gutters>
@@ -46,7 +46,6 @@
             >
               <v-autocomplete
                 id="name-text-field"
-                v-model="schoolCodeNameFilter"
                 label="School Code & Name"
                 item-value="schoolID"
                 item-title="schoolCodeName"
@@ -54,7 +53,7 @@
                 :items="schoolSearchNames"
                 :menu-props="{closeOnContentClick:true}"
                 :clearable="true"
-                @update:model-value="searchButtonClick"
+                @update:model-value="schoolCodeNameFilter = $event"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -87,7 +86,7 @@
             >
               <v-autocomplete
                 id="district-text-field"
-                v-model="districtCodeNameFilter"
+                v-model="districtCodeNameFilterVal"
                 :clearable="true"
                 :items="districtSearchNames"
                 item-title="districtNumberName"
@@ -99,9 +98,9 @@
               >
                 <template #prepend-inner>
                   <v-icon
-                    v-if="districtCodeNameFilter"
+                    v-if="districtCodeNameFilterVal"
                     class="pt-1"
-                    :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilter)?.status)"
+                    :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilterVal)?.status)"
                   >
                     mdi-circle-medium
                   </v-icon>
@@ -129,7 +128,7 @@
             >
               <v-autocomplete
                 id="authority-text-field"
-                v-model="authorityCodeNameFilter"
+                v-model="authorityCodeNameFilterVal"
                 label="Authority Code & Name"
                 item-value="authorityID"
                 item-title="authorityCodeName"
@@ -141,9 +140,9 @@
               >
                 <template #prepend-inner>
                   <v-icon
-                    v-if="authorityCodeNameFilter"
+                    v-if="authorityCodeNameFilterVal"
                     class="pt-1"
-                    :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilter)?.status)"
+                    :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilterVal)?.status)"
                   >
                     mdi-circle-medium
                   </v-icon>
@@ -332,68 +331,63 @@ export default {
   },
   mixins: [alertMixin],
   props: {
-    school: {
+    schoolReportingRequirementCodeFilter: {
       type: Object,
-      required: false,
+      required: true,
       default: null
     },
-    district: {
+    schoolCodeNameFilter: {
       type: Object,
-      required: false,
+      required: true,
       default: null
     },
-    indySchoolDistrictObject: {
+    districtCodeNameFilter: {
       type: Object,
-      required: false,
+      required: true,
       default: null
     },
-    isDistrict: {
-      type: Boolean,
-      required: false,
-      default: false
+    authorityCodeNameFilter: {
+      type: Object,
+      required: true,
+      default: null
     },
-    schoolUiFilter : {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+    issueTranscriptsFilter: {
+      type: Object,
+      required: true,
+      default: null
+    },
+    issueCertificatesFilter: {
+      type: Object,
+      required: true,
+      default: null
+    },
+    schoolFacilityTypeFilter: {
+      type: Object,
+      required: true,
+      default: null
+    },
+    schoolCategoryTypeFilter: {
+      type: Object,
+      required: true,
+      default: null
+    },
+    gradeFilter: {
+      type: Object,
+      required: true,
+      default: null
+    },
   },
-  emits: ['clearFilters', 'apply-filters', 'close'],
+  emits: ['clearFilters', 'apply-filters', 'close', 'update:schoolCodeNameFilter', 'update:districtCodeNameFilter', 'update:authorityCodeNameFilter'],
   data() {
     return {
       selected: {},
-      bandCodeValue: null,
-      courseRangeDefault: [0, 15],
-      courseRange: [0, 15],
-      schoolCodeNameFilter: null,
       activeSchoolCategoryTypes: [],
-      districtCodeNameFilter: null,
-      authorityCodeNameFilter: null,
-      schoolReportingRequirementCodeFilter: null,
       reportingRequirementTypes: [],
       schoolStatusFilter: null,
       schoolStatus: [],
       authoritySearchNames: [],
       schoolCategoryTypes: [],
-      schoolCategoryTypeFilter: null,
       schoolGradeTypes: [],
-      issueTranscriptsFilter: null,
-      issueCertificatesFilter: null,
-      gradeFilter: null,
-      schoolFacilityTypeFilter: null,
-      penLocalIdNameFilter: null,
-      schoolNameNumberFilter: null,
-      schoolNameNumberFilterForDistrict: null,
-      districtNameNumberFilter: null,
-      legalFirstName: null,
-      legalMiddleNames: null,
-      legalLastName: null,
-      usualFirstName: null,
-      usualMiddleNames: null,
-      usualLastName: null,
-      studentPen: null,
-      assignedPen: null,
-      localID: null,
       schoolSearchNames: [],
       schoolSearchNamesForDistrict: [],
       districtSearchNames: [],
@@ -417,18 +411,6 @@ export default {
         {title: 'Yes', value: true, align: 'start'},
         {title: 'No', value: false, align: 'start'}
       ];
-    }
-  },
-  watch: {
-    indySchoolDistrictObject: {
-      immediate: true,
-      handler(newVal) {
-        if (this.isDistrict && newVal) {
-          this.schoolNameNumberFilterForDistrict = null;
-          this.setSchoolNameNumberFilterForDistrict('schoolNameNumber', null);
-          this.setupSchoolListForDistrict(newVal.id);
-        }
-      }
     }
   },
   async beforeMount() {
