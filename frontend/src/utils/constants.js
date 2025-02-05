@@ -617,6 +617,7 @@ export const PAGE_TITLES = Object.freeze(
     DISTRICT_LIST: 'District List',
     DISTRICT_CONTACTS: 'District Contacts',
     SCHOOL_LIST: 'School List',
+    GRAD_SCHOOL_LIST: 'Graduation School List',
     SCHOOL_DETAILS: 'School Details',
     AUTHORITIES_LIST: 'Authority List',
     AUTHORITY_DETAILS: 'Authority Details',
@@ -629,6 +630,7 @@ export const PAGE_TITLES = Object.freeze(
     INVITATIONS: 'EDX Invitations',
     CLOSE_COLLECTION: 'Close Collection',
     ASSESSMENTS: 'Assessments',
+    GRADUATION: 'Graduation',
     ASSESSMENT_SESSIONS_MANAGEMENT: 'Assessment Sessions',
     ASSESSMENT_DATA_EXCHANGE: 'Assessment Data Exchange',
   }

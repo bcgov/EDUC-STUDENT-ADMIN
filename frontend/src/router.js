@@ -42,6 +42,7 @@ import AccessUsersPage from '@/components/secure-message/AccessSchoolUsersPage.v
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage.vue';
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage.vue';
 import DistrictList from '@/components/institute/DistrictList.vue';
+import GradSchoolList from '@/components/gdc/GradSchoolList.vue';
 import DistrictDetailsPage from '@/components/institute/DistrictDetails.vue';
 import SchoolListPage from '@/components/institute/SchoolList.vue';
 import SchoolDetails from '@/components/institute/SchoolDetails.vue';
@@ -495,6 +496,22 @@ const router = createRouter({
             pageTitle: PAGE_TITLES.AUTHORITIES_LIST,
             requiresAuth: true,
             permission: PERMISSION.VIEW_AUTHORITY_PERMISSION
+          },
+        }
+      ]
+    },
+    {
+      path: '/graduations',
+      component: RouterView,
+      children: [
+        {
+          path: 'school',
+          name: 'graduationSchoolList',
+          component: GradSchoolList,
+          meta: {
+            pageTitle: PAGE_TITLES.GRAD_SCHOOL_LIST,
+            requiresAuth: true,
+            permission: PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION
           },
         }
       ]
