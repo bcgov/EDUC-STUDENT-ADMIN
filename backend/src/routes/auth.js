@@ -65,6 +65,13 @@ router.get('/silent_idir_login', async function (req, res, next) {
     }
     await client.set(idir_guid + '::schoolDetails', true, 'EX', 1800);
     await client.set(idir_guid + '::schoolID', schoolID, 'EX', 1800);
+  }else if(req.query.districtDetails && req.query.districtID){
+    let districtID = req.query.districtID;
+    if (!validate(districtID)) {
+      res.status(401).json('Invalid District ID.');
+    }
+    await client.set(idir_guid + '::districtDetails', true, 'EX', 1800);
+    await client.set(idir_guid + '::districtID', districtID, 'EX', 1800);
   }else{
     res.status(401).json(UnauthorizedRsp);
   }
@@ -87,15 +94,21 @@ router.get(
     let schoolSearch = await client.get(idir_guid + '::schoolSearch');
     let schoolDetails = await client.get(idir_guid + '::schoolDetails');
     let schoolID = await client.get(idir_guid + '::schoolID');
+    let districtDetails = await client.get(idir_guid + '::districtDetails');
+    let districtID = await client.get(idir_guid + '::districtID');
 
     await client.del(idir_guid + '::schoolSearch');
     await client.del(idir_guid + '::schoolDetails');
     await client.del(idir_guid + '::schoolID');
+    await client.del(idir_guid + '::districtDetails');
+    await client.del(idir_guid + '::districtID');
 
     if(schoolSearch){
       res.redirect(config.get('server:frontend') + '/institute/school' );
     }else if(schoolDetails){
       res.redirect(config.get('server:frontend') + '/institute/school/' + schoolID + '/details' );
+    }else if(districtDetails){
+      res.redirect(config.get('server:frontend') + '/district/' + districtID);
     }else{
       res.status(401).json(UnauthorizedRsp);
     }
