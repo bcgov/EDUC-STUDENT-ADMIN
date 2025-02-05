@@ -174,6 +174,15 @@
             rounded="true"
           >
             <SchoolSearchFilters
+              :authority-code-name-filter="authorityCodeNameFilter"
+              :district-code-name-filter="districtCodeNameFilter"
+              :school-code-name-filter="schoolCodeNameFilter"
+              :grade-filter="gradeFilter"
+              :issue-certificates-filter="issueCertificatesFilter"
+              :issue-transcripts-filter="issueTranscriptsFilter"
+              :school-category-type-filter="schoolCategoryTypeFilter"
+              :school-facility-type-filter="schoolFacilityTypeFilter"
+              :school-reporting-requirement-code-filter="schoolReportingRequirementCodeFilter"
               @apply-filters="applyFilters"
               @clear-filters="clearFilters"
               @close="showFilters= !showFilters"
@@ -254,7 +263,7 @@ export default {
       activeSchoolCategoryTypes: [],
       activeAuthorities: [],
       schoolStatus: [],
-      schoolCodeNameFilter: null,
+      schoolCodeNameFilter: '',
       districtCodeNameFilter: null,
       authorityCodeNameFilter: null,
       schoolReportingRequirementCodeFilter: null,
@@ -349,6 +358,8 @@ export default {
       this.loadingTable = true;
       this.requests = [];
       this.schools = [];
+
+      console.log('Filters: ' + this.schoolCodeNameFilter);
 
       if (this.schoolCodeNameFilter !== null && this.schoolCodeNameFilter !== '') {
         this.headerSearchParams.schoolID = this.schoolCodeNameFilter;

@@ -53,7 +53,7 @@
                 :items="schoolSearchNames"
                 :menu-props="{closeOnContentClick:true}"
                 :clearable="true"
-                @update:model-value="schoolCodeNameFilter = $event"
+                @update:model-value="schoolCodeNameFilter = $event; apply()"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -86,7 +86,6 @@
             >
               <v-autocomplete
                 id="district-text-field"
-                v-model="districtCodeNameFilterVal"
                 :clearable="true"
                 :items="districtSearchNames"
                 item-title="districtNumberName"
@@ -94,13 +93,13 @@
                 item-value="districtId"
                 :menu-props="{closeOnContentClick:true}"
                 label="District Number & Name"
-                @update:model-value="searchButtonClick"
+                @update:model-value="districtCodeNameFilter = $event"
               >
                 <template #prepend-inner>
                   <v-icon
-                    v-if="districtCodeNameFilterVal"
+                    v-if="districtCodeNameFilter"
                     class="pt-1"
-                    :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilterVal)?.status)"
+                    :color="getDistrictStatusColor(districtSearchNames.find(x=>x.districtId===districtCodeNameFilter)?.status)"
                   >
                     mdi-circle-medium
                   </v-icon>
@@ -128,7 +127,6 @@
             >
               <v-autocomplete
                 id="authority-text-field"
-                v-model="authorityCodeNameFilterVal"
                 label="Authority Code & Name"
                 item-value="authorityID"
                 item-title="authorityCodeName"
@@ -136,13 +134,13 @@
                 :items="authoritySearchNames"
                 :menu-props="{closeOnContentClick:true}"
                 :clearable="true"
-                @update:model-value="searchButtonClick"
+                @update:model-value="authorityCodeNameFilter = $event"
               >
                 <template #prepend-inner>
                   <v-icon
-                    v-if="authorityCodeNameFilterVal"
+                    v-if="authorityCodeNameFilter"
                     class="pt-1"
-                    :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilterVal)?.status)"
+                    :color="getStatusColorAuthorityOrSchool(authoritySearchNames.find(x=>x.authorityID===authorityCodeNameFilter)?.status)"
                   >
                     mdi-circle-medium
                   </v-icon>
@@ -170,7 +168,6 @@
             >
               <v-select
                 id="status-select-field"
-                v-model="schoolStatusFilter"
                 :clearable="true"
                 :items="schoolStatus"
                 item-title="name"
@@ -178,6 +175,7 @@
                 item-value="code"
                 :menu-props="{closeOnContentClick:true}"
                 label="School Status"
+                @update:model-value="schoolStatusFilter = $event"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -211,14 +209,13 @@
             >
               <v-select
                 id="category-select-field"
-                v-model="schoolCategoryTypeFilter"
                 :clearable="true"
                 :items="activeSchoolCategoryTypes"
                 variant="underlined"
                 item-title="label"
                 item-value="schoolCategoryCode"
                 label="School Category"
-                @update:model-value="schoolCategoryChanged"
+                @update:model-value="schoolCategoryTypeFilter = $event"
               />
             </v-col>
             <v-col
@@ -228,7 +225,6 @@
             >
               <v-select
                 id="facility-select-field"
-                v-model="schoolFacilityTypeFilter"
                 :clearable="true"
                 :items="schoolFacilityTypes"
                 variant="underlined"
@@ -236,6 +232,7 @@
                 item-title="label"
                 item-value="facilityTypeCode"
                 label="Facility Type"
+                @update:model-value="schoolFacilityTypeFilter = $event"
               />
             </v-col>
             <v-col
@@ -245,14 +242,13 @@
             >
               <v-autocomplete
                 id="reporting-requirement-text-field"
-                v-model="schoolReportingRequirementCodeFilter"
                 label="Reporting Requirement"
                 item-value="schoolReportingRequirementCode"
                 variant="underlined"
                 item-title="label"
                 :items="schoolReportingRequirementTypeCodes"
                 :clearable="true"
-                @update:model-value="searchButtonClick"
+                @update:model-value="schoolReportingRequirementCodeFilter = $event"
               />
             </v-col>
             <v-col
@@ -262,13 +258,13 @@
             >
               <v-select
                 id="grade-select-field"
-                v-model="gradeFilter"
                 :clearable="true"
                 :items="schoolGradeTypes"
                 variant="underlined"
                 item-title="label"
                 item-value="schoolGradeCode"
                 label="Grade Offered"
+                @update:model-value="gradeFilter = $event"
               />
             </v-col>
             <v-col
@@ -278,13 +274,13 @@
             >
               <v-select
                 id="issue-transcripts-select-field"
-                v-model="issueTranscriptsFilter"
                 :clearable="true"
                 :items="issueCertAndTranscriptTypes"
                 variant="underlined"
                 item-title="title"
                 item-value="value"
                 label="Issue Transcripts?"
+                @update:model-value="issueTranscriptsFilter = $event"
               />
             </v-col>
             <v-col
@@ -294,13 +290,13 @@
             >
               <v-select
                 id="issue-certificates-select-field"
-                v-model="issueCertificatesFilter"
                 :clearable="true"
                 :items="issueCertAndTranscriptTypes"
                 variant="underlined"
                 item-title="title"
                 item-value="value"
                 label="Issue Certificates?"
+                @update:model-value="issueCertificatesFilter = $event"
               />
             </v-col>
           </v-row>
@@ -332,48 +328,48 @@ export default {
   mixins: [alertMixin],
   props: {
     schoolReportingRequirementCodeFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     schoolCodeNameFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     districtCodeNameFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     authorityCodeNameFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     issueTranscriptsFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     issueCertificatesFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     schoolFacilityTypeFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     schoolCategoryTypeFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
     gradeFilter: {
-      type: Object,
-      required: true,
+      type: String,
+      required: false,
       default: null
     },
   },
