@@ -327,7 +327,7 @@ export default {
         },
         {
           title: PAGE_TITLES.GRADUATION,
-          authorized:  !this.config.DISABLE_EAS_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION),
+          authorized:  this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION),
           items: [
             {
               title: 'Graduation School List',
