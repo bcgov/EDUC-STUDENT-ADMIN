@@ -488,9 +488,9 @@ export const SDC_REPORTS = Object.freeze(
         description: 'This report calculates the change in headcounts, from September to February, of students with Inclusive Education designations across all school districts. The headcounts are broken down by Inclusive Education level (1, 2, 3, ‘other’) and sub-category (A – Physically  Dependent, B – Deafblind, etc.) in September and February, before providing the resulting variance between the two collections with the same breakdown structure. This data is shown district by district. This report is only run for the February collection (comparing against the previous September collection) and can only viewed by downloading it. '
       },
       {
-        label: 'Independent School Funding System - Preliminary',
+        label: 'Independent School Funding System - Aggregate Enrollment',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/isfs-prelim-report/',
-        description: 'This preliminary report is generated for the Independent Schools Funding System (ISFS). '
+        description: 'This report is generated for the Independent Schools Funding System (ISFS). '
       },
       {
         label: 'Independent School Funding Report - Standard Student - All',

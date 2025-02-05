@@ -52,7 +52,7 @@ function getFileDetails(reportType) {
     'offshore-languages-headcounts': { filename: 'OffshoreSpokenLanguageHeadcounts.csv', contentType: 'text/csv' },
     'indy-inclusive-ed-funding-headcounts': { filename: 'IndependentSchoolsInclusiveEdFundingHeadcounts.csv', contentType: 'text/csv' },
     'indy-funding-report-all': { filename: 'IndependentSchoolsFundingReportStandardStudentAll.csv', contentType: 'text/csv' },
-    'isfs-prelim-report': { filename: 'IndependentSchoolsFundingSystemPrelimReport.csv', contentType: 'text/csv' },
+    'isfs-prelim-report': { filename: 'IndependentSchoolsFundingSystemReport.csv', contentType: 'text/csv' },
     'inclusive-education-variances-all': { filename: 'InclusiveEducationVariancesAllDistricts.csv', contentType: 'text/csv' },
     'indy-funding-report-funded': { filename: 'IndependentSchoolsFundingReportStandardStudentFunded.csv', contentType: 'text/csv' },
     'online-indy-funding-report': { filename: 'IndependentSchoolsFundingReportOnlineLearning.csv', contentType: 'text/csv' },
