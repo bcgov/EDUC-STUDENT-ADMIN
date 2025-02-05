@@ -174,16 +174,26 @@
             rounded="true"
           >
             <SchoolSearchFilters
-              :authority-code-name-filter="authorityCodeNameFilter"
-              :district-code-name-filter="districtCodeNameFilter"
-              :school-code-name-filter="schoolCodeNameFilter"
-              :grade-filter="gradeFilter"
-              :issue-certificates-filter="issueCertificatesFilter"
-              :issue-transcripts-filter="issueTranscriptsFilter"
-              :school-category-type-filter="schoolCategoryTypeFilter"
-              :school-facility-type-filter="schoolFacilityTypeFilter"
               :school-reporting-requirement-code-filter="schoolReportingRequirementCodeFilter"
-              @apply-filters="applyFilters"
+              :school-facility-type-filter="schoolFacilityTypeFilter"
+              :school-category-type-filter="schoolCategoryTypeFilter"
+              :issue-transcripts-filter="issueTranscriptsFilter"
+              :issue-certificates-filter="issueCertificatesFilter"
+              :school-code-name-filter="schoolCodeNameFilter"
+              :district-code-name-filter="districtCodeNameFilter"
+              :authority-code-name-filter="authorityCodeNameFilter"
+              :grade-filter="gradeFilter"
+              :school-status-filter="schoolStatusFilter"
+              @apply-authority-code-name-filter="applyAuthorityCodeNameFilter"
+              @apply-district-code-name-filter="applyDistrictCodeNameFilter"
+              @apply-school-code-name-filter="applySchoolCodeNameFilter"
+              @apply-grade-filter="applyGradeFilter"
+              @apply-school-status-filter="applySchoolStatusFilter"
+              @apply-issue-certificates-filter="applyIssueCertificatesFilter"
+              @apply-issue-transcripts-filter="applyIssueTranscriptsFilter"
+              @apply-school-category-type-filter="applySchoolCategoryTypeFilter"
+              @apply-school-facility-type-filter="applySchoolFacilityTypeFilter"
+              @apply-school-reporting-requirement-code-filter="applySchoolReportingRequirementCodeFilter"
               @clear-filters="clearFilters"
               @close="showFilters= !showFilters"
             />
@@ -199,7 +209,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import {mapState} from 'pinia';
-import {cloneDeep, isEmpty, omitBy, sortBy} from 'lodash';
+import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatContactName} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
@@ -268,11 +278,11 @@ export default {
       authorityCodeNameFilter: null,
       schoolReportingRequirementCodeFilter: null,
       reportingRequirementTypes: [],
-      schoolStatusFilter: null,
+      schoolStatusFilter: 'Open',
       schoolCategoryTypes: [],
       schoolCategoryTypeFilter: null,
       schoolGradeTypes: [],
-      issueTranscriptsFilter: null,
+      issueTranscriptsFilter: true,
       issueCertificatesFilter: null,
       gradeFilter: null,
       schoolFacilityTypeFilter: null,
@@ -298,7 +308,14 @@ export default {
       return sortBy(facilityTypes, ['displayOrder']);
     },
     filterCount() {
-      return Object.values(this.filterSearchParams.moreFilters).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length;
+      let totals = Object.values(this.headerSearchParams).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length
+      if(this.issueTranscriptsFilter !== null){
+        totals+=1;
+      }
+      if(this.issueCertificatesFilter !== null){
+        totals+=1;
+      }
+      return totals;
     }
   },
   watch: {
@@ -329,19 +346,72 @@ export default {
     instStore.getAllGradeCodes().then(() => {
       this.schoolGradeTypes = sortBy(this.gradeCodes, ['displayOrder']);
     });
-
     this.setSchoolStatuses();
     this.getSchoolList();
   },
   methods: {
     hasRequiredPermission,
-    applyFilters($event) {
-      this.filterSearchParams.moreFilters = cloneDeep($event);
+    applySchoolCodeNameFilter($event) {
+      this.schoolCodeNameFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applyDistrictCodeNameFilter($event) {
+      this.districtCodeNameFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applyAuthorityCodeNameFilter($event) {
+      this.authorityCodeNameFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applySchoolReportingRequirementCodeFilter($event) {
+      this.schoolReportingRequirementCodeFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applySchoolStatusFilter($event) {
+      this.schoolStatusFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applyGradeFilter($event) {
+      this.gradeFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applyIssueTranscriptsFilter($event) {
+      this.issueTranscriptsFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applyIssueCertificatesFilter($event) {
+      this.issueCertificatesFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applySchoolFacilityTypeFilter($event) {
+      this.schoolFacilityTypeFilter = $event;
+      this.pageNumber = 1;
+      this.getSchoolList();
+    },
+    applySchoolCategoryTypeFilter($event) {
+      this.schoolCategoryTypeFilter = $event;
       this.pageNumber = 1;
       this.getSchoolList();
     },
     clearFilters() {
-      this.filterSearchParams.moreFilters = {};
+      this.schoolCodeNameFilter = null;
+      this.districtCodeNameFilter = null;
+      this.authorityCodeNameFilter = null;
+      this.schoolReportingRequirementCodeFilter = null;
+      this.schoolStatusFilter = null;
+      this.gradeFilter = null;
+      this.issueTranscriptsFilter = null;
+      this.issueCertificatesFilter = null;
+      this.schoolFacilityTypeFilter = null;
+      this.schoolCategoryTypeFilter = null;
       this.pageNumber = 1;
       this.getSchoolList();
     },
@@ -358,8 +428,6 @@ export default {
       this.loadingTable = true;
       this.requests = [];
       this.schools = [];
-
-      console.log('Filters: ' + this.schoolCodeNameFilter);
 
       if (this.schoolCodeNameFilter !== null && this.schoolCodeNameFilter !== '') {
         this.headerSearchParams.schoolID = this.schoolCodeNameFilter;

@@ -47,13 +47,14 @@
               <v-autocomplete
                 id="name-text-field"
                 label="School Code & Name"
+                v-model="schoolCodeNameFilterVal"
                 item-value="schoolID"
                 item-title="schoolCodeName"
                 variant="underlined"
                 :items="schoolSearchNames"
                 :menu-props="{closeOnContentClick:true}"
                 :clearable="true"
-                @update:model-value="schoolCodeNameFilter = $event; apply()"
+                @update:model-value="schoolCodeNameFilter = $event; apply('schoolCodeNameFilter')"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -87,13 +88,14 @@
               <v-autocomplete
                 id="district-text-field"
                 :clearable="true"
+                v-model="districtCodeNameFilterVal"
                 :items="districtSearchNames"
                 item-title="districtNumberName"
                 variant="underlined"
                 item-value="districtId"
                 :menu-props="{closeOnContentClick:true}"
                 label="District Number & Name"
-                @update:model-value="districtCodeNameFilter = $event"
+                @update:model-value="districtCodeNameFilter = $event; apply('districtCodeNameFilter')"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -128,13 +130,14 @@
               <v-autocomplete
                 id="authority-text-field"
                 label="Authority Code & Name"
+                v-model="authorityCodeNameFilterVal"
                 item-value="authorityID"
                 item-title="authorityCodeName"
                 variant="underlined"
                 :items="authoritySearchNames"
                 :menu-props="{closeOnContentClick:true}"
                 :clearable="true"
-                @update:model-value="authorityCodeNameFilter = $event"
+                @update:model-value="authorityCodeNameFilter = $event; apply('authorityCodeNameFilter')"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -170,12 +173,13 @@
                 id="status-select-field"
                 :clearable="true"
                 :items="schoolStatus"
+                v-model="schoolStatusFilterVal"
                 item-title="name"
                 variant="underlined"
                 item-value="code"
                 :menu-props="{closeOnContentClick:true}"
                 label="School Status"
-                @update:model-value="schoolStatusFilter = $event"
+                @update:model-value="schoolStatusFilter = $event; apply('schoolStatusFilter')"
               >
                 <template #prepend-inner>
                   <v-icon
@@ -210,12 +214,13 @@
               <v-select
                 id="category-select-field"
                 :clearable="true"
+                v-model="schoolCategoryTypeFilterVal"
                 :items="activeSchoolCategoryTypes"
                 variant="underlined"
                 item-title="label"
                 item-value="schoolCategoryCode"
                 label="School Category"
-                @update:model-value="schoolCategoryTypeFilter = $event"
+                @update:model-value="schoolCategoryTypeFilter = $event; apply('schoolCategoryTypeFilter'); schoolCategoryChanged"
               />
             </v-col>
             <v-col
@@ -227,12 +232,13 @@
                 id="facility-select-field"
                 :clearable="true"
                 :items="schoolFacilityTypes"
+                v-model="schoolFacilityTypeFilterVal"
                 variant="underlined"
                 :disabled="!activeFacilityTypeCodes || !schoolCategoryTypeFilter"
                 item-title="label"
                 item-value="facilityTypeCode"
                 label="Facility Type"
-                @update:model-value="schoolFacilityTypeFilter = $event"
+                @update:model-value="schoolFacilityTypeFilter = $event; apply('schoolFacilityTypeFilter')"
               />
             </v-col>
             <v-col
@@ -244,11 +250,12 @@
                 id="reporting-requirement-text-field"
                 label="Reporting Requirement"
                 item-value="schoolReportingRequirementCode"
+                v-model="schoolReportingRequirementCodeFilterVal"
                 variant="underlined"
                 item-title="label"
                 :items="schoolReportingRequirementTypeCodes"
                 :clearable="true"
-                @update:model-value="schoolReportingRequirementCodeFilter = $event"
+                @update:model-value="schoolReportingRequirementCodeFilter = $event; apply('schoolReportingRequirementCodeFilter')"
               />
             </v-col>
             <v-col
@@ -261,10 +268,11 @@
                 :clearable="true"
                 :items="schoolGradeTypes"
                 variant="underlined"
+                v-model="gradeFilterVal"
                 item-title="label"
                 item-value="schoolGradeCode"
                 label="Grade Offered"
-                @update:model-value="gradeFilter = $event"
+                @update:model-value="gradeFilter = $event; apply('gradeFilter')"
               />
             </v-col>
             <v-col
@@ -276,11 +284,12 @@
                 id="issue-transcripts-select-field"
                 :clearable="true"
                 :items="issueCertAndTranscriptTypes"
+                v-model="issueTranscriptsFilterVal"
                 variant="underlined"
                 item-title="title"
                 item-value="value"
                 label="Issue Transcripts?"
-                @update:model-value="issueTranscriptsFilter = $event"
+                @update:model-value="issueTranscriptsFilter = $event; apply('issueTranscriptsFilter')"
               />
             </v-col>
             <v-col
@@ -291,12 +300,13 @@
               <v-select
                 id="issue-certificates-select-field"
                 :clearable="true"
+                v-model="issueCertificatesFilterVal"
                 :items="issueCertAndTranscriptTypes"
                 variant="underlined"
                 item-title="title"
                 item-value="value"
                 label="Issue Certificates?"
-                @update:model-value="issueCertificatesFilter = $event"
+                @update:model-value="issueCertificatesFilter = $event; apply('issueCertificatesFilter')"
               />
             </v-col>
           </v-row>
@@ -357,6 +367,11 @@ export default {
       required: false,
       default: null
     },
+    schoolStatusFilter: {
+      type: String,
+      required: false,
+      default: null
+    },
     schoolFacilityTypeFilter: {
       type: String,
       required: false,
@@ -373,13 +388,22 @@ export default {
       default: null
     },
   },
-  emits: ['clearFilters', 'apply-filters', 'close', 'update:schoolCodeNameFilter', 'update:districtCodeNameFilter', 'update:authorityCodeNameFilter'],
+  emits: ['clearFilters', 'close', 'apply-schoolReportingRequirementCodeFilter', 'apply-schoolCodeNameFilter', 'apply-districtCodeNameFilter', 'apply-authorityCodeNameFilter', 'apply-issueTranscriptsFilter', 'apply-schoolStatusFilter', 'apply-issueCertificatesFilter', 'apply-schoolFacilityTypeFilter', 'apply-schoolCategoryTypeFilter', 'apply-gradeFilter'],
   data() {
     return {
+      gradeFilterVal: this.gradeFilter,
+      schoolCategoryTypeFilterVal: this.schoolCategoryTypeFilter,
+      schoolFacilityTypeFilterVal: this.schoolFacilityTypeFilter,
+      schoolStatusFilterVal: this.schoolStatusFilter,
+      issueCertificatesFilterVal: this.issueCertificatesFilter,
+      issueTranscriptsFilterVal: this.issueTranscriptsFilter,
+      authorityCodeNameFilterVal: this.authorityCodeNameFilter,
+      districtCodeNameFilterVal: this.districtCodeNameFilter,
+      schoolCodeNameFilterVal: this.schoolCodeNameFilter,
+      schoolReportingRequirementCodeFilterVal: this.schoolReportingRequirementCodeFilter,
       selected: {},
       activeSchoolCategoryTypes: [],
       reportingRequirementTypes: [],
-      schoolStatusFilter: null,
       schoolStatus: [],
       authoritySearchNames: [],
       schoolCategoryTypes: [],
@@ -519,61 +543,51 @@ export default {
     },
     async schoolCategoryChanged() {
       this.schoolFacilityTypeFilter = null;
-      await this.fireFormValidate();
     },
     close() {
       this.$emit('close');
     },
     getStatusColorAuthorityOrSchool,
-    searchButtonClick() {
-      this.resetPageNumber();
-      this.getSchoolList();
-    },
-    clearButtonClick() {
-      this.schoolCodeNameFilter = null;
-      this.districtCodeNameFilter = null;
-      this.authorityCodeNameFilter = null;
-
-      this.schoolStatusFilter = null;
-      this.schoolFacilityTypeFilter = null;
-      this.schoolCategoryTypeFilter = null;
-      this.issueTranscriptsFilter = null;
-      this.issueCertificatesFilter = null;
-      this.gradeFilter = null;
-      this.schoolReportingRequirementCodeFilter = null;
-
-      this.headerSearchParams.schoolNumber = null;
-      this.headerSearchParams.status = null;
-      this.headerSearchParams.type = null;
-
-      this.clearSchoolList();
-    },
     clear() {
-      this.selected = {};
-      this.bandCodeValue = null;
-      this.courseRange = [...this.courseRangeDefault];
-      this.penLocalIdNameFilter = null;
-      this.schoolNameNumberFilter = null;
-      this.schoolNameNumberFilterForDistrict = null;
-      this.districtNameNumberFilter = null;
-      this.legalFirstName = null;
-      this.legalMiddleNames = null;
-      this.legalLastName = null;
-      this.usualFirstName = null;
-      this.usualMiddleNames = null;
-      this.usualLastName = null;
-      this.studentPen = null;
-      this.assignedPen = null;
-      this.localID = null;
+      this.schoolCodeNameFilterVal = null;
+      this.districtCodeNameFilterVal = null;
+      this.authorityCodeNameFilterVal = null;
+      this.schoolStatusFilterVal = null;
+      this.schoolFacilityTypeFilterVal = null;
+      this.schoolCategoryTypeFilterVal = null;
+      this.issueTranscriptsFilterVal = null;
+      this.issueCertificatesFilterVal = null;
+      this.gradeFilterVal = null;
+      this.schoolReportingRequirementCodeFilterVal = null;
+
       this.$emit('clearFilters');
     },
-    apply() {
-      this.$emit('apply-filters', this.selected);
+    apply(type) {
+      if(type === 'schoolReportingRequirementCodeFilter'){
+        this.$emit('apply-schoolReportingRequirementCodeFilter', this.schoolReportingRequirementCodeFilter);
+      }else if(type === 'schoolCodeNameFilter'){
+        this.$emit('apply-schoolCodeNameFilter', this.schoolCodeNameFilter);
+      }else if(type === 'districtCodeNameFilter'){
+        this.$emit('apply-districtCodeNameFilter', this.districtCodeNameFilter);
+      }else if(type === 'authorityCodeNameFilter'){
+        this.$emit('apply-authorityCodeNameFilter', this.authorityCodeNameFilter);
+      }else if(type === 'issueTranscriptsFilter'){
+        this.$emit('apply-issueTranscriptsFilter', this.issueTranscriptsFilter);
+      }else if(type === 'issueCertificatesFilter'){
+        this.$emit('apply-issueCertificatesFilter', this.issueCertificatesFilter);
+      }else if(type === 'schoolFacilityTypeFilter'){
+        this.$emit('apply-schoolFacilityTypeFilter', this.schoolFacilityTypeFilter);
+      }else if(type === 'schoolCategoryTypeFilter'){
+        this.$emit('apply-schoolCategoryTypeFilter', this.schoolCategoryTypeFilter);
+      }else if(type === 'gradeFilter'){
+        this.$emit('apply-gradeFilter', this.gradeFilter);
+      }else if(type === 'schoolStatusFilter'){
+        this.$emit('apply-schoolStatusFilter', this.schoolStatusFilter);
+      }
     }
   }
 };
 </script>
-    
   <style scoped>
   .sheetHeader {
     background-color: #003366;
