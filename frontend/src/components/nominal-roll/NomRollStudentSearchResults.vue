@@ -147,8 +147,8 @@
                   v-if="header.value === 'mincode'"
                   right
                 >
-                  <template #activator="{ on }">
-                    <span>{{ item.item.raw[header.value] }}</span>
+                  <template #activator="{ props }">
+                    <span v-bind="props">{{ item.item.raw[header.value] }}</span>
                   </template>
                   <span>{{ getSchoolName(item.item.raw) }}</span>
                 </v-tooltip>
@@ -166,8 +166,8 @@
                   style="color: red"
                 >
                   {{ formatTableColumn(header.format, item.item.raw[header.value]) }}
-                  <v-tooltip bottom>
-                    <template #activator="{ on, props }">
+                  <v-tooltip location="bottom">
+                    <template #activator="{ props }">
                       <v-icon
                         color="red"
                         size="small"

@@ -85,10 +85,13 @@
               v-if="header.bottomValue === 'memo'"
               bottom
             >
-              <template #activator="{ on }">
-                <span class="bottom-column-item">{{
-                    firstMemoChars(item.item.raw[header.bottomValue])
-                  }}</span>
+              <template #activator="{ props }">
+                <span
+                  v-bind="props"
+                  class="bottom-column-item"
+                >
+                  {{ firstMemoChars(item.item.raw[header.bottomValue]) }}
+                </span>
               </template>
               <span>{{ item.item.raw[header.bottomValue] }}</span>
             </v-tooltip>

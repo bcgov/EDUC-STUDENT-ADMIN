@@ -127,10 +127,14 @@
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip
                 v-if="header.bottomValue === 'memo'"
-                bottom
+                location="bottom"
               >
-                <template #activator="{ on }">
-                  <span class="bottom-column-item">{{
+                <template #activator="{ props }">
+                  <span
+                    v-bind="props"
+                    class="bottom-column-item"
+                  >
+                    {{
                       firstMemoChars(item.item.raw[header.bottomValue])
                     }}</span>
                 </template>

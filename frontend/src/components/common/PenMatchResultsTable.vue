@@ -128,13 +128,16 @@
                         </span>
                         <v-tooltip
                           v-if="item.item.raw['memo']"
-                          top
-                          max-width="40vw"
+                          location="top"
+                          max-width="500px"
                         >
-                          <template #activator="{ on }">
-                            <v-icon class="mx-1">
-                              sticky_note_2
-                            </v-icon>
+                          <template #activator="{ props }">
+
+                            <v-icon
+                              icon="mdi-note-text"
+                              class="mx-1"
+                              v-bind="props"
+                            />
                           </template>
                           <span>
                             {{ item.item.raw['memo'] }}
