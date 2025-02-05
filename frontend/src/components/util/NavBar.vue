@@ -326,6 +326,17 @@ export default {
           authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.STUDENT_DATA_COLLECTION)
         },
         {
+          title: PAGE_TITLES.GRADUATION,
+          authorized:  !this.config.DISABLE_EAS_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION),
+          items: [
+            {
+              title: 'Graduation School List',
+              link: 'graduationSchoolList',
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION)
+            }
+          ],
+        },
+        {
           title: PAGE_TITLES.ASSESSMENTS,
           authorized:  !this.config.DISABLE_EAS_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION),
           items: [                      
