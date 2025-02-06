@@ -308,7 +308,7 @@ export default {
       return sortBy(facilityTypes, ['displayOrder']);
     },
     filterCount() {
-      let totals = Object.values(this.headerSearchParams).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length
+      let totals = Object.values(this.headerSearchParams).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length;
       if(this.issueTranscriptsFilter !== null){
         totals+=1;
       }
