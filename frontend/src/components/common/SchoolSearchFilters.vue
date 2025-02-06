@@ -46,8 +46,8 @@
             >
               <v-autocomplete
                 id="name-text-field"
-                label="School Code & Name"
                 v-model="schoolCodeNameFilterVal"
+                label="School Code & Name"
                 item-value="schoolID"
                 item-title="schoolCodeName"
                 variant="underlined"
@@ -87,8 +87,8 @@
             >
               <v-autocomplete
                 id="district-text-field"
-                :clearable="true"
                 v-model="districtCodeNameFilterVal"
+                :clearable="true"
                 :items="districtSearchNames"
                 item-title="districtNumberName"
                 variant="underlined"
@@ -129,8 +129,8 @@
             >
               <v-autocomplete
                 id="authority-text-field"
-                label="Authority Code & Name"
                 v-model="authorityCodeNameFilterVal"
+                label="Authority Code & Name"
                 item-value="authorityID"
                 item-title="authorityCodeName"
                 variant="underlined"
@@ -171,9 +171,9 @@
             >
               <v-select
                 id="status-select-field"
+                v-model="schoolStatusFilterVal"
                 :clearable="true"
                 :items="schoolStatus"
-                v-model="schoolStatusFilterVal"
                 item-title="name"
                 variant="underlined"
                 item-value="code"
@@ -213,14 +213,14 @@
             >
               <v-select
                 id="category-select-field"
-                :clearable="true"
                 v-model="schoolCategoryTypeFilterVal"
+                :clearable="true"
                 :items="activeSchoolCategoryTypes"
                 variant="underlined"
                 item-title="label"
                 item-value="schoolCategoryCode"
                 label="School Category"
-                @update:model-value="schoolCategoryTypeFilter = $event; apply('schoolCategoryTypeFilter'); schoolCategoryChanged"
+                @update:model-value="schoolCategoryTypeFilter = $event; schoolCategoryChanged();"
               />
             </v-col>
             <v-col
@@ -230,9 +230,9 @@
             >
               <v-select
                 id="facility-select-field"
+                v-model="schoolFacilityTypeFilterVal"
                 :clearable="true"
                 :items="schoolFacilityTypes"
-                v-model="schoolFacilityTypeFilterVal"
                 variant="underlined"
                 :disabled="!activeFacilityTypeCodes || !schoolCategoryTypeFilter"
                 item-title="label"
@@ -248,9 +248,9 @@
             >
               <v-autocomplete
                 id="reporting-requirement-text-field"
+                v-model="schoolReportingRequirementCodeFilterVal"
                 label="Reporting Requirement"
                 item-value="schoolReportingRequirementCode"
-                v-model="schoolReportingRequirementCodeFilterVal"
                 variant="underlined"
                 item-title="label"
                 :items="schoolReportingRequirementTypeCodes"
@@ -265,10 +265,10 @@
             >
               <v-select
                 id="grade-select-field"
+                v-model="gradeFilterVal"
                 :clearable="true"
                 :items="schoolGradeTypes"
                 variant="underlined"
-                v-model="gradeFilterVal"
                 item-title="label"
                 item-value="schoolGradeCode"
                 label="Grade Offered"
@@ -282,9 +282,9 @@
             >
               <v-select
                 id="issue-transcripts-select-field"
+                v-model="issueTranscriptsFilterVal"
                 :clearable="true"
                 :items="issueCertAndTranscriptTypes"
-                v-model="issueTranscriptsFilterVal"
                 variant="underlined"
                 item-title="title"
                 item-value="value"
@@ -299,8 +299,8 @@
             >
               <v-select
                 id="issue-certificates-select-field"
-                :clearable="true"
                 v-model="issueCertificatesFilterVal"
+                :clearable="true"
                 :items="issueCertAndTranscriptTypes"
                 variant="underlined"
                 item-title="title"
@@ -358,12 +358,12 @@ export default {
       default: null
     },
     issueTranscriptsFilter: {
-      type: String,
+      type: Boolean,
       required: false,
       default: null
     },
     issueCertificatesFilter: {
-      type: String,
+      type: Boolean,
       required: false,
       default: null
     },
@@ -541,8 +541,10 @@ export default {
         code: 'Closing'
       }, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
-    async schoolCategoryChanged() {
-      this.schoolFacilityTypeFilter = null;
+    schoolCategoryChanged() {
+      this.schoolFacilityTypeFilterVal = null;
+      this.$emit('apply-schoolFacilityTypeFilter', null);
+      this.apply('schoolCategoryTypeFilter');
     },
     close() {
       this.$emit('close');
