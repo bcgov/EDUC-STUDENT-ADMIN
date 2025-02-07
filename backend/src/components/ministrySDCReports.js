@@ -31,7 +31,10 @@ async function downloadMinistrySDCReport(req, res) {
     }
     const url = `${config.get('sdc:ministrySDCReportsURL')}/${req.params.collectionID}/${req.params.reportType}/download`;
     const data = await getData(url);
-    const fileDetails = getFileDetails(req.params.reportType);
+
+    const collection = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}`);
+
+    const fileDetails = getFileDetails(req.params.reportType, collection);
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(data.documentData, 'base64');
     return res.status(200).send(buffer);
@@ -41,7 +44,7 @@ async function downloadMinistrySDCReport(req, res) {
   }
 }
 
-function getFileDetails(reportType) {
+function getFileDetails(reportType, collection) {
   const mappings = {
     'school-enrollment-headcounts': { filename: 'AllSchoolsHeadcounts.csv', contentType: 'text/csv' },
     'indy-school-enrollment-headcounts': { filename: 'IndependentSchoolsHeadcounts.csv', contentType: 'text/csv' },
@@ -52,7 +55,7 @@ function getFileDetails(reportType) {
     'offshore-languages-headcounts': { filename: 'OffshoreSpokenLanguageHeadcounts.csv', contentType: 'text/csv' },
     'indy-inclusive-ed-funding-headcounts': { filename: 'IndependentSchoolsInclusiveEdFundingHeadcounts.csv', contentType: 'text/csv' },
     'indy-funding-report-all': { filename: 'IndependentSchoolsFundingReportStandardStudentAll.csv', contentType: 'text/csv' },
-    'isfs-prelim-report': { filename: 'IndependentSchoolsFundingSystemReport.csv', contentType: 'text/csv' },
+    'isfs-prelim-report': { filename: 'IndependentSchoolsFundingSystemReport_' + collection.snapshotDate + '.csv', contentType: 'text/csv' },
     'inclusive-education-variances-all': { filename: 'InclusiveEducationVariancesAllDistricts.csv', contentType: 'text/csv' },
     'indy-funding-report-funded': { filename: 'IndependentSchoolsFundingReportStandardStudentFunded.csv', contentType: 'text/csv' },
     'online-indy-funding-report': { filename: 'IndependentSchoolsFundingReportOnlineLearning.csv', contentType: 'text/csv' },
