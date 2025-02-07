@@ -273,7 +273,7 @@ export default {
       activeSchoolCategoryTypes: [],
       activeAuthorities: [],
       schoolStatus: [],
-      schoolCodeNameFilter: '',
+      schoolCodeNameFilter: null,
       districtCodeNameFilter: null,
       authorityCodeNameFilter: null,
       schoolReportingRequirementCodeFilter: null,
@@ -290,6 +290,7 @@ export default {
       newSchoolSheet: false,
       isFormValid: false,
       rules: Rules,
+      edxURL: null,
       facilityTypeCode: null,
       schoolCategoryCode: null,
       independentArray: ['INDEPEND', 'INDP_FNS'],
@@ -297,7 +298,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
-    ...mapState(appStore, ['schoolsMap']),
+    ...mapState(appStore, ['config','schoolsMap']),
     ...mapState(notificationsStore, ['notification']),
     ...mapState(instituteStore, ['facilityTypeCodes', 'activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'gradeCodes']),
     schoolFacilityTypes() {
@@ -329,6 +330,9 @@ export default {
   created() {
     const instStore = instituteStore();
     edxStore().getMinistryTeams();
+    appStore().getConfig().then(() => {
+      this.edxURL = this.config.EDX_URL;
+    });
     instStore.getAllFacilityTypeCodes().then(() => {
       this.allSchoolFacilityTypes = sortBy(this.facilityTypeCodes, ['displayOrder']);
     });
@@ -522,7 +526,7 @@ export default {
       return formatContactName(oldestPrincipal);
     },
     openSchool(schoolId) {
-      this.$router.push({name: 'schoolDetails', params: {schoolID: schoolId}});
+      window.open(`${this.edxURL}/api/auth/silent_sdc_idir_login?schoolID=${schoolId}&idir_guid=${this.userInfo.userGuid.toLowerCase()}&gradDashboard=true`, '_blank');
     },
     searchEnabled() {
       return (this.schoolCodeNameFilter !== '' && this.schoolCodeNameFilter !== null) || (this.schoolStatusFilter !== '' && this.schoolStatusFilter !== null)
