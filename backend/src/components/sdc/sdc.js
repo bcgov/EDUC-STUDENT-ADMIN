@@ -950,6 +950,20 @@ async function moveSld (req, res) {
   }
 }
 
+async function removeSDCSchoolCollectionStudents(req, res) {
+  try {
+    let payload = {
+      softDeleteStudentIDs: req.body,
+      updateUser: utils.getUser(req).idir_username
+    }
+    let deletedSdcSchoolCollectionStudentData = await postData(`${config.get('sdc:schoolCollectionStudentURL')}/soft-delete-students`, payload);
+    return res.status(HttpStatus.OK).json(deletedSdcSchoolCollectionStudentData);
+  } catch (e) {
+    logApiError(e, 'Error deleting SDC School Collection Students.');
+    return errorResponse(res);
+  }
+}
+
 async function getDistrictHeadcounts(req, res) {
   try {
     const params = {
@@ -1008,5 +1022,6 @@ module.exports = {
   moveSld,
   getDistrictHeadcounts,
   getSdcSchoolCollectionsFromSdcDistrictCollectionID,
-  getSDCSchoolCollectionStudentSldHistoryPaginated
+  getSDCSchoolCollectionStudentSldHistoryPaginated,
+  removeSDCSchoolCollectionStudents,
 };
