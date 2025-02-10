@@ -284,7 +284,6 @@ import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import { ROLE } from '@/utils/constants/Roles';
-import { PERMISSION } from '@/utils/constants/Permission';
 
 export default {
   name: 'AccessUsersPage',
