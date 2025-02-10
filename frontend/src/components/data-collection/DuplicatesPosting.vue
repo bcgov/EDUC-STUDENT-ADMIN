@@ -26,7 +26,7 @@
             color="primary"
             text="Post Province Duplicates"
             class="ma-2"
-            :disabled="isPostProvincialDuplicatesButtonDisabled"
+            :disabled="isPostProvincialDuplicatesButtonDisabled || !hasEditPermission"
             @click="postProvincialDuplicates"
           />
           <v-btn
@@ -34,7 +34,7 @@
             color="primary"
             text="Resolve Remaining Duplicates"
             class="ma-2"
-            :disabled="isResolveRemainingDuplicatesButtonDisabled"
+            :disabled="isResolveRemainingDuplicatesButtonDisabled || !hasEditPermission"
             @click="resolveRemainingDuplicates"
           />
         </v-row>
@@ -136,7 +136,7 @@
           color="primary"
           text="Post and Close Collection"
           class="ma-2"
-          :disabled="!validForm || isCloseCollectionButtonDisabled"
+          :disabled="!validForm || isCloseCollectionButtonDisabled || !hasEditPermission"
           @click="closeCollection"
         />
       </v-row>
@@ -175,6 +175,8 @@ import {DateTimeFormatter, DayOfWeek, LocalDate, TemporalAdjusters} from '@js-jo
 import * as Rules from '@/utils/institute/formRules';
 import {COLLECTION_TYPE_CODE_MAPPING} from '@/utils/sdc/collectionTypecode';
 import alertMixin from '@/mixins/alertMixin';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'DuplicatesPosting',
@@ -228,9 +230,13 @@ export default {
   },
   computed: {
     ...mapState(sdcCollectionStore, ['collectionTypeCodesMap']),
+    ...mapState(authStore, ['userInfo']),
     isResolveRemainingDuplicatesButtonDisabled() {
       return this.collectionObject?.collectionStatusCode !== 'PROVDUPES';
     },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
+    }
   },
   async created() {
     await this.getSdcSchoolCollections();
@@ -243,6 +249,7 @@ export default {
     this.checkIsCloseCollectionButtonDisabled();
   },
   methods: {
+    hasRequiredPermission,
     async getSdcSchoolCollections(){
       this.isLoading = true;
 

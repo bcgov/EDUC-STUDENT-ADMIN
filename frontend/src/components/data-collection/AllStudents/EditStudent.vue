@@ -530,7 +530,7 @@
             @update:model-value="navigate"
           />
           <v-btn
-            v-if="functionType !== 'add' && !readonly"
+            v-if="functionType !== 'add' && !readonly && hasEditPermission"
             id="removeRecord"
             color="#003366"
             large-icon
@@ -541,7 +541,7 @@
             @click="deleteStudent"
           />
           <v-btn
-            v-if="!readonly"
+            v-if="!readonly && hasEditPermission"
             id="saveRecord"
             color="#003366"
             text="Validate & Save"
@@ -573,6 +573,9 @@ import DatePicker from '@/components/util/DatePicker.vue';
 import * as Rules from '../../../utils/institute/formRules';
 import {isValidPEN, checkEnrolledProgramLength} from '../../../utils/validation';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {authStore} from '@/store/modules/auth';
+import {mapState} from 'pinia';
 
 export default {
   name: 'EditStudent',
@@ -640,11 +643,15 @@ export default {
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     isSchoolCollectionSubmitted(){
       return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcSchoolCollectionStatusCode);
     },
     isDistrictCollectionSubmitted(){
       return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcDistrictCollectionStatusCode);
+    },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     }
   },
   watch: {
@@ -692,6 +699,7 @@ export default {
   async created() {
   },
   methods: {
+    hasRequiredPermission,
     generateCourseOptions() {
       for (let i = 0; i <= 30; i += 0.25) {
         this.courseOptions.push(i.toFixed(2).padStart(5, '0'));

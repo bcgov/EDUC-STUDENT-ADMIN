@@ -710,7 +710,7 @@ const router = createRouter({
         studentID: route.params.studentID,
       }),
       meta: {
-        pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
+        pageTitle: PAGE_TITLES.DATA_COLLECTION,
         requiresAuth: false,
         permission: PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION
       },
