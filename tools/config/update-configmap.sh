@@ -566,6 +566,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/STUDEN
   -d "[$viewStudentDataCollectionPermissionJson, $editStudentDataCollectionPermissionJson]"
 
 echo
+echo Creating VIEW_STUDENT_DATA_COLLECTION role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_STUDENT_DATA_COLLECTION\",\"description\" : \"Allows access to view SLD Collections\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to VIEW_STUDENT_DATA_COLLECTION role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_STUDENT_DATA_COLLECTION/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewStudentDataCollectionPermissionJson]"
+
+echo
 echo Creating GRAD_DATA_COLLECTION_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \

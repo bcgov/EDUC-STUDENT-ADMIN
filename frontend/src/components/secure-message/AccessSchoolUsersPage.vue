@@ -325,7 +325,7 @@ export default {
       })?.length > 0;
     },
     filteredSchoolRoles() {
-      return this.config.DISABLE_SDC_FUNCTIONALITY ? this.schoolRoles.filter(role => role.edxRoleCode !== PERMISSION.STUDENT_DATA_COLLECTION) : this.schoolRoles;
+      return this.schoolRoles;
     }
   },
   async beforeMount() {

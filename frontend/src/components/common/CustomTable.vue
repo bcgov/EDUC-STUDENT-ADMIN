@@ -99,7 +99,7 @@
                   :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
                 >
                   <a
-                    v-if="showLinks"
+                    v-if="showLinks && hasEditPermission"
                     :href="schoolSafeURL(props.item.raw.schoolID, props.item.raw.sdcSchoolCollectionID)"
                     target="_link"
                     :class="{ 'disabled-link': !props.item.raw.schoolID || !props.item.raw.sdcSchoolCollectionID }"
@@ -116,7 +116,7 @@
                   :class="highlightChanges && index !== data.length-1 && data[index][column.key] !== data[index+1]?.[column.key] ? `highlight`: ``"
                 >
                   <a
-                    v-if="showLinks"
+                    v-if="showLinks && hasEditPermission"
                     :href="districtSafeURL(props.item.raw.districtID, props.item.raw.sdcDistrictCollectionID)"
                     target="_link"
                     :class="{ 'disabled-link': !props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID }"
@@ -242,6 +242,7 @@ import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {DateTimeFormatter, LocalDateTime, LocalDate} from '@js-joda/core';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'CustomTable',
@@ -306,6 +307,9 @@ export default {
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
+    }
   },
   watch: {
     pageSize(newPageSize) {
@@ -350,6 +354,7 @@ export default {
     });
   },
   methods: {
+    hasRequiredPermission,
     districtSafeURL(districtID, sdcDistrictCollectionId) {
       return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },

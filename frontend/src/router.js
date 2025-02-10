@@ -688,7 +688,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.DATA_COLLECTION,
         requiresAuth: true,
-        permission: PERMISSION.STUDENT_DATA_COLLECTION
+        permission: PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION
       }
     },
     {
@@ -699,7 +699,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.DATA_COLLECTION,
         requiresAuth: true,
-        permission: PERMISSION.STUDENT_DATA_COLLECTION
+        permission: PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION
       },
     },
     {
@@ -712,7 +712,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.CLOSE_COLLECTION,
         requiresAuth: false,
-        role: PERMISSION.STUDENT_DATA_COLLECTION
+        permission: PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION
       },
     },
   ]

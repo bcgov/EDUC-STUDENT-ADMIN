@@ -37,12 +37,16 @@
         :search="search"
       >
         <template #item.districtTitle="{ item }">
-          <a
+          <a v-if="hasEditPermission"
             :href="safeURL(item.raw.districtID, item.raw.sdcDistrictCollectionId)"
             target="_link"
           >
             {{ item.raw.districtTitle }}
           </a>
+          <span v-else>
+            {{ item.raw.districtTitle }}
+          </span>
+          
         </template>
         <template #item.unsubmit="{ item }">
           <v-btn
@@ -83,6 +87,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
 import {sanitizeUrl} from '@braintree/sanitize-url';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default defineComponent({
   name: 'DistrictMonitoring',
@@ -145,6 +150,9 @@ export default defineComponent({
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
     ...mapState(sdcCollectionStore, ['districtCollectionStatusCodesMap']),
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
+    }
   },
   async created() {
     appStore().getConfig().then(() => {
@@ -158,6 +166,7 @@ export default defineComponent({
     this.setHistoricalHeaders();
   },
   methods: {
+    hasRequiredPermission,
     openDistrictContacts(districtId) {
       let route = this.$router.resolve({name: 'districtDetails', query: {contact: true}, params: {districtID: districtId}});
       window.open(route.href, '_blank');
