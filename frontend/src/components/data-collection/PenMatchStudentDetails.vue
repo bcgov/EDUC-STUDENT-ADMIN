@@ -80,14 +80,14 @@
                   :secondary="true"
                   class="mx-2"
                   text="Manually assign PEN"
-                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
+                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH' || !hasEditPermission"
                   @click-action="togglePENMatchDialog"
                 />                
                 <PrimaryButton
                   id="issue-pen-action"
                   class="mr-2"
                   :loading="isIssuingNewPen"
-                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
+                  :disabled="studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH' || !hasEditPermission"
                   text="Issue new PEN"
                   @click-action="togglePENRequestDialog"
                 />
@@ -153,7 +153,7 @@
               :is-pen-link="true"
               :is-refresh-required="true"
               :is-match-un-match="true"
-              :disable-match-unmatch="isMatchingToStudentRecord || studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH'"
+              :disable-match-unmatch="isMatchingToStudentRecord || studentDetails?.penMatchResult === 'NEW' || studentDetails?.penMatchResult === 'MATCH' || !hasEditPermission"
               :disable-refresh="false"
               :title="title"
               :show-match-button="true"
@@ -211,6 +211,8 @@ import _ from 'lodash';
 import SDCIssueNewPEN from './SDCIssueNewPEN.vue';
 import {constructPenMatchObjectFromSdcStudent} from '../../utils/common';
 import AddStudent from '../common/AddStudent.vue';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'PenMatchStudentDetails',
@@ -267,11 +269,15 @@ export default {
   },
   computed: {
     ...mapState(sdcCollectionStore, ['selectedIDs', 'page']),
+    ...mapState(authStore, ['userInfo']),
     preDisabled() {
       return this.page <= 0;
     },
     nextDisabled() {
       return this.page >= this.selectedIDs.length -1;
+    },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     }
   },
   async created() {
@@ -284,6 +290,7 @@ export default {
   },
   methods: {
     ...mapActions(sdcCollectionStore, ['setSelectedIDs', 'setNavigationPage']),
+    hasRequiredPermission,
     togglePENRequestDialog(){
       this.showPenRequestDialog = !this.showPenRequestDialog;
     },
