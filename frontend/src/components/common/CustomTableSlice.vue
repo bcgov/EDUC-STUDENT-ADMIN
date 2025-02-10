@@ -95,7 +95,7 @@
                 {{ getAssignedPen(props.item.raw['assignedPen']) }}
               </span>
               <div v-else-if="column.key === 'schoolName'">
-                <span v-if="readOnly">
+                <span v-if="readOnly || !hasEditPermission">
                   {{ props.item.raw['schoolName'] }}
                 </span>
                 <span v-else>
@@ -111,7 +111,7 @@
               </div>
               <div v-else-if="column.key === 'districtName'">
                 <span v-if="!props.item.raw.districtID || !props.item.raw.sdcDistrictCollectionID">-</span>
-                <span v-else-if="readOnly">
+                <span v-else-if="readOnly || !hasEditPermission">
                   {{ props.item.raw['districtName'] }}
                 </span>
                 <span v-else>
@@ -205,6 +205,7 @@ import { appStore } from '@/store/modules/app';
 import { mapState } from 'pinia';
 import { authStore } from '@/store/modules/auth';
 import { sanitizeUrl } from '@braintree/sanitize-url';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'CustomTableSlice',
@@ -265,6 +266,9 @@ export default {
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
+    }
   },
   watch: {
     pageNumber(val) {
@@ -301,6 +305,7 @@ export default {
     });
   },
   methods: {
+    hasRequiredPermission,
     districtSafeURL(districtID, sdcDistrictCollectionId) {
       return sanitizeUrl(`${this.edxURL}/api/auth/silent_sdc_idir_login?districtID=${districtID}&sdcDistrictCollectionID=${sdcDistrictCollectionId}&idir_guid=${this.user?.userGuid?.toLowerCase()}`);
     },

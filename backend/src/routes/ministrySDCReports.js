@@ -13,6 +13,6 @@ router.get('/public/:reportType/:collectionID', passport.authenticate('jwt', {se
 router.get('/independent/:reportType/:collectionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_INDEPENDENT_SCHOOLS_PERMISSION), permUtils.isValidUUIDParam('collectionID'), extendSession, getMinistrySDCReport);
 router.get('/headcount/:reportType/:collectionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION), permUtils.isValidUUIDParam('collectionID'), extendSession, getMinistrySDCReport);
 
-router.get('/download/headcount/:reportType/:collectionID', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.STUDENT_DATA_COLLECTION), permUtils.isValidUUIDParam('collectionID'), extendSession, downloadMinistrySDCReport);
+router.get('/download/headcount/:reportType/:collectionID', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), permUtils.isValidUUIDParam('collectionID'), extendSession, downloadMinistrySDCReport);
 
 module.exports = router;

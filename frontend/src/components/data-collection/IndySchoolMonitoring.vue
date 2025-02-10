@@ -211,12 +211,15 @@
         :items="filteredItems"
       >
         <template #item.schoolTitle="{ item }">
-          <a
+          <a v-if="hasEditPermission"
             :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${item.raw.schoolId}&sdcSchoolCollectionID=${item.raw.sdcSchoolCollectionId}&idir_guid=${user.userGuid.toLowerCase()}`"
             target="_link"
           >
             {{ item.raw.schoolTitle }}
           </a>
+          <span v-else>
+            {{ item.raw.schoolTitle }}
+          </span>
         </template>
         <template #item.uploadDate="{ item }">
           <span v-if="item.raw.uploadDate">
@@ -287,6 +290,7 @@ import {mapState} from 'pinia';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import alertMixin from '@/mixins/alertMixin';
 import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default defineComponent({
   name: 'IndySchoolMonitoring',
@@ -405,6 +409,9 @@ export default defineComponent({
         return this.filterForStatus(school); //last check so return true if match is found
       });
     },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
+    }
   },
   async created() {
     appStore().getConfig().then(() => {
@@ -421,6 +428,7 @@ export default defineComponent({
     this.setHistoricalHeaders();
   },
   methods: {
+    hasRequiredPermission,
     applyFilters($event) {
       this.filters = cloneDeep($event);
     },
