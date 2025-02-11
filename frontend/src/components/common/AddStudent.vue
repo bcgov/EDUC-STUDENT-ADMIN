@@ -197,7 +197,7 @@ export default {
       this.student = {};
       this.student['pen'] = data.pen;
       this.student['studentID'] = data.studentID;
-      this.student['studentName'] = data.legalFirstName + ' ' + (data.legalMiddleNames ?? '') + ' ' + data.legalLastName;
+      this.student['studentName'] = (data.legalFirstName ?? '') + ' ' + (data.legalMiddleNames ?? '') + ' ' + data.legalLastName;
       this.student['studentLocalID'] = data.localID;
       this.student['studentGender'] = data.genderCode;
       this.student['studentDoB'] = data.dob;
