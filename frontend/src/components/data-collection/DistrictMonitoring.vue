@@ -54,7 +54,7 @@
             color="primary"
             icon="mdi-lock-open"
             variant="text"
-            :disabled="item.raw.sdcDistrictCollectionStatusCode !== 'SUBMITTED'"
+            :disabled="item.raw.sdcDistrictCollectionStatusCode !== 'SUBMITTED' || !hasEditPermission"
             @click="unsubmitSdcDistrictCollection(item.raw.sdcDistrictCollectionId)"
           />
         </template>
