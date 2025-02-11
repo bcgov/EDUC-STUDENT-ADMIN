@@ -254,7 +254,7 @@
             color="primary"
             icon="mdi-lock-open"
             variant="text"
-            :disabled="item.raw.schoolStatus !== 'SUBMITTED'"
+            :disabled="item.raw.schoolStatus !== 'SUBMITTED' || !hasEditPermission"
             @click="unsubmitSdcSchoolCollection(item.raw.sdcSchoolCollectionId)"
           />
         </template>
