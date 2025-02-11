@@ -9,7 +9,7 @@ const { getSnapshotFundingDataForSchool, getAllCollectionsForSchool, getActiveCo
   getSDCSchoolCollectionStudentPaginated, getSDCSchoolCollectionStudentDetail, updateStudentPEN, checkDuplicatesInCollection, updateAndValidateSdcSchoolCollectionStudent, resolveDuplicates, postProvincialDuplicates, resolveRemainingDuplicates,
   closeCollection, getCollectionPaginated, getSDCSchoolCollectionDetail, downloadSdcReport,
   getCollectionByID, getSdcSchoolCollections, getSdcDistrictCollections, updateBandCode, moveSld, getDistrictHeadcounts, getSdcSchoolCollectionsFromSdcDistrictCollectionID,
-  getSDCSchoolCollectionStudentSldHistoryPaginated
+  getSDCSchoolCollectionStudentSldHistoryPaginated, removeSDCSchoolCollectionStudents
 } = require('../components/sdc/sdc');
 const {getCachedSDCData} = require('../components/sdc/sdc-cache');
 const constants = require('../util/constants');
@@ -67,6 +67,8 @@ router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionStudentID/update-pe
 //update student
 router.post('/sdcSchoolCollectionStudent', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, updateAndValidateSdcSchoolCollectionStudent);
 router.post('/move-sld', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), validate(moveSldSchema), extendSession, moveSld);
+router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionID/students/remove', passport.authenticate('jwt', {session: false}, undefined), 
+permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, removeSDCSchoolCollectionStudents);
 
 //district collection
 router.post('/sdcDistrictCollection/:sdcDistrictCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('sdcDistrictCollectionID'), unsubmitSdcDistrictCollection);
