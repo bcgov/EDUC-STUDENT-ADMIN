@@ -285,7 +285,7 @@
             institute-type-code="SCHOOL"
             institute-type-label="School"
             :school-name="getSchoolNameForUserInvite()"
-            :is-school-closed="getSchoolStatus === 'Closed'"
+            :is-school-closed="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
             @access-user:messageSent="closeNewUserModal"
             @access-user:cancelMessage="closeNewUserModal"
           />
