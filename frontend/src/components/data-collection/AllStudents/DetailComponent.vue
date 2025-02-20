@@ -33,6 +33,16 @@
           class="d-flex justify-end"
         >
           <v-btn
+            v-if="hasEditPermission"
+            id="filters"
+            color="#003366"
+            text="Add Student"
+            class="mr-2 mb-1"
+            prepend-icon="mdi-plus"
+            variant="outlined"
+            @click="addStudent"
+          />
+          <v-btn
             id="filters"
             color="#003366"
             text="Filter"
@@ -109,6 +119,19 @@
       @close="closeAndLoadStudents"
     />
   </v-bottom-sheet>
+  <v-bottom-sheet
+    v-model="addStudentSheet"
+    :inset="true"
+    :no-click-animation="true"
+    :scrollable="true"
+    :persistent="true"
+  >
+    <AddStudentDetails
+      @reload-students="reloadStudentsFlag = true"
+      @close="closeAddAndLoadStudents"
+      @open-edit="closeAddStudentWindow"
+    />
+  </v-bottom-sheet>
 </template>
 
 <script>
@@ -118,16 +141,19 @@ import {Routes} from '@/utils/constants';
 import {cloneDeep, isEmpty, omitBy} from 'lodash';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import ViewStudentDetailsComponent from './ViewStudentDetailsComponent.vue';
+import AddStudentDetails from './AddStudentDetails.vue';
 import Filters from '../../common/Filters.vue';
 import {mapState} from 'pinia';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
+import {PERMISSION} from "@/utils/constants/Permission";
 
 export default {
   name: 'DetailComponent',
   components: {
     CustomTableSlice,
     Filters,
-    ViewStudentDetailsComponent
+    ViewStudentDetailsComponent,
+    AddStudentDetails
   },
   mixins: [alertMixin],
   props: {
@@ -174,6 +200,7 @@ export default {
       totalElements: 0,
       canLoadNext: false,
       canLoadPrevious: false,
+      addStudentSheet: false,
       selectedStudents: [],
       filterSearchParams: {
         tabFilter: this.config.defaultFilter,
@@ -240,6 +267,20 @@ export default {
       this.pageNumber = 1;
       this.loadStudents();
     },
+    addStudent() {
+      this.addStudentSheet = true;
+    },
+    closeAddAndLoadStudents() {
+      this.addStudentSheet = !this.addStudentSheet;
+      if (this.reloadStudentsFlag === true) {
+        this.loadStudents();
+      }
+      this.reloadStudentsFlag = false;
+    },
+    closeAddStudentWindow($event) {
+      this.addStudentSheet = !this.addStudentSheet;
+      this.editStudent($event);
+    },
     loadStudents() {
       this.isLoading = true;
       let sort = {
@@ -269,6 +310,9 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     },
     loadNext() {
       if (this.canLoadNext) {
