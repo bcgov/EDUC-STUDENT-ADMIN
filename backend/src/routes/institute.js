@@ -5,7 +5,7 @@ const perm = require('../util/Permission');
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolNote, deleteSchoolNote, updateSchoolContact, updateAuthority, addAuthorityContact, updateAuthorityContact, deleteAuthorityContact,
   addNewAuthorityNote, updateAuthorityNote, deleteAuthorityNote, updateSchool, addSchool, addSchoolContact, deleteSchoolContact, updateDistrict, updateDistrictContact, deleteDistrictContact, addAuthority,
-  addDistrictContact, addNewDistrictNote, updateDistrictNote, deleteDistrictNote, moveSchool, getSchoolHistoryPaginated,
+  addDistrictContact, addNewDistrictNote, updateDistrictNote, deleteDistrictNote, moveSchool, getSchoolHistoryPaginated, getDistrictHistoryPaginated,
   getStudentRegistrationContacts, getStudentRegistrationContactByMincode, getSchoolByMincode, getDistrictNotes, getSchoolNotes, getAuthorityNotes,
   addNewFundingForSchool,
   getFundingGroupDataForSchool,
@@ -91,6 +91,8 @@ router.put('/school/:id', passport.authenticate('jwt', {session: false}, undefin
 router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolsPaginated);
 
 router.get('/schoolHistoryPaginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_SCHOOL_PERMISSION), extendSession, getSchoolHistoryPaginated);
+
+router.get('/districtHistoryPaginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_DISTRICT_PERMISSION), extendSession, getDistrictHistoryPaginated);
 
 router.post('/school/moveSchool', passport.authenticate('jwt', {session: false}, undefined), permUtils.hasPermissionToMoveSchool(), extendSession, moveSchool);
 
