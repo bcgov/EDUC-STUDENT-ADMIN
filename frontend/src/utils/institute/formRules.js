@@ -65,6 +65,8 @@ const phoneNumber = (message = 'Phone Number must be valid') => {
   return v => !v || /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || message;
 };
 
+
+
 /**
  * Rule for postalCodes
  * @param {String} message

@@ -80,7 +80,31 @@
             >
               <v-row>
                 <v-col cols="12">
-                  <v-row>
+                  <v-row v-if="functionType === 'add'">
+                    <v-col
+                      cols="12"
+                      class="pt-0"
+                    >
+                      <slot
+                        name="text-search"
+                      >
+                        <v-autocomplete
+                          id="selectSchool"
+                          v-model="schoolNameNumber"
+                          variant="underlined"
+                          :items="schoolSearchNames"
+                          color="#003366"
+                          :rules="[rules.required()]"
+                          label="School Name or Number"
+                          :clearable="true"
+                          item-title="schoolCodeName"
+                          item-value="sdcSchoolCollectionID"
+                          autocomplete="off"
+                        />
+                      </slot>
+                    </v-col>
+                  </v-row>
+                  <v-row class="mt-n3">
                     <v-col>
                       <v-text-field
                         id="studentPen"
@@ -88,7 +112,7 @@
                         label="Submitted PEN"
                         variant="underlined"
                         :maxlength="9"
-                        :rules="penRules"
+                        :rules="[rules.required(), rules.penIsValid()]"
                         density="compact"
                         :readonly="readonly"
                       />
@@ -109,6 +133,7 @@
                     <v-col>
                       <DatePicker
                         id="dobPicker"
+                        class="mt-n2"
                         v-model="sdcSchoolCollectionStudentDetailCopy.dob"
                         label="Birthdate"
                         :rules="[rules.required()]"
@@ -564,7 +589,7 @@
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {SDC_VALIDATION_FIELD_MAPPINGS} from '../../../utils/sdc/sdcValidationFieldMappings';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, sortBy} from 'lodash';
 import {formatDob} from '@/utils/format';
 import Spinner from '@/components/common/Spinner.vue';
 import {setFailureAlert, setSuccessAlert, setWarningAlert} from '../../composable/alertComposable';
@@ -576,6 +601,8 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
+import {appStore} from '@/store/modules/app';
+import {penIsValid} from "../../../utils/institute/formRules";
 
 export default {
   name: 'EditStudent',
@@ -632,6 +659,8 @@ export default {
       hasError: false,
       sdcSchoolCollectionStudentDetail: {},
       sdcSchoolCollectionStudentDetailCopy: {},
+      schoolSearchNames: [],
+      schoolNameNumber: null,
       loadingCount: 0,
       rules: Rules,
       sdcSchoolCollection: null,
@@ -643,13 +672,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(appStore, ['schoolMap']),
     ...mapState(authStore, ['userInfo']),
-    isSchoolCollectionSubmitted(){
-      return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcSchoolCollectionStatusCode);
-    },
-    isDistrictCollectionSubmitted(){
-      return this.completionStatuses.includes(this.sdcSchoolCollection?.sdcDistrictCollectionStatusCode);
-    },
     hasEditPermission() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     }
@@ -686,7 +710,7 @@ export default {
       handler(value) {
         if(value === 'add') {
           this.sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionStudentStatusCode= 'LOADED';
-          this.sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionID= this.$route.params.schoolCollectionID;
+          this.setupSchoolList();
           this.$nextTick().then(this.validateForm);
         }
       },
@@ -696,10 +720,30 @@ export default {
   mounted() {
     this.generateCourseOptions();
   },
-  async created() {
-  },
   methods: {
+    penIsValid,
     hasRequiredPermission,
+    setupSchoolList(){
+      this.schoolSearchNames = [];
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.$route.params.collectionID}/sdcSchoolCollections`)
+        .then((res) => {
+          res.data.forEach(schoolCollection => {
+            const school = this.schoolMap.get(schoolCollection.schoolID);
+            if (school) {
+              let schoolItem = {
+                schoolCodeName: school.schoolName + ' - ' + school.mincode,
+                sdcSchoolCollectionID: schoolCollection.sdcSchoolCollectionID,
+                schoolID: school.schoolID,
+              };
+              this.schoolSearchNames.push(schoolItem);
+            }
+          });
+          this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
     generateCourseOptions() {
       for (let i = 0; i <= 30; i += 0.25) {
         this.courseOptions.push(i.toFixed(2).padStart(5, '0'));
@@ -750,6 +794,10 @@ export default {
     save(){
       this.loadingCount += 1;
       this.hasError = false;
+
+      if(this.functionType === 'add'){
+        this.sdcSchoolCollectionStudentDetailCopy.sdcSchoolCollectionID = this.schoolNameNumber;
+      }
 
       if(this.sdcCollection?.schoolCollection?.sdcDistrictCollectionID){
         this.sdcSchoolCollectionStudentDetailCopy.sdcDistrictCollectionID = this.sdcCollection.schoolCollection.sdcDistrictCollectionID;
