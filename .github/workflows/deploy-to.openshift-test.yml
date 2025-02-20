@@ -138,6 +138,13 @@ jobs:
           oc logs -f dc/${{ env.IMAGE_NAME }}
           # Get status, returns 0 if rollout is successful
           oc rollout status dc/${{ env.IMAGE_NAME }}
+          
+          # Start second rollout and follow it
+          oc rollout latest dc/${{ env.IMAGE_NAME }} 2> /dev/null \
+          || true && echo "Rollout in progress"
+          
+          # Get status, returns 0 if rollout is successful
+          oc rollout status dc/${{ env.IMAGE_NAME }}
 
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.7.0
