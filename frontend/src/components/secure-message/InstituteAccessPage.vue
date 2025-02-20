@@ -35,7 +35,21 @@
             color="#003366"
             :label="instituteTypeLabel"
             clearable
-          />
+          >
+          <template #selection="{ item }">
+            <span> {{ item.text }} </span>
+          </template>
+          <template #item="{props, item}">
+            <v-list-item
+              v-bind="props"
+              :prepend-icon="'mdi-circle-medium'"
+            >
+            <template v-slot:prepend>
+              <v-icon :color="instituteTypeCode === 'SCHOOL' ? getStatusColorAuthorityOrSchool(item.raw.status) : getStatusColor(item.raw.status)"></v-icon>
+            </template>
+            </v-list-item>
+          </template>
+          </v-autocomplete>
           <PrimaryButton
             id="manageInstituteButton"
             class="ml-4"
@@ -58,6 +72,7 @@ import router from '@/router';
 import Spinner from '@/components/common/Spinner.vue';
 import {appStore} from '@/store/modules/app';
 import _ from 'lodash';
+import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 
 export default {
   name: 'InstituteAccessPage',
@@ -81,13 +96,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['notClosedSchools','activeDistricts']),
+    ...mapState(appStore, ['notClosedSchools','activeDistricts', 'schools']),
     instituteArray() {
       switch (this.instituteTypeCode) {
       case 'SCHOOL':
-        return _.sortBy(this.notClosedSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
+        return _.sortBy(this.schools.map(school => (
+          { text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode, status: getStatusAuthorityOrSchool(school)})), ['mincode']);
       case 'DISTRICT':
-        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
+        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber, status: district.districtStatusCode})), ['key']);
       default:
         return [];
       }
@@ -97,8 +113,17 @@ export default {
     await appStore().refreshEntities();
   },
   methods:{
+    getStatusColorAuthorityOrSchool,
+    getStatusAuthorityOrSchool,
     backButtonClick() {
       router.push({name: 'home'});
+    },
+    getStatusColor(status) {
+      if (status === 'ACTIVE') {
+        return 'green';
+      } else {
+        return 'red';
+      }
     },
   }
 };

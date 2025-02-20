@@ -27,7 +27,8 @@ export const appStore = defineStore('app', {
     alertNotification: false,
     config: '',
     fundingGroupsMap: new Map(),
-    fundingGroups: []
+    fundingGroups: [],
+    schools: []
   }),
   getters: {
     activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString()),
@@ -71,6 +72,7 @@ export const appStore = defineStore('app', {
       mincodeSchoolNameList.forEach(element => {
         this.mincodeSchoolNames.set(element.mincode, element.schoolName);
         this.schoolMap.set(element.schoolID, {...element});
+        this.schools.push(element);
         if(isSchoolActive(element)){
           this.notClosedSchools.push(element);
           this.notClosedSchoolsMap.set(element.schoolID, element);

@@ -1,16 +1,7 @@
 <template>
   <v-container class="containerSetup mb-5">
     <v-row>
-      <v-col class="pb-0">
-        <h2>
-          <strong>
-            {{ getSchoolName() }}
-          </strong>
-        </h2>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="mt-1 mb-2 d-flex justify-start">
+      <v-col class="mt-1 d-flex justify-start">
         <v-icon
           class="mt-1"
           size="small"
@@ -22,6 +13,28 @@
           class="ml-1"
           @click="backButtonClick"
         >Return to EDX School Access</a>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <h2>
+          <strong>
+            {{ getSchoolName() }}
+          </strong>
+        </h2>
+      </v-col>
+    </v-row>
+    <v-row class="pb-2 mt-n3">
+      <v-col class="d-flex">
+        <v-icon
+          :color="getStatusColorAuthorityOrSchool(getSchoolStatus)"
+          dark
+        >
+         mdi-circle-medium
+        </v-icon>
+        <span>{{
+          getSchoolStatus
+        }}</span>
       </v-col>
       <v-col class="d-flex justify-end">
         <v-chip
@@ -175,6 +188,7 @@
           :user="user"
           :institute-code="schoolID"
           :institute-roles="filteredSchoolRoles"
+          :is-school-closed-or-closing="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
           institute-type-code="SCHOOL"
           institute-type-label="School"
           @refresh="getUsersData"
@@ -252,12 +266,27 @@
         </v-card-title>
         <v-divider />
         <v-card-text>
+          <v-row>
+            <v-col>
+              <v-alert
+                density="compact"
+                type="warning"
+                class="mx-4"
+                variant="tonal"
+                v-if="getSchoolStatus === 'Closed'"
+              >
+                Please note, you are adding a user to a closed school.
+              </v-alert>
+            </v-col>
+          </v-row>
+          
           <InviteUserPage
             :user-roles="filteredSchoolRoles"
             :institute-code="schoolID"
             institute-type-code="SCHOOL"
             institute-type-label="School"
             :school-name="getSchoolNameForUserInvite()"
+            :is-school-closed-or-closing="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
             @access-user:messageSent="closeNewUserModal"
             @access-user:cancelMessage="closeNewUserModal"
           />
@@ -284,6 +313,7 @@ import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
 import { ROLE } from '@/utils/constants/Roles';
+import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 
 export default {
   name: 'AccessUsersPage',
@@ -325,7 +355,10 @@ export default {
     },
     filteredSchoolRoles() {
       return this.schoolRoles;
-    }
+    },
+    getSchoolStatus() {
+      return getStatusAuthorityOrSchool(this.schoolMap?.get(this.schoolID));
+    },
   },
   async beforeMount() {
     if (this.schoolRoles.length === 0) {
@@ -340,6 +373,8 @@ export default {
     this.getPrimaryEdxActivationCode();
   },
   methods: {
+    getStatusColorAuthorityOrSchool, 
+    getStatusAuthorityOrSchool,
     enterPushed() {
       if (this.searchFilter.name) {
         this.searchButtonClick();
@@ -403,7 +438,7 @@ export default {
     getSchoolName() {
       const schoolName = this.schoolMap.get(this.schoolID)?.schoolName;
       const mincode = this.schoolMap.get(this.schoolID)?.mincode;
-      return `${schoolName} (${mincode})`;
+      return `${mincode} - ${schoolName}`;
     },
     clearButtonClick() {
       setEmptyInputParams(this.searchFilter);

@@ -18,16 +18,7 @@
     >
       <v-col>
         <v-row>
-          <v-col class="pb-0">
-            <h2>
-              <strong>
-                {{ districtName + ' (' + districtNumber + ')' }}
-              </strong>
-            </h2>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="mt-1 mb-2 d-flex justify-start">
+          <v-col class="mt-1 d-flex justify-start">
             <v-icon
               class="mt-1"
               size="small"
@@ -39,6 +30,28 @@
               class="ml-1"
               @click="backButtonClick"
             >Return to EDX District Access</a>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="pb-0">
+            <h2>
+              <strong>
+                {{ districtNumber }} - {{ districtName }}
+              </strong>
+            </h2>
+          </v-col>
+        </v-row>
+        <v-row class="pb-2 mt-n3">
+          <v-col class="d-flex">
+            <v-icon
+              :color="getStatusColor()"
+              dark
+            >
+            mdi-circle-medium
+            </v-icon>
+            <span>{{
+              getStatusText()
+            }}</span>
           </v-col>
           <v-col class="d-flex justify-end">
             <v-chip
@@ -480,7 +493,21 @@ export default {
     },
     getDistrictNameForUserInvite() {
       return this.district.name;
-    }
+    },
+    getStatusColor() {
+      if (this.district.districtStatusCode === 'ACTIVE') {
+        return 'green';
+      } else {
+        return 'red';
+      }
+    },
+    getStatusText() {
+      if (this.district.districtStatusCode === 'ACTIVE') {
+        return 'Active';
+      } else {
+        return 'Inactive';
+      }
+    },
   }
 };
 </script>

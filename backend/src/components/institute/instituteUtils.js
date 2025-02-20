@@ -45,7 +45,8 @@ function generateSchoolObject(school) {
     closedDate: school.closedDate,
     districtID: school.districtId,
     authorityID: school.independentAuthorityId,
-    schoolNumber: school.schoolNumber
+    schoolNumber: school.schoolNumber,
+    canIssueTranscripts: school.canIssueTranscripts
   };
 }
 
