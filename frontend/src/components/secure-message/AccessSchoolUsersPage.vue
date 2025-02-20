@@ -188,6 +188,7 @@
           :user="user"
           :institute-code="schoolID"
           :institute-roles="filteredSchoolRoles"
+          :is-school-closed-or-closing="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
           institute-type-code="SCHOOL"
           institute-type-label="School"
           @refresh="getUsersData"
@@ -285,7 +286,7 @@
             institute-type-code="SCHOOL"
             institute-type-label="School"
             :school-name="getSchoolNameForUserInvite()"
-            :is-school-closed="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
+            :is-school-closed-or-closing="getSchoolStatus === 'Closed' || getSchoolStatus === 'Closing'"
             @access-user:messageSent="closeNewUserModal"
             @access-user:cancelMessage="closeNewUserModal"
           />
