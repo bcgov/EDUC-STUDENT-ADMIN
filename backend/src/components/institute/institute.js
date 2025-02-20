@@ -1092,6 +1092,53 @@ async function getSchoolHistoryPaginated(req, res) {
   }
 }
 
+async function getDistrictHistoryPaginated(req, res) {
+  try {
+    let parsedParams = '';
+    if (req.query.searchParams) {
+      parsedParams = req.query.searchParams;
+    }
+
+    const historySearchCriteria = [{
+      condition: null,
+      searchCriteriaList: createDistrictSearchCriteria(parsedParams),
+    }];
+    const districtHistorySearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(historySearchCriteria)
+      }
+    };
+
+    Promise.all([
+      getData(config.get('server:edx:edxUsersURL')),
+      getData(config.get('server:institute:rootURL') + '/district/history/paginated', districtHistorySearchParam)
+    ])
+      .then(async ([edxUserResponse, districtHistoryResponse]) => {
+        if (edxUserResponse && districtHistoryResponse) {
+          districtHistoryResponse.content.forEach((element) => {
+            if(element.updateUser?.length > 10){
+              let val = edxUserResponse.find(user => user.edxUserID === element.updateUser.replace('EDX/', ''));
+              if(val){
+                element.updateUser = (val.firstName + ' ' + val.lastName).trim();
+              }
+            }
+          });
+
+          return res.status(HttpStatus.OK).json(districtHistoryResponse);
+        }
+      }).catch(async e => {
+        await logApiError(e, 'getDistrictHistoryPaginated', 'Error occurred while attempting to GET district history paginated.');
+        return errorResponse(res);
+      });
+  } catch (e) {
+    logApiError(e, 'getDistrictHistoryPaginated', 'Error occurred while attempting to GET district history paginated.');
+    return errorResponse(res);
+  }
+}
+
 function createSchoolSearchCriteria(searchParams){
 
   let searchCriteriaList = [];
@@ -1151,6 +1198,19 @@ function createSchoolSearchCriteria(searchParams){
     }
     if(key === 'issueCertificates'){
       searchCriteriaList.push({key: 'canIssueCertificates', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.BOOLEAN, condition: CONDITION.AND});
+    }
+  });
+
+  return searchCriteriaList;
+}
+
+function createDistrictSearchCriteria(searchParams){
+  let searchCriteriaList = [];
+
+  Object.keys(searchParams).forEach(function(key){
+    let pValue = searchParams[key];
+    if(key === 'districtID'){
+      searchCriteriaList.push({key: 'districtId', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
     }
   });
 
@@ -1484,6 +1544,7 @@ module.exports = {
   getStudentRegistrationContacts,
   getStudentRegistrationContactByMincode,
   getSchoolByMincode,
+  getDistrictHistoryPaginated,
   getDistrictNotes,
   getAuthorityNotes,
   getSchoolNotes

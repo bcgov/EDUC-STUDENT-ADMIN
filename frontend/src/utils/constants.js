@@ -108,6 +108,7 @@ let object = {
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     FUNDING_DATA_URL: instituteRoot + '/funding-groups',
     SCHOOL_HISTORY_PAGINATED_DATA_URL: instituteRoot + '/schoolHistoryPaginated',
+    DISTRICT_HISTORY_PAGINATED_DATA_URL: instituteRoot + '/districtHistoryPaginated',
     SCHOOL_MOVE_URL: instituteRoot + '/school/moveSchool',
     DISTRICT_DATA_URL: instituteRoot + '/district',
     DISTRICT_CONTACT_URL: instituteRoot + '/district/contact',

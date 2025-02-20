@@ -118,6 +118,9 @@
               <v-tab value="contacts">
                 Contacts
               </v-tab>
+              <v-tab value="history">
+                History
+              </v-tab>
               <v-tab
                 value="notes"
               >
@@ -141,6 +144,11 @@
                   <DistrictContacts 
                     :district-i-d="districtID" 
                     :has-access="canEditDistrictDetails()"
+                  />
+                </v-window-item>
+                <v-window-item value="history">
+                  <DistrictHistory
+                    :district-i-d="districtID"
                   />
                 </v-window-item>
                 <v-window-item value="notes">
@@ -182,10 +190,12 @@ import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import Details from './district/Details.vue';
 import DistrictContacts from './district/DistrictContacts.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import DistrictHistory from '@/components/institute/district/DistrictHistory.vue';
 
 export default {
   name: 'DistrictDetails',
   components: {
+    DistrictHistory,
     InstituteNotes,
     PrimaryButton,
     Details,
