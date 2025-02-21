@@ -96,7 +96,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(appStore, ['notClosedSchools','activeDistricts', 'schools']),
+    ...mapState(appStore, ['activeDistricts', 'schools']),
     instituteArray() {
       switch (this.instituteTypeCode) {
       case 'SCHOOL':
