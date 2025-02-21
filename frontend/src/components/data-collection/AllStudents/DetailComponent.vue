@@ -145,7 +145,8 @@ import AddStudentDetails from './AddStudentDetails.vue';
 import Filters from '../../common/Filters.vue';
 import {mapState} from 'pinia';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
-import {PERMISSION} from "@/utils/constants/Permission";
+import {hasRequiredPermission, PERMISSION} from "@/utils/constants/Permission";
+import {authStore} from "@/store/modules/auth";
 
 export default {
   name: 'DetailComponent',
@@ -215,9 +216,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
     ...mapState(sdcCollectionStore, ['schoolCollection','schoolFundingCodesMap', 'enrolledProgramCodesMap', 'careerProgramCodesMap', 'bandCodesMap', 'specialEducationCodesMap']),
     filterCount() {
       return Object.values(this.filterSearchParams.moreFilters).filter(filter => !!filter).reduce((total, filter) => total.concat(filter), []).length;
+    },
+    hasEditPermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     }
   },
   watch: {
@@ -243,6 +248,7 @@ export default {
       }
       this.reloadStudentsFlag = false;
     },
+    hasRequiredPermission,
     downloadReportURL() {
       if (this.indySchoolDistrictObject != null) {
         if (this.indySchoolDistrictObject.type === 'indy') return `${Routes.sdc.BASE_URL}/${this.indySchoolDistrictObject.id}/report/csv_school/download`;
@@ -310,9 +316,6 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
-    },
-    hasEditPermission() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION);
     },
     loadNext() {
       if (this.canLoadNext) {
