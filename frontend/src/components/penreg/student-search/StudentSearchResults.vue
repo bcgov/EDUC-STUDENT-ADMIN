@@ -86,7 +86,7 @@
           <td
             v-for="header in headers"
             :key="header.id"
-            :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(item.item) }"
+            :class="{'table-checkbox' :header.id, 'row-highlight': isMergedOrDeceased(item.item.raw) }"
           >
             <div v-if="header.key === 'checkbox'">
               <v-checkbox
@@ -403,6 +403,8 @@ export default {
         });
     },
     isMergedOrDeceased(student) {
+      console.log(student);
+      console.log(student.statusCode);
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
     },
   }
@@ -464,9 +466,9 @@ export default {
     padding-left: 0;
 }
 
-.row-hightlight {
-    background-color: rgba(0, 0, 0, 0.06);
-    color: #1A5A96;
-    font-weight: bold;
+.v-data-table .v-table__wrapper > table tbody > tr > td.row-highlight {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #1A5A96;
+  font-weight: bold;
 }
 </style>
