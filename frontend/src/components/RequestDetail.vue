@@ -455,11 +455,13 @@
           />
         </v-card>
       </v-row>
+      <UpArrow />
     </v-col>
   </v-container>
 </template>
 <script>
 import Chat from './Chat.vue';
+import UpArrow from './common/UpArrow.vue';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import {mapActions, mapState} from 'pinia';
@@ -481,7 +483,8 @@ export default {
   components: {
     ImageRenderer,
     PrimaryButton,
-    Chat
+    Chat,
+    UpArrow,
   },
   mixins: [alertMixin],
   props: {

@@ -348,17 +348,20 @@ export default {
   computed: {
     ...mapState(appStore, ['schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
+    getSchoolStatus() {
+      return getStatusAuthorityOrSchool(this.schoolMap?.get(this.schoolID));
+    },
     hasAdminUsers() {
       return this.users.filter(user => {
         return user.edxUserSchools.some(school => school.edxUserSchoolRoles.some(role => role.edxRoleCode === ROLE.EDX_SCHOOL_ADMIN));
       })?.length > 0;
     },
     filteredSchoolRoles() {
+      if(this.getSchoolStatus === 'Closed') {
+        return this.schoolRoles.filter(role => role.edxRoleCode === 'GRAD_SCH_ADMIN' || role.edxRoleCode === 'SECURE_EXCHANGE_SCHOOL')
+      }
       return this.schoolRoles;
-    },
-    getSchoolStatus() {
-      return getStatusAuthorityOrSchool(this.schoolMap?.get(this.schoolID));
-    },
+    }
   },
   async beforeMount() {
     if (this.schoolRoles.length === 0) {
