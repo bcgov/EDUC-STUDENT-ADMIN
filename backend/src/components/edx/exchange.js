@@ -996,7 +996,9 @@ async function createSchool(req, res) {
       });
     }
 
-    await setIssueTranscriptAndCertificatesFlags(school);
+    if(['INDEPEND', 'INDP_FNS'].includes(school.schoolCategoryCode)) {
+      await setIssueTranscriptAndCertificatesFlags(school);
+    }
     const userInfo = utils.getUser(req);
     const payload = {
       school: {

@@ -395,7 +395,9 @@ async function addSchool(req, res) {
       payload.grades = req.body.grades;
     }
 
-    await setIssueTranscriptAndCertificatesFlags(payload);
+    if(['INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)) {
+      await setIssueTranscriptAndCertificatesFlags(payload);
+    }
 
     const data = await utils.postData(config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
@@ -935,7 +937,7 @@ async function updateSchoolDetails(school, idirUsername){
   let common = _.intersection(currentSchoolGradeCodes, incomingSchoolGradeCodes);
   let offset = _.difference(all, common); _.difference(currentSchoolGradeCodes, incomingSchoolGradeCodes);
 
-  if(offset.length !== 0){
+  if(offset.length !== 0 && ['INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
     await setIssueTranscriptAndCertificatesFlags(payload);
   }
 
