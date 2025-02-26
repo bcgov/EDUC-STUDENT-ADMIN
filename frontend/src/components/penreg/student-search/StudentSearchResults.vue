@@ -403,8 +403,6 @@ export default {
         });
     },
     isMergedOrDeceased(student) {
-      console.log(student);
-      console.log(student.statusCode);
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
     },
   }
