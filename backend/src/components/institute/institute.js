@@ -395,7 +395,7 @@ async function addSchool(req, res) {
       payload.grades = req.body.grades;
     }
 
-    if(['INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)) {
+    if(!['FED_BAND'].includes(payload.schoolCategoryCode)) {
       await setIssueTranscriptAndCertificatesFlags(payload);
     }
 
@@ -937,7 +937,7 @@ async function updateSchoolDetails(school, idirUsername){
   let common = _.intersection(currentSchoolGradeCodes, incomingSchoolGradeCodes);
   let offset = _.difference(all, common); _.difference(currentSchoolGradeCodes, incomingSchoolGradeCodes);
 
-  if(offset.length !== 0 && ['INDEPEND', 'INDP_FNS'].includes(payload.schoolCategoryCode)){
+  if(offset.length !== 0 && !['FED_BAND'].includes(payload.schoolCategoryCode)){
     await setIssueTranscriptAndCertificatesFlags(payload);
   }
 
