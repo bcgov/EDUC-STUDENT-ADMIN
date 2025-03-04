@@ -337,7 +337,7 @@
       >
         <span
           :class="{
-            'diff-value': isValueEmpty(schoolHistory.canIssueTranscripts,
+            'diff-value': isValueEmpty(schoolHistory.canIssueTranscripts === true ? 'Yes' : 'No',
                                        schoolHistory.canIssueTranscripts_diff)
           }"
         >
@@ -363,7 +363,7 @@
       >
         <span
           :class="{
-            'diff-value': isValueEmpty(schoolHistory.canIssueCertificates,
+            'diff-value': isValueEmpty(schoolHistory.canIssueCertificates === true ? 'Yes' : 'No',
                                        schoolHistory.canIssueCertificates_diff)
           }"
         >
