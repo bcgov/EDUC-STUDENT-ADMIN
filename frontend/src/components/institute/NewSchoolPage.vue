@@ -160,7 +160,7 @@
                   id="newSchoolReportingRequirementInput"
                   v-model="newSchool.schoolReportingRequirementCode"
                   :rules="[rules.required()]"
-                  :items="schoolReportingRequirementCodes"
+                  :items="schoolReportingRequirementTypes"
                   item-value="schoolReportingRequirementCode"
                   item-title="label"
                   variant="underlined"
@@ -586,7 +586,16 @@ export default {
         {districtRegionCode: 'YUKON', schoolCategory: 'YUKON'}
       ],
       schoolDistrictDisabled: false,
+      schoolReportingRequirementTypesLoaded: [],
       schoolCategoryDisabled: false,
+      psiEarlyLearn: ['EAR_LEARN', 'POST_SEC'],
+      yukon: ['YUKON'],
+      nonIndependentArray: ['FED_BAND'],
+      publicSchoolReqCodes: ['REGULAR', 'CSF'],
+      independentOrOffshoreSchoolReqCodes: ['REGULAR'],
+      nonIndependentFNSchoolReqCodes: ['REGULAR','RT', 'NONE'],
+      yukonReqCodes: ['CSF', 'NONE'],
+      noneReqCodes: ['NONE'],
       newSchool: {
         districtID: null,
         independentAuthorityId: null,
@@ -662,6 +671,18 @@ export default {
       }
       return sortBy(returnedDistrictNames, ['districtNumberName']);
     },
+    schoolReportingRequirementTypes() {
+      if(this.independentArray.includes(this.newSchool.schoolCategoryCode) || this.offshoreArray.includes(this.newSchool.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.independentOrOffshoreSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }else if(this.nonIndependentArray.includes(this.newSchool.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.nonIndependentFNSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }else if(this.psiEarlyLearn.includes(this.newSchool.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.noneReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }else if(this.yukon.includes(this.newSchool.schoolCategoryCode)) {
+        return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.yukonReqCodes.includes(reqCode.schoolReportingRequirementCode));
+      }
+      return this.schoolReportingRequirementTypesLoaded.filter(reqCode => this.publicSchoolReqCodes.includes(reqCode.schoolReportingRequirementCode));
+    },
     schoolCategoryTypeCodes() {
       let returnedCodes = [];
       let publicOnlyTypes = this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes.filter(cat => !this.independentArray.includes(cat.schoolCategoryCode) && !this.offshoreArray.includes(cat.schoolCategoryCode)) : [];
@@ -734,7 +755,9 @@ export default {
     instStore.getAllActiveProvinceCodes();
     instStore.getAllActiveCountryCodes();
     instStore.getSchoolCategoryFacilityTypesMap();
-    instStore.getSchoolReportingRequirementTypeCodes();
+    instStore.getSchoolReportingRequirementTypeCodes().then(() => {
+      this.schoolReportingRequirementTypesLoaded = this.schoolReportingRequirementTypeCodes;
+    });
     this.preselectSchoolDistrict();
   },
   methods: {

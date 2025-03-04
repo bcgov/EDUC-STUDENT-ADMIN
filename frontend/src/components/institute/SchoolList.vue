@@ -632,7 +632,6 @@ export default {
     }
     instStore.getAllGradeCodes().then(() => {
       this.schoolGradeTypes = sortBy(this.gradeCodes, ['displayOrder']);
-      console.log('Grades: ' + JSON.stringify(this.schoolGradeTypes));
     });
   },
   methods: {
