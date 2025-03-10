@@ -119,7 +119,6 @@
                             label="Access Expiry Date"
                             model-type="yyyy-MM-dd'T'00:00:00"
                             :min-date="minExpiryDate"
-                            :rules="isSchoolClosedOrClosing ? requiredRules : ''"
                             @clear-date="clearExpiryDate"
                           />
                         </v-card-text>
@@ -202,12 +201,7 @@ export default {
     instituteTypeCode: {
       type: String,
       required: true
-    },
-    isSchoolClosedOrClosing: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
+    }
   },
   data() {
 

@@ -183,7 +183,6 @@
           model-type="yyyy-MM-dd'T'00:00:00"
           :min-date="minExpiryDate"
           :allow-teleport="true"
-          :rules="isSchoolClosedOrClosing ? requiredRules : ''"
           @clear-date="clearExpiryDate"
         />
         <v-row
@@ -251,11 +250,6 @@ export default {
       type: String,
       required: true
     },
-    isSchoolClosedOrClosing: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
   },
   emits: ['refresh'],
   data() {
@@ -268,7 +262,6 @@ export default {
       accessExpiryDate: null,
       from: 'uuuu-MM-dd\'T\'HH:mm:ss',
       pickerFormat: 'uuuu-MM-dd',
-      requiredRules: [v => !!v || 'Required'],
       minExpiryDate: LocalDate.now().atStartOfDay().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')).toString()
     };
   },
@@ -308,7 +301,7 @@ export default {
     },
     getRoleLabel(curRole) {
       if (this.instituteRoles.length > 0) {
-        return this.instituteRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
+        return this.instituteRoles.find((role) => role.edxRoleCode === curRole?.edxRoleCode)?.label;
       }
       return '';
     },
