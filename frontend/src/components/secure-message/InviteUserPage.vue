@@ -286,7 +286,7 @@ export default {
         lastName: this.lastName,
         email: this.email,
         edxActivationRoleCodes: this.edxActivationRoleCodes,
-        edxUserExpiryDate: this.accessExpiryDate
+        edxUserExpiryDate: this.accessExpiryDate === '' ? null : this.accessExpiryDate
       };
       let url = null;
       if (this.instituteTypeCode === 'SCHOOL') {
