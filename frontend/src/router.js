@@ -56,6 +56,7 @@ import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudent
 import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue';
 import AssessmentSessionDetail from '@/components/assessments/AssessmentSessionsDetail.vue';
 import AssessmentDataExchange from '@/components/assessments/AssessmentDataExchange.vue';
+import GraduationTabs from '@/components/gdc/GraduationTabs.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -515,6 +516,16 @@ const router = createRouter({
           },
         }
       ]
+    },
+    {
+      path: '/graduation',
+      name: 'graduationTabs',
+      component: GraduationTabs,
+      meta: {
+        pageTitle: PAGE_TITLES.GRAD_SCHOOL_LIST,
+        requiresAuth: true,
+        permission: PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION
+      },
     },
     {
       path: '/assessment-sessions',
