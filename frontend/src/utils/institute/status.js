@@ -133,3 +133,18 @@ export function getStatusColorAuthorityOrSchool(statusText) {
     return 'grey';
   }
 }
+
+/**
+ * Provides status color for GDC Sessions
+ * @param status
+ * @returns String
+ */
+export function getStatusColorGdcSession(statusText) {
+  if (statusText === 'complete') {
+    return 'green';
+  } else if (statusText === 'ongoing'){
+    return 'blue';
+  } else if (statusText === 'pendingStart'){
+    return 'grey';
+  }
+}
