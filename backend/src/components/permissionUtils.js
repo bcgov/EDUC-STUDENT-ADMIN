@@ -400,7 +400,6 @@ async function checkUserRoleForNewUser(req, res, next) {
 }
 
 async function checkValidRoles(req, incomingRoles, schoolID) {
-  const token = auth.getBackendUserToken(req);
   const params = {
     params: req.query
   };
