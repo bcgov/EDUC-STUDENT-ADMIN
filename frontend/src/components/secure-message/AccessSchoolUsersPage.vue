@@ -340,7 +340,6 @@ export default {
         name: null,
         roleName: null,
       },
-      school: null,
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
   },
@@ -348,8 +347,8 @@ export default {
     ...mapState(appStore, ['schoolMap', 'config']),
     ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
     getSchoolStatus() {
-      this.school = this.schoolMap?.get(this.schoolID);
-      return getStatusAuthorityOrSchool(this.school);
+      let school = this.schoolMap?.get(this.schoolID);
+      return getStatusAuthorityOrSchool(school);
     },
     hasAdminUsers() {
       return this.users.filter(user => {
@@ -357,7 +356,8 @@ export default {
       })?.length > 0;
     },
     filteredSchoolRoles() {
-      if(!this.school?.canIssueTranscripts) {
+      let school = this.schoolMap?.get(this.schoolID);
+      if(!school?.canIssueTranscripts) {
         return this.schoolRoles.filter(role => role.edxRoleCode !== 'GRAD_SCH_ADMIN');
       } else if(this.getSchoolStatus === 'Closed') {
         return this.schoolRoles.filter(role => role.edxRoleCode === 'GRAD_SCH_ADMIN' || role.edxRoleCode === 'SECURE_EXCHANGE_SCHOOL')
