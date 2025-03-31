@@ -9,6 +9,7 @@ const cacheService = require('./cache-service');
 const _ = require('lodash');
 const auth = require('./auth');
 const {v4: validate } = require('uuid');
+const {getData} = require('./utils');
 
 function checkUserHasPermission(permission) {
   return function(req, res, next) {
@@ -375,6 +376,49 @@ function isValidUUIDQueryParam(paramName) {
   };
 }
 
+async function checkIfRoleIsAllowedForSchool(req, res, next) {
+  let schoolID = req?.body?.params?.schoolID;
+  let isRoleAllowed = await checkValidRoles(req, req.body.params.selectedRoles, schoolID);
+  if(!isRoleAllowed) {
+    return res.status(HttpStatus.FORBIDDEN).json({
+      message: 'Role is not allowed.'
+    });
+  }
+  return next();
+}
+
+
+async function checkUserRoleForNewUser(req, res, next) {
+  let schoolID = req?.body?.schoolID;
+  let isRoleAllowed = await checkValidRoles(req, req.body.edxActivationRoleCodes, schoolID);
+  if(!isRoleAllowed) {
+    return res.status(HttpStatus.FORBIDDEN).json({
+      message: 'Role is not allowed.'
+    });
+  }
+  return next();
+}
+
+async function checkValidRoles(req, incomingRoles, schoolID) {
+  const token = auth.getBackendUserToken(req);
+  const params = {
+    params: req.query
+  };
+  let data = await getData(`${config.get('server:edx:rootURL')}/users/roles`, params);
+  let allowedRoles = filterSchoolRoles(schoolID, data);
+  return incomingRoles.every(role => {
+    return allowedRoles.filter(allowed => allowed.edxRoleCode === role).length > 0
+  });
+}
+
+function filterSchoolRoles(schoolID, data) {
+  const school = cacheService.getSchoolBySchoolID(schoolID);
+  if(!school?.canIssueTranscripts) {
+    return data.filter(role => role.edxRoleCode !== 'GRAD_SCH_ADMIN');
+  }
+  return data;
+}
+
 const permUtils = {
   isValidUUIDParam,
   isValidUUIDQueryParam,
@@ -387,7 +431,9 @@ const permUtils = {
   hasPermissionToGetStudentByPEN,
   hasPermissionToGetMacros,
   hasPermissionToMoveSchool,
-  isAuthorized
+  isAuthorized,
+  checkIfRoleIsAllowedForSchool,
+  checkUserRoleForNewUser,
 };
 
 module.exports = permUtils;
