@@ -58,7 +58,7 @@ router.get('/users/roles', passport.authenticate('jwt', {session: false}, undefi
 router.get('/users/school/:schoolID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('schoolID'), getEdxSchoolUsers);
 router.get('/users/district/:districtID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('districtID'), getEdxDistrictUsers);
 
-router.post('/users/roles/school', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, updateEdxUserSchoolRoles);
+router.post('/users/roles/school', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.checkIfRoleIsAllowedForSchool, updateEdxUserSchoolRoles);
 router.post('/users/roles/district', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, updateEdxUserDistrictRoles);
 
 router.post('/users/remove/school', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, removeUserSchoolAccess);
@@ -73,7 +73,7 @@ router.get('/users/activation-code/primary/district/:instituteIdentifier', passp
 router.post('/users/activation-code/primary/school/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), generateOrRegeneratePrimaryEdxActivationSchoolCode);
 router.post('/users/activation-code/primary/district/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), extendSession, permUtils.isValidUUIDParam('instituteIdentifier'), generateOrRegeneratePrimaryEdxActivationDistrictCode);
 
-router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), schoolUserActivationInvite);
+router.post('/school-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), permUtils.checkUserRoleForNewUser, schoolUserActivationInvite);
 router.post('/district-user-activation-invite', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_DISTRICT_USERS_PERMISSION), districtUserActivationInvite);
 
 router.get('/findAll-school-invites', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_EDX_SCHOOL_USERS_PERMISSION), extendSession, findAllSchoolInvitations);
