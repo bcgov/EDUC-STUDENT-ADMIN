@@ -201,6 +201,7 @@ nconf.defaults({
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
     edxURL: process.env.EDX_URL,
     disableEASFunctionality: process.env.DISABLE_EAS_FUNCTIONALITY === 'true',
+    disableGDCFunctionality: process.env.DISABLE_GDC_FUNCTIONALITY === 'true',
     sldMigrationDate: process.env.SLD_MIGRATION_DATE
   },
   sdc: {
