@@ -159,6 +159,10 @@ nconf.defaults({
       assessmentSpecialCaseTypeCodeURL: process.env.EAS_API_URL+ '/assessment-specialcase-types',
       assessmentStudentsURL: process.env.EAS_API_URL+ '/student',
       assessmentKeyURL: process.env.EAS_API_URL+ '/assessment-keys',
+    },
+    gdc:{
+      rootURL: process.env.GDC_API_URL,
+      activeReportingPeriodURL: process.env.GDC_API_URL + '/active-reporting-period',
     }
   },
   oidc: {
