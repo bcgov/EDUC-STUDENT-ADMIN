@@ -327,7 +327,7 @@ export default {
         },
         {
           title: PAGE_TITLES.GRADUATION,
-          authorized:  this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION),
+          authorized: !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION),
           items: [
             {
               title: 'Graduation School List',
