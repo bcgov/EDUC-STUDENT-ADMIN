@@ -14,16 +14,28 @@
     <v-table>
       <thead>
         <tr>
-          <th class="text-left">
+          <th
+            class="text-left"
+            scope="col"
+          >
             Reporting Period
           </th>
-          <th class="text-left">
+          <th
+            class="text-left"
+            scope="col"
+          >
             Open Date
           </th>
-          <th class="text-left">
+          <th
+            class="text-left"
+            scope="col"
+          >
             Close Date
           </th>
-          <th class="text-left">
+          <th
+            class="text-left"
+            scope="col"
+          >
             Action
           </th>
         </tr>
