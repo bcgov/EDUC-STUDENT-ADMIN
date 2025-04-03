@@ -522,7 +522,7 @@ const router = createRouter({
       name: 'graduationTabs',
       component: GraduationTabs,
       meta: {
-        pageTitle: PAGE_TITLES.GRAD_SCHOOL_LIST,
+        pageTitle: PAGE_TITLES.GRAD_TABS,
         requiresAuth: true,
         permission: PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION
       },
