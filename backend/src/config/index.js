@@ -105,6 +105,7 @@ nconf.defaults({
     },
     nominalRoll: {
       rootURL: process.env.NOMINAL_ROLL_API_URL,
+      fedBandCode: process.env.NOMINAL_ROLL_API_URL + '/federal-province-codes',
       roleAdmin: process.env.NOMINAL_ROLL,
       rolesAllowed: process.env.NOMINAL_ROLL_ROLES ? process.env.NOMINAL_ROLL_ROLES.split(',') : '', // comma separated list
     },

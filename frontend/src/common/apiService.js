@@ -98,7 +98,7 @@ export default {
   getDistricts:getCodes(Routes.cache.DISTRICT_DATA_URL),
   getAuthorities:getCodes(Routes.cache.AUTHORITY_DATA_URL),
   getActiveAuthorities:getCodes(`${Routes.cache.AUTHORITY_DATA_URL}?active=true`),
-  getFedProvSchoolCodes: getCodes(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`),
+  getFedProvSchoolCodes: getCodes(`${Routes.nominalRoll.FED_BAND_CODE}`),
   getExchangeStatuses: getCodes(`${Routes.edx.STATUSES_URL}`),
   getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
   getValidSchoolIDsForMessaging: getCodes(Routes.edx.VALID_USERS_FOR_MESSAGING),

@@ -22,5 +22,5 @@ router.post('/validate', passport.authenticate('jwt', {session: false}, undefine
 router.put('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, permUtils.isValidUUIDParam('id'), updateNominalRollStudent);
 router.post('/postData', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, postNominalRollData);
 router.post('/fedProvSchoolCode', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, createFedProvSchoolCode);
-
+router.get('/federal-province-codes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.getCodes('server:nominalRoll:fedBandCode', 'fedProvSchoolCodes'));
 module.exports = router;
