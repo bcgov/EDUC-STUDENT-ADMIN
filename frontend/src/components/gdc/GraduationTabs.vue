@@ -11,7 +11,7 @@
         Current Reporting Cycle
       </strong>
       <span class="pl-2">
-        {{ collectionsObject !== null ? `- ${collectionsObject.schoolYear.openDate} to ${collectionsObject.summer.closeDate}` : '-' }}
+        {{ collectionObject !== null ? `- ${collectionObject?.schYrStart} to ${collectionObject?.summerEnd}` : '-' }}
       </span>
     </v-row>
     <v-row no-gutters>
@@ -61,7 +61,7 @@
         <v-card-text>
           <v-window v-model="tab">
             <v-window-item value="reportingDatesTab">
-              <ReportingDates :collections-object="collectionsObject" />
+              <ReportingDates :collection-object="collectionObject" />
             </v-window-item>
             <v-window-item value="schoolsTab">
               Schools
@@ -106,7 +106,7 @@ export default {
     return {
       PAGE_TITLES: PAGE_TITLES,
       tab: null,
-      collectionsObject: null
+      collectionObject: null
     };
   },
   computed: {
@@ -118,20 +118,11 @@ export default {
   },
   methods: {
     getActiveReportingDates() {
-      // ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTIONS}`)
-      //   .then(response => {
-      //     this.collectionsObject = response.data;
-      //   });
-      this.collectionsObject = {
-        schoolYear: {
-          openDate: '20241001',
-          closeDate: '20250718'
-        },
-        summer: {
-          openDate: '20250810',
-          closeDate: '20250912'
-        }
-      };
+      ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTION}`)
+        .then(response => {
+          console.log(response.data);
+          this.collectionObject = response.data;
+        });
     }
   }
 };

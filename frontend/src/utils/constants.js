@@ -209,7 +209,7 @@ let object = {
   },
   gdc: {
     BASE_URL: gdcRoot,
-    ACTIVE_COLLECTIONS: gdcRoot + 'collections',
+    ACTIVE_COLLECTION: gdcRoot + '/active-reporting-period',
   },
   eas: {
     BASE_URL: easRoot,

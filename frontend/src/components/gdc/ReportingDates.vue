@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="6">
+  <v-col cols="9">
     <h3 class="subHeading">
       Reporting Cycle
     </h3>
@@ -7,7 +7,7 @@
       Month Year - Month Year
     </p>
   </v-col>
-  <v-col cols="6">
+  <v-col cols="9">
     <h3 class="subHeading">
       Reporting Periods
     </h3>
@@ -31,8 +31,8 @@
       <tbody>
         <tr>
           <td>School Year</td>
-          <td>{{ collectionsObject.schoolYear ? collectionsObject.schoolYear.openDate : '' }}</td>
-          <td>{{ collectionsObject.schoolYear ? collectionsObject.schoolYear.closeDate : '' }}</td>
+          <td>{{ collectionObject?.schYrStart }}</td>
+          <td>{{ collectionObject?.schYrEnd }}</td>
           <td>
             <v-btn
               variant="text"
@@ -42,8 +42,8 @@
         </tr>
         <tr>
           <td>Summer</td>
-          <td>{{ collectionsObject.summer ? collectionsObject.summer.openDate : '' }}</td>
-          <td>{{ collectionsObject.summer ? collectionsObject.summer.closeDate : '' }}</td>
+          <td>{{ collectionObject?.summerStart }}</td>
+          <td>{{ collectionObject?.summerEnd }}</td>
           <td>
             <v-btn
               variant="text"
@@ -56,13 +56,15 @@
   </v-col>
 </template>
 <script>
-import getStatusColorGdcSession from '../../utils/constants';
+// todo
+//import getStatusColorGdcSession from '../../utils/constants';
 export default {
   name: 'ReportingDates',
   props: {
-    collectionsObject: {
+    collectionObject: {
       type: Object,
-      required: true
+      required: false,
+      default: null
     },
   }
 };
