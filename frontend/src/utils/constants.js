@@ -154,6 +154,7 @@ let object = {
   MACRO_URL: macroRoot,
   nominalRoll:{
     ROOT_ENDPOINT: nominalRollRoot,
+    FED_BAND_CODE: nominalRollRoot+ '/fedProvSchoolCodes',
     PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
   edx: {
