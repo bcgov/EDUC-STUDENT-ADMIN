@@ -1,11 +1,9 @@
 <template>
   <v-col cols="9">
-    <h3 class="subHeading">
+    <h3 class="subHeading pb-1">
       Reporting Cycle
     </h3>
-    <p>
-      Month Year - Month Year
-    </p>
+    <p>{{ formatDate(collectionObject?.schYrStart) }} - {{ formatDate(collectionObject?.schYrEnd) }}</p>
   </v-col>
   <v-col cols="9">
     <h3 class="subHeading">
@@ -43,40 +41,143 @@
       <tbody>
         <tr>
           <td>School Year</td>
-          <td>{{ collectionObject?.schYrStart }}</td>
-          <td>{{ collectionObject?.schYrEnd }}</td>
+          <td>{{ formatDate(collectionObject?.schYrStart) }}</td>
+          <td>{{ formatDate(collectionObject?.schYrEnd) }}</td>
           <td>
             <v-btn
               variant="text"
               icon="mdi-pencil-outline"
+              @click="openEditDialog('school')"
             />
           </td>
         </tr>
         <tr>
           <td>Summer</td>
-          <td>{{ collectionObject?.summerStart }}</td>
-          <td>{{ collectionObject?.summerEnd }}</td>
+          <td>{{ formatDate(collectionObject?.summerStart) }}</td>
+          <td>{{ formatDate(collectionObject?.summerEnd) }}</td>
           <td>
             <v-btn
               variant="text"
               icon="mdi-pencil-outline"
+              @click="openEditDialog('summer')"
             />
           </td>
         </tr>
       </tbody>
     </v-table>
   </v-col>
+
+  <v-dialog
+    v-model="dialog"
+    persistent
+    max-width="500px"
+  >
+    <v-card>
+      <v-card-title>
+        Edit {{ editMode === 'school' ? 'School Year' : 'Summer' }} Dates
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <DatePicker
+                v-model="editDates.start"
+                label="Start Date"
+                :model-type="'yyyy-MM-dd'"
+                :allow-teleport="true"
+              />
+            </v-col>
+            <v-col cols="12">
+              <DatePicker
+                v-model="editDates.end"
+                label="End Date"
+                :model-type="'yyyy-MM-dd'"
+                :allow-teleport="true"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          @click="dialog = false"
+        >
+          Cancel
+        </v-btn>
+        <v-btn
+          color="primary"
+          @click="updateReportingDates"
+        >
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 <script>
 // todo
 //import getStatusColorGdcSession from '../../utils/constants';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {formatDate} from '@/utils/format';
+import DatePicker from '@/components/util/DatePicker.vue';
+
 export default {
   name: 'ReportingDates',
+  components: {DatePicker},
   props: {
     collectionObject: {
       type: Object,
       required: false,
       default: null
+    },
+  },
+  emits: ['update:collectionObject'],
+  data() {
+    return {
+      dialog: false,
+      editMode: '',
+      editDates: {
+        start: '',
+        end: '',
+      },
+    };
+  },
+  methods: {
+    formatDate,
+    openEditDialog(mode) {
+      this.editMode = mode;
+      if (mode === 'school') {
+        this.editDates.start = this.collectionObject.schYrStart?.split('T')[0];
+        this.editDates.end = this.collectionObject.schYrEnd?.split('T')[0];
+      } else {
+        this.editDates.start = this.collectionObject.summerStart?.split('T')[0];
+        this.editDates.end = this.collectionObject.summerEnd?.split('T')[0];
+      }
+      this.dialog = true;
+    },
+    updateReportingDates() {
+      const toISOStringWithTime = (dateStr) => {
+        return `${dateStr}T00:00:00`;
+      };
+
+      if (this.editMode === 'school') {
+        this.collectionObject.schYrStart = toISOStringWithTime(this.editDates.start);
+        this.collectionObject.schYrEnd = toISOStringWithTime(this.editDates.end);
+      } else {
+        this.collectionObject.summerStart = toISOStringWithTime(this.editDates.start);
+        this.collectionObject.summerEnd = toISOStringWithTime(this.editDates.end);
+      }
+
+      ApiService.apiAxios.put(`${Routes.gdc.REPORTING_PERIOD}`, this.collectionObject)
+        .then(response => {
+          this.$emit('update:collectionObject', response.data);
+          this.dialog = false;
+        })
+        .catch(error => {
+          console.error('Update failed:', error);
+        });
     },
   }
 };
