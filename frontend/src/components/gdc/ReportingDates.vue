@@ -73,8 +73,8 @@
     max-width="500px"
   >
     <v-card>
-      <v-card-title>
-        Edit {{ editMode === 'school' ? 'School Year' : 'Summer' }} Dates
+      <v-card-title class="header">
+        Edit {{ editMode === 'school' ? 'School Year' : 'Summer' }} Reporting Period
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -100,17 +100,15 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          @click="dialog = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="primary"
-          @click="updateReportingDates"
-        >
-          Save
-        </v-btn>
+        <PrimaryButton
+          text="Cancel"
+          secondary
+          @click-action="dialog = false"
+        />
+        <PrimaryButton
+          text="Save"
+          @click-action="updateReportingDates"
+        />
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -122,10 +120,11 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {formatDate} from '@/utils/format';
 import DatePicker from '@/components/util/DatePicker.vue';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 
 export default {
   name: 'ReportingDates',
-  components: {DatePicker},
+  components: {PrimaryButton, DatePicker},
   props: {
     collectionObject: {
       type: Object,
@@ -185,5 +184,11 @@ export default {
 <style scoped>
 .subHeading {
   color: #38598a;
+}
+.header {
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
 }
 </style>
