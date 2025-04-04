@@ -67,7 +67,7 @@
               Schools
             </v-window-item>
             <v-window-item value="reportingInsightsTab">
-              Reporting Insights
+              <CollectionInsights :collection-object="collectionObject" />
             </v-window-item>
             <v-window-item value="studentDataTab">
               Find Student in Data Submissions
@@ -89,11 +89,13 @@ import {appStore} from '@/store/modules/app';
 import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
 import {formatDate} from '@/utils/format';
+import CollectionInsights from './insights/CollectionInsights.vue';
 
 export default {
   name: 'GraduationSchoolTabs',
   components: {
-    ReportingDates
+    ReportingDates,
+    CollectionInsights
   },
   mixins: [alertMixin],
   props: {
