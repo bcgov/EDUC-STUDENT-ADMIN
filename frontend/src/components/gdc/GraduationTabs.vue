@@ -11,7 +11,7 @@
         Current Reporting Cycle
       </strong>
       <span class="pl-2">
-        {{ collectionObject !== null ? `- ${collectionObject?.schYrStart} to ${collectionObject?.summerEnd}` : '-' }}
+        {{ collectionObject !== null ? `- ${formatDate(collectionObject?.schYrStart)} to ${formatDate(collectionObject?.summerEnd)}` : '-' }}
       </span>
     </v-row>
     <v-row no-gutters>
@@ -88,6 +88,7 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
+import {formatDate} from '@/utils/format';
 import CollectionInsights from './insights/CollectionInsights.vue';
 
 export default {
@@ -119,10 +120,10 @@ export default {
     this.getActiveReportingDates();
   },
   methods: {
+    formatDate,
     getActiveReportingDates() {
       ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTION}`)
         .then(response => {
-          console.log(response.data);
           this.collectionObject = response.data;
         });
     }

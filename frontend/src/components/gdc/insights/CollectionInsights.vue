@@ -12,7 +12,7 @@
           <h4>School Year Reporting Period</h4>
           <template #actions>
             <v-chip
-              :color="getChipColor(panel1Status)"
+              :color="getStatusColorGdcSession(panel1Status)"
               variant="flat"
             >
               {{ panel1Status }}
@@ -35,7 +35,7 @@
           <h4>Summer Reporting Period</h4>
           <template #actions>
             <v-chip
-              :color="getChipColor(panel2Status)"
+              :color="getStatusColorGdcSession(panel2Status)"
               variant="flat"
             >
               {{ panel2Status }}
@@ -58,7 +58,7 @@ import alertMixin from '@/mixins/alertMixin';
 import SummaryTable from './SummaryTable.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
    
 export default {
   name: 'CollectionInsights',
@@ -110,15 +110,8 @@ export default {
     
   },
   methods: {
-    getChipColor(status) {
-      if(status === 'Pending Start') {
-        return 'grey';
-      } else if(status === 'Complete') {
-        return 'green';
-      } else if(status === 'Ongoing') {
-        return 'blue';
-      }
-    },
+    getStatusColorGdcSession,
+    findReportingPeriodStatus,
     async getReportingSummary() {
       this.loading = true;
       this.summaryData = {};
@@ -137,29 +130,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    findReportingPeriodStatus() {
-      var currentDate = LocalDateTime.now();
-      var schoolYearStart = LocalDateTime.parse(this.collectionObject.schYrStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-      var schoolYearEnd = LocalDateTime.parse(this.collectionObject.schYrEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-      var summerStart = LocalDateTime.parse(this.collectionObject.summerStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-      var summerEnd = LocalDateTime.parse(this.collectionObject.summerEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-      if((currentDate.isEqual(schoolYearStart) || currentDate.isAfter(schoolYearStart)) 
-        && (currentDate.isEqual(schoolYearEnd) || currentDate.isBefore(schoolYearEnd))) {
-        this.panel1Status = 'Ongoing';
-        this.panel2Status = 'Pending Start';
-        this.type = 'SchoolYear';
-      } else if((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart)) 
-        && (currentDate.isEqual(summerEnd) || currentDate.isBefore(summerEnd))) {
-        this.panel1Status = 'Completed';
-        this.panel2Status = 'Ongoing';
-        this.type = 'Summer';
-      } else {
-        this.panel1Status = 'Completed';
-        this.panel2Status = 'Completed';
-        this.type = '';
-      }
     }
   }
 };
