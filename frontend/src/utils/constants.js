@@ -211,6 +211,7 @@ let object = {
   gdc: {
     BASE_URL: gdcRoot,
     ACTIVE_COLLECTION: gdcRoot + '/active-reporting-period',
+    REPORTING_SUMMARY: gdcRoot + '/reporting-summary'
   },
   eas: {
     BASE_URL: easRoot,
