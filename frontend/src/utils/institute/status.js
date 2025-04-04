@@ -140,11 +140,38 @@ export function getStatusColorAuthorityOrSchool(statusText) {
  * @returns String
  */
 export function getStatusColorGdcSession(statusText) {
-  if (statusText === 'complete') {
+  if (statusText === 'Complete') {
     return 'green';
-  } else if (statusText === 'ongoing'){
+  } else if (statusText === 'Ongoing'){
     return 'blue';
-  } else if (statusText === 'pendingStart'){
+  } else if (statusText === 'Pending Start'){
     return 'grey';
+  }
+}
+
+/**
+ * set reporting period status for gdc tabs
+ */
+export function findReportingPeriodStatus() {
+  var currentDate = LocalDateTime.now();
+  var schoolYearStart = LocalDateTime.parse(this.collectionObject.schYrStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+  var schoolYearEnd = LocalDateTime.parse(this.collectionObject.schYrEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+  var summerStart = LocalDateTime.parse(this.collectionObject.summerStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+  var summerEnd = LocalDateTime.parse(this.collectionObject.summerEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+  if((currentDate.isEqual(schoolYearStart) || currentDate.isAfter(schoolYearStart))
+      && (currentDate.isEqual(schoolYearEnd) || currentDate.isBefore(schoolYearEnd))) {
+    this.panel1Status = 'Ongoing';
+    this.panel2Status = 'Pending Start';
+    this.type = 'SchoolYear';
+  } else if((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart))
+      && (currentDate.isEqual(summerEnd) || currentDate.isBefore(summerEnd))) {
+    this.panel1Status = 'Completed';
+    this.panel2Status = 'Ongoing';
+    this.type = 'Summer';
+  } else {
+    this.panel1Status = 'Completed';
+    this.panel2Status = 'Completed';
+    this.type = '';
   }
 }

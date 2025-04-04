@@ -3,12 +3,33 @@
     <h3 class="subHeading pb-1">
       Reporting Cycle
     </h3>
-    <p>{{ formatDate(collectionObject?.schYrStart) }} - {{ formatDate(collectionObject?.schYrEnd) }}</p>
+    <p>{{ formatDate(collectionObject?.schYrStart) }} - {{ formatDate(collectionObject?.summerEnd) }}</p>
   </v-col>
   <v-col cols="9">
     <h3 class="subHeading">
       Reporting Periods
     </h3>
+    <v-row
+      class="py-5 px-2"
+      dense
+      no-gutters
+    >
+      <v-col
+        v-for="status in ['Pending Start', 'Ongoing', 'Complete']"
+        :key="status"
+        class="d-inline-flex"
+        cols="auto"
+      >
+        <v-chip
+          class="me-2 mb-2"
+          :color="getStatusColorGdcSession(status)"
+          variant="flat"
+        >
+          {{ status }}
+        </v-chip>
+      </v-col>
+    </v-row>
+
     <v-table>
       <thead>
         <tr>
@@ -40,7 +61,15 @@
       </thead>
       <tbody>
         <tr>
-          <td>School Year</td>
+          <td>
+            <v-icon
+              class="pb-1"
+              :color="getStatusColorGdcSession(panel1Status)"
+            >
+              mdi-circle-medium
+            </v-icon>
+            School Year
+          </td>
           <td>{{ formatDate(collectionObject?.schYrStart) }}</td>
           <td>{{ formatDate(collectionObject?.schYrEnd) }}</td>
           <td>
@@ -52,7 +81,15 @@
           </td>
         </tr>
         <tr>
-          <td>Summer</td>
+          <td>
+            <v-icon
+              class="pb-1"
+              :color="getStatusColorGdcSession(panel2Status)"
+            >
+              mdi-circle-medium
+            </v-icon>
+            Summer
+          </td>
           <td>{{ formatDate(collectionObject?.summerStart) }}</td>
           <td>{{ formatDate(collectionObject?.summerEnd) }}</td>
           <td>
@@ -114,13 +151,13 @@
   </v-dialog>
 </template>
 <script>
-// todo
-//import getStatusColorGdcSession from '../../utils/constants';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {formatDate} from '@/utils/format';
 import DatePicker from '@/components/util/DatePicker.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
+import {setFailureAlert} from '@/components/composable/alertComposable';
 
 export default {
   name: 'ReportingDates',
@@ -141,10 +178,24 @@ export default {
         start: '',
         end: '',
       },
+      panel1Status: '',
+      panel2Status: '',
     };
   },
+  watch: {
+    collectionObject: {
+      handler(value) {
+        if(value) {
+          this.findReportingPeriodStatus();
+        }
+      },
+      immediate: true
+    },
+  },
   methods: {
+    findReportingPeriodStatus,
     formatDate,
+    getStatusColorGdcSession,
     openEditDialog(mode) {
       this.editMode = mode;
       if (mode === 'school') {
@@ -175,6 +226,7 @@ export default {
           this.dialog = false;
         })
         .catch(error => {
+          setFailureAlert(error.response?.data?.message || error.message);
           console.error('Update failed:', error);
         });
     },

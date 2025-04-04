@@ -124,7 +124,6 @@ export default {
     getActiveReportingDates() {
       ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTION}`)
         .then(response => {
-          console.log(response.data);
           this.collectionObject = response.data;
         });
     }
