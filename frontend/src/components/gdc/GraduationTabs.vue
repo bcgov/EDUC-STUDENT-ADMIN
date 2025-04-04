@@ -67,7 +67,7 @@
               Schools
             </v-window-item>
             <v-window-item value="reportingInsightsTab">
-              <CollectionInsights :collection-object="collectionObject"></CollectionInsights>
+              <CollectionInsights :collection-object="collectionObject" />
             </v-window-item>
             <v-window-item value="studentDataTab">
               Find Student in Data Submissions

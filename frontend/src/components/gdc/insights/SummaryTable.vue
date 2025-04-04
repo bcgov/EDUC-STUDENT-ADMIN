@@ -1,83 +1,88 @@
 <template>
-    <v-table
-      density="compact"
-    >
-      <thead>
-        <tr>
-          <th
-            v-for="columnHeader in header"
-            :id="'tableHeader'+columnHeader?.key"
-            :key="columnHeader?.key + generateKey()"
-          >
-            {{ columnHeader?.title }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="row in summaryData?.rows"
-          :key="row?.categoryOrFacilityType + generateKey()"
-          :class="row?.isSection === 'true' ?'section-header':''"
+  <v-table
+    density="compact"
+  >
+    <thead>
+      <tr>
+        <th
+          v-for="columnHeader in header"
+          :id="'tableHeader'+columnHeader?.key"
+          :key="columnHeader?.key + generateKey()"
         >
-          <td
-            v-for="columnHeader in header"
-            :key="row?.title?.currentValue + columnHeader?.key + generateKey()"
-            class="table-cell"
+          {{ columnHeader?.title }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="row in summaryData?.rows"
+        :key="row?.categoryOrFacilityType + generateKey()"
+        :class="row?.isSection === 'true' ?'section-header':''"
+      >
+        <td
+          v-for="columnHeader in header"
+          :key="row?.title?.currentValue + columnHeader?.key + generateKey()"
+          class="table-cell"
+        >
+          <span
+            v-if="columnHeader?.key === 'categoryOrFacilityType'"
+            :class="row?.isSection === 'false' ?'pl-12':''"
           >
-              <span v-if="columnHeader?.key === 'categoryOrFacilityType'" :class="row?.isSection === 'false' ?'pl-12':''"
-                >
-                {{ row[columnHeader?.key] }}
-              </span>
-              <span v-else class="pl-12">{{ row[columnHeader?.key] }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </template>
+            {{ row[columnHeader?.key] }}
+          </span>
+          <span
+            v-else
+            class="pl-12"
+          >{{ row[columnHeader?.key] }}</span>
+        </td>
+      </tr>
+    </tbody>
+  </v-table>
+</template>
   
-  <script>
-  import alertMixin from '@/mixins/alertMixin';
-  import {v4 as uuidv4} from 'uuid';
+<script>
+import alertMixin from '@/mixins/alertMixin';
+import {v4 as uuidv4} from 'uuid';
    
-  export default {
-    name: 'SummaryTable',
-    components: {
+export default {
+  name: 'SummaryTable',
+  components: {
+  },
+  mixins: [alertMixin],
+  props: {
+    summaryData: {
+      type: Object,
+      required: true,
+      default: null
     },
-    mixins: [alertMixin],
-    props: {
-      summaryData: {
-        type: Object,
-        required: true,
-        default: null
-      },
-      header: {
-        type: Array,
-        required: true,
-        default: null
-      }
-    },
-    methods: {
-      getClassForCell(columnHeader, row) {
-        if(row.section && row.title.currentValue===row.section.currentValue) {
-          if(columnHeader==='title') {
-            return 'section-header-title';
-          } else if(row[columnHeader]?.currentValue==='0') {
-            return 'table-cell';
-          } else {
-            return 'section-header-cell';
-          }
-        } else if(columnHeader==='title') {
-          return 'pl-12';
-        } else {
-          return 'table-cell';
-        }
-      },
-      generateKey() {
-        return uuidv4();
-      }
+    header: {
+      type: Array,
+      required: true,
+      default: null
     }
-  };
-  </script>
+  },
+  methods: {
+    getClassForCell(columnHeader, row) {
+      if(row.section && row.title.currentValue===row.section.currentValue) {
+        if(columnHeader==='title') {
+          return 'section-header-title';
+        } else if(row[columnHeader]?.currentValue==='0') {
+          return 'table-cell';
+        } else {
+          return 'section-header-cell';
+        }
+      } else if(columnHeader==='title') {
+        return 'pl-12';
+      } else {
+        return 'table-cell';
+      }
+    },
+    generateKey() {
+      return uuidv4();
+    }
+  }
+};
+</script>
          
   <style scoped>
   .section-header {
