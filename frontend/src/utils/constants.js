@@ -212,6 +212,7 @@ let object = {
     BASE_URL: gdcRoot,
     REPORTING_PERIOD: gdcRoot + '/reporting-period',
     ACTIVE_COLLECTION: gdcRoot + '/active-reporting-period',
+    PREVIOUS_COLLECTION: gdcRoot + '/previous-reporting-period',
     REPORTING_SUMMARY: gdcRoot + '/reporting-summary'
   },
   eas: {

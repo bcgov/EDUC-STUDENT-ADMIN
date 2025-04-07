@@ -166,12 +166,12 @@ export function findReportingPeriodStatus() {
     this.type = 'SchoolYear';
   } else if((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart))
       && (currentDate.isEqual(summerEnd) || currentDate.isBefore(summerEnd))) {
-    this.panel1Status = 'Completed';
+    this.panel1Status = 'Complete';
     this.panel2Status = 'Ongoing';
     this.type = 'Summer';
   } else {
-    this.panel1Status = 'Completed';
-    this.panel2Status = 'Completed';
+    this.panel1Status = 'Complete';
+    this.panel2Status = 'Complete';
     this.type = '';
   }
 }
