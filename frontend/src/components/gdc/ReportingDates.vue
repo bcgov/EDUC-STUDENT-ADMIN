@@ -122,6 +122,8 @@
                 label="Start Date"
                 :model-type="'yyyy-MM-dd'"
                 :allow-teleport="true"
+                :min-date="editDates.min"
+                :max-date="editDates.max"
               />
             </v-col>
             <v-col cols="12">
@@ -130,6 +132,8 @@
                 label="End Date"
                 :model-type="'yyyy-MM-dd'"
                 :allow-teleport="true"
+                :min-date="editDates.min"
+                :max-date="editDates.max"
               />
             </v-col>
           </v-row>
@@ -144,6 +148,8 @@
         />
         <PrimaryButton
           text="Save"
+          :loading="saving"
+          :disabled="saving"
           @click-action="updateReportingDates"
         />
       </v-card-actions>
@@ -157,7 +163,7 @@ import {formatDate} from '@/utils/format';
 import DatePicker from '@/components/util/DatePicker.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
-import {setFailureAlert} from '@/components/composable/alertComposable';
+import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
 
 export default {
   name: 'ReportingDates',
@@ -177,9 +183,12 @@ export default {
       editDates: {
         start: '',
         end: '',
+        min: '',
+        max:  ''
       },
       panel1Status: '',
       panel2Status: '',
+      saving: false,
     };
   },
   watch: {
@@ -187,6 +196,7 @@ export default {
       handler(value) {
         if(value) {
           this.findReportingPeriodStatus();
+          this.setDateBoundaries();
         }
       },
       immediate: true
@@ -196,6 +206,17 @@ export default {
     findReportingPeriodStatus,
     formatDate,
     getStatusColorGdcSession,
+    setDateBoundaries() {
+
+      const schYrStart = this.collectionObject.schYrStart.split('T')[0];
+      const summerEnd = this.collectionObject.summerEnd.split('T')[0];
+
+      const startYear = new Date(schYrStart).getFullYear();
+      const endYear = new Date(summerEnd).getFullYear();
+
+      this.editDates.min = `${startYear}-10-01`;
+      this.editDates.max = `${endYear}-09-30`;
+    },
     openEditDialog(mode) {
       this.editMode = mode;
       if (mode === 'school') {
@@ -208,9 +229,51 @@ export default {
       this.dialog = true;
     },
     updateReportingDates() {
-      const toISOStringWithTime = (dateStr) => {
-        return `${dateStr}T00:00:00`;
-      };
+      this.saving = true;
+
+      const toISOStringWithTime = (dateStr) => `${dateStr}T00:00:00`;
+      const start = this.editDates.start;
+      const end = this.editDates.end;
+
+      const schYrStart = this.collectionObject.schYrStart?.split('T')[0];
+      const schYrEnd = this.collectionObject.schYrEnd?.split('T')[0];
+      const summerStart = this.collectionObject.summerStart?.split('T')[0];
+      const summerEnd = this.collectionObject.summerEnd?.split('T')[0];
+
+      const cycleStart = `${new Date(schYrStart).getFullYear()}-10-01`;
+      const cycleEnd = `${new Date(summerEnd).getFullYear()}-09-30`;
+
+      if (!start || !end) {
+        this.saving = false;
+        setFailureAlert('Start and end dates are required.');
+        return;
+      }
+      if (start > end) {
+        this.saving = false;
+        setFailureAlert('Start Date cannot be after End Date.');
+        return;
+      }
+      if (start < cycleStart || end > cycleEnd) {
+        this.saving = false;
+        setFailureAlert(`Dates must be between ${cycleStart} and ${cycleEnd}.`);
+        return;
+      }
+
+      if (this.editMode === 'school') {
+        if (summerStart && summerEnd &&
+            (this.isBetween(start, summerStart, summerEnd) || this.isBetween(end, summerStart, summerEnd))) {
+          this.saving = false;
+          setFailureAlert('School Year dates cannot overlap Summer period.');
+          return;
+        }
+      } else if (this.editMode === 'summer') {
+        if (schYrStart && schYrEnd &&
+            (this.isBetween(start, schYrStart, schYrEnd) || this.isBetween(end, schYrStart, schYrEnd))) {
+          this.saving = false;
+          setFailureAlert('Summer dates cannot overlap School Year period.');
+          return;
+        }
+      }
 
       if (this.editMode === 'school') {
         this.collectionObject.schYrStart = toISOStringWithTime(this.editDates.start);
@@ -224,12 +287,19 @@ export default {
         .then(response => {
           this.$emit('update:collectionObject', response.data);
           this.dialog = false;
+          setSuccessAlert('Success Updating Reporting Periods');
         })
         .catch(error => {
           setFailureAlert(error.response?.data?.message || error.message);
           console.error('Update failed:', error);
+        })
+        .finally(() => {
+          this.saving = false;
         });
     },
+    isBetween(date, min, max) {
+      return date >= min && date <= max;
+    }
   }
 };
 </script>
