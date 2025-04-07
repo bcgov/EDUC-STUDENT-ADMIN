@@ -14,6 +14,17 @@ async function getActiveReportingPeriod(req, res) {
   }
 }
 
+async function getPreviousReportingPeriod(req, res) {
+  try {
+    const url = `${config.get('server:gdc:previousReportingPeriodURL')}`;
+    const data = await getData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getPreviousReportingPeriod', 'Error occurred while attempting to GET GDC Previous Reporting Period.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function updateReportingPeriod(req, res) {
   try {
     const url = `${config.get('server:gdc:reportingPeriodURL')}`;
@@ -47,6 +58,7 @@ async function getReportingSummary(req, res) {
 
 module.exports = {
   getActiveReportingPeriod,
+  getPreviousReportingPeriod,
   updateReportingPeriod,
   getReportingSummary
 };

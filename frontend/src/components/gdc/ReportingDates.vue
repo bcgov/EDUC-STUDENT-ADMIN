@@ -54,9 +54,7 @@
           <th
             class="text-left"
             scope="col"
-          >
-            Action
-          </th>
+          />
         </tr>
       </thead>
       <tbody>
@@ -74,6 +72,7 @@
           <td>{{ formatDate(collectionObject?.schYrEnd) }}</td>
           <td>
             <v-btn
+              v-if="!isPrevious"
               variant="text"
               icon="mdi-pencil-outline"
               @click="openEditDialog('school')"
@@ -94,6 +93,7 @@
           <td>{{ formatDate(collectionObject?.summerEnd) }}</td>
           <td>
             <v-btn
+              v-if="!isPrevious"
               variant="text"
               icon="mdi-pencil-outline"
               @click="openEditDialog('summer')"
@@ -174,6 +174,10 @@ export default {
       required: false,
       default: null
     },
+    isPrevious: {
+      type: Boolean,
+      default: false
+    }
   },
   emits: ['update:collectionObject'],
   data() {
