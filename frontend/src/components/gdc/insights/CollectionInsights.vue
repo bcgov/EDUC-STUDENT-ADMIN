@@ -2,7 +2,7 @@
   <div class="mt-4">
     <v-expansion-panels
       v-model="type"
-      @update:model-value="getReportingSummary()"
+      @update:model-value="togglePanel()"
     >
       <v-expansion-panel
         class="border"
@@ -20,6 +20,11 @@
           </template>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
+          <v-row class="sub-heading mt-n10 mb-1">
+            <v-col>
+              The Schools Expected to Submit are transcript eligible schools that are open or have been closed for less than 3 months.
+            </v-col>
+          </v-row>
           <SummaryTable
             :summary-data="summaryData"
             :header="schoolYearHeaders"
@@ -112,9 +117,14 @@ export default {
   methods: {
     getStatusColorGdcSession,
     findReportingPeriodStatus,
+    togglePanel() {
+      this.summaryData = {};
+      if(this.type) {
+        this.getReportingSummary();
+      }
+    },
     async getReportingSummary() {
       this.loading = true;
-      this.summaryData = {};
       ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}`, {
         params: {
           type: this.type
@@ -148,6 +158,11 @@ h4 {
 :deep(.v-expansion-panel-title--active > .v-expansion-panel-title__overlay) {
   background-color: white !important;
   opacity: 0 !important;
+}
+
+.sub-heading {
+  color: grey;
+  font-style: italic;
 }
 
 </style>
