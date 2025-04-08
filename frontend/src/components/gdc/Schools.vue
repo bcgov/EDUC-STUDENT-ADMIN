@@ -12,37 +12,36 @@
     <v-col cols="9">
       <v-row>
         <v-col cols="auto">
-          <v-btn variant="text">
+          <span>
             <v-icon
               icon="mdi-phone-outline"
               class="pe-2"
             />
             604-644-4444
-          </v-btn>
+          </span>
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            variant="text"
-            color="#1a5a96"
+          <a
+            :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${schoolNameNumber}&gradDashboard=true&idir_guid=${user.userGuid.toLowerCase()}`"
+            target="_link"
           >
             <v-icon
               icon="mdi-school-outline"
               class="pe-2"
             />
             Graduation Dashboard
-          </v-btn>
+          </a>
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            variant="text"
-            color="#1a5a96"
+          <a
+            @click="openSchool(schoolNameNumber)"
           >
             <v-icon
               icon="mdi-domain"
               class="pe-2"
             />
             School Details
-          </v-btn>
+          </a>
         </v-col>
       </v-row>
     </v-col>
@@ -134,6 +133,9 @@
 <script>
 import SchoolCodeNameFilter from '@/components/common/SchoolCodeNameFilter.vue';
 import { findReportingPeriodStatus, getStatusColorGdcSession } from '@/utils/institute/status';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
+import {mapState} from 'pinia';
 
 export default {
   name: 'Schools',
@@ -154,7 +156,13 @@ export default {
       schoolNameNumber: null,
       panel1Status: '',
       panel2Status: '',
+      edxURL: '',
+      user: null,
     };
+  },
+  computed: {
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['config']),
   },
   watch: {
     collectionObject: {
@@ -166,9 +174,24 @@ export default {
       immediate: true
     },
   },
+  created() {
+    appStore().getConfig().then(() => {
+      this.edxURL = this.config.EDX_URL;
+    });
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
+    });
+  },
   methods: {
     findReportingPeriodStatus,
-    getStatusColorGdcSession
+    getStatusColorGdcSession,
+    openSchool(schoolId) {
+      const routeData = this.$router.resolve({
+        name: 'schoolDetails',
+        params: { schoolID: schoolId }
+      });
+      window.open(routeData.href, '_blank');
+    },
   }
 };
 </script>
