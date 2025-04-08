@@ -183,7 +183,6 @@ if(!config.get('frontendConfig').disableEASFunctionality) {
   });
 }
 
-
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');
 }).catch((e) => {
@@ -194,6 +193,13 @@ cacheService.loadAllDocumentTypeCodesToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading document type codes during boot .', e);
 });
+
+cacheService.loadAllEdxUsersToMap().then(() => {
+  log.info('Loaded EDX Users to memory.');
+}).catch((e) => {
+  log.error('Error loading EDX Users during boot.', e);
+});
+
 WS.init(app, server);
 
 /**

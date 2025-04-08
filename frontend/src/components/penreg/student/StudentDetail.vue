@@ -14,7 +14,7 @@
         class="fill-height ma-0 pa-0"
       >
         <v-row>
-          <v-tabs v-model="tab">
+          <v-tabs v-model="activeTab">
             <v-tab
               value="demographics"
               class="student-details-tabs-style"
@@ -22,6 +22,7 @@
               Demographics
             </v-tab>
             <v-tab
+              v-if="VIEW_SLD_HISTORY_ROLE"
               value="sld"
               class="student-details-tabs-style"
             >
@@ -38,7 +39,7 @@
         </v-row>
         <v-row v-if="!isLoading">
           <v-col class="px-0">
-            <v-window v-model="tab">
+            <v-window v-model="activeTab">
               <v-window-item
                 value="demographics"
               >
@@ -132,7 +133,7 @@
 import StudentDetailCommon from '../../common/StudentDetailCommon.vue';
 import StudentAuditHistory from './StudentAuditHistory.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import {Routes} from '@/utils/constants';
+import {Routes, REQUEST_TYPES} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory.vue';
@@ -140,6 +141,7 @@ import {mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {studentStore} from '@/store/modules/student';
 import {authStore} from '@/store/modules/auth';
+import router from '@/router';
 export default {
   name: 'StudentDetail',
   components: {
@@ -159,7 +161,6 @@ export default {
     return {
       validForm: false,
       studentForm: null,
-      tab: null,
       isLoading: true,
       studentDetails: null,
       isStudentDataUpdated: false,
@@ -170,6 +171,27 @@ export default {
     ...mapState(authStore, ['VIEW_AUDIT_HISTORY_ROLE', 'VIEW_SLD_HISTORY_ROLE', 'EDIT_STUDENT_RECORDS_ROLE', 'VIEW_TRANSCRIPT_ROLE']),
     hasSagaInProgress() {
       return this.studentDetails && (this.studentDetails.sagaInProgress || this.studentsInProcess.has(this.studentDetails.studentID));
+    },
+    validTabs() {
+      let validTabs = ['demographics'];
+      if (this.VIEW_SLD_HISTORY_ROLE) {
+        validTabs.push('sld');
+      }
+      if (this.VIEW_AUDIT_HISTORY_ROLE) {
+        validTabs.push('audit');
+      }
+      return validTabs;
+    },
+    activeTab: {
+      get() {
+        return this.validTabs.includes(this.$route.query?.activeTab) ? this.$route.query?.activeTab : 'demographics';
+      },
+      set(value) {
+        if (!this.validTabs.includes(value)) {
+          return;
+        }
+        router.push({name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}, query: {activeTab: value}});
+      }
     },
   },
   watch: {

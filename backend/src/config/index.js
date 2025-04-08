@@ -163,6 +163,7 @@ nconf.defaults({
     gdc:{
       rootURL: process.env.GDC_API_URL,
       activeReportingPeriodURL: process.env.GDC_API_URL + '/active-reporting-period',
+      filesetURL: process.env.GDC_API_URL + '/fileset',
     }
   },
   oidc: {

@@ -1,6 +1,9 @@
 'use strict';
 const { logApiError, getData, handleExceptionResponse } = require('../utils');
 const config = require('../../config');
+const cacheService = require('../cache-service');
+const HttpStatus = require('http-status-codes');
+const {FILTER_OPERATION, VALUE_TYPE} = require('../../util/constants');
 
 async function getActiveReportingPeriod(req, res) {
   try {
@@ -13,6 +16,94 @@ async function getActiveReportingPeriod(req, res) {
   }
 }
 
+async function getFilesetsPaginated(req, res) {
+  try {
+    const search = [];
+
+    if (req.query?.searchParams?.schoolID) {
+      search.push({
+        condition: 'AND',
+        searchCriteriaList: [{ key: 'schoolID', value: req.query.searchParams.schoolID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
+      });
+    }
+    if (req.query?.searchParams?.pen) {
+      search.push({
+        condition: 'AND',
+        searchCriteriaList: [
+          { key: 'demographicStudentEntities.pen', value: req.query?.searchParams?.pen, operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING },
+        ]
+      });
+    }
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const month = now.getMonth() + 1; // getMonth() is 0-indexed
+
+    const startCurrentCollectionYear = month >= 10 ? new Date(currentYear, 9, 1) : new Date(currentYear - 1, 9, 1);
+
+    search.push({
+      condition: 'AND',
+      searchCriteriaList: [{
+        key: 'createDate',
+        value: startCurrentCollectionYear.toISOString().substring(0,10),
+        operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
+        valueType: VALUE_TYPE.DATE
+      }]
+    });
+
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      }
+    };
+    let data = await getData(`${config.get('server:gdc:filesetURL')}/paginated`, params);
+
+    if (data.content && data.content.length > 0) {
+      data.content = data.content.map(fileset => {
+        if (req?.params?.districtID) {
+          const school = cacheService.getSchoolBySchoolID(fileset.schoolID);
+          fileset.schoolName = `${school.mincode} - ${school.schoolName}`.trim();
+        }
+        if (fileset.updateUser && fileset.updateUser.startsWith('EDX/')) {
+          const userID = fileset.updateUser.slice(4);
+          const user = cacheService.getEdxUserByID(userID);
+          fileset.updateUser = user ? user.displayName : fileset.updateUser;
+        }
+        return fileset;
+      });
+    }
+
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError('Error getting error fileset paginated list', e.stack);
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getDemographicStudentByPenIncomingFilesetIdAndSchoolId(req, res) {
+  try {
+    const params = {
+      params: {
+        pen: req.params.pen,
+        incomingFilesetID: req.params.incomingFilesetID,
+        schoolID: req.query?.schoolID,
+      }
+    };
+
+    let data = await getData(`${config.get('server:gdc:filesetURL')}/get-student`, params);
+
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError('Error getting error fileset object', e.stack);
+    return handleExceptionResponse(e, res);
+  }
+}
+
 module.exports = {
   getActiveReportingPeriod,
+  getFilesetsPaginated,
+  getDemographicStudentByPenIncomingFilesetIdAndSchoolId
 };

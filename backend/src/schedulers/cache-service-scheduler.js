@@ -14,6 +14,7 @@ try {
       await cacheService.loadAllAuthoritiesToMap();
       await cacheService.loadAllAssessmentTypeCodesToMap();
       await cacheService.loadAllSpecialCaseTypeCodesToMap();
+      await cacheService.loadAllEdxUsersToMap();
     } catch (e) {
       log.error(e);
     }

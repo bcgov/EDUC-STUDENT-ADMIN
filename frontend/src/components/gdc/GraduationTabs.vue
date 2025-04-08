@@ -70,7 +70,7 @@
               Reporting Insights
             </v-window-item>
             <v-window-item value="studentDataTab">
-              Find Student in Data Submissions
+              <GradStudentSearch />
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -88,20 +88,15 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
+import GradStudentSearch from '@/components/gdc/GradStudentSearch.vue';
 
 export default {
   name: 'GraduationSchoolTabs',
   components: {
-    ReportingDates
+    ReportingDates,
+    GradStudentSearch
   },
   mixins: [alertMixin],
-  props: {
-    districtID: {
-      type: String,
-      required: false,
-      default: null
-    },
-  },
   data() {
     return {
       PAGE_TITLES: PAGE_TITLES,
