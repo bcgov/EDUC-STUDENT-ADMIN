@@ -12,9 +12,7 @@
     <v-col cols="9">
       <v-row>
         <v-col cols="auto">
-          <v-btn
-            variant="text"
-          >
+          <v-btn variant="text">
             <v-icon
               icon="mdi-phone-outline"
               class="pe-2"
@@ -55,15 +53,9 @@
       <v-table>
         <thead>
           <tr>
-            <th>
-              Reporting Period
-            </th>
-            <th>
-              Total Submissions
-            </th>
-            <th>
-              Last Submission
-            </th>
+            <th>Reporting Period</th>
+            <th>Total Submissions</th>
+            <th>Last Submission</th>
           </tr>
         </thead>
         <tbody>
@@ -103,12 +95,8 @@
       <v-table>
         <thead>
           <tr>
-            <th>
-              Name
-            </th>
-            <th>
-              Email
-            </th>
+            <th>Name</th>
+            <th>Email</th>
             <th />
           </tr>
         </thead>
@@ -121,7 +109,7 @@
                 variant="text"
                 icon="mdi-content-copy"
                 color="#1a5a96"
-                @click="console.log('todo')"
+                @click="console.log('todo copy')"
               />
             </td>
           </tr>
@@ -133,7 +121,7 @@
                 variant="text"
                 icon="mdi-content-copy"
                 color="#1a5a96"
-                @click="console.log('todo')"
+                @click="console.log('todo copy')"
               />
             </td>
           </tr>
@@ -142,15 +130,14 @@
     </v-col>
   </div>
 </template>
+
 <script>
-
-
 import SchoolCodeNameFilter from '@/components/common/SchoolCodeNameFilter.vue';
-import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
+import { findReportingPeriodStatus, getStatusColorGdcSession } from '@/utils/institute/status';
 
 export default {
   name: 'Schools',
-  components: {SchoolCodeNameFilter},
+  components: { SchoolCodeNameFilter },
   props: {
     collectionObject: {
       type: Object,
@@ -171,8 +158,8 @@ export default {
   },
   watch: {
     collectionObject: {
-      handler(value) {
-        if(value) {
+      handler(newCollection) {
+        if (newCollection) {
           this.findReportingPeriodStatus();
         }
       },
