@@ -11,14 +11,25 @@
   <div v-if="schoolNameNumber">
     <v-col cols="9">
       <v-row>
-        <v-col cols="auto">
-          <span>
-            <v-icon
-              icon="mdi-phone-outline"
-              class="pe-2"
-            />
-            604-644-4444
-          </span>
+        <v-col
+          v-if="loading"
+          cols="auto"
+          class="ma-0 pa-0"
+        >
+          <v-skeleton-loader
+            type="text"
+            width="154px"
+          />
+        </v-col>
+        <v-col
+          v-else
+          cols="auto"
+        >
+          <v-icon
+            icon="mdi-phone-outline"
+            class="pe-2"
+          />
+          {{ school.phoneNumber ? formatPhoneNumber(school.phoneNumber) : 'No phone number found' }}
         </v-col>
         <v-col cols="auto">
           <a
@@ -136,6 +147,9 @@ import { findReportingPeriodStatus, getStatusColorGdcSession } from '@/utils/ins
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import {mapState} from 'pinia';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {formatPhoneNumber} from '@/utils/format';
 
 export default {
   name: 'Schools',
@@ -158,6 +172,8 @@ export default {
       panel2Status: '',
       edxURL: '',
       user: null,
+      school: null,
+      loading: null
     };
   },
   computed: {
@@ -173,6 +189,13 @@ export default {
       },
       immediate: true
     },
+    schoolNameNumber: {
+      handler(newSchoolNameNumber) {
+        if (newSchoolNameNumber) {
+          this.getThisSchoolsDetails();
+        }
+      }
+    }
   },
   created() {
     appStore().getConfig().then(() => {
@@ -183,6 +206,7 @@ export default {
     });
   },
   methods: {
+    formatPhoneNumber,
     findReportingPeriodStatus,
     getStatusColorGdcSession,
     openSchool(schoolId) {
@@ -191,6 +215,20 @@ export default {
         params: { schoolID: schoolId }
       });
       window.open(routeData.href, '_blank');
+    },
+    getThisSchoolsDetails() {
+      this.loading = true;
+      this.school = '';
+
+      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolNameNumber}`)
+        .then(response => {
+          this.school = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
   }
 };
