@@ -15,6 +15,7 @@ async function getConfig(req, res) {
     WEB_SOCKET_URL: frontendConfig.webSocketURL,
     DISABLE_SDC_FUNCTIONALITY: frontendConfig.disableSdcFunctionality,
     EDX_URL: frontendConfig.edxURL,
+    GRAD_ADMIN_URL: frontendConfig.gradAdminURL,
     DISABLE_EAS_FUNCTIONALITY: frontendConfig.disableEASFunctionality,
     DISABLE_GDC_FUNCTIONALITY: frontendConfig.disableGDCFunctionality,
     SLD_MIGRATION_DATE: frontendConfig.sldMigrationDate
