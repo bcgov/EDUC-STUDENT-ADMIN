@@ -162,7 +162,9 @@ nconf.defaults({
     },
     gdc:{
       rootURL: process.env.GDC_API_URL,
-      activeReportingPeriodURL: process.env.GDC_API_URL + '/active-reporting-period',
+      reportingPeriodURL: process.env.GDC_API_URL + '/reporting-period',
+      activeReportingPeriodURL: process.env.GDC_API_URL + '/reporting-period/active',
+      previousReportingPeriodURL: process.env.GDC_API_URL + '/reporting-period/previous',
       filesetURL: process.env.GDC_API_URL + '/fileset',
     }
   },
@@ -202,6 +204,7 @@ nconf.defaults({
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
     edxURL: process.env.EDX_URL,
     disableEASFunctionality: process.env.DISABLE_EAS_FUNCTIONALITY === 'true',
+    disableGDCFunctionality: process.env.DISABLE_GDC_FUNCTIONALITY === 'true',
     sldMigrationDate: process.env.SLD_MIGRATION_DATE
   },
   sdc: {

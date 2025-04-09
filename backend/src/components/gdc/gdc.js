@@ -1,6 +1,7 @@
 'use strict';
-const { logApiError, getData, handleExceptionResponse } = require('../utils');
+const { logApiError, getData, putData, handleExceptionResponse } = require('../utils');
 const config = require('../../config');
+const utils = require('../utils');
 const cacheService = require('../cache-service');
 const HttpStatus = require('http-status-codes');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../../util/constants');
@@ -12,6 +13,48 @@ async function getActiveReportingPeriod(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getActiveReportingPeriod', 'Error occurred while attempting to GET GDC Active Reporting Period.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getPreviousReportingPeriod(req, res) {
+  try {
+    const url = `${config.get('server:gdc:previousReportingPeriodURL')}`;
+    const data = await getData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getPreviousReportingPeriod', 'Error occurred while attempting to GET GDC Previous Reporting Period.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function updateReportingPeriod(req, res) {
+  try {
+    const url = `${config.get('server:gdc:reportingPeriodURL')}`;
+    const params = req.body;
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    const data = await putData(url, params, utils.getUser(req).idir_username);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'updateReportingPeriod', 'Error occurred while attempting to UPDATE GDC Reporting Period.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getReportingSummary(req, res) {
+  try {
+    const params = {
+      params: {
+        type: req.query.type
+      }
+    };
+    const url = `${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/summary`;
+    const data = await getData(url, params);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getReportingSummary', 'Error occurred while attempting to GET GDC Reporting summary.');
     return handleExceptionResponse(e, res);
   }
 }
@@ -104,6 +147,9 @@ async function getDemographicStudentByPenIncomingFilesetIdAndSchoolId(req, res) 
 
 module.exports = {
   getActiveReportingPeriod,
+  getPreviousReportingPeriod,
+  updateReportingPeriod,
+  getReportingSummary,
   getFilesetsPaginated,
   getDemographicStudentByPenIncomingFilesetIdAndSchoolId
 };

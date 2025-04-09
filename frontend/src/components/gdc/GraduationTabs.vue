@@ -5,15 +5,55 @@
   >
     <v-row
       no-gutters
-      class="mb-2 ml-1"
+      align="center"
+      class="mb-4 ml-1"
     >
-      <strong>
-        Current Reporting Cycle
-      </strong>
-      <span class="pl-2">
-        {{ collectionObject !== null ? `- ${collectionObject?.schYrStart} to ${collectionObject?.summerEnd}` : '-' }}
-      </span>
+      <v-col
+        cols="auto"
+        class="pr-4 d-flex align-center"
+        style="cursor: pointer;"
+        @click="activeCollectionSelected = true"
+      >
+        <v-radio
+          v-model="activeCollectionSelected"
+          :value="true"
+          density="compact"
+          hide-details
+        />
+        <div class="pl-2">
+          <span class="font-weight-bold">
+            Current Reporting Cycle -
+          </span>
+          <span>
+            {{ collectionObject ? `${formatDate(collectionObject.schYrStart)} to ${formatDate(collectionObject.summerEnd)}` : '-' }}
+          </span>
+        </div>
+      </v-col>
+
+      <v-col
+        cols="auto"
+        class="pl-4 d-flex align-center"
+        style="cursor: pointer;"
+        @click="activeCollectionSelected = false"
+      >
+        <v-radio
+          v-model="activeCollectionSelected"
+          :value="false"
+          density="compact"
+          hide-details
+        />
+        <div class="pl-2">
+          <span class="font-weight-bold">
+            Previous Reporting Cycle -
+          </span>
+          <span>
+            {{ previousCollectionObject ? `${formatDate(previousCollectionObject.schYrStart)} to ${formatDate(previousCollectionObject.summerEnd)}` : '-' }}
+          </span>
+        </div>
+      </v-col>
     </v-row>
+
+
     <v-row no-gutters>
       <v-col>
         <v-divider class="divider" />
@@ -61,13 +101,17 @@
         <v-card-text>
           <v-window v-model="tab">
             <v-window-item value="reportingDatesTab">
-              <ReportingDates :collection-object="collectionObject" />
+              <ReportingDates
+                :key="`${selectedCollectionObject?.reportingPeriodID}-${tab}`"
+                :collection-object="selectedCollectionObject"
+                :is-previous="!activeCollectionSelected"
+              />
             </v-window-item>
             <v-window-item value="schoolsTab">
               Schools
             </v-window-item>
             <v-window-item value="reportingInsightsTab">
-              Reporting Insights
+              <CollectionInsights :collection-object="collectionObject" />
             </v-window-item>
             <v-window-item value="studentDataTab">
               <GradStudentSearch />
@@ -88,12 +132,15 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
+import {formatDate} from '@/utils/format';
+import CollectionInsights from './insights/CollectionInsights.vue';
 import GradStudentSearch from '@/components/gdc/GradStudentSearch.vue';
 
 export default {
   name: 'GraduationSchoolTabs',
   components: {
     ReportingDates,
+    CollectionInsights,
     GradStudentSearch
   },
   mixins: [alertMixin],
@@ -101,22 +148,34 @@ export default {
     return {
       PAGE_TITLES: PAGE_TITLES,
       tab: null,
-      collectionObject: null
+      collectionObject: null,
+      previousCollectionObject: null,
+      activeCollectionSelected: true
     };
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated','userInfo']),
-    ...mapState(appStore, ['config'])
+    ...mapState(appStore, ['config']),
+    selectedCollectionObject() {
+      return this.activeCollectionSelected ? this.collectionObject : this.previousCollectionObject;
+    }
   },
   created() {
     this.getActiveReportingDates();
+    this.getPreviousReportingDates();
   },
   methods: {
+    formatDate,
     getActiveReportingDates() {
       ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTION}`)
         .then(response => {
-          console.log(response.data);
           this.collectionObject = response.data;
+        });
+    },
+    getPreviousReportingDates() {
+      ApiService.apiAxios.get(`${Routes.gdc.PREVIOUS_COLLECTION}`)
+        .then(response => {
+          this.previousCollectionObject = response.data;
         });
     }
   }
