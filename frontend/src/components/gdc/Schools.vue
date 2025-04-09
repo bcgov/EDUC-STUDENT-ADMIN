@@ -108,7 +108,7 @@
       <h3 class="subHeading pb-1">
         Graduation Administrator(s)
       </h3>
-      <v-table>
+      <v-table id="gradAdministrator">
         <thead>
           <tr>
             <th scope="col">
@@ -124,27 +124,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>name</td>
-            <td>email</td>
+          <tr
+            v-for="admin in gradAdmins"
+            :key="admin.edxUserID"
+          >
+            <td>{{ admin.firstName }} {{ admin.lastName }}</td>
+            <td>{{ admin.email }}</td>
             <td>
               <v-btn
                 variant="text"
                 icon="mdi-content-copy"
                 color="#1a5a96"
-                @click="console.log('todo copy')"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>name</td>
-            <td>email</td>
-            <td>
-              <v-btn
-                variant="text"
-                icon="mdi-content-copy"
-                color="#1a5a96"
-                @click="console.log('todo copy')"
+                @click="copyToClipboard(admin.email)"
               />
             </td>
           </tr>
@@ -163,6 +154,7 @@ import {mapState} from 'pinia';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {formatPhoneNumber} from '@/utils/format';
+import {setSuccessAlert} from '@/components/composable/alertComposable';
 
 export default {
   name: 'Schools',
@@ -186,12 +178,21 @@ export default {
       edxURL: '',
       user: null,
       school: null,
-      loading: null
+      loading: null,
+      users: [],
     };
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
+    gradAdmins() {
+      return this.users.filter(user =>
+        user.edxUserSchools.some(school =>
+          school.schoolID === this.schoolNameNumber &&
+              school.edxUserSchoolRoles.some(role => role.edxRoleCode === 'GRAD_SCH_ADMIN')
+        )
+      );
+    }
   },
   watch: {
     collectionObject: {
@@ -206,6 +207,7 @@ export default {
       handler(newSchoolNameNumber) {
         if (newSchoolNameNumber) {
           this.getThisSchoolsDetails();
+          this.getUsersData();
         }
       }
     }
@@ -243,6 +245,38 @@ export default {
           this.loading = false;
         });
     },
+    getUsersData() {
+      this.loadingUsers = true;
+      ApiService.apiAxios.get(`${Routes.edx.EDX_SCHOOL_USERS_URL}/${this.schoolNameNumber}`)
+        .then(response => {
+          this.users =  this.sortUserData(response.data);
+          console.log(this.users);
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        })
+        .finally(() => {
+          this.loadingUsers = false;
+        });
+    },
+    sortUserData(users){
+      return users.sort((a, b) => {
+        if (a.firstName > b.firstName) {
+          return 1;
+        } else if (a.firstName < b.firstName) {
+          return -1;
+        }
+        return 0;
+      } );
+    },
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        setSuccessAlert('Email copied to clipboard');
+      }).catch(err => {
+        console.error('Could not copy text: ', err);
+      });
+    }
   }
 };
 </script>
