@@ -33,26 +33,17 @@
     <v-table>
       <thead>
         <tr>
-          <th
-            class="text-left"
-            scope="col"
-          >
+          <th scope="col">
             Reporting Period
           </th>
-          <th
-            class="text-left"
-            scope="col"
-          >
+          <th scope="col">
             Open Date
           </th>
-          <th
-            class="text-left"
-            scope="col"
-          >
+          <th scope="col">
             Close Date
           </th>
           <th
-            class="text-left"
+            id="actionColumn"
             scope="col"
           />
         </tr>
@@ -74,6 +65,7 @@
             <v-btn
               v-if="!isPrevious"
               variant="text"
+              color="#1a5a96"
               icon="mdi-pencil-outline"
               @click="openEditDialog('school')"
             />
@@ -95,6 +87,7 @@
             <v-btn
               v-if="!isPrevious"
               variant="text"
+              color="#1a5a96"
               icon="mdi-pencil-outline"
               @click="openEditDialog('summer')"
             />

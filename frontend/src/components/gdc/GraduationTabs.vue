@@ -100,20 +100,39 @@
       <v-col>
         <v-card-text>
           <v-window v-model="tab">
-            <v-window-item value="reportingDatesTab">
+            <v-window-item
+              value="reportingDatesTab"
+              transition="false"
+              reverse-transition="false"
+            >
               <ReportingDates
                 :key="`${selectedCollectionObject?.reportingPeriodID}-${tab}`"
                 :collection-object="selectedCollectionObject"
                 :is-previous="!activeCollectionSelected"
               />
             </v-window-item>
-            <v-window-item value="schoolsTab">
-              Schools
+            <v-window-item
+              value="schoolsTab"
+              transition="false"
+              reverse-transition="false"
+            >
+              <Schools
+                :collection-object="selectedCollectionObject"
+                :is-previous="!activeCollectionSelected"
+              />
             </v-window-item>
-            <v-window-item value="reportingInsightsTab">
+            <v-window-item
+              value="reportingInsightsTab"
+              transition="false"
+              reverse-transition="false"
+            >
               <CollectionInsights :collection-object="collectionObject" />
             </v-window-item>
-            <v-window-item value="studentDataTab">
+            <v-window-item
+              value="studentDataTab"
+              transition="false"
+              reverse-transition="false"
+            >
               <GradStudentSearch />
             </v-window-item>
           </v-window>
@@ -134,11 +153,13 @@ import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
 import {formatDate} from '@/utils/format';
 import CollectionInsights from './insights/CollectionInsights.vue';
+import Schools from '@/components/gdc/Schools.vue';
 import GradStudentSearch from '@/components/gdc/GradStudentSearch.vue';
 
 export default {
   name: 'GraduationSchoolTabs',
   components: {
+    Schools,
     ReportingDates,
     CollectionInsights,
     GradStudentSearch
