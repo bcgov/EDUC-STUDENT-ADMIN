@@ -181,7 +181,7 @@
                         </div>
                         <div>
                           <a
-                            href="#"
+                            :href="`${gradAdminURL}/api/auth/silent_idir_login?studentID=${studentID}&studentDetails=true&idir_guid=${user.userGuid.toLowerCase()}`"
                             target="_blank"
                           >View GRAD Data</a>
                         </div>
@@ -329,6 +329,7 @@ import {getStatusColorAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolCodeNameFilter from '@/components/gdc/common/SchoolCodeNameFilter.vue';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'GradStudentSearch',
@@ -387,7 +388,9 @@ export default {
       selectedSubmission: {},
       selectedSubmissionText: '',
       noDataFlag: false,
-      studentID: null
+      studentID: null,
+      gradAdminURL: '',
+      user: null,
     };
   },
   computed: {
@@ -395,9 +398,19 @@ export default {
       return REQUEST_TYPES;
     },
     ...mapState(authStore, ['VIEW_SLD_HISTORY_ROLE']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['config']),
     isLoading() {
       return this.requestCount > 0;
     }
+  },
+  created() {
+    appStore().getConfig().then(() => {
+      this.gradAdminURL = this.config.GRAD_ADMIN_URL;
+    });
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
+    });
   },
   methods: {
     getStatusColorAuthorityOrSchool,
