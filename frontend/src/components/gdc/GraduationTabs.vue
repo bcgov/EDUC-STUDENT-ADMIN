@@ -133,7 +133,7 @@
               transition="false"
               reverse-transition="false"
             >
-              Find Student in Data Submissions
+              <GradStudentSearch />
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -154,22 +154,17 @@ import ApiService from '@/common/apiService';
 import {formatDate} from '@/utils/format';
 import CollectionInsights from './insights/CollectionInsights.vue';
 import Schools from '@/components/gdc/Schools.vue';
+import GradStudentSearch from '@/components/gdc/GradStudentSearch.vue';
 
 export default {
   name: 'GraduationSchoolTabs',
   components: {
     Schools,
     ReportingDates,
-    CollectionInsights
+    CollectionInsights,
+    GradStudentSearch
   },
   mixins: [alertMixin],
-  props: {
-    districtID: {
-      type: String,
-      required: false,
-      default: null
-    },
-  },
   data() {
     return {
       PAGE_TITLES: PAGE_TITLES,
