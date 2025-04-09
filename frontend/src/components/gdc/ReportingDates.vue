@@ -33,16 +33,19 @@
     <v-table>
       <thead>
         <tr>
-          <th>
+          <th scope="col">
             Reporting Period
           </th>
-          <th>
+          <th scope="col">
             Open Date
           </th>
-          <th>
+          <th scope="col">
             Close Date
           </th>
-          <th />
+          <th
+            id="actionColumn"
+            scope="col"
+          />
         </tr>
       </thead>
       <tbody>

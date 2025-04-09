@@ -63,9 +63,15 @@
       <v-table>
         <thead>
           <tr>
-            <th>Reporting Period</th>
-            <th>Total Submissions</th>
-            <th>Last Submission</th>
+            <th scope="col">
+              Reporting Period
+            </th>
+            <th scope="col">
+              Total Submissions
+            </th>
+            <th scope="col">
+              Last Submission
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -105,9 +111,16 @@
       <v-table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th />
+            <th scope="col">
+              Name
+            </th>
+            <th scope="col">
+              Email
+            </th>
+            <th
+              id="copyColumn"
+              scope="col"
+            />
           </tr>
         </thead>
         <tbody>
