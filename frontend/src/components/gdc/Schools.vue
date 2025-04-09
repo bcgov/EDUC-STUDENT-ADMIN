@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import SchoolCodeNameFilter from '@/components/common/SchoolCodeNameFilter.vue';
+import SchoolCodeNameFilter from '@/components/gdc/common/SchoolCodeNameFilter.vue';
 import { findReportingPeriodStatus, getStatusColorGdcSession } from '@/utils/institute/status';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
