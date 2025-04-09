@@ -109,6 +109,7 @@
                 :key="`${selectedCollectionObject?.reportingPeriodID}-${tab}`"
                 :collection-object="selectedCollectionObject"
                 :is-previous="!activeCollectionSelected"
+                @update:collection-object="collectionObject = $event"
               />
             </v-window-item>
             <v-window-item

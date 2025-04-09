@@ -102,7 +102,7 @@
     persistent
     max-width="500px"
   >
-    <v-card>
+    <v-card style="overflow: visible">
       <v-card-title class="header">
         Edit {{ editMode === 'school' ? 'School Year' : 'Summer' }} Reporting Period
       </v-card-title>
@@ -114,7 +114,6 @@
                 v-model="editDates.start"
                 label="Start Date"
                 :model-type="'yyyy-MM-dd'"
-                :allow-teleport="true"
                 :min-date="editDates.min"
                 :max-date="editDates.max"
               />
@@ -124,7 +123,6 @@
                 v-model="editDates.end"
                 label="End Date"
                 :model-type="'yyyy-MM-dd'"
-                :allow-teleport="true"
                 :min-date="editDates.min"
                 :max-date="editDates.max"
               />
