@@ -250,7 +250,6 @@ export default {
       ApiService.apiAxios.get(`${Routes.edx.EDX_SCHOOL_USERS_URL}/${this.schoolNameNumber}`)
         .then(response => {
           this.users =  this.sortUserData(response.data);
-          console.log(this.users);
         })
         .catch(error => {
           console.error(error);
