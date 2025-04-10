@@ -102,7 +102,7 @@
     persistent
     max-width="500px"
   >
-    <v-card>
+    <v-card style="overflow: visible">
       <v-card-title class="header">
         Edit {{ editMode === 'school' ? 'School Year' : 'Summer' }} Reporting Period
       </v-card-title>
@@ -114,7 +114,6 @@
                 v-model="editDates.start"
                 label="Start Date"
                 :model-type="'yyyy-MM-dd'"
-                :allow-teleport="true"
                 :min-date="editDates.min"
                 :max-date="editDates.max"
               />
@@ -124,7 +123,6 @@
                 v-model="editDates.end"
                 label="End Date"
                 :model-type="'yyyy-MM-dd'"
-                :allow-teleport="true"
                 :min-date="editDates.min"
                 :max-date="editDates.max"
               />
@@ -229,74 +227,37 @@ export default {
       this.saving = true;
 
       const toISOStringWithTime = (dateStr) => `${dateStr}T00:00:00`;
-      const start = this.editDates.start;
-      const end = this.editDates.end;
 
-      const schYrStart = this.collectionObject.schYrStart?.split('T')[0];
-      const schYrEnd = this.collectionObject.schYrEnd?.split('T')[0];
-      const summerStart = this.collectionObject.summerStart?.split('T')[0];
-      const summerEnd = this.collectionObject.summerEnd?.split('T')[0];
-
-      const cycleStart = `${new Date(schYrStart).getFullYear()}-10-01`;
-      const cycleEnd = `${new Date(summerEnd).getFullYear()}-09-30`;
-
-      if (!start || !end) {
-        this.saving = false;
-        setFailureAlert('Start and end dates are required.');
-        return;
-      }
-      if (start > end) {
-        this.saving = false;
-        setFailureAlert('Start Date cannot be after End Date.');
-        return;
-      }
-      if (start < cycleStart || end > cycleEnd) {
-        this.saving = false;
-        setFailureAlert(`Dates must be between ${cycleStart} and ${cycleEnd}.`);
-        return;
-      }
+      const payload = { ...this.collectionObject };
 
       if (this.editMode === 'school') {
-        if (summerStart && summerEnd &&
-            (this.isBetween(start, summerStart, summerEnd) || this.isBetween(end, summerStart, summerEnd))) {
-          this.saving = false;
-          setFailureAlert('School Year dates cannot overlap Summer period.');
-          return;
-        }
-      } else if (this.editMode === 'summer') {
-        if (schYrStart && schYrEnd &&
-            (this.isBetween(start, schYrStart, schYrEnd) || this.isBetween(end, schYrStart, schYrEnd))) {
-          this.saving = false;
-          setFailureAlert('Summer dates cannot overlap School Year period.');
-          return;
-        }
-      }
-
-      if (this.editMode === 'school') {
-        this.collectionObject.schYrStart = toISOStringWithTime(this.editDates.start);
-        this.collectionObject.schYrEnd = toISOStringWithTime(this.editDates.end);
+        payload.schYrStart = toISOStringWithTime(this.editDates.start);
+        payload.schYrEnd = toISOStringWithTime(this.editDates.end);
       } else {
-        this.collectionObject.summerStart = toISOStringWithTime(this.editDates.start);
-        this.collectionObject.summerEnd = toISOStringWithTime(this.editDates.end);
+        payload.summerStart = toISOStringWithTime(this.editDates.start);
+        payload.summerEnd = toISOStringWithTime(this.editDates.end);
       }
 
-      ApiService.apiAxios.put(`${Routes.gdc.REPORTING_PERIOD}`, this.collectionObject)
+      ApiService.apiAxios.put(`${Routes.gdc.REPORTING_PERIOD}`, payload)
         .then(response => {
           this.$emit('update:collectionObject', response.data);
           this.dialog = false;
           setSuccessAlert('Success Updating Reporting Periods');
         })
         .catch(error => {
-          setFailureAlert(error.response?.data?.message || error.message);
-          console.error('Update failed:', error);
+          const validationErrors = error.response?.data?.reportingPeriodValidationErrors;
+          if (Array.isArray(validationErrors)) {
+            validationErrors.forEach(e => setFailureAlert(`${e.field}: ${e.message}`));
+            console.error('Update Failed: Failed validations:', error?.response?.data?.reportingPeriodValidationErrors);
+          } else {
+            setFailureAlert(error.response?.data?.message || error.message);
+            console.error('Update Failed:', error);
+          }
         })
         .finally(() => {
           this.saving = false;
         });
     },
-    isBetween(date, min, max) {
-      return date >= min && date <= max;
-    }
   }
 };
 </script>

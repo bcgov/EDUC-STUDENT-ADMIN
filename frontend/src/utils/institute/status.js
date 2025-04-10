@@ -159,13 +159,21 @@ export function findReportingPeriodStatus() {
 
   var summerStart = LocalDateTime.parse(this.collectionObject.summerStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
   var summerEnd = LocalDateTime.parse(this.collectionObject.summerEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-  if((currentDate.isEqual(schoolYearStart) || currentDate.isAfter(schoolYearStart))
-      && (currentDate.isEqual(schoolYearEnd) || currentDate.isBefore(schoolYearEnd))) {
+  if (currentDate.isBefore(schoolYearStart)) {
+    this.panel1Status = 'Pending Start';
+    this.panel2Status = 'Pending Start';
+    this.type = 'SchoolYear';
+  } else if ((currentDate.isEqual(schoolYearStart) || currentDate.isAfter(schoolYearStart))
+      && currentDate.isBefore(schoolYearEnd.plusDays(1))) {
     this.panel1Status = 'Ongoing';
     this.panel2Status = 'Pending Start';
     this.type = 'SchoolYear';
-  } else if((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart))
-      && (currentDate.isEqual(summerEnd) || currentDate.isBefore(summerEnd))) {
+  } else if (currentDate.isBefore(summerStart)) {
+    this.panel1Status = 'Complete';
+    this.panel2Status = 'Pending Start';
+    this.type = 'Summer';
+  } else if ((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart))
+      && currentDate.isBefore(summerEnd.plusDays(1))) {
     this.panel1Status = 'Complete';
     this.panel2Status = 'Ongoing';
     this.type = 'Summer';

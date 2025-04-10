@@ -39,6 +39,13 @@ async function updateReportingPeriod(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'updateReportingPeriod', 'Error occurred while attempting to UPDATE GDC Reporting Period.');
+    if (
+      e.status === 400 &&
+      e.data?.reportingPeriodValidationErrors &&
+      Array.isArray(e.data.reportingPeriodValidationErrors)
+    ) {
+      return res.status(400).json(e.data);
+    }
     return handleExceptionResponse(e, res);
   }
 }
