@@ -4,11 +4,11 @@ kind: Template
 labels:
   template: "${REPO_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-frontend-dc"
+  name: "${REPO_NAME}-frontend-deployment"
   creationTimestamp:
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
@@ -19,11 +19,13 @@ objects:
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
+      matchLabels:
+        app: "${APP_NAME}-${BRANCH}"
     strategy:
-      resources: {}
-      type: Rolling
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
     template:
       metadata:
         annotations:
@@ -31,7 +33,6 @@ objects:
         creationTimestamp:
         labels:
           app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
@@ -97,7 +98,6 @@ objects:
       targetPort: 2015
     selector:
       app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-frontend-${BRANCH}"
 - apiVersion: v1
   kind: Route
   metadata:
@@ -127,8 +127,8 @@ objects:
     name: "${APP_NAME}-frontend-${BRANCH}-cpu-autoscaler"
   spec:
     scaleTargetRef:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
+      apiVersion: apps/v1
+      kind: Deployment
       name: "${APP_NAME}-frontend-${BRANCH}"
       subresource: scale
     minReplicas: ${{MIN_REPLICAS}}
