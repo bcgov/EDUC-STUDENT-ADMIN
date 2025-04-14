@@ -138,7 +138,7 @@ async function getDemographicStudentByPenIncomingFilesetIdAndSchoolId(req, res) 
     const params = {
       params: {
         pen: req.params.pen,
-        incomingFilesetID: req.params.incomingFilesetID,
+        incomingFilesetID: req.params.filesetID,
         schoolID: req.query?.schoolID,
       }
     };
