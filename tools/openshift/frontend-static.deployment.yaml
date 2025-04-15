@@ -14,13 +14,13 @@ objects:
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-frontend-${BRANCH}"
     name: "${APP_NAME}-frontend-${BRANCH}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
       matchLabels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-backend-${BRANCH}"
     strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -88,7 +88,7 @@ objects:
       service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-frontend-cert"
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-frontend-${BRANCH}"
     name: "${APP_NAME}-frontend-${BRANCH}"
   spec:
     ports:
@@ -97,7 +97,7 @@ objects:
       protocol: TCP
       targetPort: 2015
     selector:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-frontend-${BRANCH}"
 - apiVersion: v1
   kind: Route
   metadata:
@@ -107,7 +107,7 @@ objects:
       haproxy.router.openshift.io/timeout: 120s
       openshift.io/host.generated: 'true'
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-frontend-${BRANCH}"
     name: "${APP_NAME}-frontend-${BRANCH}"
   spec:
     host: "${HOST_ROUTE}"
