@@ -147,7 +147,7 @@ objects:
       protocol: TCP
       targetPort: 443
     selector:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
 - apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:

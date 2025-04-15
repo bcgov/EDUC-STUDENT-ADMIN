@@ -20,7 +20,7 @@ objects:
     replicas: ${{MIN_REPLICAS}}
     selector:
       matchLabels:
-        app: "${APP_NAME}-backend-${BRANCH}"
+        app: "${APP_NAME}-frontend-${BRANCH}"
     strategy:
       type: RollingUpdate
       rollingUpdate:
