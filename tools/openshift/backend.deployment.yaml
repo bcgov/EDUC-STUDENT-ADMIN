@@ -14,13 +14,13 @@ objects:
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
     name: "${APP_NAME}-backend-${BRANCH}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
       matchLabels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-backend-${BRANCH}"
     strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -32,7 +32,7 @@ objects:
           openshift.io/generated-by: OpenShiftNewApp
         creationTimestamp:
         labels:
-          app: "${APP_NAME}-${BRANCH}"
+          app: "${APP_NAME}-backend-${BRANCH}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -134,7 +134,7 @@ objects:
       service.alpha.openshift.io/serving-cert-secret-name: "student-admin-backend-cert"
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
     name: "${APP_NAME}-backend-${BRANCH}"
   spec:
     ports:
