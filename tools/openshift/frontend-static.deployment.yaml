@@ -32,7 +32,7 @@ objects:
           openshift.io/generated-by: OpenShiftNewApp
         creationTimestamp:
         labels:
-          app: "${APP_NAME}-${BRANCH}"
+          app: "${APP_NAME}-frontend-${BRANCH}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
