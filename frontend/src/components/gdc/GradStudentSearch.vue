@@ -345,8 +345,7 @@ export default {
   props: {
     collectionObject: {
       type: Object,
-      required: false,
-      default: null
+      required: true
     },
   },
   data() {
@@ -412,6 +411,19 @@ export default {
       return this.requestCount > 0;
     }
   },
+  watch: {
+    collectionObject: {
+      handler() {
+        this.demStudentData = null;
+        this.assessmentData = [];
+        this.courseData = [];
+        this.selectedSubmission = {};
+        this.selectedSubmissionText = '';
+        this.noDataFlag = false;
+      },
+      immediate: true
+    }
+  },
   created() {
     appStore().getConfig().then(() => {
       this.gradAdminURL = this.config.GRAD_ADMIN_URL;
@@ -441,7 +453,12 @@ export default {
       this.selectedSubmission = {};
       this.filterSearchParams.pen = this.studentPEN;
       this.filterSearchParams.schoolID = this.schoolNameNumber;
+      this.filterSearchParams.collectionObject = this.collectionObject;
       await this.getStudentSubmissions();
+      if (this.filesetStudentSubmissions.length === 0) {
+        this.noDataFlag = true;
+        return;
+      }
       await this.findStudentInFilesetByPEN();
       await this.findStudentIdByPEN();
     },
