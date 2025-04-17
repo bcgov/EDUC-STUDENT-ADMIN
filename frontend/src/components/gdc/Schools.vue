@@ -6,7 +6,10 @@
     <p>Find a school expected to submit GRAD data.</p>
   </v-col>
   <v-col cols="9">
-    <SchoolCodeNameFilter v-model="schoolNameNumber" />
+    <SchoolCodeNameFilter
+      v-model="schoolNameNumber"
+      :collection-object="collectionObject"
+    />
   </v-col>
   <div v-if="schoolNameNumber">
     <v-col cols="9">

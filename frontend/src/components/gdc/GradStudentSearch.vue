@@ -16,6 +16,7 @@
             v-model="schoolNameNumber"
             closed-within-months="3"
             :rules="[rules.required()]"
+            :collection-object="collectionObject"
           />
         </v-col>
         <v-col cols="2">
@@ -341,6 +342,13 @@ export default {
     Spinner
   },
   mixins: [alertMixin],
+  props: {
+    collectionObject: {
+      type: Object,
+      required: false,
+      default: null
+    },
+  },
   data() {
     return {
       requestCount: 0,

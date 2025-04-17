@@ -46,13 +46,17 @@ export default {
     modelValue: {
       type: [String, Number, Object],
       default: ''
+    },
+    collectionObject: {
+      type: Object,
+      required: true
     }
   },
   emits: ['update:modelValue', 'search'],
 
   data() {
     return {
-      schoolsCacheMap: null,
+      schoolsCacheMap: [],
       schoolSearchNames: []
     };
   },
@@ -66,6 +70,17 @@ export default {
       set(val) {
         this.$emit('update:modelValue', val);
       }
+    }
+  },
+  watch: {
+    collectionObject: {
+      handler() {
+        this.getSchoolDropDownItems();
+        if (!this.schoolSearchNames.some(s => s.schoolID === this.modelValue)) {
+          this.$emit('update:modelValue', null);
+        }
+      },
+      immediate: true
     }
   },
   async created() {
@@ -82,27 +97,25 @@ export default {
     getSchoolDropDownItems() {
       this.schoolSearchNames = [];
       let now = LocalDateTime.now();
+      let cutoff = now;
+
+      if (this.collectionObject) {
+        const summerStart = LocalDateTime.parse(this.collectionObject.summerStart);
+        const schYrEnd = LocalDateTime.parse(this.collectionObject.schYrEnd);
+        const summerEnd = LocalDateTime.parse(this.collectionObject.summerEnd);
+        cutoff = now.isBefore(summerStart) ? schYrEnd : summerEnd;
+      }
 
       this.schoolsCacheMap.forEach(school => {
-        if (school.schoolCategoryCode !== 'PUBLIC') {
-          return;
-        }
-        if (!school.canIssueTranscripts) {
-          return;
-        }
-        if (!school.openedDate) {
-          return;
-        }
+        if (school.schoolCategoryCode !== 'PUBLIC') return;
+        if (!school.canIssueTranscripts) return;
+        if (!school.openedDate) return;
 
         let openDate = LocalDateTime.parse(school.openedDate);
         let endOfCloseDateGraceWindow = school.closedDate ? LocalDateTime.parse(school.closedDate).plusMonths(3) : null;
 
-        if (now.isBefore(openDate)) {
-          return;
-        }
-        if((endOfCloseDateGraceWindow !== null) && now.isAfter(endOfCloseDateGraceWindow)) {
-          return;
-        }
+        if (cutoff.isBefore(openDate)) return;
+        if (endOfCloseDateGraceWindow && cutoff.isAfter(endOfCloseDateGraceWindow)) return;
 
         let schoolItem = {
           schoolCodeName: `${school.mincode} - ${school.schoolName}`,
