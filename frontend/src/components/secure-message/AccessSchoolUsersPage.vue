@@ -1,21 +1,6 @@
 <template>
   <v-container class="containerSetup mb-5">
     <v-row>
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon
-          class="mt-1"
-          size="small"
-          color="#1976d2"
-        >
-          mdi-arrow-left
-        </v-icon>
-        <a
-          class="ml-1"
-          @click="backButtonClick"
-        >Return to EDX School Access</a>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col>
         <h2>
           <strong>
@@ -471,9 +456,6 @@ export default {
     },
     openNewUserInviteSheet(){
       this.newUserInviteSheet = !this.newUserInviteSheet;
-    },
-    backButtonClick() {
-      router.push({name: 'exchangeAccess'});
     },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);

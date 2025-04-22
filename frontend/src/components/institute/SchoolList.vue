@@ -13,18 +13,6 @@
       />
       <div v-else>
         <v-row>
-          <v-col class="mt-1 d-flex justify-start">
-            <v-icon
-              small
-              color="#1976d2"
-            >
-              mdi-arrow-left
-            </v-icon>
-            <a
-              class="ml-1"
-              @click="backButtonClick"
-            >Return to Dashboard</a>
-          </v-col>
           <v-col class="d-flex justify-end">
             <PrimaryButton
               v-if="canAddSchools"
@@ -910,9 +898,6 @@ export default {
         || (this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null) || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null)
         || (this.issueTranscriptsFilter !== '' && this.issueTranscriptsFilter !== null) || (this.issueCertificatesFilter !== '' && this.issueCertificatesFilter !== null)
         || (this.gradeFilter !== '' && this.gradeFilter !== null);
-    },
-    backButtonClick() {
-      router.push({name: 'home'});
     },
     clearButtonClick() {
       this.schoolCodeNameFilter = null;

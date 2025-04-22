@@ -18,21 +18,6 @@
     >
       <v-col>
         <v-row>
-          <v-col class="mt-1 d-flex justify-start">
-            <v-icon
-              class="mt-1"
-              size="small"
-              color="#1976d2"
-            >
-              mdi-arrow-left
-            </v-icon>
-            <a
-              class="ml-1"
-              @click="backButtonClick"
-            >Return to EDX District Access</a>
-          </v-col>
-        </v-row>
-        <v-row>
           <v-col class="pb-0">
             <h2>
               <strong>
@@ -476,9 +461,6 @@ export default {
     },
     messageSent() {
       this.newUserInviteSheet = !this.newUserInviteSheet;
-    },
-    backButtonClick() {
-      router.push({name: 'exchangeDistrictAccess'});
     },
     getChipColor() {
       if (this.primaryEdxActivationCode) {

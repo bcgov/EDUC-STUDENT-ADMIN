@@ -7,20 +7,6 @@
       class="containerSetup"
       fluid
     >
-      <v-row>
-        <v-col class="mt-1 mb-4 d-flex justify-start">
-          <v-icon
-            small
-            color="#1976d2"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1"
-            @click="backButtonClick"
-          >Return to Authority List</a>
-        </v-col>
-      </v-row>
       <v-row v-if="loading">
         <v-col class="d-flex justify-center">
           <v-progress-circular
@@ -279,9 +265,6 @@ export default {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
         });
-    },
-    backButtonClick() {
-      router.push({name: 'instituteAuthoritiesList'});
     },
     deepCloneObject,
     setHasSamePhysicalFlag() {

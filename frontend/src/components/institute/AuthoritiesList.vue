@@ -9,18 +9,6 @@
     />
     <div v-else>
       <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon
-            small
-            color="#1976d2"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1"
-            @click="backButtonClick"
-          >Return to Dashboard</a>
-        </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
             v-if="canAddIndependentAuthority"
@@ -431,9 +419,6 @@ export default {
       return (this.authorityStatusFilter !== '' && this.authorityStatusFilter !== null)
         || (this.authorityTypeFilter !== '' && this.authorityTypeFilter !== null)
         || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
-    },
-    backButtonClick() {
-      router.push({name: 'home'});
     },
     openNewAuthoritySheet() {
       this.newAuthoritySheet = !this.newAuthoritySheet;
