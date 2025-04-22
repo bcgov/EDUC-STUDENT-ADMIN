@@ -53,7 +53,6 @@
 
 import {mapState} from 'pinia';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import router from '@/router';
 import Spinner from '@/components/common/Spinner.vue';
 import {appStore} from '@/store/modules/app';
 import _ from 'lodash';
