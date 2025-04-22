@@ -39,6 +39,13 @@ async function updateReportingPeriod(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'updateReportingPeriod', 'Error occurred while attempting to UPDATE GDC Reporting Period.');
+    if (
+      e.status === 400 &&
+      e.data?.reportingPeriodValidationErrors &&
+      Array.isArray(e.data.reportingPeriodValidationErrors)
+    ) {
+      return res.status(400).json(e.data);
+    }
     return handleExceptionResponse(e, res);
   }
 }
@@ -78,21 +85,32 @@ async function getFilesetsPaginated(req, res) {
       });
     }
 
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const month = now.getMonth() + 1; // getMonth() is 0-indexed
+    if (req.query.searchParams?.collectionObject) {
+      const {schYrStart, summerEnd} = req.query.searchParams.collectionObject;
 
-    const startCurrentCollectionYear = month >= 10 ? new Date(currentYear, 9, 1) : new Date(currentYear - 1, 9, 1);
+      const startDate = schYrStart.split('T')[0];
+      const endDate = summerEnd.split('T')[0];
 
-    search.push({
-      condition: 'AND',
-      searchCriteriaList: [{
-        key: 'createDate',
-        value: startCurrentCollectionYear.toISOString().substring(0,10),
-        operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
-        valueType: VALUE_TYPE.DATE
-      }]
-    });
+      search.push({
+        condition: 'AND',
+        searchCriteriaList: [{
+          key: 'createDate',
+          value: startDate,
+          operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
+          valueType: VALUE_TYPE.DATE
+        }]
+      });
+
+      search.push({
+        condition: 'AND',
+        searchCriteriaList: [{
+          key: 'createDate',
+          value: endDate,
+          operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
+          valueType: VALUE_TYPE.DATE
+        }]
+      });
+    }
 
     const params = {
       params: {
@@ -131,7 +149,7 @@ async function getDemographicStudentByPenIncomingFilesetIdAndSchoolId(req, res) 
     const params = {
       params: {
         pen: req.params.pen,
-        incomingFilesetID: req.params.incomingFilesetID,
+        incomingFilesetID: req.params.filesetID,
         schoolID: req.query?.schoolID,
       }
     };

@@ -4,34 +4,35 @@ kind: Template
 labels:
   template: "${REPO_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-backend-dc"
+  name: "${REPO_NAME}-backend-deployment"
   creationTimestamp:
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
     name: "${APP_NAME}-backend-${BRANCH}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${BRANCH}"
+      matchLabels:
+        app: "${APP_NAME}-backend-${BRANCH}"
     strategy:
-      resources: {}
-      type: Rolling
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
     template:
       metadata:
         annotations:
           openshift.io/generated-by: OpenShiftNewApp
         creationTimestamp:
         labels:
-          app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-backend-${BRANCH}"
+          app: "${APP_NAME}-backend-${BRANCH}"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -133,7 +134,7 @@ objects:
       service.alpha.openshift.io/serving-cert-secret-name: "student-admin-backend-cert"
     creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
     name: "${APP_NAME}-backend-${BRANCH}"
   spec:
     ports:
@@ -146,16 +147,15 @@ objects:
       protocol: TCP
       targetPort: 443
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${BRANCH}"
+      app: "${APP_NAME}-backend-${BRANCH}"
 - apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
     name: "${APP_NAME}-backend-${BRANCH}-cpu-autoscaler"
   spec:
     scaleTargetRef:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
+      apiVersion: apps/v1
+      kind: Deployment
       name: "${APP_NAME}-backend-${BRANCH}"
       subresource: scale
     minReplicas: ${{MIN_REPLICAS}}

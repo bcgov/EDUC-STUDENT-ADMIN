@@ -16,6 +16,7 @@
             v-model="schoolNameNumber"
             closed-within-months="3"
             :rules="[rules.required()]"
+            :collection-object="collectionObject"
           />
         </v-col>
         <v-col cols="2">
@@ -341,6 +342,12 @@ export default {
     Spinner
   },
   mixins: [alertMixin],
+  props: {
+    collectionObject: {
+      type: Object,
+      required: true
+    },
+  },
   data() {
     return {
       requestCount: 0,
@@ -404,6 +411,19 @@ export default {
       return this.requestCount > 0;
     }
   },
+  watch: {
+    collectionObject: {
+      handler() {
+        this.demStudentData = null;
+        this.assessmentData = [];
+        this.courseData = [];
+        this.selectedSubmission = {};
+        this.selectedSubmissionText = '';
+        this.noDataFlag = false;
+      },
+      immediate: true
+    }
+  },
   created() {
     appStore().getConfig().then(() => {
       this.gradAdminURL = this.config.GRAD_ADMIN_URL;
@@ -433,7 +453,12 @@ export default {
       this.selectedSubmission = {};
       this.filterSearchParams.pen = this.studentPEN;
       this.filterSearchParams.schoolID = this.schoolNameNumber;
+      this.filterSearchParams.collectionObject = this.collectionObject;
       await this.getStudentSubmissions();
+      if (this.filesetStudentSubmissions.length === 0) {
+        this.noDataFlag = true;
+        return;
+      }
       await this.findStudentInFilesetByPEN();
       await this.findStudentIdByPEN();
     },

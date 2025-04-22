@@ -109,6 +109,7 @@
                 :key="`${selectedCollectionObject?.reportingPeriodID}-${tab}`"
                 :collection-object="selectedCollectionObject"
                 :is-previous="!activeCollectionSelected"
+                @update:collection-object="collectionObject = $event"
               />
             </v-window-item>
             <v-window-item
@@ -126,14 +127,14 @@
               transition="false"
               reverse-transition="false"
             >
-              <CollectionInsights :collection-object="collectionObject" />
+              <CollectionInsights :collection-object="selectedCollectionObject" />
             </v-window-item>
             <v-window-item
               value="studentDataTab"
               transition="false"
               reverse-transition="false"
             >
-              <GradStudentSearch />
+              <GradStudentSearch :collection-object="selectedCollectionObject" />
             </v-window-item>
           </v-window>
         </v-card-text>
