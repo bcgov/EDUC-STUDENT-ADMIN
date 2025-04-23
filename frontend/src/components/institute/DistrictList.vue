@@ -164,7 +164,6 @@
 <script>
 
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
-import router from '@/router';
 import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
 import alertMixin from '@/mixins/alertMixin';

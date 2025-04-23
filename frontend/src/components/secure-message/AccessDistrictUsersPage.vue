@@ -298,7 +298,6 @@ import alertMixin from '@/mixins/alertMixin';
 import InviteUserPage from '@/components/secure-message/InviteUserPage.vue';
 import AccessUserCard from '@/components/secure-message/AccessUserCard.vue';
 import Spinner from '@/components/common/Spinner.vue';
-import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {edxStore} from '@/store/modules/edx';
 import { ROLE } from '@/utils/constants/Roles';

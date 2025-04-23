@@ -193,7 +193,6 @@ import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {getStatusAuthorityOrSchool, getStatusColorAuthorityOrSchool,} from '@/utils/institute/status';
-import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
 import Details from './common/Details.vue';

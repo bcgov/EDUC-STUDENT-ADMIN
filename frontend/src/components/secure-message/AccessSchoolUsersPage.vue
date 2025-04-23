@@ -291,7 +291,6 @@ import AccessUserCard from './AccessUserCard.vue';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner.vue';
 import InviteUserPage from '@/components/secure-message/InviteUserPage.vue';
-import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {appStore} from '@/store/modules/app';
 import {edxStore} from '@/store/modules/edx';
@@ -345,7 +344,7 @@ export default {
       if(!school?.canIssueTranscripts) {
         return this.schoolRoles.filter(role => role.edxRoleCode !== 'GRAD_SCH_ADMIN');
       } else if(this.getSchoolStatus === 'Closed') {
-        return this.schoolRoles.filter(role => role.edxRoleCode === 'GRAD_SCH_ADMIN' || role.edxRoleCode === 'SECURE_EXCHANGE_SCHOOL')
+        return this.schoolRoles.filter(role => role.edxRoleCode === 'GRAD_SCH_ADMIN' || role.edxRoleCode === 'SECURE_EXCHANGE_SCHOOL');
       }
       return this.schoolRoles;
     }

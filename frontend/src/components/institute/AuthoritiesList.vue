@@ -242,7 +242,6 @@ import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
-import router from '@/router';
 import NewAuthorityPage from './NewAuthorityPage.vue';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';

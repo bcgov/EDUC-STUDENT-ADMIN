@@ -146,7 +146,6 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {mapState} from 'pinia';
-import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';

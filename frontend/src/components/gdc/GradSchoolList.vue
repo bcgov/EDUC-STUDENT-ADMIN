@@ -201,7 +201,6 @@ import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatContactName} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
-import router from '@/router';
 import Spinner from '@/components/common/Spinner.vue';
 import * as Rules from '@/utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';

@@ -163,7 +163,6 @@ import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {mapState, mapActions} from 'pinia';
 import {deepCloneObject} from '@/utils/common';

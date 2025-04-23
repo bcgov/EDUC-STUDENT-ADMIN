@@ -464,7 +464,6 @@ import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
-import router from '@/router';
 import Spinner from '@/components/common/Spinner.vue';
 import NewSchoolPage from './NewSchoolPage.vue';
 import {isOpenNotClosingAuthority} from '@/utils/common';
