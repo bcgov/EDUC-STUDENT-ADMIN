@@ -107,19 +107,6 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="mt-1 d-flex justify-start">
-                <v-icon
-                  size="small"
-                  color="#1976d2"
-                  class="mt-1"
-                >
-                  mdi-arrow-left
-                </v-icon>
-                <a
-                  class="ml-1"
-                  @click="backButtonClick"
-                >Return to {{ secureExchange.ministryOwnershipTeamName }} Inbox</a>
-              </v-col>
               <v-col class="d-flex justify-end">
                 <v-btn
                   id="markAsButton"
@@ -1274,9 +1261,6 @@ export default {
           this.loadingCount -= 1;
           this.hideNewNotePanel();
         });
-    },
-    backButtonClick() {
-      router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     //helper function to close all panels before setting one to visible in another method
     closeAllPanels() {

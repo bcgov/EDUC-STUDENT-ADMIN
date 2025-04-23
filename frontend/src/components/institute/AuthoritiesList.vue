@@ -9,18 +9,6 @@
     />
     <div v-else>
       <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon
-            small
-            color="#1976d2"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1"
-            @click="backButtonClick"
-          >Return to Dashboard</a>
-        </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton
             v-if="canAddIndependentAuthority"
@@ -254,7 +242,6 @@ import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
-import router from '@/router';
 import NewAuthorityPage from './NewAuthorityPage.vue';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
@@ -431,9 +418,6 @@ export default {
       return (this.authorityStatusFilter !== '' && this.authorityStatusFilter !== null)
         || (this.authorityTypeFilter !== '' && this.authorityTypeFilter !== null)
         || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
-    },
-    backButtonClick() {
-      router.push({name: 'home'});
     },
     openNewAuthoritySheet() {
       this.newAuthoritySheet = !this.newAuthoritySheet;

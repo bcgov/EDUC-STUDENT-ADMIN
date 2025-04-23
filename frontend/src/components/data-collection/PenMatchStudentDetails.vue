@@ -2,21 +2,6 @@
   <v-container fluid>
     <v-row class="mt-0">
       <v-col class="pt-0">
-        <v-row>
-          <v-col class="mt-1 d-flex justify-start">
-            <v-icon
-              small
-              color="#1976d2"
-            >
-              mdi-arrow-left
-            </v-icon>
-            <a
-              class="ml-1"
-              @click="backButtonClick"
-            >Return to PEN fixes List</a>
-          </v-col>
-        </v-row>
-
         <v-row v-if="isLoading()">
           <v-col class="d-flex justify-center">
             <Spinner
@@ -299,9 +284,6 @@ export default {
     },
     updateAddStudentWarningMessage(newValue) {
       this.addStudentWarningMessage = newValue;
-    },
-    backButtonClick() {
-      this.$router.push({name: 'collection-view', query: {penMatch: true}, params: {collectionID: this.activeCollection?.collectionID}});
     },
     async getActiveCollection() {
       if(this.activeCollection == null) {

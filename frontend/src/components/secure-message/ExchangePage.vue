@@ -16,19 +16,6 @@
           </v-col>
         </v-row>
         <v-row class="pt-0 mb-0">
-          <v-col class="mt-1 d-flex justify-start">
-            <v-icon
-              size="small"
-              color="#1976d2"
-              class="mt-1"
-            >
-              mdi-arrow-left
-            </v-icon>
-            <a
-              class="ml-1"
-              @click="backButtonClick"
-            >Return to Dashboard</a>
-          </v-col>
           <v-col class="d-flex justify-end">
             <PrimaryButton
               id="claimBTN"
@@ -860,9 +847,6 @@ export default {
       }).finally(() => {
         this.loadingTableCount -= 1;
       });
-    },
-    backButtonClick() {
-      router.push({name: 'home'});
     },
     openExchange(exchangeID) {
       router.push({

@@ -8,20 +8,6 @@
       flat
     />
     <div v-else>
-      <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon
-            small
-            color="#1976d2"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1"
-            @click="backButtonClick"
-          >Return to Dashboard</a>
-        </v-col>
-      </v-row>
       <!--    search filter -->
       <v-row
         :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']"
@@ -178,7 +164,6 @@
 <script>
 
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
-import router from '@/router';
 import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
 import alertMixin from '@/mixins/alertMixin';
@@ -281,9 +266,6 @@ export default {
       }
 
       return true;
-    },
-    backButtonClick() {
-      router.push({name: 'home'});
     },
     openDistrict(districtId) {
       this.$router.push({name: 'districtDetails', params: {districtID: districtId}});

@@ -3,18 +3,6 @@
     class="containerSetup"
     fluid
   >
-    <v-col class="mt-1 d-flex justify-start">
-      <v-icon
-        small
-        color="#1976d2"
-      >
-        mdi-arrow-left
-      </v-icon>
-      <a
-        class="ml-1"
-        @click="backButtonClick"
-      >Return to School List</a>
-    </v-col>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -205,7 +193,6 @@ import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {getStatusAuthorityOrSchool, getStatusColorAuthorityOrSchool,} from '@/utils/institute/status';
-import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
 import Details from './common/Details.vue';
@@ -347,9 +334,6 @@ export default {
     },
     deepCloneObject,
     getStatusColorAuthorityOrSchool,
-    backButtonClick() {
-      router.push({name: 'instituteSchoolList'});
-    },
     populateExtraSchoolFields(school) {
       school.status = getStatusAuthorityOrSchool(school);
     },

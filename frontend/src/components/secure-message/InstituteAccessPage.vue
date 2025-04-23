@@ -1,21 +1,6 @@
 <template>
   <v-container class="d-flex justify-center">
     <div v-if="instituteArray.length >=1">
-      <v-row>
-        <v-col class="mb-1">
-          <v-icon
-            size="small"
-            color="#1976d2"
-            class="mt-1"
-          >
-            mdi-arrow-left
-          </v-icon>
-          <a
-            class="ml-1"
-            @click="backButtonClick"
-          >Return to Dashboard</a>
-        </v-col>
-      </v-row>
       <v-card
         color="#F2F2F2"
         min-width="55em"
@@ -36,19 +21,19 @@
             :label="instituteTypeLabel"
             clearable
           >
-          <template #selection="{ item }">
-            <span> {{ item.text }} </span>
-          </template>
-          <template #item="{props, item}">
-            <v-list-item
-              v-bind="props"
-              :prepend-icon="'mdi-circle-medium'"
-            >
-            <template v-slot:prepend>
-              <v-icon :color="instituteTypeCode === 'SCHOOL' ? getStatusColorAuthorityOrSchool(item.raw.status) : getStatusColor(item.raw.status)"></v-icon>
+            <template #selection="{ item }">
+              <span> {{ item.text }} </span>
             </template>
-            </v-list-item>
-          </template>
+            <template #item="{props, item}">
+              <v-list-item
+                v-bind="props"
+                :prepend-icon="'mdi-circle-medium'"
+              >
+                <template #prepend>
+                  <v-icon :color="instituteTypeCode === 'SCHOOL' ? getStatusColorAuthorityOrSchool(item.raw.status) : getStatusColor(item.raw.status)" />
+                </template>
+              </v-list-item>
+            </template>
           </v-autocomplete>
           <PrimaryButton
             id="manageInstituteButton"
@@ -68,7 +53,6 @@
 
 import {mapState} from 'pinia';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import router from '@/router';
 import Spinner from '@/components/common/Spinner.vue';
 import {appStore} from '@/store/modules/app';
 import _ from 'lodash';
@@ -115,9 +99,6 @@ export default {
   methods:{
     getStatusColorAuthorityOrSchool,
     getStatusAuthorityOrSchool,
-    backButtonClick() {
-      router.push({name: 'home'});
-    },
     getStatusColor(status) {
       if (status === 'ACTIVE') {
         return 'green';

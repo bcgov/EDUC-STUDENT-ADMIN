@@ -3,20 +3,6 @@
     class="containerSetup"
     fluid
   >
-    <v-row>
-      <v-col class="mt-1 mb-4 d-flex justify-start">
-        <v-icon
-          small
-          color="#1976d2"
-        >
-          mdi-arrow-left
-        </v-icon>
-        <a
-          class="ml-1"
-          @click="backButtonClick"
-        >Return to District List</a>
-      </v-col>
-    </v-row>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -177,7 +163,6 @@ import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {mapState, mapActions} from 'pinia';
 import {deepCloneObject} from '@/utils/common';
@@ -329,9 +314,6 @@ export default {
       } else {
         return 'Inactive';
       }
-    },
-    backButtonClick() {
-      router.push({name: 'instituteDistrict'});
     },
     saveNewDistrictNote(districtNote) {
       this.noteRequestCount += 1;

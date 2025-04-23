@@ -18,23 +18,6 @@
         <h4>{{ collectionType }} {{ collectionYear }}</h4>
       </v-col>
     </v-row>
-    <v-row
-      no-gutters
-      class="mt-2 mb-2 d-flex justify-start"
-    >
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon
-          small
-          color="#1976d2"
-        >
-          mdi-arrow-left
-        </v-icon>
-        <a
-          class="ml-1"
-          @click="backToActiveCollection()"
-        >Return to Data Collection</a>
-      </v-col>
-    </v-row>
     <v-row no-gutters>
       <v-col>
         <v-divider class="divider" />
@@ -246,9 +229,6 @@ export default {
     },
     navigationCompleted() {
       this.registerNextEvent = false;
-    },
-    backToActiveCollection() {
-      this.$router.push({name: 'sdc-collection'});
     }
   }
 };
