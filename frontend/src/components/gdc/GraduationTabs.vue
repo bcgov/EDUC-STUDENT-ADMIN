@@ -25,7 +25,7 @@
             Current Reporting Cycle -
           </span>
           <span>
-            {{ collectionObject ? `${formatDate(collectionObject.schYrStart)} to ${formatDate(collectionObject.summerEnd)}` : '-' }}
+            {{ collectionObject ? `${formatDate(collectionObject.periodStart)} to ${formatDate(collectionObject.periodEnd)}` : '-' }}
           </span>
         </div>
       </v-col>
@@ -47,7 +47,7 @@
             Previous Reporting Cycle -
           </span>
           <span>
-            {{ previousCollectionObject ? `${formatDate(previousCollectionObject.schYrStart)} to ${formatDate(previousCollectionObject.summerEnd)}` : '-' }}
+            {{ previousCollectionObject ? `${formatDate(previousCollectionObject.periodStart)} to ${formatDate(previousCollectionObject.periodEnd)}` : '-' }}
           </span>
         </div>
       </v-col>

@@ -3,7 +3,7 @@
     <h3 class="subHeading pb-1">
       Reporting Cycle
     </h3>
-    <p>{{ formatDate(collectionObject?.schYrStart) }} - {{ formatDate(collectionObject?.summerEnd) }}</p>
+    <p>{{ formatDate(collectionObject?.periodStart) }} - {{ formatDate(collectionObject?.periodEnd) }}</p>
   </v-col>
   <v-col cols="9">
     <h3 class="subHeading">
