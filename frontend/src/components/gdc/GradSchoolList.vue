@@ -14,7 +14,7 @@
       <div v-else>
         <v-row>
           <v-col
-            cols="8"
+            cols="12"
             class="d-flex justify-end"
           >
             <v-btn
