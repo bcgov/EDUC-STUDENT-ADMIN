@@ -208,14 +208,37 @@ export default {
     formatDate,
     getStatusColorGdcSession,
     setDateBoundaries() {
-      const schYrStart = this.collectionObject.periodStart.split('T')[0];
-      const summerEnd = this.collectionObject.periodEnd.split('T')[0];
+      if (!this.collectionObject?.periodStart || !this.collectionObject?.periodEnd) {
+        this.editDates.min = null;
+        this.editDates.max = null;
+        return;
+      }
 
-      const startYear = new Date(schYrStart).getFullYear();
-      const endYear = new Date(summerEnd).getFullYear();
+      const toYYYYMMDD = (date) => {
+        if (!date || !(date instanceof Date)) return null;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
 
-      this.editDates.min = `${startYear}-10-02`;
-      this.editDates.max = `${endYear}-10-01`;
+      try {
+        const startDateString = this.collectionObject.periodStart.split('T')[0];
+        const startDateLocal = new Date(startDateString + 'T00:00:00');
+        if (isNaN(startDateLocal.getTime())) throw new Error('Invalid start date');
+        startDateLocal.setDate(startDateLocal.getDate() + 1);
+        this.editDates.min = toYYYYMMDD(startDateLocal);
+
+        const endDateString = this.collectionObject.periodEnd.split('T')[0];
+        const endDateLocal = new Date(endDateString + 'T00:00:00');
+        if (isNaN(endDateLocal.getTime())) throw new Error('Invalid end date');
+        endDateLocal.setDate(endDateLocal.getDate() + 1);
+        this.editDates.max = toYYYYMMDD(endDateLocal);
+      } catch (e) {
+        console.error('Error processing dates for boundaries:', e);
+        this.editDates.min = null;
+        this.editDates.max = null;
+      }
     },
     openEditDialog(mode) {
       this.editMode = mode;
