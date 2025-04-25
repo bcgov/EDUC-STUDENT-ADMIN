@@ -620,6 +620,20 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/GRAD_D
   -d "[$viewGradDataCollectionPermissionJson, $editGradDataCollectionPermissionJson, $viewGDCReportingPeriodPermissionJson, $writeGDCReportingPeriodPermissionJson]"
 
 echo
+echo Creating GRAD_DATA_COLLECTION_VIEWER role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"GRAD_DATA_COLLECTION_VIEWER\",\"description\" : \"Allows access to view Grad Data Collections\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to GRAD_DATA_COLLECTION_VIEWER role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/GRAD_DATA_COLLECTION_VIEWER/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$viewGradDataCollectionPermissionJson, $viewGDCReportingPeriodPermissionJson]"
+
+echo
 echo Creating MANAGE_EAS_SESSIONS_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
