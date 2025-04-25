@@ -66,6 +66,32 @@ async function getReportingSummary(req, res) {
   }
 }
 
+async function getReportingInsights(req, res) {
+  try {
+    let schools = cacheService.getAllSchoolsJSON();
+    let gradSchools = cacheService.getGradSchoolsMap();
+    let filteredSchoolsIDByCategory = schools.filter(school => school.schoolCategoryCode === req.params.schoolCategory).map(obj => obj.schoolID);
+    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([val]) => val.canIssueTranscripts === "true"));
+
+    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id));
+
+    const params = {
+      params: {
+        grade: "12",
+        schoolIDs: schoolIDs
+      }
+    };
+    const url = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts`;
+    const sdcGrad12Data = await getData(url, params);
+
+    //TODO: GRAD numbers
+    return res.status(200).json(sdcGrad12Data);
+  } catch (e) {
+    logApiError(e, 'getReportingSummary', 'Error occurred while attempting to GET GDC Reporting summary.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function getFilesetsPaginated(req, res) {
   try {
     const search = [];
@@ -169,5 +195,6 @@ module.exports = {
   updateReportingPeriod,
   getReportingSummary,
   getFilesetsPaginated,
-  getDemographicStudentByPenIncomingFilesetIdAndSchoolId
+  getDemographicStudentByPenIncomingFilesetIdAndSchoolId,
+  getReportingInsights
 };

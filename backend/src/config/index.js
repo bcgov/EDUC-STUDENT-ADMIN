@@ -166,7 +166,10 @@ nconf.defaults({
       activeReportingPeriodURL: process.env.GDC_API_URL + '/reporting-period/active',
       previousReportingPeriodURL: process.env.GDC_API_URL + '/reporting-period/previous',
       filesetURL: process.env.GDC_API_URL + '/fileset',
-    }
+    },
+    gradSchool: {
+      rootURL: process.env.GRAD_SCHOOL_API_ENDPOINT
+    },
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
