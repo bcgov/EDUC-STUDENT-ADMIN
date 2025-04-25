@@ -512,7 +512,7 @@ const router = createRouter({
           meta: {
             pageTitle: PAGE_TITLES.GRAD_SCHOOL_LIST,
             requiresAuth: true,
-            permission: PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION
+            permission: PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION
           },
         }
       ]
@@ -524,7 +524,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.GRAD_TABS,
         requiresAuth: true,
-        permission: PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION
+        permission: PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION
       },
     },
     {

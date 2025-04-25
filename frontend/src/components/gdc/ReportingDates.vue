@@ -63,7 +63,7 @@
           <td>{{ formatDate(collectionObject?.schYrEnd) }}</td>
           <td>
             <v-btn
-              v-if="!isPrevious"
+              v-if="!isPrevious && hasWritePermission()"
               variant="text"
               color="#1a5a96"
               icon="mdi-pencil-outline"
@@ -85,7 +85,7 @@
           <td>{{ formatDate(collectionObject?.summerEnd) }}</td>
           <td>
             <v-btn
-              v-if="!isPrevious"
+              v-if="!isPrevious && hasWritePermission()"
               variant="text"
               color="#1a5a96"
               icon="mdi-pencil-outline"
@@ -155,6 +155,9 @@ import DatePicker from '@/components/util/DatePicker.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
 import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'ReportingDates',
@@ -185,6 +188,9 @@ export default {
       panel2Status: '',
       saving: false,
     };
+  },
+  computed:{
+    ...mapState(authStore, ['userInfo']),
   },
   watch: {
     collectionObject: {
@@ -223,6 +229,10 @@ export default {
       }
       this.dialog = true;
     },
+    hasWritePermission() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);
+    },
+    hasRequiredPermission,
     updateReportingDates() {
       this.saving = true;
 
