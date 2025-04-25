@@ -112,28 +112,13 @@ async function getFilesetsPaginated(req, res) {
     }
 
     if (req.query.searchParams?.collectionObject) {
-      const {schYrStart, summerEnd} = req.query.searchParams.collectionObject;
-
-      const startDate = schYrStart.split('T')[0];
-      const endDate = summerEnd.split('T')[0];
-
       search.push({
         condition: 'AND',
         searchCriteriaList: [{
-          key: 'createDate',
-          value: startDate,
-          operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
-          valueType: VALUE_TYPE.DATE
-        }]
-      });
-
-      search.push({
-        condition: 'AND',
-        searchCriteriaList: [{
-          key: 'createDate',
-          value: endDate,
-          operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
-          valueType: VALUE_TYPE.DATE
+          key: 'reportingPeriod.reportingPeriodID',
+          value: req.query.searchParams.collectionObject.reportingPeriodID,
+          operation: FILTER_OPERATION.EQUAL,
+          valueType: VALUE_TYPE.UUID
         }]
       });
     }
