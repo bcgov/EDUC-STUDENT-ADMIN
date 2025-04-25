@@ -71,7 +71,7 @@ async function getReportingInsights(req, res) {
     let schools = cacheService.getAllSchoolsJSON();
     let gradSchools = cacheService.getGradSchoolsMap();
     let filteredSchoolsIDByCategory = schools.filter(school => school.schoolCategoryCode === req.params.schoolCategory).map(obj => obj.schoolID);
-    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([key, val]) => val.canIssueTranscripts === "true"))
+    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([val]) => val.canIssueTranscripts === "true"));
 
     let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id));
 
