@@ -208,15 +208,14 @@ export default {
     formatDate,
     getStatusColorGdcSession,
     setDateBoundaries() {
-
-      const schYrStart = this.collectionObject.schYrStart.split('T')[0];
-      const summerEnd = this.collectionObject.summerEnd.split('T')[0];
+      const schYrStart = this.collectionObject.periodStart.split('T')[0];
+      const summerEnd = this.collectionObject.periodEnd.split('T')[0];
 
       const startYear = new Date(schYrStart).getFullYear();
       const endYear = new Date(summerEnd).getFullYear();
 
-      this.editDates.min = `${startYear}-10-01`;
-      this.editDates.max = `${endYear}-09-30`;
+      this.editDates.min = `${startYear}-10-02`;
+      this.editDates.max = `${endYear}-10-01`;
     },
     openEditDialog(mode) {
       this.editMode = mode;
