@@ -183,6 +183,14 @@ if(!config.get('frontendConfig').disableEASFunctionality) {
   });
 }
 
+if(!config.get('frontendConfig').disableGDCFunctionality) {
+  cacheService.loadAllGradSchools('server:gradSchool:rootURL').then(() => {
+    log.info('Loaded GRAD_SCHOOLS data to memory');
+  }).catch((e) => {
+    log.error('Error loading GRAD_SCHOOLS data during boot.', e);
+  });
+}
+
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');
 }).catch((e) => {

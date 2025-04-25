@@ -35,6 +35,7 @@ let assessmentTypeCodesMap = new Map();
 let assessmentSpecialCaseTypeCodesMap = new Map();
 
 let edxUsers = new Map();
+let gradSchoolsMap = new Map();
 
 const cacheService = {
 
@@ -178,6 +179,23 @@ const cacheService = {
     });
 
   },
+
+  async loadAllGradSchools(url) {
+    log.debug('Loading all grad schools during start up');
+    await retry(async () => {
+      const schools = await getData(config.get(url));
+      gradSchoolsMap.clear();
+      if (schools && schools.length > 0) {
+        for (const data of schools) {
+          gradSchoolsMap.set(data.schoolID, data);
+        }
+      }
+      log.info(`Loaded ${gradSchoolsMap.size} grad schools.`);
+    }, {
+      retries: 50
+    });
+  },
+  
   getAllDocumentTypeCodesJSON() {
     return documentTypeCodes;
   },
@@ -404,6 +422,9 @@ const cacheService = {
   },
   getActiveSpecialEducationCodes() {
     return cachedData[constants.CACHE_KEYS.SDC_SPECIAL_ED_CODES].activeRecords;
+  },
+  getGradSchoolsMap() {
+    return gradSchoolsMap;
   },
   async loadAllEdxUsersToMap() {
     log.debug('Loading all EDX Users to cache.');

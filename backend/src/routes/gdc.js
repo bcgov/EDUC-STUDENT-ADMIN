@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { getActiveReportingPeriod, getPreviousReportingPeriod, updateReportingPeriod, getReportingSummary, getFilesetsPaginated, getDemographicStudentByPenIncomingFilesetIdAndSchoolId } = require('../components/gdc/gdc');
+const { getActiveReportingPeriod, getPreviousReportingPeriod, updateReportingPeriod, getReportingSummary, getFilesetsPaginated, getDemographicStudentByPenIncomingFilesetIdAndSchoolId, getReportingInsights } = require('../components/gdc/gdc');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const permUtils = require('../components/permissionUtils');
@@ -15,5 +15,7 @@ router.put('/reporting-period', passport.authenticate('jwt', {session: false}, u
 router.get('/reporting-summary/:reportingPeriodID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getReportingSummary);
 router.get('/fileset/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getFilesetsPaginated);
 router.get('/fileset/:filesetID/student/:pen', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getDemographicStudentByPenIncomingFilesetIdAndSchoolId);
+
+router.get('/reporting-insights/:reportingPeriodID/:sdcCollectionID/:schoolCategory', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getReportingInsights);
 
 module.exports = router;
