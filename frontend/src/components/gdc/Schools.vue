@@ -188,8 +188,7 @@ export default {
       schoolYearSubmissionCount: null,
       schoolYearLastSubmission: null,
       summerSubmissionCount: null,
-      summerLastSubmission: null,
-      currentCategoryCode: null
+      summerLastSubmission: null
     };
   },
   computed: {
@@ -209,8 +208,6 @@ export default {
     collectionObject: {
       handler(newCollection, oldCollection) {
         if (newCollection?.reportingPeriodID !== oldCollection?.reportingPeriodID) {
-          this.currentCategoryCode = null;
-          this.submissionsByCategory = null;
           if (this.schoolNameNumber) {
             this.getSchoolSubmissions();
           }
@@ -224,7 +221,7 @@ export default {
     schoolNameNumber: {
       handler(newSchoolNameNumber) {
         if (newSchoolNameNumber) {
-          this.getThisSchoolsDetails();
+          this.school = this.schoolsCacheMap.get(newSchoolNameNumber);
           this.getUsersData();
           this.getSchoolSubmissions();
         }
@@ -259,26 +256,20 @@ export default {
 
       this.loading = true;
 
-      if (this.currentCategoryCode !== school.schoolCategoryCode) {
-        ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}/school-submission-counts`, {
-          params: {
-            categoryCode: school.schoolCategoryCode,
-          }
-        })
-          .then(response => {
-            this.submissionsByCategory = response.data;
-            this.currentCategoryCode = school.schoolCategoryCode;
-            this.updateSubmissionData(school.schoolID);
-          }).catch(error => {
-            console.error(error);
-            this.setFailureAlert(error.response?.data?.message || error.message);
-          }).finally(() => {
-            this.loading = false;
-          });
-      } else {
-        this.updateSubmissionData(school.schoolID);
-        this.loading = false;
-      }
+      ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}/school-submission-counts`, {
+        params: {
+          categoryCode: school.schoolCategoryCode,
+        }
+      })
+        .then(response => {
+          this.submissionsByCategory = response.data;
+          this.updateSubmissionData(school.schoolID);
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     updateSubmissionData(schoolID) {
       if (!this.submissionsByCategory) return;
@@ -300,20 +291,6 @@ export default {
         this.summerSubmissionCount = 0;
         this.summerLastSubmission = null;
       }
-    },
-    getThisSchoolsDetails() {
-      this.loading = true;
-      this.school = '';
-
-      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolNameNumber}`)
-        .then(response => {
-          this.school = response.data;
-        }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
     },
     getUsersData() {
       this.loadingUsers = true;
