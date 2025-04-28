@@ -21,7 +21,7 @@
         >
           <v-skeleton-loader
             type="text"
-            width="154px"
+            width="50%"
           />
         </v-col>
         <v-col
@@ -88,8 +88,28 @@
               </v-icon>
               School Year
             </td>
-            <td>{{ schoolYearSubmissionCount || 0 }}</td>
-            <td>{{ schoolYearLastSubmission || '-' }}</td>
+            <td>
+              <template v-if="loadingSubmissions">
+                <v-skeleton-loader
+                  type="text"
+                  width="50%"
+                />
+              </template>
+              <template v-else>
+                {{ schoolYearSubmissionCount || 0 }}
+              </template>
+            </td>
+            <td>
+              <template v-if="loadingSubmissions">
+                <v-skeleton-loader
+                  type="text"
+                  width="70%"
+                />
+              </template>
+              <template v-else>
+                {{ schoolYearLastSubmission || '-' }}
+              </template>
+            </td>
           </tr>
           <tr>
             <td>
@@ -101,8 +121,28 @@
               </v-icon>
               Summer
             </td>
-            <td>{{ summerSubmissionCount || 0 }}</td>
-            <td>{{ summerLastSubmission || '-' }}</td>
+            <td>
+              <template v-if="loadingSubmissions">
+                <v-skeleton-loader
+                  type="text"
+                  width="50%"
+                />
+              </template>
+              <template v-else>
+                {{ summerSubmissionCount || 0 }}
+              </template>
+            </td>
+            <td>
+              <template v-if="loadingSubmissions">
+                <v-skeleton-loader
+                  type="text"
+                  width="70%"
+                />
+              </template>
+              <template v-else>
+                {{ summerLastSubmission || '-' }}
+              </template>
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -188,7 +228,8 @@ export default {
       schoolYearSubmissionCount: null,
       schoolYearLastSubmission: null,
       summerSubmissionCount: null,
-      summerLastSubmission: null
+      summerLastSubmission: null,
+      loadingSubmissions: false
     };
   },
   computed: {
@@ -254,8 +295,7 @@ export default {
       const school = this.schoolsCacheMap.get(this.schoolNameNumber);
       if (!school) return;
 
-      this.loading = true;
-
+      this.loadingSubmissions = true;
       ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}/school-submission-counts`, {
         params: {
           categoryCode: school.schoolCategoryCode,
@@ -268,7 +308,7 @@ export default {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
         }).finally(() => {
-          this.loading = false;
+          this.loadingSubmissions = false;
         });
     },
     updateSubmissionData(schoolID) {
