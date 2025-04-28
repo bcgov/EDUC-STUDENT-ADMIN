@@ -395,10 +395,6 @@ async function addSchool(req, res) {
       payload.grades = req.body.grades;
     }
 
-    if(!['FED_BAND'].includes(payload.schoolCategoryCode)) {
-      await setIssueTranscriptAndCertificatesFlags(payload);
-    }
-
     const data = await utils.postData(config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
@@ -928,19 +924,6 @@ async function updateSchoolDetails(school, idirUsername){
     payload.independentAuthorityId = null;
   }
 
-  let currentSchool = await getSchoolBySchoolID(payload.schoolId);
-
-  let currentSchoolGradeCodes = currentSchool.grades.map(grade => grade.schoolGradeCode);
-  let incomingSchoolGradeCodes = payload.grades.map(grade => grade.schoolGradeCode);
-
-  let all = _.union(currentSchoolGradeCodes, incomingSchoolGradeCodes);
-  let common = _.intersection(currentSchoolGradeCodes, incomingSchoolGradeCodes);
-  let offset = _.difference(all, common); _.difference(currentSchoolGradeCodes, incomingSchoolGradeCodes);
-
-  if(offset.length !== 0 && !['FED_BAND'].includes(payload.schoolCategoryCode)){
-    await setIssueTranscriptAndCertificatesFlags(payload);
-  }
-
   return await utils.putData(config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, idirUsername);
 }
 
@@ -1362,7 +1345,6 @@ async function deleteFundingDataForSchool(req, res) {
 
     school.schoolFundingGroups = school.schoolFundingGroups.filter(group => group.schoolFundingGroupID !== req.params.schoolFundingGroupID);
     res.body = school;
-    await setIssueTranscriptAndCertificatesFlags(school);
     await updateSchoolDetails(school,utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
@@ -1391,8 +1373,6 @@ async function updateFundingDataForSchool(req, res) {
     school.schoolFundingGroups = school.schoolFundingGroups.filter(group => group.schoolFundingGroupID !== req.body.schoolFundingGroupID);
     school.schoolFundingGroups.push(payload);
 
-    await setIssueTranscriptAndCertificatesFlags(school);
-
     await updateSchoolDetails(school, user);
     return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
@@ -1416,56 +1396,12 @@ async function addNewFundingForSchool(req, res) {
     payload.schoolID = req.params.schoolID;
     school.schoolFundingGroups.push(payload);
 
-    await setIssueTranscriptAndCertificatesFlags(school);
-
     await updateSchoolDetails(school, user);
     return res.status(HttpStatus.OK).json('{}');
   } catch (e) {
     await logApiError(e, 'addNewFundingForSchool', 'Error adding funding data for this school');
     return errorResponse(res);
   }
-}
-
-async function setIssueTranscriptAndCertificatesFlags(school){
-  let gradesArray = ['GRADE10','GRADE11','GRADE12','SECUNGR'];
-  let groupsArray = ['GROUP1','GROUP2','GROUP4'];
-  let summerShortPRPArray = ['SHORT_PRP','SUMMER'];
-  let canIssueTranscripts = false;
-  let canIssueCertificates = false;
-
-  let grade10toSUFundingCodes = school.schoolFundingGroups?.filter(group => gradesArray.includes(group.schoolGradeCode));
-  let schoolHas10toSUGrades = school.grades?.some(grade => gradesArray.includes(grade.schoolGradeCode));
-  let hasGroup1or2or4 = grade10toSUFundingCodes?.some(group => groupsArray.includes(group.schoolFundingGroupCode));
-
-  switch(school.schoolCategoryCode) {
-  case 'PUBLIC':
-    if(!summerShortPRPArray.includes(school.facilityTypeCode) && schoolHas10toSUGrades){
-      canIssueTranscripts = true;
-      canIssueCertificates = true;
-    }
-    break;
-  case 'INDEPEND':
-  case 'INDP_FNS':
-    if(schoolHas10toSUGrades && hasGroup1or2or4){
-      canIssueTranscripts = true;
-      canIssueCertificates = true;
-    }
-    break;
-  case 'YUKON':
-    if(schoolHas10toSUGrades){
-      canIssueTranscripts = true;
-    }
-    break;
-  case 'OFFSHORE':
-    if(schoolHas10toSUGrades){
-      canIssueTranscripts = true;
-      canIssueCertificates = true;
-    }
-    break;
-  }
-
-  school.canIssueTranscripts = canIssueTranscripts;
-  school.canIssueCertificates = canIssueCertificates;
 }
 
 function createAuthoritySearchCriteria(searchParams){
@@ -1542,7 +1478,6 @@ module.exports = {
   updateFundingDataForSchool,
   getFundingGroupDataForSchool,
   moveSchool,
-  setIssueTranscriptAndCertificatesFlags,
   getStudentRegistrationContacts,
   getStudentRegistrationContactByMincode,
   getSchoolByMincode,

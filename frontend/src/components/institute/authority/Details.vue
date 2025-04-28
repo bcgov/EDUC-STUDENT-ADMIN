@@ -860,7 +860,7 @@ import { mapState } from 'pinia';
 import router from '@/router';
 import { deepCloneObject } from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
-import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
+import AuthorityStatus from '@/components/institute/authority/AuthorityStatus.vue';
 import {isEmpty, omitBy, sortBy} from 'lodash';
 import { instituteStore } from '@/store/modules/institute';
 

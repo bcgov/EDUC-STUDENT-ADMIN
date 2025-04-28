@@ -41,6 +41,7 @@ const macroRouter = require('./routes/macro');
 const analyticsRouter = require('./routes/analytics-router');
 const nominalRollRouter = require('./routes/nominal-roll');
 const edxRouter = require('./routes/edx-router');
+const gradSchoolRouter = require('./routes/grad-school');
 const instituteRouter = require('./routes/institute');
 const sdcRouter = require('./routes/sdc');
 const cacheRouter = require('./routes/cache-router');
@@ -55,6 +56,8 @@ messagePubSub.init().then(() => {
   require('./messaging/handlers/institute-update-handler').subscribe();
   require('./messaging/handlers/jetstream-subscriber').subscribe();
   require('./messaging/handlers/institute-jetstream-subscriber').subscribe();
+  require('./messaging/handlers/grad-school-update-handler').subscribe();
+  require('./messaging/handlers/grad-school-jetstream-subscriber').subscribe();
   require('./messaging/handlers/edx-jetstream-subscriber').subscribe();
   require('./messaging/handlers/edx-event-handler').subscribe();
   require('./messaging/handlers/sdc-jetstream-subscriber').subscribe();
@@ -241,6 +244,7 @@ apiRouter.use('/sdc', sdcRouter);
 apiRouter.use('/cache', cacheRouter);
 apiRouter.use('/eas', easRouter);
 apiRouter.use('/gdc', gdcRouter);
+apiRouter.use('/grad-school', gradSchoolRouter);
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
   log.error(err.stack);

@@ -233,9 +233,9 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import {mapState} from 'pinia';
 import {isEmpty, omitBy, sortBy} from 'lodash';

@@ -18,6 +18,7 @@ const instituteRoot = baseRoot + '/institute';
 const cacheRoot = baseRoot + '/cache';
 const sdcRoot = baseRoot + '/sdc';
 const gdcRoot = baseRoot + '/gdc';
+const gradSchoolRoot = baseRoot + '/grad-school';
 const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
 const easRoot = baseRoot + '/eas';
 
@@ -214,6 +215,9 @@ let object = {
     ACTIVE_COLLECTION: gdcRoot + '/active-reporting-period',
     PREVIOUS_COLLECTION: gdcRoot + '/previous-reporting-period',
     REPORTING_SUMMARY: gdcRoot + '/reporting-summary'
+  },
+  gradSchool: {
+    BASE_URL: gradSchoolRoot
   },
   eas: {
     BASE_URL: easRoot,
