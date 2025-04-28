@@ -66,6 +66,22 @@ async function getReportingSummary(req, res) {
   }
 }
 
+async function getSchoolSubmissionCounts(req, res) {
+  try {
+    const params = {
+      params: {
+        categoryCode: req.query?.categoryCode
+      }
+    };
+    const url = `${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/school-submission-counts`;
+    const data = await getData(url, params);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSubmissionCounts', 'Error occurred while attempting to GET GDC school submission counts summary.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function getReportingInsights(req, res) {
   try {
     let schools = cacheService.getAllSchoolsJSON();
@@ -181,5 +197,6 @@ module.exports = {
   getReportingSummary,
   getFilesetsPaginated,
   getDemographicStudentByPenIncomingFilesetIdAndSchoolId,
-  getReportingInsights
+  getReportingInsights,
+  getSchoolSubmissionCounts
 };
