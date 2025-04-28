@@ -31,6 +31,7 @@ import StudentRegistrationContactsDisplay from '@/components/penreg/student-regi
 import BandCodes from '@/components/admin/BandCodes.vue';
 import MacrosDisplay from '@/components/admin/MacrosDisplay.vue';
 import NominalRoll from '@/components/nominal-roll/NominalRoll.vue';
+import NominalRollReports from '@/components/nominal-roll/NominalRollReports.vue';
 import NomRollStudentListDisplay from '@/components/nominal-roll/NomRollStudentListDisplay.vue';
 import NomRollStudentDetailsDisplay from '@/components/nominal-roll/NomRollStudentDetailsDisplay.vue';
 import StatsDashboard from '@/components/admin/stats/StatsDashboard.vue';
@@ -337,6 +338,16 @@ const router = createRouter({
             requiresAuth: true,
             role: 'NOMINAL_ROLL_ROLE'
           },
+        },
+        {
+          path: 'reports',
+          name: 'nominal-roll-reports',
+          component: NominalRollReports, // adjust path if needed
+          meta: {
+            pageTitle: 'Nominal Roll Reports',
+            requiresAuth: true,
+            role: 'NOMINAL_ROLL_ROLE'
+          }
         }
       ]
     },

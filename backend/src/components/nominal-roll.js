@@ -164,6 +164,38 @@ async function createFedProvSchoolCode(req, res) {
   }
 }
 
+async function downloadNominalRollReport(req, res) {
+  try {
+    let url;
+    console.log('req.params.year', req.params.year);
+    if(req.params.yearEnd !== null){
+
+      url = `${config.get('server:nominalRoll:rootURL')}/report/${req.params.year}/download`;
+
+    }
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const resData = await getData( url, params);
+    const fileDetails = { filename: `NominalRollReport${req.params.year}.csv`, contentType: 'text/csv' } ;
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(resData.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
+  }
+  catch (e) {
+    log.error('download NominalRoll Report Error', e.stack);
+    return errorResponse(e, res);
+  }
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
+
 const isDataPosted = async (req, res) => {
   try {
     const params = {
@@ -193,5 +225,6 @@ module.exports = {
   updateNominalRollStudent,
   postNominalRollData,
   isDataPosted,
-  createFedProvSchoolCode
+  createFedProvSchoolCode,
+  downloadNominalRollReport
 };
