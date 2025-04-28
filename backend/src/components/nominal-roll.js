@@ -200,7 +200,6 @@ function validateNominalRollReportYear(req, res, next) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Invalid nominal roll report year'});
     }
-    // Extra optional check: Year should not be in the future
     const currentYear = LocalDate.now().year();
     if (passedYear > currentYear + 1 || req.params.year < 2022) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -208,7 +207,6 @@ function validateNominalRollReportYear(req, res, next) {
     }
     return next();
   } catch (error) {
-    // If year, month, or day is invalid, LocalDate.of() will throw an error
     return res.status(HttpStatus.BAD_REQUEST).json({
       message: 'Invalid nominal roll report year'});
   }
