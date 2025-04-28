@@ -1,5 +1,6 @@
 'use strict';
 
+
 const {errorResponse, logApiError, getUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
@@ -167,7 +168,6 @@ async function createFedProvSchoolCode(req, res) {
 async function downloadNominalRollReport(req, res) {
   try {
     let url;
-    console.log('req.params.year', req.params.year);
     if(req.params.yearEnd !== null){
 
       url = `${config.get('server:nominalRoll:rootURL')}/report/${req.params.year}/download`;
@@ -188,6 +188,29 @@ async function downloadNominalRollReport(req, res) {
   catch (e) {
     log.error('download NominalRoll Report Error', e.stack);
     return errorResponse(e, res);
+  }
+}
+
+
+
+function validateNominalRollReportYear(req, res, next) {
+  try {
+    const passedYear = parseInt(req.params.year, 10);
+    if (isNaN(passedYear)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid nominal roll report year'});
+    }
+    // Extra optional check: Year should not be in the future
+    const currentYear = LocalDate.now().year();
+    if (passedYear > currentYear + 1 || req.params.year < 2022) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid nominal roll report year'});
+    }
+    return next();
+  } catch (error) {
+    // If year, month, or day is invalid, LocalDate.of() will throw an error
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Invalid nominal roll report year'});
   }
 }
 
@@ -226,5 +249,6 @@ module.exports = {
   postNominalRollData,
   isDataPosted,
   createFedProvSchoolCode,
+  validateNominalRollReportYear,
   downloadNominalRollReport
 };
