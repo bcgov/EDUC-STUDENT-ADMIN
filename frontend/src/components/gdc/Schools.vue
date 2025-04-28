@@ -88,8 +88,8 @@
               </v-icon>
               School Year
             </td>
-            <td />
-            <td />
+            <td>{{ schoolYearSubmissionCount || 0 }}</td>
+            <td>{{ schoolYearLastSubmission || '-' }}</td>
           </tr>
           <tr>
             <td>
@@ -101,8 +101,8 @@
               </v-icon>
               Summer
             </td>
-            <td />
-            <td />
+            <td>{{ summerSubmissionCount || 0 }}</td>
+            <td>{{ summerLastSubmission || '-' }}</td>
           </tr>
         </tbody>
       </v-table>
@@ -183,11 +183,19 @@ export default {
       school: null,
       loading: null,
       users: [],
+      schoolsCacheMap: [],
+      submissionsByCategory: null,
+      schoolYearSubmissionCount: null,
+      schoolYearLastSubmission: null,
+      summerSubmissionCount: null,
+      summerLastSubmission: null,
+      currentCategoryCode: null
     };
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
+    ...mapState(appStore, ['schoolMap']),
     gradAdmins() {
       return this.users.filter(user =>
         user.edxUserSchools.some(school =>
@@ -199,7 +207,14 @@ export default {
   },
   watch: {
     collectionObject: {
-      handler(newCollection) {
+      handler(newCollection, oldCollection) {
+        if (newCollection?.reportingPeriodID !== oldCollection?.reportingPeriodID) {
+          this.currentCategoryCode = null;
+          this.submissionsByCategory = null;
+          if (this.schoolNameNumber) {
+            this.getSchoolSubmissions();
+          }
+        }
         if (newCollection) {
           this.findReportingPeriodStatus();
         }
@@ -211,6 +226,7 @@ export default {
         if (newSchoolNameNumber) {
           this.getThisSchoolsDetails();
           this.getUsersData();
+          this.getSchoolSubmissions();
         }
       }
     }
@@ -221,6 +237,9 @@ export default {
     });
     authStore().getUserInfo().then(()=> {
       this.user = this.userInfo;
+    });
+    appStore().getInstituteCodes().finally(() => {
+      this.schoolsCacheMap = this.schoolMap;
     });
   },
   methods: {
@@ -233,6 +252,54 @@ export default {
         params: { schoolID: schoolId }
       });
       window.open(routeData.href, '_blank');
+    },
+    getSchoolSubmissions() {
+      const school = this.schoolsCacheMap.get(this.schoolNameNumber);
+      if (!school) return;
+
+      this.loading = true;
+
+      if (this.currentCategoryCode !== school.schoolCategoryCode) {
+        ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}/school-submission-counts`, {
+          params: {
+            categoryCode: school.schoolCategoryCode,
+          }
+        })
+          .then(response => {
+            this.submissionsByCategory = response.data;
+            this.currentCategoryCode = school.schoolCategoryCode;
+            this.updateSubmissionData(school.schoolID);
+          }).catch(error => {
+            console.error(error);
+            this.setFailureAlert(error.response?.data?.message || error.message);
+          }).finally(() => {
+            this.loading = false;
+          });
+      } else {
+        this.updateSubmissionData(school.schoolID);
+        this.loading = false;
+      }
+    },
+    updateSubmissionData(schoolID) {
+      if (!this.submissionsByCategory) return;
+
+      const schoolYearData = this.submissionsByCategory.schoolSubmissions.find(s => s.schoolID === schoolID);
+      if (schoolYearData) {
+        this.schoolYearSubmissionCount = schoolYearData.submissionCount;
+        this.schoolYearLastSubmission = schoolYearData.lastSubmissionDate.split('T')[0].replaceAll('-', '/');
+      } else {
+        this.schoolYearSubmissionCount = 0;
+        this.schoolYearLastSubmission = null;
+      }
+
+      const summerData = this.submissionsByCategory.summerSubmissions.find(s => s.schoolID === schoolID);
+      if (summerData) {
+        this.summerSubmissionCount = summerData.submissionCount;
+        this.summerLastSubmission = summerData.lastSubmissionDate.split('T')[0].replaceAll('-', '/');
+      } else {
+        this.summerSubmissionCount = 0;
+        this.summerLastSubmission = null;
+      }
     },
     getThisSchoolsDetails() {
       this.loading = true;
