@@ -6,7 +6,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const {postData, getData, putData} = require('./utils');
 const utils = require('./utils');
-const {LocalDate, LocalDateTime} = require('@js-joda/core');
+const {LocalDate, LocalDateTime, Year} = require('@js-joda/core');
 const redisUtil = require('../util/redis/redis-utils');
 const SAGAS = require('./saga');
 const log = require('./logger');
@@ -196,7 +196,7 @@ async function downloadNominalRollReport(req, res) {
 function validateNominalRollReportYear(req, res, next) {
   try {
     const passedYear = parseInt(req.params.year, 10);
-    if (isNaN(passedYear)) {
+    if (!Year.of(passedYear)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Invalid nominal roll report year'});
     }
