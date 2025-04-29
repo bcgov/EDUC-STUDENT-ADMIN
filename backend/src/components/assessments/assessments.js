@@ -11,7 +11,7 @@ const log = require('../logger');
 
 async function getAssessmentSessions(req, res) {
   try {
-    const url = `${config.get('server:eas:assessmentSessionsURL')}`;
+    const url = `${config.get('server:assessments:assessmentSessionsURL')}`;
     const data = await getData(url);
     const today = LocalDate.now();
     const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -31,7 +31,7 @@ async function getAssessmentSessions(req, res) {
 
 async function getAssessmentSessionsBySchoolYear(req, res) {
   try {
-    const url = `${config.get('server:eas:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
+    const url = `${config.get('server:assessments:assessmentSessionsURL')}/school-year/${req.params.schoolYear}`;
     let data = await getData(url);
     const today = LocalDate.now();
     const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -68,7 +68,7 @@ async function updateAssessmentSession(req, res) {
       activeUntilDate: req.body.activeUntilDate,
       updateUser: userInfo.idir_username
     };
-    const result = await utils.putData(`${config.get('server:eas:assessmentSessionsURL')}/${req.body.sessionID}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:assessments:assessmentSessionsURL')}/${req.body.sessionID}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentSession', 'Error occurred while attempting to save the changes to the assessment session.');
@@ -93,7 +93,7 @@ async function getAssessmentStudentsPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-    let data =  await getData(`${config.get('server:eas:assessmentStudentsURL')}/paginated`, params);
+    let data =  await getData(`${config.get('server:assessments:assessmentStudentsURL')}/paginated`, params);
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
       return res.status(HttpStatus.OK).json(result);
@@ -106,7 +106,7 @@ async function getAssessmentStudentsPaginated(req, res) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting eas assessment student paginated list');
+      await logApiError(e, 'Error getting assessments assessment student paginated list');
       return handleExceptionResponse(e, res);
     }
   }
@@ -115,13 +115,13 @@ async function getAssessmentStudentsPaginated(req, res) {
 async function getAssessmentStudentByID(req, res) {
   try {
 
-    let data = await getData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
+    let data = await getData(`${config.get('server:assessments:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
     return res.status(200).json(includeAssessmentStudentProps(data));
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting eas assessment student');
+      await logApiError(e, 'Error getting assessment student');
       return handleExceptionResponse(e, res);
     }
   }
@@ -137,7 +137,7 @@ async function postAssessmentStudent(req, res){
       updateDate: null,
       createDate: null
     };
-    const result = await utils.postData(`${config.get('server:eas:assessmentStudentsURL')}`, payload);
+    const result = await utils.postData(`${config.get('server:assessments:assessmentStudentsURL')}`, payload);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'postAssessmentStudent', 'Error occurred while attempting to create the assessment student registration.');
@@ -159,7 +159,7 @@ async function updateAssessmentStudentByID(req, res) {
       updateDate: null,
       createDate: null
     };
-    const result = await utils.putData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`, payload, utils.getUser(req).idir_username);
+    const result = await utils.putData(`${config.get('server:assessments:assessmentStudentsURL')}/${req.params.assessmentStudentID}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAssessmentStudent', 'Error occurred while attempting to save the changes to the assessment student registration.');
@@ -169,7 +169,7 @@ async function updateAssessmentStudentByID(req, res) {
 
 async function deleteAssessmentStudentByID(req, res) {
   try {
-    const result = await utils.deleteData(`${config.get('server:eas:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
+    const result = await utils.deleteData(`${config.get('server:assessments:assessmentStudentsURL')}/${req.params.assessmentStudentID}`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'deleteAssessmentStudentByID', 'Error occurred while attempting to delete the assessment student registration.');
@@ -188,7 +188,7 @@ async function uploadAssessmentKeyFile(req, res) {
       createUser: createUpdateUser,
       updateUser: createUpdateUser
     };
-    let data = await utils.postData(`${config.get('server:eas:assessmentKeyURL')}/${req.params.sessionID}/file`, payload, null, userInfo.idir_username);  
+    let data = await utils.postData(`${config.get('server:assessments:assessmentKeyURL')}/${req.params.sessionID}/file`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     console.log(JSON.stringify(e));

@@ -83,7 +83,7 @@ export default {
       this.loading = true;
       const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
       ApiService.apiAxios
-        .get(`${Routes.eas.EAS_ASSESSMENT_SESSIONS}`, {})
+        .get(`${Routes.assessments.ASSESSMENT_SESSIONS}`, {})
         .then((response) => {
           const allSessions = response.data;
           allSessions.sort((a, b) => {

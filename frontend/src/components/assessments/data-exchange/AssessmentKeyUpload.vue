@@ -429,7 +429,7 @@ export default {
         };
         await ApiService.apiAxios
           .post(
-            Routes.eas.EAS_ASSESSMENT_KEYS + '/session/' + this.selectedSessionID + '/upload-file', document
+            Routes.assessments.ASSESSMENT_KEYS + '/session/' + this.selectedSessionID + '/upload-file', document
           )
           .then(() => {});
         this.successfulUploadCount += 1;

@@ -152,13 +152,13 @@ nconf.defaults({
       rootURL: process.env.MACRO_API_URL,
       penMacroURL: process.env.MACRO_API_URL + '/pen'
     },
-    eas:{
-      rootURL: process.env.EAS_API_URL,
-      assessmentSessionsURL: process.env.EAS_API_URL+ '/sessions',
-      assessmentTypeCodeURL: process.env.EAS_API_URL+ '/assessment-types',
-      assessmentSpecialCaseTypeCodeURL: process.env.EAS_API_URL+ '/assessment-specialcase-types',
-      assessmentStudentsURL: process.env.EAS_API_URL+ '/student',
-      assessmentKeyURL: process.env.EAS_API_URL+ '/assessment-keys',
+    assessments:{
+      rootURL: process.env.ASSESSMENTS_API_URL,
+      assessmentSessionsURL: process.env.ASSESSMENTS_API_URL+ '/sessions',
+      assessmentTypeCodeURL: process.env.ASSESSMENTS_API_URL+ '/assessment-types',
+      assessmentSpecialCaseTypeCodeURL: process.env.ASSESSMENTS_API_URL+ '/assessment-specialcase-types',
+      assessmentStudentsURL: process.env.ASSESSMENTS_API_URL+ '/student',
+      assessmentKeyURL: process.env.ASSESSMENTS_API_URL+ '/assessment-keys',
     },
     gdc:{
       rootURL: process.env.GDC_API_URL,
@@ -207,7 +207,7 @@ nconf.defaults({
     disableSdcFunctionality: process.env.DISABLE_SDC_FUNCTIONALITY === 'true',
     edxURL: process.env.EDX_URL,
     gradAdminURL: process.env.GRAD_ADMIN_URL,
-    disableEASFunctionality: process.env.DISABLE_EAS_FUNCTIONALITY === 'true',
+    disableAssessmentFunctionality: process.env.DISABLE_ASSESSMENT_FUNCTIONALITY === 'true',
     disableGDCFunctionality: process.env.DISABLE_GDC_FUNCTIONALITY === 'true',
     sldMigrationDate: process.env.SLD_MIGRATION_DATE
   },

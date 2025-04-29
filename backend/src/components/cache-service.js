@@ -256,7 +256,7 @@ const cacheService = {
   async loadAllAssessmentTypeCodesToMap() {
     log.debug('Loading all assessment Type Codes during start up');
     await retry(async () => {
-      const assessmentTypeCodesResponse = await getData(config.get('server:eas:assessmentTypeCodeURL'));      
+      const assessmentTypeCodesResponse = await getData(config.get('server:assessments:assessmentTypeCodeURL'));
       if (assessmentTypeCodesResponse && assessmentTypeCodesResponse.length > 0) {
         assessmentTypeCodesMap.clear(); // reset the value.
         assessmentTypeCodesResponse.forEach(entry => {
@@ -272,7 +272,7 @@ const cacheService = {
   async loadAllSpecialCaseTypeCodesToMap() {
     log.debug('Loading all specialcase Type Codes during start up');
     await retry(async () => {
-      const provincialSpecialCaseTypeCodesResponse = await getData(config.get('server:eas:assessmentSpecialCaseTypeCodeURL'));      
+      const provincialSpecialCaseTypeCodesResponse = await getData(config.get('server:assessments:assessmentSpecialCaseTypeCodeURL'));
       if (provincialSpecialCaseTypeCodesResponse && provincialSpecialCaseTypeCodesResponse.length > 0) {
         assessmentSpecialCaseTypeCodesMap.clear(); // reset the value.
         provincialSpecialCaseTypeCodesResponse.forEach(entry => {

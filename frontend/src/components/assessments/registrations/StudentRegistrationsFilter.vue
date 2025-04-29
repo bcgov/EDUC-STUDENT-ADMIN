@@ -276,7 +276,7 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import { isEmpty, sortBy, cloneDeep } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
-import {easStore} from '@/store/modules/eas';
+import {assessmentsStore} from '@/store/modules/assessments';
 
 import { mapState } from 'pinia';
 import moment from 'moment';

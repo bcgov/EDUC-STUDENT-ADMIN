@@ -197,7 +197,7 @@ import moment from 'moment';
 import Spinner from "@/components/common/Spinner.vue";
 import * as Rules from "@/utils/institute/formRules.js";
 import {appStore} from "@/store/modules/app";
-import {easStore} from "@/store/modules/eas"
+import {assessmentsStore} from "@/store/modules/assessments"
 import {Routes} from "@/utils/constants";
 import ApiService from "@/common/apiService";
 
@@ -358,7 +358,7 @@ export default {
       );
       ApiService.apiAxios
           .post(
-              `${Routes.eas.ASSESSMENT_STUDENTS}`,
+              `${Routes.assessments.ASSESSMENT_STUDENTS}`,
               postAssessmentStudentDetail
           )
           .then((res) => {

@@ -45,7 +45,7 @@ const gradSchoolRouter = require('./routes/grad-school');
 const instituteRouter = require('./routes/institute');
 const sdcRouter = require('./routes/sdc');
 const cacheRouter = require('./routes/cache-router');
-const easRouter = require('./routes/eas');
+const assessmentsRouter = require('./routes/assessments');
 const gdcRouter = require('./routes/gdc');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
@@ -242,7 +242,7 @@ apiRouter.use('/edx', edxRouter);
 apiRouter.use('/institute', instituteRouter);
 apiRouter.use('/sdc', sdcRouter);
 apiRouter.use('/cache', cacheRouter);
-apiRouter.use('/eas', easRouter);
+apiRouter.use('/assessments', assessmentsRouter);
 apiRouter.use('/gdc', gdcRouter);
 apiRouter.use('/grad-school', gradSchoolRouter);
 // Prevent unhandled errors from crashing application

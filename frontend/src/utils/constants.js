@@ -20,7 +20,7 @@ const sdcRoot = baseRoot + '/sdc';
 const gdcRoot = baseRoot + '/gdc';
 const gradSchoolRoot = baseRoot + '/grad-school';
 const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
-const easRoot = baseRoot + '/eas';
+const studentAssessmentRoot = baseRoot + '/student-assessment';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -220,14 +220,14 @@ let object = {
   gradSchool: {
     BASE_URL: gradSchoolRoot
   },
-  eas: {
-    BASE_URL: easRoot,
-    EAS_ASSESSMENT_SESSIONS: easRoot + '/assessment-sessions',
-    GET_ASSESSMENT_TYPES: easRoot + '/assessment-types',
-    GET_ASSESSMENT_SPECIALCASE_TYPES: easRoot + '/assessment-specialcase-types',
-    ASSESSMENT_STUDENTS: easRoot + '/assessment-registrations/student',
-    GET_ASSESSMENT_STUDENTS_PAGINATED: easRoot + '/assessment-registrations/paginated',
-    EAS_ASSESSMENT_KEYS: easRoot + '/assessment-keys',
+  assessments: {
+    BASE_URL: studentAssessmentRoot,
+    ASSESSMENT_SESSIONS: studentAssessmentRoot + '/assessment-sessions',
+    GET_ASSESSMENT_TYPES: studentAssessmentRoot + '/assessment-types',
+    GET_ASSESSMENT_SPECIALCASE_TYPES: studentAssessmentRoot + '/assessment-specialcase-types',
+    ASSESSMENT_STUDENTS: studentAssessmentRoot + '/assessment-registrations/student',
+    GET_ASSESSMENT_STUDENTS_PAGINATED: studentAssessmentRoot + '/assessment-registrations/paginated',
+    ASSESSMENT_KEYS: studentAssessmentRoot + '/assessment-keys',
 
   }
 };

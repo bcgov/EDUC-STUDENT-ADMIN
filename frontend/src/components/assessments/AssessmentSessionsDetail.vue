@@ -77,7 +77,7 @@ export default {
       this.loading = true;
       ApiService.apiAxios
         .get(
-          `${Routes.eas.EAS_ASSESSMENT_SESSIONS}/school-year/` +
+          `${Routes.assessments.ASSESSMENT_SESSIONS}/school-year/` +
             this.schoolYear,
           {}
         )

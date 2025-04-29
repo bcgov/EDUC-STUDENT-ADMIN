@@ -354,17 +354,17 @@ export default {
         },
         {
           title: PAGE_TITLES.ASSESSMENTS,
-          authorized:  !this.config.DISABLE_EAS_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION),
+          authorized:  !this.config.DISABLE_ASSESSMENT_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION),
           items: [                      
             {
               title: 'Sessions',
               link: 'assessment-sessions',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION)
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION)
             },
             {
               title: 'Data Exchange',
               link: 'assessment-data-exchange',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_EAS_ASSESSMENT_KEYS_PERMISSION)
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION)
             }
           ],
         }

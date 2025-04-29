@@ -26,7 +26,7 @@ env:
   NAMESPACE_TOOLS: ${{ secrets.PEN_NAMESPACE_NO_ENV }}-tools
   COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
   EDX_NAMESPACE: ${{ secrets.EDX_NAMESPACE_NO_ENV }}
-  EAS_NAMESPACE: ${{ secrets.EAS_NAMESPACE_NO_ENV }}
+  STUDENT_ASSESSMENT_NAMESPACE: ${{ secrets.STUDENT_ASSESSMENT_NAMESPACE_NO_ENV }}
   GDC_NAMESPACE: ${{ secrets.GDC_NAMESPACE_NO_ENV }}
   MIN_CPU: "300m"
   MAX_CPU: "600m"
@@ -125,7 +125,7 @@ jobs:
           oc process -f tools/openshift/frontend-static.deployment.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
           | oc apply -f -
           
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ steps.get-latest-tag.outputs.tag }}/tools/config/update-configmap.sh | bash /dev/stdin prod ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{ env.COMMON_NAMESPACE }} ${{ env.EDX_NAMESPACE }} ${{ env.EAS_NAMESPACE }} ${{ env.GDC_NAMESPACE }} ${{ env.SPLUNK_TOKEN }}
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ steps.get-latest-tag.outputs.tag }}/tools/config/update-configmap.sh | bash /dev/stdin prod ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{ env.COMMON_NAMESPACE }} ${{ env.EDX_NAMESPACE }} ${{ env.STUDENT_ASSESSMENT_NAMESPACE }} ${{ env.GDC_NAMESPACE }} ${{ env.SPLUNK_TOKEN }}
           
           echo "Waiting a few seconds before deploy..."
           sleep 10

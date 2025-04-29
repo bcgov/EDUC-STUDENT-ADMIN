@@ -170,7 +170,7 @@ if(!config.get('frontendConfig').disableSdcFunctionality) {
   });
 }
 
-if(!config.get('frontendConfig').disableEASFunctionality) {
+if(!config.get('frontendConfig').disableAssessmentFunctionality) {
   cacheService.loadAllAssessmentTypeCodesToMap().then(() => {
     log.info('Loaded AssessmentTypeCodes data to memory');
   }).catch((e) => {

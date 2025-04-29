@@ -111,7 +111,7 @@
 
 <script>
 import StudentRegistrationsCustomTable from './StudentRegistrationsCustomTable.vue';
-import { SCHOOL_YEAR_REGISTRATIONS_VIEW, SESSION_REGISTRATIONS_VIEW } from '@/utils/eas/StudentRegistrationTableConfiguration.js';
+import { SCHOOL_YEAR_REGISTRATIONS_VIEW, SESSION_REGISTRATIONS_VIEW } from '@/utils/assessments/StudentRegistrationTableConfiguration.js';
 import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { cloneDeep, isEmpty, omitBy } from 'lodash';
@@ -216,7 +216,7 @@ export default {
         ];
       }
       ApiService.apiAxios
-        .get(`${Routes.eas.GET_ASSESSMENT_STUDENTS_PAGINATED}`, {
+        .get(`${Routes.assessments.GET_ASSESSMENT_STUDENTS_PAGINATED}`, {
           params: {
             pageNumber: this.pageNumber - 1,
             pageSize: this.pageSize,

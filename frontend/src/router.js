@@ -545,7 +545,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
         requiresAuth: true,
-        permission: PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION
+        permission: PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION
       },
     },
     {
@@ -556,7 +556,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
         requiresAuth: true,
-        permission: PERMISSION.MANAGE_EAS_SESSIONS_PERMISSION
+        permission: PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION
       },
     },
     {
@@ -566,7 +566,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
         requiresAuth: true,
-        permission: PERMISSION.MANAGE_EAS_ASSESSMENT_KEYS_PERMISSION
+        permission: PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION
       },
     },
     {

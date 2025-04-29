@@ -258,8 +258,8 @@ import { sortBy, cloneDeep } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
 import { mapState } from 'pinia';
-import {easStore} from '@/store/modules/eas';
-import { PROFICIENCY_SCORE_RANGE_FILTER } from '@/utils/eas/StudentRegistrationTableConfiguration.js';
+import {assessmentsStore} from '@/store/modules/assessments';
+import { PROFICIENCY_SCORE_RANGE_FILTER } from '@/utils/assessments/StudentRegistrationTableConfiguration.js';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import moment from 'moment';
 
@@ -453,7 +453,7 @@ export default {
     getAssessmentStudentDetail(assessmentStudentID) {
       this.loadingCount += 1;
       this.selectedAssessmentStudentID=assessmentStudentID;
-      ApiService.apiAxios.get(`${Routes.eas.ASSESSMENT_STUDENTS}/${assessmentStudentID}`)
+      ApiService.apiAxios.get(`${Routes.assessments.ASSESSMENT_STUDENTS}/${assessmentStudentID}`)
         .then(response => {
           this.assessmentStudentDetail = response.data;
           this.assessmentStudentDetailCopy = cloneDeep(this.assessmentStudentDetail);
@@ -470,7 +470,7 @@ export default {
         });
     },
     checkEditPermission() {
-      this.editPermitted = this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_EAS_STUDENT_PERMISSION);
+      this.editPermitted = this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_ASSESSMENT_STUDENT_PERMISSION);
     },    
     saveStudentRegistration() {
       this.loadingCount += 1;
@@ -479,7 +479,7 @@ export default {
       );
       ApiService.apiAxios
         .put(
-          `${Routes.eas.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID, 
+          `${Routes.assessments.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID,
           putAssessmentStudentDetail
         )
         .then((res) => {
@@ -508,7 +508,7 @@ export default {
       confirmation.then((result) => {
         if (result) {
           this.loadingCount += 1;
-          ApiService.apiAxios.delete(`${Routes.eas.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID)
+          ApiService.apiAxios.delete(`${Routes.assessments.ASSESSMENT_STUDENTS}/`+this.selectedAssessmentStudentID)
             .then(() => {
               setSuccessAlert('Success! The student registration details have been deleted.');
               this.$emit('reset-student-registration-pagination');
