@@ -204,7 +204,7 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
 import {formatDate} from '@/utils/format';

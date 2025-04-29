@@ -456,9 +456,9 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {mapActions, mapState} from 'pinia';
 import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';

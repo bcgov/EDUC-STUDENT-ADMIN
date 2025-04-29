@@ -206,7 +206,7 @@ import {mapState} from 'pinia';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import {appStore} from '@/store/modules/app';
 import {instituteStore} from '@/store/modules/institute';
-import AddSchoolFunding from '@/components/institute/common/AddSchoolFunding.vue';
+import AddSchoolFunding from '@/components/institute/school/AddSchoolFunding.vue';
 import {sortBy, orderBy} from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {hasRequiredPermission, PERMISSION} from "@/utils/constants/Permission";

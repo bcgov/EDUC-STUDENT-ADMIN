@@ -245,47 +245,6 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col
-              cols="3"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                v-if="!editing"
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="10"
-                  class="d-flex justify-start"
-                >
-                  <span style="color: grey">Issue Transcripts?</span>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="10"
-                  class="pb-1 pr-0"
-                >
-                  <span
-                    v-if="!editing"
-                    class="ministryLine"
-                    style="color: black"
-                  >{{
-                    school.canIssueTranscripts === true ? 'Yes' : 'No'
-                  }}</span>
-                  <v-select
-                    v-else
-                    v-model="schoolDetailsCopy.canIssueTranscripts"
-                    :items="canIssueTypes"
-                    item-value="canIssueTypeCode"
-                    item-title="label"
-                    class="mt-n5"
-                    variant="underlined"
-                    label="Can Issue Transcripts?"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
           </v-row>
           <v-row class="d-flex justify-start mb-3">
             <v-col
@@ -417,47 +376,6 @@
                     multiple
                     required
                     @input="sortGrades"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col
-              cols="3"
-              class="pb-0 pt-0"
-            >
-              <v-row
-                v-if="!editing"
-                no-gutters
-                class="d-flex justify-start"
-              >
-                <v-col
-                  cols="10"
-                  class="d-flex justify-start"
-                >
-                  <span style="color: grey">Issue Certificates?</span>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="10"
-                  class="pb-1 pr-0"
-                >
-                  <span
-                    v-if="!editing"
-                    class="ministryLine"
-                    style="color: black"
-                  >{{
-                    school.canIssueCertificates === true ? 'Yes' : 'No'
-                  }}</span>
-                  <v-select
-                    v-else
-                    v-model="schoolDetailsCopy.canIssueCertificates"
-                    :items="canIssueTypes"
-                    item-value="canIssueTypeCode"
-                    item-title="label"
-                    class="mt-n5"
-                    variant="underlined"
-                    label="Can Issue Certificates?"
                   />
                 </v-col>
               </v-row>
@@ -1250,7 +1168,7 @@ import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject, isOpenNotClosingAuthority} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import SchoolStatus from '@/components/institute/SchoolStatus.vue';
+import SchoolStatus from '@/components/institute/school/SchoolStatus.vue';
 import {sortBy} from 'lodash';
 import {getAllowedFacilityTypes} from '@/utils/institute/editFacilityTypeMatrix';
 import {authStore} from '@/store/modules/auth';

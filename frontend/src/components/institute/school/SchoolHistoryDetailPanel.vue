@@ -34,7 +34,7 @@
 
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import HistoryDetailHeader from './HistoryDetailHeader.vue';
+import HistoryDetailHeader from '../common/HistoryDetailHeader.vue';
 import SchoolHistoryDetail from './SchoolHistoryDetail.vue';
 
 export default {

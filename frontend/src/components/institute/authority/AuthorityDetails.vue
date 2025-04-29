@@ -140,7 +140,7 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
@@ -150,8 +150,8 @@ import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
-import Details from './authority/Details.vue';
-import AuthorityContacts from './authority/AuthoritiesContacts.vue';
+import Details from './Details.vue';
+import AuthorityContacts from './AuthoritiesContacts.vue';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 

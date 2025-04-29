@@ -71,7 +71,7 @@ import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
 import {mapState, mapActions} from 'pinia';
-import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
+import MoveSchoolPage from './MoveSchoolPage.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {appStore} from '@/store/modules/app';

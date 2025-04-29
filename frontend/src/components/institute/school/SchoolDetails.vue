@@ -117,6 +117,9 @@
               <v-tab value="contacts">
                 Contacts
               </v-tab>
+              <v-tab value="grad">
+                Graduation
+              </v-tab>
               <v-tab value="notes">
                 Ministry Notes
               </v-tab>
@@ -151,6 +154,14 @@
                   <SchoolContacts 
                     :school-i-d="schoolID" 
                     :has-access="canEditSchools"
+                  />
+                </v-window-item>
+                <v-window-item value="grad">
+                  <GradDetails
+                    :school-i-d="schoolID"
+                    :has-access="canEditSchools"
+                    :canEditAllSchools="canEditAllSchools"
+                    @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
                 <v-window-item value="notes">
@@ -195,20 +206,22 @@ import {Routes} from '@/utils/constants';
 import {getStatusAuthorityOrSchool, getStatusColorAuthorityOrSchool,} from '@/utils/institute/status';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
-import Details from './common/Details.vue';
-import SchoolHistory from './common/SchoolHistory.vue';
-import SchoolContacts from './common/SchoolContacts.vue';
-import SchoolMove from './common/SchoolMove.vue';
-import SchoolFunding from './common/SchoolFunding.vue';
+import Details from './Details.vue';
+import SchoolHistory from './SchoolHistory.vue';
+import SchoolContacts from './SchoolContacts.vue';
+import SchoolMove from './SchoolMove.vue';
+import SchoolFunding from './SchoolFunding.vue';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import {appStore} from '@/store/modules/app';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import GradDetails from '@/components/institute/school/GradDetails.vue';
 
 export default {
   name: 'SchoolDetailsPage',
   components: {
+    GradDetails,
     InstituteNotes,
     Details,
     SchoolHistory,

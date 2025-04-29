@@ -158,7 +158,7 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
@@ -172,8 +172,8 @@ import {authStore} from '@/store/modules/auth';
 import {instituteStore} from '@/store/modules/institute';
 import {edxStore} from '@/store/modules/edx';
 import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
-import Details from './district/Details.vue';
-import DistrictContacts from './district/DistrictContacts.vue';
+import Details from './Details.vue';
+import DistrictContacts from './DistrictContacts.vue';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import DistrictHistory from '@/components/institute/district/DistrictHistory.vue';
 
