@@ -316,7 +316,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, [ 'activeSchools']),
-    ...mapState(easStore, ['specialCaseCodes']),
+    ...mapState(assessmentsStore, ['specialCaseCodes']),
     ...mapState(authStore, ['userInfo']),
 
   },
@@ -359,7 +359,7 @@ export default {
             this.setupSchoolList();
             this.loading = false;
           });
-        easStore()
+        assessmentsStore()
           .getSpecialCaseCodes()
           .then(() => {           
             this.loading = false;

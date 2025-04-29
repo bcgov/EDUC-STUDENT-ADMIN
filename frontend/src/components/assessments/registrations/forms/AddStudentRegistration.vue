@@ -194,12 +194,12 @@ import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertCom
 import { sortBy } from 'lodash';
 import { mapState } from 'pinia';
 import moment from 'moment';
-import Spinner from "@/components/common/Spinner.vue";
-import * as Rules from "@/utils/institute/formRules.js";
-import {appStore} from "@/store/modules/app";
-import {assessmentsStore} from "@/store/modules/assessments"
-import {Routes} from "@/utils/constants";
-import ApiService from "@/common/apiService";
+import Spinner from '@/components/common/Spinner.vue';
+import * as Rules from '@/utils/institute/formRules.js';
+import {appStore} from '@/store/modules/app';
+import {assessmentsStore} from '@/store/modules/assessments'
+import {Routes} from '@/utils/constants';
+import ApiService from '@/common/apiService';
 
 export default {
   name: 'AddStudentRegistration',
@@ -255,7 +255,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['activeSchools', 'config']),
-    ...mapState(easStore, ['specialCaseCodes']),
+    ...mapState(assessmentsStore, ['specialCaseCodes']),
   },
   watch: {
     saveEvent: {

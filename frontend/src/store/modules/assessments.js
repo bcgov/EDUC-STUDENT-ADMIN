@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import {defineStore} from 'pinia';
 
-export const easStore = defineStore('EasStore', {
+export const assessmentsStore = defineStore('AssessmentsStore', {
   namespaced: true,
   state: () => ({
     specialCaseCodes: {},

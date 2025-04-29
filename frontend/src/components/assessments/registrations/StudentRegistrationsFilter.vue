@@ -328,7 +328,7 @@ export default {
   computed: {
     ...mapState(appStore, ['districtMap', 'schoolMap', 'config']),
     ...mapState(authStore, ['userInfo']),    
-    ...mapState(easStore, ['specialCaseCodes']),
+    ...mapState(assessmentsStore, ['specialCaseCodes']),
   },
   watch: {},
   async beforeMount() {
@@ -348,7 +348,7 @@ export default {
             this.setupDistrictList();
             this.loading = false;
           });
-        easStore()
+        assessmentsStore()
           .getSpecialCaseCodes()
           .then(() => {            
             this.setupSpecialCaseCodes();     
