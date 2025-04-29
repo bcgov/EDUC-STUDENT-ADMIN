@@ -157,7 +157,8 @@ let object = {
   nominalRoll:{
     ROOT_ENDPOINT: nominalRollRoot,
     FED_BAND_CODE: nominalRollRoot+ '/federal-province-codes',
-    PAGINATED_ENDPOINT: nominalRollRoot + '/search'
+    PAGINATED_ENDPOINT: nominalRollRoot + '/search',
+    REPORTS: nominalRollRoot + '/report'
   },
   edx: {
     ROOT_ENDPOINT: edxRoot,

@@ -1,11 +1,12 @@
 'use strict';
 
+
 const {errorResponse, logApiError, getUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const {postData, getData, putData} = require('./utils');
 const utils = require('./utils');
-const {LocalDate, LocalDateTime} = require('@js-joda/core');
+const {LocalDate, LocalDateTime, Year} = require('@js-joda/core');
 const redisUtil = require('../util/redis/redis-utils');
 const SAGAS = require('./saga');
 const log = require('./logger');
@@ -164,6 +165,58 @@ async function createFedProvSchoolCode(req, res) {
   }
 }
 
+async function downloadNominalRollReport(req, res) {
+  try {
+    let url;
+    if(req.params.yearEnd !== null){
+
+      url = `${config.get('server:nominalRoll:rootURL')}/report/${req.params.year}/download`;
+
+    }
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const resData = await getData( url, params);
+    const fileDetails = { filename: `NominalRollReport${req.params.year}.csv`, contentType: 'text/csv' } ;
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(resData.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
+  }
+  catch (e) {
+    log.error('download NominalRoll Report Error', e.stack);
+    return errorResponse(e, res);
+  }
+}
+
+
+
+function validateNominalRollReportYear(req, res, next) {
+  try {
+    const passedYear = parseInt(req.params.year, 10);
+    if (!Year.of(passedYear)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid nominal roll report year'});
+    }
+    const currentYear = LocalDate.now().year();
+    if (passedYear > currentYear + 1 || req.params.year < 2022) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid nominal roll report year'});
+    }
+    return next();
+  } catch (error) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Invalid nominal roll report year'});
+  }
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
+
 const isDataPosted = async (req, res) => {
   try {
     const params = {
@@ -193,5 +246,7 @@ module.exports = {
   updateNominalRollStudent,
   postNominalRollData,
   isDataPosted,
-  createFedProvSchoolCode
+  createFedProvSchoolCode,
+  validateNominalRollReportYear,
+  downloadNominalRollReport
 };

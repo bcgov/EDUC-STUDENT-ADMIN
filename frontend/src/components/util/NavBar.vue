@@ -286,8 +286,19 @@ export default {
         },
         {
           title: 'Nominal Roll',
-          link: 'nominal-roll',
-          authorized: this.NOMINAL_ROLL_ROLE
+          authorized: this.NOMINAL_ROLL_ROLE,
+          items: [
+            {
+              title: 'Upload',
+              link: 'nominal-roll',
+              authorized: this.NOMINAL_ROLL_ROLE
+            },
+            {
+              title: 'Reports',
+              link: 'nominal-roll-reports',
+              authorized: this.NOMINAL_ROLL_ROLE
+            }
+          ],
         },
         {
           title: PAGE_TITLES.ANALYTICS,
