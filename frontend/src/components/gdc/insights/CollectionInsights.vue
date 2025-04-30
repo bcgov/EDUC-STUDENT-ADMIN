@@ -89,7 +89,7 @@ export default {
       schoolYearHeaders: [
         { title: 'School Category and Facility Type', key: 'categoryOrFacilityType', align: 'start'},
         { title: 'Schools Expected', key: 'schoolsExpected', align: 'end'},
-        { title: 'Schools With Submissions', key: 'schoolsWithSubmissions', align: 'end'}
+        { title: 'Schools With Submission in the Last 30 Days', key: 'schoolsWithSubmissions', align: 'end'}
       ],
       summerHeaders: [
         { title: 'School Category and Facility Type', key: 'categoryOrFacilityType', align: 'start'},
