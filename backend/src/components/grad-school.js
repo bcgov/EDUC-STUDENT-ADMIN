@@ -31,7 +31,7 @@ async function updateGradSchool(req, res) {
 function getGradSchools(req, res) {
   try {
     let schools = cacheService.getGradSchoolsList();
-    return res.status(HttpStatus.OK).json(schools);
+    return res.status(200).json(schools);
   } catch (e) {
     logApiError(e, 'getGradSchools', 'Error occurred while attempting to GET grad school.');
     return handleExceptionResponse(e, res);
