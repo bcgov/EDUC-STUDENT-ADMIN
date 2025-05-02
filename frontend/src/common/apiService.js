@@ -92,6 +92,7 @@ export default {
   getPrbValidationIssueSeverityCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_SEVERITY_CODE_URL),
   getPrbValidationIssueTypeCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_TYPE_CODE_URL),
   getAllSchools: getCodes(Routes.cache.SCHOOL_DATA_URL),
+  getGradSchools: getCodes(`${Routes.gradSchool.BASE_URL}`),
   getActiveSchools: getCodes(`${Routes.cache.SCHOOL_DATA_URL}?active=true`),
   getActiveDistricts: getCodes(`${Routes.cache.DISTRICT_DATA_URL}?active=true`),
   getSchools:getCodes(Routes.cache.SCHOOL_DATA_URL),

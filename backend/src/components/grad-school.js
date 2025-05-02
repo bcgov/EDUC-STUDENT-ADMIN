@@ -2,6 +2,7 @@
 const { logApiError, getData, putData, handleExceptionResponse } = require('./utils');
 const config = require('../config');
 const utils = require('./utils');
+const cacheService = require('./cache-service');
 
 async function getGradSchool(req, res) {
   try {
@@ -27,7 +28,18 @@ async function updateGradSchool(req, res) {
   }
 }
 
+function getGradSchools(req, res) {
+  try {
+    let schools = cacheService.getGradSchoolsList();
+    return res.status(200).json(schools);
+  } catch (e) {
+    logApiError(e, 'getGradSchools', 'Error occurred while attempting to GET grad school.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 module.exports = {
   getGradSchool,
-  updateGradSchool
+  updateGradSchool,
+  getGradSchools
 };

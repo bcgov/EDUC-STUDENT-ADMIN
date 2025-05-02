@@ -28,7 +28,8 @@ export const appStore = defineStore('app', {
     config: '',
     fundingGroupsMap: new Map(),
     fundingGroups: [],
-    schools: []
+    schools: [],
+    gradSchoolMap: new Map(),
   }),
   getters: {
     activeFundingGroups: state => state.fundingGroups.filter(group => group.expiryDate >= LocalDateTime.now().toString() && group.effectiveDate <= LocalDateTime.now().toString()),
@@ -118,6 +119,12 @@ export const appStore = defineStore('app', {
         this.fundingGroupsMap.set(element.schoolFundingGroupCode, element);
       });
     },
+    async setGradSchools(gradDchoolsResponse) {
+      this.gradSchoolMap = new Map();
+      gradDchoolsResponse.forEach(element => {
+        this.gradSchoolMap.set(element.schoolID, element);
+      });
+    },
     async getInstituteCodes() {
       if(localStorage.getItem('jwtToken')) {// DONT Call api if there is not token.
         const promises = [
@@ -126,6 +133,8 @@ export const appStore = defineStore('app', {
           ... this.districtMap.size === 0 ? [ApiService.getDistricts().then((res) => this.setDistricts(res.data))] : [],
           ... this.activeDistricts.length === 0 ? [ApiService.getActiveDistricts().then((res) => this.setActiveDistricts(res.data))] : [],
           ... this.independentAuthorityMap.size === 0 ? [ApiService.getAuthorities().then((res) => this.setIndependentAuthorities(res.data))] : [],
+          //load grad schools with institute
+          ... this.gradSchoolMap.size === 0 ? [ApiService.getGradSchools().then((res) => this.setGradSchools(res.data))] : [],
         ];
         return Promise.all(promises);
       }
