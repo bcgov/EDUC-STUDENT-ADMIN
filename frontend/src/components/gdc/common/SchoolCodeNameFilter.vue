@@ -107,9 +107,9 @@ export default {
       }
 
       this.schoolsCacheMap.forEach(school => {
-        let gradSchool = this.gradSchoolMap.get(this.schoolID);
+        let gradSchool = this.gradSchoolMap.get(school.schoolID);
         if (school.schoolCategoryCode !== 'PUBLIC') return;
-        if (gradSchool.canIssueTranscripts === 'N') return;
+        if (gradSchool?.canIssueTranscripts === 'N') return;
         if (!school.openedDate) return;
 
         let openDate = LocalDateTime.parse(school.openedDate);
