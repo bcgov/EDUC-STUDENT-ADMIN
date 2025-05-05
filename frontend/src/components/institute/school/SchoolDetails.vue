@@ -124,10 +124,13 @@
                 Ministry Notes
               </v-tab>
               <v-tab value="history">
-                History
+                School History
               </v-tab>
               <v-tab value="moves">
                 Moves
+              </v-tab>
+              <v-tab value="gradHistory">
+                Graduation History
               </v-tab>
               <v-tab
                 v-if="canViewFundingTab()"
@@ -188,6 +191,9 @@
                     @refreshSchool="getThisSchoolsDetails"
                   />
                 </v-window-item>
+                <v-window-item value="gradHistory">
+                  <GraduationHistory :school-i-d="schoolID" />
+                </v-window-item>
               </v-window>
             </v-card-text>
           </v-col>
@@ -217,6 +223,7 @@ import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import {appStore} from '@/store/modules/app';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import GradDetails from '@/components/institute/school/GradDetails.vue';
+import GraduationHistory from '@/components/institute/school/grad/GraduationHistory.vue';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -227,7 +234,8 @@ export default {
     SchoolHistory,
     SchoolContacts,
     SchoolMove,
-    SchoolFunding
+    SchoolFunding,
+    GraduationHistory
   },
   mixins: [alertMixin],
   props: {
@@ -249,7 +257,7 @@ export default {
       offshoreArray: ['OFFSHORE'],
       tab: null,
       items: [
-        'Details', 'Contacts', 'Ministry Notes', 'History', 'Moves', 'Funding'
+        'Details', 'Contacts', 'Ministry Notes', 'School History', 'Moves', 'Funding',
       ],
     };
   },

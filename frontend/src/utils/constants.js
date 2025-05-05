@@ -218,7 +218,8 @@ let object = {
     REPORTING_SUMMARY: gdcRoot + '/reporting-summary'
   },
   gradSchool: {
-    BASE_URL: gradSchoolRoot
+    BASE_URL: gradSchoolRoot,
+    GRAD_SCHOOL_HISTORY_PAGINATED_DATA_URL: gradSchoolRoot + '/history/paginated'
   },
   assessments: {
     BASE_URL: studentAssessmentRoot,

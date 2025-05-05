@@ -335,58 +335,6 @@
         cols="4"
         class="pb-0 pt-0 key"
       >
-        <span
-          :class="{
-            'diff-value': isValueEmpty(schoolHistory.canIssueTranscripts === true ? 'Yes' : 'No',
-                                       schoolHistory.canIssueTranscripts_diff)
-          }"
-        >
-          Can Issue Transcripts?
-        </span>
-      </v-col>
-      <v-col
-        cols="6"
-        class="pb-0 pt-0"
-      >
-        <span :class="{ 'diff-value': schoolHistory.canIssueTranscripts_diff }">
-          {{
-            schoolHistory.canIssueTranscripts === true ? 'Yes' : 'No'
-          }}
-        </span>
-      </v-col>
-    </v-row>
-
-    <v-row class="py-1">
-      <v-col
-        cols="4"
-        class="pb-0 pt-0 key"
-      >
-        <span
-          :class="{
-            'diff-value': isValueEmpty(schoolHistory.canIssueCertificates === true ? 'Yes' : 'No',
-                                       schoolHistory.canIssueCertificates_diff)
-          }"
-        >
-          Can Issue Certificates?
-        </span>
-      </v-col>
-      <v-col
-        cols="6"
-        class="pb-0 pt-0"
-      >
-        <span :class="{ 'diff-value': schoolHistory.canIssueCertificates_diff }">
-          {{
-            schoolHistory.canIssueCertificates === true ? 'Yes' : 'No'
-          }}
-        </span>
-      </v-col>
-    </v-row>
-
-    <v-row class="py-1">
-      <v-col
-        cols="4"
-        class="pb-0 pt-0 key"
-      >
         <span :class="{ 'diff-value': isValueEmpty(schoolHistory.mailingAddress, schoolHistory.mailingAddress_diff) }">Mailing Address</span>
       </v-col>
       <v-col
