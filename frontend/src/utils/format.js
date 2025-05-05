@@ -126,3 +126,18 @@ export function displayName(first, middle, last) {
 
   return name;
 }
+
+// Format a date string to 'Month YYYY'
+export function formatDateAsMonthYear(dateStr) {
+  if (!dateStr) return '';
+  // Accepts ISO date or 'yyyy-MM-dd' or 'yyyy-MM-ddTHH:mm:ss'
+  let datePart = dateStr.split('T')[0];
+  try {
+    const [year, month, day] = datePart.split('-');
+    const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+    return dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  } catch (e) {
+    console.info(`could not parse date ${dateStr} as 'Month YYYY': ${e}`);
+    return dateStr;
+  }
+}
