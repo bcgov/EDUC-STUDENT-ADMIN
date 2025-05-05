@@ -84,10 +84,7 @@ import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState} from 'pinia';
 import GraduationHistoryDetailPanel from './GraduationHistoryDetailPanel.vue';
-import {instituteStore} from '@/store/modules/institute';
-import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'GraduationHistory',
