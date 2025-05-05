@@ -3,7 +3,7 @@
     <h3 class="subHeading pb-1">
       Reporting Cycle
     </h3>
-    <p>{{ formatDate(collectionObject?.periodStart) }} - {{ formatDate(collectionObject?.periodEnd) }}</p>
+    <p>{{ formatDateAsMonthYear(collectionObject?.periodStart) }} - {{ formatDateAsMonthYear(collectionObject?.periodEnd) }}</p>
   </v-col>
   <v-col cols="9">
     <h3 class="subHeading">
@@ -150,7 +150,7 @@
 <script>
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {formatDate} from '@/utils/format';
+import {formatDate, formatDateAsMonthYear} from '@/utils/format';
 import DatePicker from '@/components/util/DatePicker.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
@@ -204,6 +204,7 @@ export default {
     },
   },
   methods: {
+    formatDateAsMonthYear,
     findReportingPeriodStatus,
     formatDate,
     getStatusColorGdcSession,
