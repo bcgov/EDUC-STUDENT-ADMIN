@@ -137,6 +137,7 @@ export function formatDateAsMonthYear(dateStr) {
     const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
     return dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   } catch (e) {
+    console.info(`could not parse date ${dateStr} as 'Month YYYY': ${e}`);
     return dateStr;
   }
 }
