@@ -11,6 +11,7 @@ async function subscribeToGradSchoolAPIMessageTopic(nats) {
   for await (const msg of sub) {
     log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] ::`);
     await cacheService.loadAllGradSchools();
+    await cacheService.loadAllSchoolsToMap();
   }
 }
 
