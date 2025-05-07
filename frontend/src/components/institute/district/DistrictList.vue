@@ -138,7 +138,6 @@
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
@@ -149,7 +148,6 @@ import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission'
 export default {
   name: 'InstituteDistrict',
   components: {
-    PrimaryButton,
     Spinner,
     DistrictSearchFilters
   },
