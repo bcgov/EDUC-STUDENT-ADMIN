@@ -87,21 +87,23 @@ async function getReportingInsights(req, res) {
     let schools = cacheService.getAllSchoolsJSON();
     let gradSchools = cacheService.getGradSchoolsMap();
     let filteredSchoolsIDByCategory = schools.filter(school => school.schoolCategoryCode === req.params.schoolCategory).map(obj => obj.schoolID);
-    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([val]) => val.canIssueTranscripts === "true"));
+    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([, gradSchoolObject]) => gradSchoolObject.canIssueTranscripts === "Y"));
 
-    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id));
+    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id)).filter(id => id != null && id !== '');
 
-    const params = {
+    const grade = '12';
+    const sdcURL = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}?schoolIDs=${schoolIDs.join(',')}`;
+    const sdcData = await getData(sdcURL, {});
+
+    const gradURL = `${config.get('server:gradStudent:rootURL')}/graduation-counts`;
+    const gradParams = {
       params: {
-        grade: "12",
-        schoolIDs: schoolIDs
+        schoolId: schoolIDs
       }
     };
-    const url = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts`;
-    const sdcGrad12Data = await getData(url, params);
+    const gradData = await getData(gradURL, gradParams);
 
-    //TODO: GRAD numbers
-    return res.status(200).json(sdcGrad12Data);
+    return res.status(200).json(sdcData);
   } catch (e) {
     logApiError(e, 'getReportingSummary', 'Error occurred while attempting to GET GDC Reporting summary.');
     return handleExceptionResponse(e, res);

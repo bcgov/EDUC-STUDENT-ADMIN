@@ -2,7 +2,6 @@
   <div class="mt-4">
     <v-expansion-panels
       v-model="type"
-      @update:model-value="togglePanel()"
     >
       <v-expansion-panel
         class="border"
@@ -25,10 +24,21 @@
               The Schools Expected to Submit are transcript eligible schools that are open or have been closed for less than 3 months.
             </v-col>
           </v-row>
-          <SummaryTable
-            :summary-data="summaryData"
-            :header="schoolYearHeaders"
-          />
+          <template v-if="!showSchoolCategoryTable">
+            <SummaryTable
+              :summary-data="summaryData"
+              :header="schoolYearHeaders"
+              @category-clicked="handleCategoryClicked"
+            />
+          </template>
+          <template v-else>
+            <SchoolCategoryTable
+              :reporting-period-i-d="collectionObject.reportingPeriodID"
+              :pre-selected-category="selectedCategoryForDetail"
+              :available-categories="availableCategoriesForDetail"
+              @close-detail="showSchoolCategoryTable = false"
+            />
+          </template>
         </v-expansion-panel-text>
       </v-expansion-panel>
 
@@ -36,21 +46,28 @@
         class="border"
         value="Summer"
       >
-        <v-expansion-panel-title disable-icon-rotate>
-          <h4>Summer Reporting Period</h4>
-          <template #actions>
-            <v-chip
-              :color="getStatusColorGdcSession(panel2Status)"
-              variant="flat"
-            >
-              {{ panel2Status }}
-            </v-chip>
+        <v-expansion-panel-text>
+          <template v-if="!showSchoolCategoryTable">
+            <SummaryTable
+                :summary-data="summaryData"
+                :header="summerHeaders"
+                @category-clicked="handleCategoryClicked"
+            />
           </template>
-        </v-expansion-panel-title>
+          <template v-else>
+            <SchoolCategoryTable
+                :reporting-period-i-d="collectionObject.reportingPeriodID"
+                :pre-selected-category="selectedCategoryForDetail"
+                :available-categories="availableCategoriesForDetail"
+                @close-detail="showSchoolCategoryTable = false"
+            />
+          </template>
+        </v-expansion-panel-text>
         <v-expansion-panel-text>
           <SummaryTable 
             :summary-data="summaryData"
             :header="summerHeaders"
+            @category-clicked="handleCategoryClicked"
           />
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -64,10 +81,12 @@ import SummaryTable from './SummaryTable.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
+import SchoolCategoryTable from '@/components/gdc/insights/SchoolCategoryTable.vue';
    
 export default {
   name: 'CollectionInsights',
   components: {
+    SchoolCategoryTable,
     SummaryTable
   },
   mixins: [alertMixin],
@@ -95,6 +114,9 @@ export default {
         { title: 'School Category and Facility Type', key: 'categoryOrFacilityType', align: 'start'},
         { title: 'Schools With Submissions', key: 'schoolsWithSubmissions', align: 'end'}
       ],
+      showSchoolCategoryTable: false,
+      selectedCategoryForDetail: null,
+      availableCategoriesForDetail: []
     };
   },
   computed: {
@@ -110,19 +132,32 @@ export default {
       },
       immediate: true
     },
+    summaryData: {
+      handler(value) {
+        if (value && value.rows) {
+          this.availableCategoriesForDetail = value.rows
+            .filter(row => row.isSection === 'true' && row?.categoryOrFacilityType)
+            .map(row => row.categoryOrFacilityType);
+        } else {
+          this.availableCategoriesForDetail = [];
+        }
+      },
+      deep: true
+    },
+    type(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.showSchoolCategoryTable = false;
+        this.selectedCategoryForDetail = null;
+        this.getReportingSummary();
+      }
+    }
   },
   created() {
-    
+
   },
   methods: {
     getStatusColorGdcSession,
     findReportingPeriodStatus,
-    togglePanel() {
-      this.summaryData = {};
-      if(this.type) {
-        this.getReportingSummary();
-      }
-    },
     async getReportingSummary() {
       this.loading = true;
       ApiService.apiAxios.get(`${Routes.gdc.REPORTING_SUMMARY}/${this.collectionObject.reportingPeriodID}`, {
@@ -140,6 +175,16 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    handleCategoryClicked(clickedRow) {
+      if (clickedRow && clickedRow.categoryOrFacilityType) {
+        this.selectedCategoryForDetail = clickedRow.categoryOrFacilityType;
+
+        //TODO - if statement below necessary?
+        if (this.availableCategoriesForDetail && this.availableCategoriesForDetail.length > 0) {
+          this.showSchoolCategoryTable = true;
+        }
+      }
     }
   }
 };

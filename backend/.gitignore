@@ -7,7 +7,7 @@ coverage
 reports
 
 # local env files
-local.*
+src/config/local.json
 local-*.*
 .env.local
 .env.*.local
@@ -17,7 +17,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-local.json
+src/config/local.json
 realm.json
 
 # Editor directories and files
