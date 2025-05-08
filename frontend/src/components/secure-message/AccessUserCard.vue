@@ -292,7 +292,7 @@ export default {
         let schoolGDCRole = this.selectedRoles.filter(userRole => userRole === 'GRAD_SCH_ADMIN');
         let schoolGDCReadOnlyRole = this.selectedRoles.filter(userRole => userRole === 'GRAD_SCH_RO');
         if(schoolGDCRole.length > 0 && schoolGDCReadOnlyRole.length > 0){
-          return ['Only one school Graduation Data Collection role can be selected.'];
+          return 'Only one school Graduation Data Collection role can be selected.';
         }
       }
       return null;
