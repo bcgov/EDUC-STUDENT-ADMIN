@@ -117,9 +117,6 @@
               <v-tab value="contacts">
                 Contacts
               </v-tab>
-              <v-tab value="grad">
-                Graduation
-              </v-tab>
               <v-tab value="notes">
                 Ministry Notes
               </v-tab>
@@ -129,8 +126,16 @@
               <v-tab value="moves">
                 Moves
               </v-tab>
-              <v-tab value="gradHistory">
-                Graduation History
+              <v-tab
+                v-if="canViewGradTabs()"
+                value="grad">
+                GRAD Flags
+              </v-tab>
+              <v-tab
+                v-if="canViewGradTabs()"
+                value="gradHistory"
+              >
+                GRAD History
               </v-tab>
               <v-tab
                 v-if="canViewFundingTab()"
@@ -149,7 +154,7 @@
                   <Details
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
-                    :canEditAllSchools="canEditAllSchools"
+                    :can-edit-all-schools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -163,7 +168,7 @@
                   <GradDetails
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
-                    :canEditAllSchools="canEditAllSchools"
+                    :can-edit-all-schools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -277,7 +282,7 @@ export default {
       ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.canEditAllSchools;
     },
     canEditAllSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     }
   },
   watch: {},
@@ -374,6 +379,9 @@ export default {
     },
     canViewFundingTab() {
       return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_SCHOOL_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
+    },
+    canViewGradTabs() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
