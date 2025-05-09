@@ -46,8 +46,10 @@ function generateSchoolObject(school) {
     districtID: school.districtId,
     authorityID: school.independentAuthorityId,
     schoolNumber: school.schoolNumber,
-    canIssueTranscripts: school.canIssueTranscripts,
     phoneNumber: school.phoneNumber,
+    facilityTypeCode: school.facilityTypeCode,
+    email: school.email,
+    schoolReportingRequirementCode: school.schoolReportingRequirementCode
   };
 }
 
