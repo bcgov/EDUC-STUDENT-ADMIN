@@ -235,7 +235,6 @@ import {sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
-import Spinner from '@/components/common/Spinner.vue';
 import NewSchoolPage from './NewSchoolPage.vue';
 import {isOpenNotClosingAuthority, deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
@@ -251,7 +250,6 @@ export default {
   name: 'SchoolListPage',
   components: {
     PrimaryButton,
-    Spinner,
     NewSchoolPage,
     SchoolSearchFilters
   },
