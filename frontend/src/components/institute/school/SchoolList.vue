@@ -237,7 +237,7 @@ import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import Spinner from '@/components/common/Spinner.vue';
 import NewSchoolPage from './NewSchoolPage.vue';
-import {isOpenNotClosingAuthority} from '@/utils/common';
+import {isOpenNotClosingAuthority, deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
@@ -246,7 +246,6 @@ import {instituteStore} from '@/store/modules/institute';
 import {notificationsStore} from '@/store/modules/notifications';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import SchoolSearchFilters from '@/components/common/SchoolSearchFilters.vue';
-import { deepCloneObject } from '@/utils/common';
 
 export default {
   name: 'SchoolListPage',
