@@ -253,7 +253,7 @@
                 item-value="schoolReportingRequirementCode"
                 variant="underlined"
                 item-title="label"
-                :items="schoolReportingRequirementTypeCodes"
+                :items="reportingRequirementTypes"
                 :clearable="true"
                 @update:model-value="schoolReportingRequirementCodeFilter = $event; apply('schoolReportingRequirementCodeFilter')"
               />
@@ -262,23 +262,6 @@
               cols="12"
               md="6"
               class="pl-2"
-            >
-              <v-select
-                id="grade-select-field"
-                v-model="gradeFilterVal"
-                :clearable="true"
-                :items="schoolGradeTypes"
-                variant="underlined"
-                item-title="label"
-                item-value="schoolGradeCode"
-                label="Grade Offered"
-                @update:model-value="gradeFilter = $event; apply('gradeFilter')"
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              md="6"
-              class="pr-2"
             >
               <v-select
                 id="issue-transcripts-select-field"
@@ -295,7 +278,6 @@
             <v-col
               cols="12"
               md="6"
-              class="pl-2"
             >
               <v-select
                 id="issue-certificates-select-field"
@@ -358,12 +340,12 @@ export default {
       default: null
     },
     issueTranscriptsFilter: {
-      type: Boolean,
+      type: String,
       required: false,
       default: null
     },
     issueCertificatesFilter: {
-      type: Boolean,
+      type: String,
       required: false,
       default: null
     },
@@ -382,16 +364,10 @@ export default {
       required: false,
       default: null
     },
-    gradeFilter: {
-      type: String,
-      required: false,
-      default: null
-    },
   },
-  emits: ['clearFilters', 'close', 'apply-schoolReportingRequirementCodeFilter', 'apply-schoolCodeNameFilter', 'apply-districtCodeNameFilter', 'apply-authorityCodeNameFilter', 'apply-issueTranscriptsFilter', 'apply-schoolStatusFilter', 'apply-issueCertificatesFilter', 'apply-schoolFacilityTypeFilter', 'apply-schoolCategoryTypeFilter', 'apply-gradeFilter'],
+  emits: ['clearFilters', 'close', 'apply-schoolReportingRequirementCodeFilter', 'apply-schoolCodeNameFilter', 'apply-districtCodeNameFilter', 'apply-authorityCodeNameFilter', 'apply-issueTranscriptsFilter', 'apply-schoolStatusFilter', 'apply-issueCertificatesFilter', 'apply-schoolFacilityTypeFilter', 'apply-schoolCategoryTypeFilter'],
   data() {
     return {
-      gradeFilterVal: this.gradeFilter,
       schoolCategoryTypeFilterVal: this.schoolCategoryTypeFilter,
       schoolFacilityTypeFilterVal: this.schoolFacilityTypeFilter,
       schoolStatusFilterVal: this.schoolStatusFilter,
@@ -428,8 +404,8 @@ export default {
     },
     issueCertAndTranscriptTypes() {
       return [
-        {title: 'Yes', value: true, align: 'start'},
-        {title: 'No', value: false, align: 'start'}
+        {title: 'Yes', value: 'Y', align: 'start'},
+        {title: 'No', value: 'N', align: 'start'}
       ];
     }
   },
@@ -559,7 +535,6 @@ export default {
       this.schoolCategoryTypeFilterVal = null;
       this.issueTranscriptsFilterVal = null;
       this.issueCertificatesFilterVal = null;
-      this.gradeFilterVal = null;
       this.schoolReportingRequirementCodeFilterVal = null;
 
       this.$emit('clearFilters');
@@ -581,8 +556,6 @@ export default {
         this.$emit('apply-schoolFacilityTypeFilter', this.schoolFacilityTypeFilter);
       }else if(type === 'schoolCategoryTypeFilter'){
         this.$emit('apply-schoolCategoryTypeFilter', this.schoolCategoryTypeFilter);
-      }else if(type === 'gradeFilter'){
-        this.$emit('apply-gradeFilter', this.gradeFilter);
       }else if(type === 'schoolStatusFilter'){
         this.$emit('apply-schoolStatusFilter', this.schoolStatusFilter);
       }

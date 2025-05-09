@@ -49,7 +49,6 @@ const cacheService = {
       let newSchoolMap = new Map();
       let newMincodeSchools = [];
       let newActiveSchools = [];
-
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = generateSchoolObject(school);
@@ -197,6 +196,21 @@ const cacheService = {
     }, {
       retries: 50
     });
+  },
+
+  getSchoolListForPagination() {
+    let schoolList = mincodeSchools;
+    for (const school of schoolList) {
+      let gradSchoolRecord = gradSchoolsMap.get(school.schoolID);
+      if(gradSchoolRecord) {
+        school.canIssueTranscripts = gradSchoolRecord.canIssueTranscripts;
+        school.canIssueCertificates = gradSchoolRecord.canIssueCertificates;
+      } else {
+        school.canIssueTranscripts = 'N';
+        school.canIssueCertificates = 'N';
+      }
+    }
+    return schoolList;
   },
   
   getAllDocumentTypeCodesJSON() {
