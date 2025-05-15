@@ -268,9 +268,7 @@ h4, .v-icon {
 
 .clickable-title-component {
   cursor: pointer;
-}
-
-.clickable-title-component {
   margin-bottom: 0;
 }
+
 </style>

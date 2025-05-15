@@ -360,10 +360,8 @@ export default {
               value.includes(this.preSelectedCategory)
           ) {
             this.selectedCategory = this.preSelectedCategory;
-          } else {
-            if (!this.selectedCategory) {
-              this.selectedCategory = value[0];
-            }
+          } else if (!this.selectedCategory) {
+            this.selectedCategory = value[0];
           }
           if (this.selectedCategory) {
             this.fetchDetailedData();
