@@ -108,7 +108,6 @@
 
                       <v-col v-if="canViewMenu(item.raw.canIssueTranscripts)" cols="1" class="d-flex">
                       <v-menu
-                        transition="fab-transition"
                         location="end"
                       >
                         <template #activator="{ props }">

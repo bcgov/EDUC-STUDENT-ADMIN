@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, putData, handleExceptionResponse } = require('../utils');
+const { logApiError, getData, putData, postData, handleExceptionResponse } = require('../utils');
 const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
@@ -87,25 +87,153 @@ async function getReportingInsights(req, res) {
     let schools = cacheService.getAllSchoolsJSON();
     let gradSchools = cacheService.getGradSchoolsMap();
     let filteredSchoolsIDByCategory = schools.filter(school => school.schoolCategoryCode === req.params.schoolCategory).map(obj => obj.schoolID);
-    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([val]) => val.canIssueTranscripts === "Y"));
+    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([, gradSchoolObject]) => gradSchoolObject.canIssueTranscripts === 'Y'));
 
-    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id));
+    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id)).filter(id => id != null && id !== '');
 
-    const params = {
+    const grade = '12';
+
+    const gdcParams = {
       params: {
-        grade: "12",
-        schoolIDs: schoolIDs
+        categoryCode: req.params.schoolCategory
       }
     };
-    const url = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts`;
-    const sdcGrad12Data = await getData(url, params);
+    const gdcURL = `${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/school-submission-counts`;
+    const gdcData = await getData(gdcURL, gdcParams);
 
-    //TODO: GRAD numbers
-    return res.status(200).json(sdcGrad12Data);
+    let sdcData = null;
+    let gradData = null;
+
+    const activeSDCURL = `${config.get('sdc:activeCollectionURL')}`;
+    const activeSDC = await getData(activeSDCURL, {});
+    const septSDCInFlight = activeSDC.collectionTypeCode === 'SEPTEMBER';
+
+    if(req.params.reportingPeriodType === 'SchoolYear' && !septSDCInFlight){
+      const sdcURL = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}`;
+      const sdcRequestBody = { schoolIDs: schoolIDs };
+      sdcData = await postData(sdcURL, sdcRequestBody, {});
+
+      const gradURL = `${config.get('server:gradStudent:rootURL')}/graduation-counts`;
+      const gradRequestBody = { schoolID: schoolIDs };
+      gradData = await postData(gradURL, gradRequestBody, {});
+    }
+
+    const reportingInsights = req.params.reportingPeriodType === 'SchoolYear' ? await createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, gdcData) : await createSummerReportingInsights(schoolIDs, gdcData);
+    reportingInsights.sort((a, b) => a.schoolName.localeCompare(b.schoolName, undefined, { sensitivity: 'base' }));
+
+    return res.status(200).json(reportingInsights);
   } catch (e) {
     logApiError(e, 'getReportingSummary', 'Error occurred while attempting to GET GDC Reporting summary.');
     return handleExceptionResponse(e, res);
   }
+}
+
+async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, gdcData){
+  return Promise.all(schoolIDs.map(async schoolID => {
+    const sdcEntry = sdcData.find(item => item.schoolID === schoolID);
+    const gradEntry = gradData.find(item => item.schoolOfRecordId === schoolID);
+    const gdcEntry = gdcData.schoolSubmissions.find(item => item.schoolID === schoolID);
+    const schoolData = cacheService.getSchoolBySchoolID(schoolID);
+
+    const schoolUserParams = {
+      params: {
+        schoolID: schoolID,
+      }
+    };
+    const schoolUserURL = `${config.get('server:edx:rootURL')}/users`;
+    const schoolUsers = await getData(schoolUserURL, schoolUserParams);
+
+    const gradUsersForSchool = createGradUsersList(schoolUsers, schoolID);
+
+    return {
+      schoolID: schoolID,
+      schoolName: `${schoolData.mincode} - ${schoolData.schoolName}`,
+      schoolPhoneNumber: formatPhoneNumber(schoolData.phoneNumber),
+      facilityType: schoolData.facilityTypeCode,
+      totalSubmissions: gdcEntry ? gdcEntry.submissionCount : null,
+      lastSubmission: gdcEntry ? gdcEntry.lastSubmissionDate : null,
+      currentGraduates: gradEntry ? gradEntry.currentGraduates : null,
+      currentNonGraduates: gradEntry ? gradEntry.currentNonGraduates : null,
+      percentageGraduation: gradEntry ? (() => {
+        const numerator = parseInt(gradEntry.currentGraduates);
+        const denominator = parseInt(gradEntry.currentGraduates) + parseInt(gradEntry.currentNonGraduates);
+        return denominator === 0 ? null : (numerator / denominator) * 100;
+      })() : null,
+      grade12Enrolment: sdcEntry ? sdcEntry.gradeEnrolmentCount : null,
+      percentGraduatedSLD: gradEntry && sdcEntry ? (() => {
+        const numerator = parseInt(gradEntry.currentGraduates);
+        const denominator = parseInt(sdcEntry.gradeEnrolmentCount);
+        return denominator === 0 ? null : (numerator / denominator) * 100;
+      })() : null,
+      gradUsers: gradUsersForSchool
+    };
+  }));
+}
+
+async function createSummerReportingInsights(schoolIDs, gdcData){
+  const insights = await Promise.all(schoolIDs
+    .filter(schoolID => {
+      return gdcData.summerSubmissions.some(item => item.schoolID === schoolID);
+    })
+    .map(async schoolID => {
+      const gdcEntry = gdcData.summerSubmissions.find(item => item.schoolID === schoolID);
+      const schoolData = cacheService.getSchoolBySchoolID(schoolID);
+
+      const schoolUserParams = {
+        params: {
+          schoolID: schoolID,
+        }
+      };
+      const schoolUserURL = `${config.get('server:edx:rootURL')}/users`;
+      const schoolUsers = await getData(schoolUserURL, schoolUserParams);
+
+      const gradUsersForSchool = createGradUsersList(schoolUsers, schoolID);
+
+      return {
+        schoolID: schoolID,
+        schoolName: `${schoolData.mincode} - ${schoolData.schoolName}`,
+        schoolPhoneNumber: formatPhoneNumber(schoolData.phoneNumber),
+        facilityType: schoolData.facilityTypeCode,
+        totalSubmissions: gdcEntry ? gdcEntry.submissionCount : 0,
+        lastSubmission: gdcEntry ? gdcEntry.lastSubmissionDate : null,
+
+        gradUsers: gradUsersForSchool
+      };
+    }));
+  return insights;
+}
+
+function createGradUsersList (schoolUsers, schoolID) {
+  return schoolUsers.reduce((acc, user) => {
+    const schoolMatch = user.edxUserSchools.find(eus => eus.schoolID === schoolID);
+    if (schoolMatch) {
+      const isGradAdmin = schoolMatch.edxUserSchoolRoles.some(role => role.edxRoleCode === 'GRAD_SCH_ADMIN');
+      if (isGradAdmin) {
+        const userFullName = formatFullName(user.firstName, user.lastName);
+        acc.push({
+          userFullName: userFullName,
+          userEmail: user.email,
+        });
+      }
+    }
+    return acc;
+  }, []);
+}
+
+function formatFullName(firstName, lastName) {
+  const capitalizedFirst =  firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  const capitalizedLast = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
+  return `${capitalizedFirst} ${capitalizedLast}`;
+}
+
+function formatPhoneNumber(phoneNumberString) {
+  if (!phoneNumberString || typeof phoneNumberString !== 'string' || !/^\d{10}$/.test(phoneNumberString)) {
+    return phoneNumberString; // Return original if not a 10-digit string
+  }
+  const areaCode = phoneNumberString.substring(0, 3);
+  const centralOfficeCode = phoneNumberString.substring(3, 6);
+  const lineNumber = phoneNumberString.substring(6, 10);
+  return `(${areaCode}) ${centralOfficeCode}-${lineNumber}`;
 }
 
 async function getFilesetsPaginated(req, res) {

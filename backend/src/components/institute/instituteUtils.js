@@ -41,13 +41,13 @@ function generateSchoolObject(school) {
     mincode: school.mincode,
     schoolName: school.displayName,
     schoolCategoryCode: school.schoolCategoryCode,
+    facilityTypeCode: school.facilityTypeCode,
     openedDate: school.openedDate,
     closedDate: school.closedDate,
     districtID: school.districtId,
     authorityID: school.independentAuthorityId,
     schoolNumber: school.schoolNumber,
     phoneNumber: school.phoneNumber,
-    facilityTypeCode: school.facilityTypeCode,
     email: school.email,
     schoolReportingRequirementCode: school.schoolReportingRequirementCode
   };

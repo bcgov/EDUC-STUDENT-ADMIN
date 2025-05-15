@@ -74,7 +74,6 @@
             </v-col>
             <v-col v-if="canViewMenu(item.raw.districtStatusCode)">
                 <v-menu
-                  transition="fab-transition"
                   location="end"
                 >
                   <template #activator="{ props }">

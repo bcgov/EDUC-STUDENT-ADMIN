@@ -215,7 +215,8 @@ let object = {
     REPORTING_PERIOD: gdcRoot + '/reporting-period',
     ACTIVE_COLLECTION: gdcRoot + '/active-reporting-period',
     PREVIOUS_COLLECTION: gdcRoot + '/previous-reporting-period',
-    REPORTING_SUMMARY: gdcRoot + '/reporting-summary'
+    REPORTING_SUMMARY: gdcRoot + '/reporting-summary',
+    REPORTING_INSIGHTS: gdcRoot + '/reporting-insights',
   },
   gradSchool: {
     BASE_URL: gradSchoolRoot,
@@ -334,6 +335,17 @@ export const REQUEST_TYPES = Object.freeze(
     }
   }
 );
+
+export const GRAD_SCHOOL_CATEGORY_MAP = Object.freeze(
+  {
+    'Public': 'PUBLIC',
+    'Independent': 'INDEPEND',
+    'Ind. First Nations': 'INDP_FNS',
+    'Non-Ind. First Nations': 'FED_BAND',
+    'Offshore': 'OFFSHORE',
+    'Yukon': 'YUKON'
+  });
+
 /**
  * Source of truth for field Names in  StudentDetails.vue and its child components.
  * @type {Readonly<{GRADE_CODE: string, TWINS: string, MINCODE: string, GRADE_YEAR: string, CREATED_DATE: string, LEGAL_FIRST_NAME: string, USUAL_LAST_NAME: string,
