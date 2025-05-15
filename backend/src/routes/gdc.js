@@ -17,6 +17,6 @@ router.get('/reporting-summary/:reportingPeriodID', passport.authenticate('jwt',
 router.get('/fileset/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getFilesetsPaginated);
 router.get('/fileset/:filesetID/student/:pen', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getDemographicStudentByPenIncomingFilesetIdAndSchoolId);
 
-router.get('/reporting-insights/:reportingPeriodID/:sdcCollectionID/:schoolCategory', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getReportingInsights);
+router.get('/reporting-insights/:reportingPeriodID/:reportingPeriodType/:sdcCollectionID/:schoolCategory', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION), extendSession, getReportingInsights);
 
 module.exports = router;
