@@ -117,17 +117,25 @@
               <v-tab value="contacts">
                 Contacts
               </v-tab>
-              <v-tab value="grad">
-                Graduation
-              </v-tab>
               <v-tab value="notes">
                 Ministry Notes
               </v-tab>
               <v-tab value="history">
-                History
+                School History
               </v-tab>
               <v-tab value="moves">
                 Moves
+              </v-tab>
+              <v-tab
+                v-if="canViewGradTabs()"
+                value="grad">
+                GRAD Flags
+              </v-tab>
+              <v-tab
+                v-if="canViewGradTabs()"
+                value="gradHistory"
+              >
+                GRAD History
               </v-tab>
               <v-tab
                 v-if="canViewFundingTab()"
@@ -146,7 +154,7 @@
                   <Details
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
-                    :canEditAllSchools="canEditAllSchools"
+                    :can-edit-all-schools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -160,7 +168,7 @@
                   <GradDetails
                     :school-i-d="schoolID"
                     :has-access="canEditSchools"
-                    :canEditAllSchools="canEditAllSchools"
+                    :can-edit-all-schools="canEditAllSchools"
                     @updateSchool="updateSchoolDetails"
                   />
                 </v-window-item>
@@ -187,6 +195,9 @@
                     :school-i-d="schoolID"
                     @refreshSchool="getThisSchoolsDetails"
                   />
+                </v-window-item>
+                <v-window-item value="gradHistory">
+                  <GraduationHistory :school-i-d="schoolID" />
                 </v-window-item>
               </v-window>
             </v-card-text>
@@ -217,6 +228,7 @@ import InstituteNotes from '@/components/institute/common/InstituteNotes.vue';
 import {appStore} from '@/store/modules/app';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 import GradDetails from '@/components/institute/school/GradDetails.vue';
+import GraduationHistory from '@/components/institute/school/grad/GraduationHistory.vue';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -227,7 +239,8 @@ export default {
     SchoolHistory,
     SchoolContacts,
     SchoolMove,
-    SchoolFunding
+    SchoolFunding,
+    GraduationHistory
   },
   mixins: [alertMixin],
   props: {
@@ -249,7 +262,7 @@ export default {
       offshoreArray: ['OFFSHORE'],
       tab: null,
       items: [
-        'Details', 'Contacts', 'Ministry Notes', 'History', 'Moves', 'Funding'
+        'Details', 'Contacts', 'Ministry Notes', 'School History', 'Moves', 'Funding',
       ],
     };
   },
@@ -269,7 +282,7 @@ export default {
       ![...this.offshoreArray, ...this.independentArray].includes(this.school?.schoolCategoryCode) && this.canEditAllSchools;
     },
     canEditAllSchools() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION)
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_SCHOOL_PERMISSION);
     }
   },
   watch: {},
@@ -366,6 +379,9 @@ export default {
     },
     canViewFundingTab() {
       return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_SCHOOL_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
+    },
+    canViewGradTabs() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;

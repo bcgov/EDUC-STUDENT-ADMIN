@@ -25,7 +25,7 @@
             Current Reporting Cycle -
           </span>
           <span>
-            {{ collectionObject ? `${formatDate(collectionObject.periodStart)} to ${formatDate(collectionObject.periodEnd)}` : '-' }}
+            {{ collectionObject ? `${formatDateAsMonthYear(collectionObject.periodStart)} to ${formatDateAsMonthYear(collectionObject.periodEnd)}` : '-' }}
           </span>
         </div>
       </v-col>
@@ -47,7 +47,7 @@
             Previous Reporting Cycle -
           </span>
           <span>
-            {{ previousCollectionObject ? `${formatDate(previousCollectionObject.periodStart)} to ${formatDate(previousCollectionObject.periodEnd)}` : '-' }}
+            {{ previousCollectionObject ? `${formatDateAsMonthYear(previousCollectionObject.periodStart)} to ${formatDateAsMonthYear(previousCollectionObject.periodEnd)}` : '-' }}
           </span>
         </div>
       </v-col>
@@ -152,7 +152,7 @@ import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 import ReportingDates from '@/components/gdc/ReportingDates.vue';
 import ApiService from '@/common/apiService';
-import {formatDate} from '@/utils/format';
+import {formatDate, formatDateAsMonthYear} from '@/utils/format';
 import CollectionInsights from './insights/CollectionInsights.vue';
 import Schools from '@/components/gdc/Schools.vue';
 import GradStudentSearch from '@/components/gdc/GradStudentSearch.vue';
@@ -187,6 +187,7 @@ export default {
     this.getPreviousReportingDates();
   },
   methods: {
+    formatDateAsMonthYear,
     formatDate,
     getActiveReportingDates() {
       ApiService.apiAxios.get(`${Routes.gdc.ACTIVE_COLLECTION}`)

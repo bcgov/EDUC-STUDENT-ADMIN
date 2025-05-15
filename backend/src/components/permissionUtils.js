@@ -411,8 +411,8 @@ async function checkValidRoles(req, incomingRoles, schoolID) {
 }
 
 function filterSchoolRoles(schoolID, data) {
-  const school = cacheService.getSchoolBySchoolID(schoolID);
-  if(!school?.canIssueTranscripts) {
+  const school = cacheService.getGradSchoolByID(schoolID);
+  if(school?.canIssueTranscripts === 'N') {
     return data.filter(role => role.edxRoleCode !== 'GRAD_SCH_ADMIN');
   }
   return data;

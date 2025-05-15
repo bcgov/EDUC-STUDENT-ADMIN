@@ -36,6 +36,7 @@ let assessmentSpecialCaseTypeCodesMap = new Map();
 
 let edxUsers = new Map();
 let gradSchoolsMap = new Map();
+let gradSchools = [];
 
 const cacheService = {
 
@@ -48,7 +49,6 @@ const cacheService = {
       let newSchoolMap = new Map();
       let newMincodeSchools = [];
       let newActiveSchools = [];
-
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = generateSchoolObject(school);
@@ -185,15 +185,32 @@ const cacheService = {
     await retry(async () => {
       const schools = await getData(config.get(url));
       gradSchoolsMap.clear();
+      gradSchools=[];
       if (schools && schools.length > 0) {
         for (const data of schools) {
           gradSchoolsMap.set(data.schoolID, data);
+          gradSchools.push(data);
         }
       }
       log.info(`Loaded ${gradSchoolsMap.size} grad schools.`);
     }, {
       retries: 50
     });
+  },
+
+  getSchoolListForPagination() {
+    let schoolList = mincodeSchools;
+    for (const school of schoolList) {
+      let gradSchoolRecord = gradSchoolsMap.get(school.schoolID);
+      if(gradSchoolRecord) {
+        school.canIssueTranscripts = gradSchoolRecord.canIssueTranscripts;
+        school.canIssueCertificates = gradSchoolRecord.canIssueCertificates;
+      } else {
+        school.canIssueTranscripts = 'N';
+        school.canIssueCertificates = 'N';
+      }
+    }
+    return schoolList;
   },
   
   getAllDocumentTypeCodesJSON() {
@@ -425,6 +442,12 @@ const cacheService = {
   },
   getGradSchoolsMap() {
     return gradSchoolsMap;
+  },
+  getGradSchoolByID(schoolID) {
+    return gradSchoolsMap.get(schoolID);
+  },
+  getGradSchoolsList() {
+    return gradSchools;
   },
   async loadAllEdxUsersToMap() {
     log.debug('Loading all EDX Users to cache.');

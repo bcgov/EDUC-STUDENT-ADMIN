@@ -341,11 +341,6 @@ export default {
           authorized: !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION),
           items: [
             {
-              title: 'Graduation School List',
-              link: 'graduationSchoolList',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION)
-            },
-            {
               title: 'Graduation Records and Achievement Data Collection',
               link: 'graduationTabs',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION)

@@ -928,27 +928,8 @@ async function updateSchoolDetails(school, idirUsername){
 }
 
 async function getSchoolsPaginated(req, res){
-  try {
-    let parsedParams = '';
-    if (req.query.searchParams) {
-      parsedParams = req.query.searchParams;
-    }
-
-    const schoolSearchCriteria = [{
-      condition: null,
-      searchCriteriaList: createSchoolSearchCriteria(parsedParams),
-    }];
-
-    const schoolSearchParam = {
-      params: {
-        pageNumber: req.query.pageNumber,
-        pageSize: req.query.pageSize,
-        sort: JSON.stringify(req.query.sort),
-        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
-      }
-    };
-    
-    let response = await getData(config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
+  try {    
+    let response = cacheService.getSchoolListForPagination();
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
