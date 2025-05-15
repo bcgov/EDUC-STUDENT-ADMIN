@@ -48,7 +48,6 @@ function generateSchoolObject(school) {
     authorityID: school.independentAuthorityId,
     schoolNumber: school.schoolNumber,
     phoneNumber: school.phoneNumber,
-    facilityTypeCode: school.facilityTypeCode,
     email: school.email,
     schoolReportingRequirementCode: school.schoolReportingRequirementCode
   };
