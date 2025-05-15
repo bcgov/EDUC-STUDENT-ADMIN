@@ -231,8 +231,6 @@ export default {
       if (clickedRow && clickedRow.categoryOrFacilityType) {
         this.selectedCategoryForDetail = clickedRow.categoryOrFacilityType;
         this.showSchoolCategoryTable = true;
-        console.log('type', this.type);
-        console.log('showSchoolCategoryTable', this.showSchoolCategoryTable);
       }
     },
     returnToSummary() {

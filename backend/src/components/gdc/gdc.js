@@ -104,7 +104,11 @@ async function getReportingInsights(req, res) {
     let sdcData = null;
     let gradData = null;
 
-    if(req.params.reportingPeriodType === 'SchoolYear'){
+    const activeSDCURL = `${config.get('sdc:activeCollectionURL')}`;
+    const activeSDC = await getData(activeSDCURL, {});
+    const septSDCInFlight = activeSDC.collectionTypeCode === 'SEPTEMBER';
+
+    if(req.params.reportingPeriodType === 'SchoolYear' && !septSDCInFlight){
       const sdcURL = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}`;
       const sdcRequestBody = { schoolIDs: schoolIDs };
       sdcData = await postData(sdcURL, sdcRequestBody, {});
@@ -144,7 +148,7 @@ async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, g
     return {
       schoolID: schoolID,
       schoolName: `${schoolData.mincode} - ${schoolData.schoolName}`,
-      schoolPhoneNumber: schoolData.phoneNumber,
+      schoolPhoneNumber: formatPhoneNumber(schoolData.phoneNumber),
       facilityType: schoolData.facilityTypeCode,
       totalSubmissions: gdcEntry ? gdcEntry.submissionCount : null,
       lastSubmission: gdcEntry ? gdcEntry.lastSubmissionDate : null,
@@ -175,8 +179,6 @@ async function createSummerReportingInsights(schoolIDs, gdcData){
       const gdcEntry = gdcData.summerSubmissions.find(item => item.schoolID === schoolID);
       const schoolData = cacheService.getSchoolBySchoolID(schoolID);
 
-      console.log("SchoolData>>>>", schoolData);
-
       const schoolUserParams = {
         params: {
           schoolID: schoolID,
@@ -190,7 +192,7 @@ async function createSummerReportingInsights(schoolIDs, gdcData){
       return {
         schoolID: schoolID,
         schoolName: `${schoolData.mincode} - ${schoolData.schoolName}`,
-        schoolPhoneNumber: schoolData.phoneNumber,
+        schoolPhoneNumber: formatPhoneNumber(schoolData.phoneNumber),
         facilityType: schoolData.facilityTypeCode,
         totalSubmissions: gdcEntry ? gdcEntry.submissionCount : 0,
         lastSubmission: gdcEntry ? gdcEntry.lastSubmissionDate : null,
@@ -222,6 +224,16 @@ function formatFullName(firstName, lastName) {
   const capitalizedFirst =  firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
   const capitalizedLast = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
   return `${capitalizedFirst} ${capitalizedLast}`;
+}
+
+function formatPhoneNumber(phoneNumberString) {
+  if (!phoneNumberString || typeof phoneNumberString !== 'string' || !/^\d{10}$/.test(phoneNumberString)) {
+    return phoneNumberString; // Return original if not a 10-digit string
+  }
+  const areaCode = phoneNumberString.substring(0, 3);
+  const centralOfficeCode = phoneNumberString.substring(3, 6);
+  const lineNumber = phoneNumberString.substring(6, 10);
+  return `(${areaCode}) ${centralOfficeCode}-${lineNumber}`;
 }
 
 async function getFilesetsPaginated(req, res) {

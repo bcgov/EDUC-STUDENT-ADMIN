@@ -123,7 +123,7 @@
         </tr>
       </template>
 
-      <template #item="{ item: dataTableRow, index }">
+      <template #item="{ item: dataTableRow }">
         <tr>
           <td
             v-for="header in tableHeaders"
@@ -142,36 +142,79 @@
               {{ formatDate(dataTableRow.selectable[header.key]) }}
             </template>
             <template v-else-if="header.key === 'actions'">
-              <v-tooltip
-                v-model="tooltipStates[dataTableRow.selectable.schoolID]"
-                location="bottom"
-                activator="parent"
-                :open-on-hover="false"
+              <v-menu
+                location="bottom end"
+                :close-on-content-click="false"
               >
-                <template #activator="{ props }">
-                  <span
-                    v-bind="props"
-                    style="cursor: pointer"
-                    @click="toggleTooltip(dataTableRow.selectable.schoolID)"
-                  >...</span>
+                <template #activator="{ props: menuProps }">
+                  <v-btn
+                    icon="mdi-dots-vertical"
+                    variant="text"
+                    size="small"
+                    v-bind="menuProps"
+                  />
                 </template>
-                <div>
-                  {{ dataTableRow.selectable.schoolName }}<br>
-                  {{ dataTableRow.selectable.schoolPhoneNumber }}<br>
-                  Grad Administrators:<br>
+                <v-list density="compact">
+                  <v-list-item>
+                    <v-list-item-title class="text-subtitle-2 font-weight-bold">
+                      {{ dataTableRow.selectable.schoolName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      <v-icon> mdi-phone-outline</v-icon>
+                      {{ dataTableRow.selectable.schoolPhoneNumber }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-divider class="my-1" />
+                  <v-list-subheader><strong>Grad Administrators</strong></v-list-subheader>
                   <template v-if="dataTableRow.selectable.gradUsers && dataTableRow.selectable.gradUsers.length > 0">
-                    <div
+                    <v-list-item
                       v-for="(gradUser, i) in dataTableRow.selectable.gradUsers"
                       :key="i"
+                      density="compact"
                     >
-                      {{ gradUser.userFullName }} - {{ gradUser.userEmail }}
-                    </div>
+                      <v-list-item-title class="text-body-2">
+                        {{ gradUser.userFullName }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-caption"
+                      >
+                        <v-icon> mdi-email-outline </v-icon>
+                        {{ gradUser.userEmail }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
                   </template>
                   <template v-else>
-                    No Grad Administrators found.
+                    <v-list-item density="compact">
+                      <v-list-item-title class="text-body-2">
+                        No Grad Administrators found
+                      </v-list-item-title>
+                    </v-list-item>
                   </template>
-                </div>
-              </v-tooltip>
+                  <v-divider class="my-1" />
+
+                  <v-list-item>
+                    <v-list-item-title 
+                      class="text-subtitle-2 pb-2"
+                    >
+                      <a
+                        :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${dataTableRow.selectable.schoolID}&gradDashboard=true&idir_guid=${userInfo.userGuid.toLowerCase()}`"
+                        target="_link"
+                      >
+                        <v-icon>mdi-school-outline</v-icon>
+                        Graduation Dashboard
+                      </a>
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      class="text-subtitle-2"
+                    >
+                      <a @click="openSchool(dataTableRow.selectable.schoolID)">
+                        <v-icon>mdi-domain</v-icon>
+                        School Details
+                      </a>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </template>
             <template v-else>
               {{ dataTableRow.selectable[header.key] ?? '-' }}
@@ -192,6 +235,8 @@ import ApiService from '@/common/apiService';
 import { Routes, GRAD_SCHOOL_CATEGORY_MAP } from '@/utils/constants';
 import { instituteStore } from '@/store/modules/institute';
 import { mapState } from 'pinia';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'SchoolCategoryTable',
@@ -284,11 +329,13 @@ export default {
       page: 1,
       itemsPerPage: 25,
       search: '',
-      tooltipStates: {}, // To track the open/closed state of each tooltip
+      edxURL: '',
     };
   },
   computed: {
     ...mapState(instituteStore, ['facilityTypeCodes']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['config']),
     facilityTypeLabelMap() {
       if (!this.facilityTypeCodes) {
         return new Map();
@@ -325,7 +372,6 @@ export default {
           this.selectedCategory = null;
           this.detailedData = [];
           this.page = 1;
-          this.tooltipStates = {}; // Clear tooltip states
         }
       },
       immediate: true,
@@ -351,17 +397,9 @@ export default {
       } else if (newValue === null) {
         this.detailedData = [];
         this.page = 1;
-        this.tooltipStates = {}; // Clear tooltip states
       }
     },
-    detailedData(newVal) {
-      this.tooltipStates = newVal.reduce((acc, item) => {
-        // Ensure item.selectable exists and has schoolID
-        if (item?.selectable?.schoolID) {
-          acc[item.selectable.schoolID] = false;
-        }
-        return acc;
-      }, {});
+    detailedData() {
       this.page = 1;
     },
   },
@@ -370,17 +408,11 @@ export default {
     if (!this.facilityTypeCodes || this.facilityTypeCodes.length === 0) {
       store.getAllFacilityTypeCodes().catch((error) => {
         console.error('Failed to load facility type codes:', error);
-        this.setFailureAlert(
-          'Failed to load facility type codes. Some labels may not display correctly.'
-        );
       });
     }
-  },
-  mounted() {
-    document.addEventListener('click', this.handleClickOutside);
-  },
-  beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside);
+    appStore().getConfig().then(() => {
+      this.edxURL = this.config.EDX_URL;
+    });
   },
   methods: {
     formatDate(dateTimeString) {
@@ -396,7 +428,6 @@ export default {
     async fetchDetailedData() {
       this.loading = true;
       this.detailedData = [];
-      this.tooltipStates = {}; // Reset tooltip states on fetch
 
       try {
         if (this.sdcCollectionID === null) {
@@ -433,36 +464,17 @@ export default {
         console.error('Error fetching detailed data:', error);
         this.setFailureAlert('Failed to load school submission data.');
         this.detailedData = [];
-        this.tooltipStates = {}; // Reset on error as well
       } finally {
         this.loading = false;
       }
     },
-    toggleTooltip(schoolID) {
-      // Close any other open tooltips
-      Object.keys(this.tooltipStates).forEach(id => {
-        if (id !== schoolID && this.tooltipStates[id]) {
-          this.tooltipStates[id] = false;
-        }
+    openSchool(schoolID) {
+      const routeData = this.$router.resolve({
+        name: 'schoolDetails',
+        params: { schoolID: schoolID }
       });
-      // Toggle the current tooltip
-      this.tooltipStates[schoolID] = !this.tooltipStates[schoolID];
-    },
-    handleClickOutside(event) {
-      const tooltips = document.querySelectorAll('.v-tooltip--open');
-      let clickedInsideTooltip = false;
-      tooltips.forEach(tooltip => {
-        if (tooltip.contains(event.target)) {
-          clickedInsideTooltip = true;
-        }
-      });
-
-      if (!clickedInsideTooltip) {
-        Object.keys(this.tooltipStates).forEach(id => {
-          this.tooltipStates[id] = false;
-        });
-      }
-    },
+      window.open(routeData.href, '_blank');
+    }
   },
 };
 </script>

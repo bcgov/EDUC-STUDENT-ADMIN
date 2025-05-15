@@ -161,7 +161,6 @@
               <v-menu
                 v-if="shouldDisplaySpeedDial && isEditable()"
                 v-model="editOptionsOpen"
-                transition="fab-transition"
                 location="end"
                 offset="10"
               >
