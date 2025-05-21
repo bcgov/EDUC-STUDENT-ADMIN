@@ -184,7 +184,7 @@ if(!config.get('frontendConfig').disableAssessmentFunctionality) {
 }
 
 if(!config.get('frontendConfig').disableGDCFunctionality) {
-  cacheService.loadAllGradSchools('server:gradSchool:rootURL').then(() => {
+  cacheService.loadAllGradSchools().then(() => {
     log.info('Loaded GRAD_SCHOOLS data to memory');
   }).catch((e) => {
     log.error('Error loading GRAD_SCHOOLS data during boot.', e);

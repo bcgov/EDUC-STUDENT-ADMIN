@@ -180,10 +180,10 @@ const cacheService = {
 
   },
 
-  async loadAllGradSchools(url) {
+  async loadAllGradSchools() {
     log.debug('Loading all grad schools during start up');
     await retry(async () => {
-      const schools = await getData(config.get(url));
+      const schools = await getData(config.get('server:gradSchool:rootURL'));
       gradSchoolsMap.clear();
       gradSchools=[];
       if (schools && schools.length > 0) {
