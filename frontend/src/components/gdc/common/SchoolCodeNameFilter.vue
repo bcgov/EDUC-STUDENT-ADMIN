@@ -84,6 +84,7 @@ export default {
     }
   },
   async created() {
+    await appStore().refreshEntities();
     appStore().getInstituteCodes().finally(() => {
       this.schoolsCacheMap = this.schoolMap;
       this.getSchoolDropDownItems();
