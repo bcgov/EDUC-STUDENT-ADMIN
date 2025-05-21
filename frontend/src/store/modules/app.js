@@ -172,6 +172,11 @@ export const appStore = defineStore('app', {
           const responseFunding = await ApiService.getAllFundingGroups();
           await this.setFundingGroups(responseFunding.data);
         }
+
+        if(!this.config.DISABLE_GDC_FUNCTIONALITY) {
+          const responseFunding = await ApiService.getGradSchools();
+          await this.setGradSchools(responseFunding.data);
+        }
       }
     },
   },

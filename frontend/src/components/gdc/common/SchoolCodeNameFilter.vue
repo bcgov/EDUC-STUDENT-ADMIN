@@ -72,6 +72,9 @@ export default {
       }
     }
   },
+  async created() {
+    await appStore().refreshEntities();
+  },
   watch: {
     collectionObject: {
       handler() {
