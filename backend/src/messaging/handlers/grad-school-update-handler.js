@@ -1,7 +1,9 @@
 'use strict';
 const log = require('../../components/logger');
+const webSocket = require('../../socket/web-socket');
 const CONSTANTS = require('../../util/constants');
 const NATS = require('../message-pub-sub');
+const {StringCodec} = require('nats');
 const cacheService = require('../../components/cache-service');
 const sc = StringCodec();
 
@@ -24,7 +26,6 @@ async function subscribeToGradSchoolAPIMessageTopic(nats) {
   log.info(`Service listening to ${CONSTANTS.GRAD_SCHOOL_CACHE_REFRESH_TOPIC}`);
   for await (const msg of sub) {
     const dataStr = sc.decode(msg.data);
-    const data = JSON.parse(dataStr);
     log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] ::`);
     await cacheService.loadAllGradSchools();
     await cacheService.loadAllSchoolsToMap();
