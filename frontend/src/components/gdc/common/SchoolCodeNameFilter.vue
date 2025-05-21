@@ -72,9 +72,6 @@ export default {
       }
     }
   },
-  async created() {
-    await appStore().refreshEntities();
-  },
   watch: {
     collectionObject: {
       handler() {
@@ -88,6 +85,7 @@ export default {
   },
   async created() {
     appStore().getInstituteCodes().finally(() => {
+      await appStore().refreshEntities();
       this.schoolsCacheMap = this.schoolMap;
       this.getSchoolDropDownItems();
     });
