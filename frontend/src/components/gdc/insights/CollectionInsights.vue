@@ -45,7 +45,7 @@
             </v-row>
             <SummaryTable
               :summary-data="summaryData"
-              :header="schoolYearHeaders"
+              :header="panel1Status === 'Complete' ? completeHeaders : ongoingHeaders"
               @category-clicked="handleCategoryClicked"
             />
           </template>
@@ -97,7 +97,7 @@
           <template v-if="!showSchoolCategoryTable">
             <SummaryTable
               :summary-data="summaryData"
-              :header="summerHeaders"
+              :header="panel2Status === 'Complete' ? completeHeaders : ongoingHeaders"
               @category-clicked="handleCategoryClicked"
             />
           </template>
@@ -150,14 +150,16 @@ export default {
       panel2Status: '',
       loading: false,
       summaryData: {},
-      schoolYearHeaders: [
+      ongoingHeaders: [
         { title: 'School Category and Facility Type', key: 'categoryOrFacilityType', align: 'start'},
-        { title: 'Schools Expected', key: 'schoolsExpected', align: 'end'},
-        { title: 'Schools With Submission in the Last 30 Days', key: 'schoolsWithSubmissions', align: 'end'}
+        { title: 'Schools Expected to Submit', key: 'schoolsExpected', align: 'end'},
+        { title: 'Schools with One or More Submission', key: 'schoolsWithSubmissions', align: 'end'},
+        { title: 'Schools without a Submission in the Last 30 Days', key: 'schoolsWitSubmissionsInLast30DaysCount', align: 'end'}
       ],
-      summerHeaders: [
+      completeHeaders: [
         { title: 'School Category and Facility Type', key: 'categoryOrFacilityType', align: 'start'},
-        { title: 'Schools With Submissions', key: 'schoolsWithSubmissions', align: 'end'}
+        { title: 'Schools Expected to Submit', key: 'schoolsExpected', align: 'end'},
+        { title: 'Schools with One or More Submission', key: 'schoolsWithSubmissions', align: 'end'},
       ],
       showSchoolCategoryTable: false,
       selectedCategoryForDetail: null,
