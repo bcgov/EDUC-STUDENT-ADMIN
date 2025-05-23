@@ -57,6 +57,7 @@ import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue'
 import AssessmentSessionDetail from '@/components/assessments/AssessmentSessionsDetail.vue';
 import AssessmentDataExchange from '@/components/assessments/AssessmentDataExchange.vue';
 import GraduationTabs from '@/components/gdc/GraduationTabs.vue';
+import ChallengeReports from '@/components/challenge-reports/ChallengeReports.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -519,6 +520,16 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.GRAD_TABS,
         requiresAuth: true,
         permission: PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION
+      },
+    },
+    {
+      path: '/challenge-reports',
+      name: 'challengeReports',
+      component: ChallengeReports,
+      meta: {
+        pageTitle: PAGE_TITLES.CHALLENGE_REPORTS,
+        requiresAuth: true,
+        permission: PERMISSION.CHALLENGE_REPORT_PERMISSION
       },
     },
     {

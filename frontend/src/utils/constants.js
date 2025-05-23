@@ -18,6 +18,7 @@ const instituteRoot = baseRoot + '/institute';
 const cacheRoot = baseRoot + '/cache';
 const sdcRoot = baseRoot + '/sdc';
 const gdcRoot = baseRoot + '/gdc';
+const challengeReportsRoot = baseRoot + '/challengeReports';
 const gradSchoolRoot = baseRoot + '/grad-school';
 const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
 const studentAssessmentRoot = baseRoot + '/student-assessment';
@@ -217,6 +218,12 @@ let object = {
     PREVIOUS_COLLECTION: gdcRoot + '/previous-reporting-period',
     REPORTING_SUMMARY: gdcRoot + '/reporting-summary',
     REPORTING_INSIGHTS: gdcRoot + '/reporting-insights',
+  },
+  challengeReports: {
+    BASE_URL: challengeReportsRoot,
+    ACTIVE_PERIOD: challengeReportsRoot + '/active-period',
+    START_CHALLENGE_REPORT_PHASE: challengeReportsRoot + '/startChallengeReportPhase',
+    DOWNLOAD_REPORT: challengeReportsRoot + '/report'
   },
   gradSchool: {
     BASE_URL: gradSchoolRoot,
@@ -647,6 +654,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_LIST: 'School List',
     GRAD_SCHOOL_LIST: 'Graduation School List',
     GRAD_TABS: 'Graduation Records and Achievement Data Collection',
+    CHALLENGE_REPORTS: 'Funding Reports for Course Challenges',
     SCHOOL_DETAILS: 'School Details',
     AUTHORITIES_LIST: 'Authority List',
     AUTHORITY_DETAILS: 'Authority Details',
