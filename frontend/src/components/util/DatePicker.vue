@@ -44,6 +44,14 @@ export default defineComponent({
     readonly: {
       type: Boolean,
       default: false
+    },
+    variant: {
+      type: String,
+      default: 'underlined'
+    },
+    density: {
+      type: String,
+      default: 'default'
     }
   },
   emits: ['update:model-value', 'clearDate'],
@@ -86,7 +94,8 @@ export default defineComponent({
         :rules="rules"
         prepend-inner-icon="mdi-calendar"
         :label="label"
-        variant="underlined"
+        :variant="variant"
+        :density="density"
         placeholder="yyyy/mm/dd"
         :clearable="!readonly"
         :readonly="readonly"

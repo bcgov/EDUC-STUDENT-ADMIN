@@ -337,6 +337,11 @@ export default {
           authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION)
         },
         {
+          title: PAGE_TITLES.CHALLENGE_REPORTS,
+          link: 'challengeReports',
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION)
+        },
+        {
           title: PAGE_TITLES.GRADUATION,
           authorized: !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION),
           items: [

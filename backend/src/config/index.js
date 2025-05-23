@@ -170,6 +170,9 @@ nconf.defaults({
     gradSchool: {
       rootURL: process.env.GRAD_SCHOOL_API_ENDPOINT
     },
+    challengeReports: {
+      rootURL: process.env.CHALLENGE_REPORTS_API_ENDPOINT
+    },
     gradStudent: {
       rootURL: process.env.GRAD_STUDENT_URL
     },
