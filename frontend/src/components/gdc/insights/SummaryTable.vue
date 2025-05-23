@@ -5,9 +5,10 @@
     <thead>
       <tr>
         <th
-          v-for="columnHeader in header"
+          v-for="(columnHeader, idx) in header"
           :id="'tableHeader'+columnHeader?.key"
           :key="columnHeader?.key + generateKey()"
+          :class="{'centered-header': idx !== 0}"
         >
           {{ columnHeader?.title }}
         </th>
@@ -85,6 +86,9 @@ export default {
   th {
     color: #38598a !important;
     text-align: left !important;
+  }
+  .centered-header {
+    text-align: center !important;
   }
   .clickable-header {
     cursor: pointer;
