@@ -157,13 +157,13 @@ async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, g
       percentageGraduation: gradEntry ? (() => {
         const numerator = parseInt(gradEntry.currentGraduates);
         const denominator = parseInt(gradEntry.currentGraduates) + parseInt(gradEntry.currentNonGraduates);
-        return denominator === 0 ? null : (numerator / denominator) * 100;
+        return denominator === 0 ? null : Math.round((numerator / denominator) * 100);
       })() : null,
       grade12Enrolment: sdcEntry ? sdcEntry.gradeEnrolmentCount : null,
       percentGraduatedSLD: gradEntry && sdcEntry ? (() => {
         const numerator = parseInt(gradEntry.currentGraduates);
         const denominator = parseInt(sdcEntry.gradeEnrolmentCount);
-        return denominator === 0 ? null : (numerator / denominator) * 100;
+        return denominator === 0 ? null : Math.round((numerator / denominator) * 100);
       })() : null,
       gradUsers: gradUsersForSchool
     };

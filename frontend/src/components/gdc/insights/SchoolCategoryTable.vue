@@ -11,6 +11,7 @@
           :items="availableCategories"
           label="School Category"
           density="compact"
+          variant="underlined"
           class="pb-0"
           @update:model-value="fetchDetailedData"
         />
@@ -18,9 +19,6 @@
           Loading school categories...
         </div>
       </v-col>
-    </v-row>
-
-    <v-row>
       <v-col
         cols="12"
         md="4"
@@ -30,6 +28,7 @@
           label="Search"
           density="compact"
           prepend-inner-icon="mdi-magnify"
+          variant="underlined"
           clearable
           class="pt-0"
         />
