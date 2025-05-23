@@ -36,18 +36,18 @@
           </span>
           <span
             v-else
-            class="pl-12"
+            class="centered-cell"
           >{{ row[columnHeader?.key] }}</span>
         </td>
       </tr>
     </tbody>
   </v-table>
 </template>
-  
+
 <script>
 import alertMixin from '@/mixins/alertMixin';
 import {v4 as uuidv4} from 'uuid';
-   
+
 export default {
   name: 'SummaryTable',
   components: {
@@ -72,7 +72,7 @@ export default {
   }
 };
 </script>
-         
+
   <style scoped>
   .section-header {
     background-color: #FAFBFC;
@@ -90,9 +90,8 @@ export default {
     cursor: pointer;
     text-decoration: underline;
   }
+  .centered-cell {
+    display: block;
+    text-align: center;
+  }
   </style>
-         
-         
-       
-     
-  
