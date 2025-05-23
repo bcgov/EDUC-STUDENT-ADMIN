@@ -529,7 +529,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.CHALLENGE_REPORTS,
         requiresAuth: true,
-        permission: PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION
+        permission: PERMISSION.CHALLENGE_REPORT_PERMISSION
       },
     },
     {

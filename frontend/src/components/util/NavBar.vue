@@ -339,7 +339,7 @@ export default {
         {
           title: PAGE_TITLES.CHALLENGE_REPORTS,
           link: 'challengeReports',
-          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION)
+          authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.CHALLENGE_REPORT_PERMISSION)
         },
         {
           title: PAGE_TITLES.GRADUATION,

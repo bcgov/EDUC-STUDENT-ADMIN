@@ -133,6 +133,13 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"VIEW_REGISTRATION_CONTACTS_PERMISSION\",\"description\" : \"Permission to view registration conatcts\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating CHALLENGE_REPORT_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"CHALLENGE_REPORT_PERMISSION\",\"description\" : \"Permission to view challenge report screen\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
 echo Creating MANAGE_EXCHANGE_PEN_INBOX_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -362,6 +369,12 @@ viewRegistrationContactsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/adm
   -H "Authorization: Bearer $TKN")
 
 echo
+echo Retrieving CHALLENGE_REPORT_PERMISSION permission
+viewChallengeReportPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/CHALLENGE_REPORT_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
 echo Retrieving VIEW_STUDENT_DATA_COLLECTION_PERMISSION permission
 viewStudentDataCollectionPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_STUDENT_DATA_COLLECTION_PERMISSION" \
   -H "Content-Type: application/json" \
@@ -453,7 +466,7 @@ echo Assigning permissions to REPORTS_SDC_HEADCOUNTS role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/REPORTS_SDC_HEADCOUNTS/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$reportsSdcHeadcountsPermissionJson]"
+  -d "[$reportsSdcHeadcountsPermissionJson, $viewChallengeReportPermissionJson]"
 
 echo
 echo Creating EDX_ADMIN role
@@ -593,7 +606,7 @@ echo Assigning permissions to GRAD_DATA_COLLECTION_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/GRAD_DATA_COLLECTION_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$viewGradDataCollectionPermissionJson, $editGradDataCollectionPermissionJson]"
+  -d "[$viewGradDataCollectionPermissionJson, $editGradDataCollectionPermissionJson, $viewChallengeReportPermissionJson]"
 
 echo
 echo Creating GRAD_DATA_COLLECTION_VIEWER role

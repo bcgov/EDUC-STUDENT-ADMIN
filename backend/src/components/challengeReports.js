@@ -1,9 +1,10 @@
 'use strict';
-const { handleExceptionResponse, getData, putData} = require('./utils');
+const { handleExceptionResponse, getData, putData, postData, logApiError, errorResponse} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const config = require('../config');
 const utils = require('./utils');
+let reportTypes = ['DISTRICT_FUNDING_REPORT', 'INDEPENDENT_SCHOOL_FUNDING_REPORT'];
 
 async function getActiveChallengeReportsPeriod(req, res) {
   try {
@@ -56,6 +57,61 @@ async function updateActiveChallengeReportsSession(req, res) {
   }
 }
 
+async function startChallengeReportPhase(req, res) {
+  try {
+    const url = `${config.get('server:challengeReports:rootURL')}/activeSession`;
+    const data = await getData(url);
+
+    let urlPost = `${config.get('server:challengeReports:rootURL')}` + '/preliminaryStage/' + utils.getUser(req).idir_username;
+    if(data.challengeReportsStatusCode === 'PRELIM'){
+      urlPost = `${config.get('server:challengeReports:rootURL')}` + '/finalStage/' + utils.getUser(req).idir_username;
+    }
+
+    await postData(urlPost);
+
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    log.error(e, 'getActiveChallengeReportPeriod', 'Error occurred while attempting to GET active Challenge Reports Period.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function downloadMinistryChallengeReport(req, res) {
+  try {
+    if(!reportTypes.includes(req.params.reportType)){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided.'
+      });
+    }
+    const url = `${config.get('server:challengeReports:rootURL')}/report/${req.params.reportType}/download`;
+    const data = await getData(url);
+
+    const urlSession = `${config.get('server:challengeReports:rootURL')}/activeSession`;
+    const dataSession = await getData(urlSession);
+
+    const fileDetails = getFileDetails(req.params.reportType, dataSession.schoolYear);
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(data.documentData, 'base64');
+    return res.status(200).send(buffer);
+  } catch (e) {
+    await logApiError(e, 'downloadMinistryChallengeReport', 'Error occurred while attempting to download ministry challenge report.');
+    return errorResponse(res);
+  }
+}
+
+function getFileDetails(reportType, schoolYear) {
+  const mappings = {
+    'DISTRICT_FUNDING_REPORT': { filename: 'District Funding Report for Course Challenges - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'INDEPENDENT_SCHOOL_FUNDING_REPORT': { filename: 'Independent School Funding Report for Course Challenges - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'DEFAULT': { filename: 'download.csv', contentType: 'text/csv' }
+  };
+  return mappings[reportType] || mappings['DEFAULT'];
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
 
 function formatCompletionDate(rawDate) {
   const date = new Date(rawDate);
@@ -69,5 +125,7 @@ function formatCompletionDate(rawDate) {
 
 module.exports = {
   getActiveChallengeReportsPeriod,
-  updateActiveChallengeReportsSession
+  updateActiveChallengeReportsSession,
+  startChallengeReportPhase,
+  downloadMinistryChallengeReport
 };

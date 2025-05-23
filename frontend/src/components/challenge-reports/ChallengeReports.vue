@@ -10,6 +10,7 @@
           style="color: #38598a"
         >
           <v-tab
+            v-if="hasPermissionToManageChallengeReporting"
             id="reportingDatesTab"
             value="reportingDatesTab"
             prepend-icon="mdi-format-list-checks"
@@ -17,6 +18,7 @@
             Manage Reporting Process
           </v-tab>
           <v-tab
+            v-if="hasPermissionToViewChallengeReporting"
             id="schoolsTab"
             value="schoolsTab"
             prepend-icon="mdi-download-box-outline"
@@ -42,7 +44,7 @@
               transition="false"
               reverse-transition="false"
             >
-
+              <ChallengeReportsMinistryReports />
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -56,11 +58,16 @@
 import alertMixin from '@/mixins/alertMixin';
 import {PAGE_TITLES} from '@/utils/constants';
 import {formatDate} from '@/utils/format';
-import ChallengeReportsReportingProcess from '@/components/challenge-reports/ChallengeReportsReportingProcess.vue';
+import ChallengeReportsReportingProcess from '@/components/challenge-reports/ChallengeReportsManagement.vue';
+import ChallengeReportsMinistryReports from '@/components/challenge-reports/ChallengeReportsMinistryReports.vue';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'ChallengeReports',
   components: {
+    ChallengeReportsMinistryReports,
     ChallengeReportsReportingProcess
   },
   mixins: [alertMixin],
@@ -74,9 +81,17 @@ export default {
     };
   },
   computed: {
+    ...mapState(authStore, ['userInfo']),
+    hasPermissionToViewChallengeReporting() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
+    },
+    hasPermissionToManageChallengeReporting() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);
+    }
   },
   methods: {
-    formatDate
+    formatDate,
+    hasRequiredPermission
   }
 };
 </script>
