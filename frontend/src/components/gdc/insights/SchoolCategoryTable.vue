@@ -11,6 +11,7 @@
           :items="availableCategories"
           label="School Category"
           density="compact"
+          variant="underlined"
           class="pb-0"
           @update:model-value="fetchDetailedData"
         />
@@ -18,9 +19,6 @@
           Loading school categories...
         </div>
       </v-col>
-    </v-row>
-
-    <v-row>
       <v-col
         cols="12"
         md="4"
@@ -30,6 +28,7 @@
           label="Search"
           density="compact"
           prepend-inner-icon="mdi-magnify"
+          variant="underlined"
           clearable
           class="pt-0"
         />
@@ -242,14 +241,14 @@ export default {
   name: 'SchoolCategoryTable',
   mixins: [alertMixin],
   props: {
+    collectionObject: {
+      type: Object,
+      required: true,
+    },
     preSelectedCategory: {
       type: String,
       required: false,
       default: null,
-    },
-    reportingPeriodID: {
-      type: String,
-      required: true,
     },
     reportingPeriodType: {
       type: String,
@@ -456,9 +455,14 @@ export default {
         }
 
         const response = await ApiService.apiAxios.get(
-          `${Routes.gdc.REPORTING_INSIGHTS}/${this.reportingPeriodID}/${this.reportingPeriodType}/${this.sdcCollectionID}/${
+          `${Routes.gdc.REPORTING_INSIGHTS}/${this.collectionObject?.reportingPeriodID}/${this.reportingPeriodType}/${this.sdcCollectionID}/${
             GRAD_SCHOOL_CATEGORY_MAP[this.selectedCategory]
-          }`
+          }`,
+          {
+            params: {
+              collectionObject: this.collectionObject
+            }
+          }
         );
         this.detailedData = response.data;
       } catch (error) {

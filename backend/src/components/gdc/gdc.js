@@ -5,6 +5,7 @@ const utils = require('../utils');
 const cacheService = require('../cache-service');
 const HttpStatus = require('http-status-codes');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../../util/constants');
+const {LocalDateTime} = require('@js-joda/core');
 
 async function getActiveReportingPeriod(req, res) {
   try {
@@ -86,10 +87,44 @@ async function getReportingInsights(req, res) {
   try {
     let schools = cacheService.getAllSchoolsJSON();
     let gradSchools = cacheService.getGradSchoolsMap();
-    let filteredSchoolsIDByCategory = schools.filter(school => school.schoolCategoryCode === req.params.schoolCategory).map(obj => obj.schoolID);
-    let filteredGradSchoolMapTranscriptElig = new Map([...gradSchools].filter(([, gradSchoolObject]) => gradSchoolObject.canIssueTranscripts === 'Y'));
 
-    let schoolIDs = filteredSchoolsIDByCategory.filter(id => filteredGradSchoolMapTranscriptElig.has(id)).filter(id => id != null && id !== '');
+    let collectionObject = req.query.collectionObject;
+    if (typeof collectionObject === 'string') {
+      try {
+        collectionObject = JSON.parse(collectionObject);
+      } catch {
+        collectionObject = null;
+      }
+    }
+
+    let cutoff;
+    if (collectionObject) {
+      if (req.params.reportingPeriodType === 'SchoolYear' && collectionObject.schYrEnd) {
+        cutoff = LocalDateTime.parse(collectionObject.schYrEnd);
+      } else if (req.params.reportingPeriodType === 'Summer' && collectionObject.summerEnd) {
+        cutoff = LocalDateTime.parse(collectionObject.summerEnd);
+      } else {
+        cutoff = LocalDateTime.now();
+      }
+    } else {
+      cutoff = LocalDateTime.now();
+    }
+
+    let filteredSchoolIDs = [];
+    for (const school of schools) {
+      let gradSchool = gradSchools.get(school.schoolID);
+      if (school.schoolCategoryCode !== req.params.schoolCategory) continue;
+      if (gradSchool?.canIssueTranscripts === 'N') continue;
+      if (!school.openedDate) continue;
+
+      let openDate = LocalDateTime.parse(school.openedDate);
+      let endOfCloseDateGraceWindow = school.closedDate ? LocalDateTime.parse(school.closedDate).plusMonths(3) : null;
+
+      if (cutoff.isBefore(openDate)) continue;
+      if (endOfCloseDateGraceWindow && cutoff.isAfter(endOfCloseDateGraceWindow)) continue;
+
+      filteredSchoolIDs.push(school.schoolID);
+    }
 
     const grade = '12';
 
@@ -110,15 +145,17 @@ async function getReportingInsights(req, res) {
 
     if(req.params.reportingPeriodType === 'SchoolYear' && !septSDCInFlight){
       const sdcURL = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}`;
-      const sdcRequestBody = { schoolIDs: schoolIDs };
+      const sdcRequestBody = { schoolIDs: filteredSchoolIDs };
       sdcData = await postData(sdcURL, sdcRequestBody, {});
 
       const gradURL = `${config.get('server:gradStudent:rootURL')}/graduation-counts`;
-      const gradRequestBody = { schoolID: schoolIDs };
+      const gradRequestBody = { schoolID: filteredSchoolIDs };
       gradData = await postData(gradURL, gradRequestBody, {});
     }
 
-    const reportingInsights = req.params.reportingPeriodType === 'SchoolYear' ? await createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, gdcData) : await createSummerReportingInsights(schoolIDs, gdcData);
+    const reportingInsights = req.params.reportingPeriodType === 'SchoolYear'
+      ? await createSchoolYearReportingInsights(filteredSchoolIDs, sdcData, gradData, gdcData)
+      : await createSummerReportingInsights(filteredSchoolIDs, gdcData);
     reportingInsights.sort((a, b) => a.schoolName.localeCompare(b.schoolName, undefined, { sensitivity: 'base' }));
 
     return res.status(200).json(reportingInsights);
@@ -157,13 +194,13 @@ async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, g
       percentageGraduation: gradEntry ? (() => {
         const numerator = parseInt(gradEntry.currentGraduates);
         const denominator = parseInt(gradEntry.currentGraduates) + parseInt(gradEntry.currentNonGraduates);
-        return denominator === 0 ? null : (numerator / denominator) * 100;
+        return denominator === 0 ? null : Math.round((numerator / denominator) * 100);
       })() : null,
       grade12Enrolment: sdcEntry ? sdcEntry.gradeEnrolmentCount : null,
       percentGraduatedSLD: gradEntry && sdcEntry ? (() => {
         const numerator = parseInt(gradEntry.currentGraduates);
         const denominator = parseInt(sdcEntry.gradeEnrolmentCount);
-        return denominator === 0 ? null : (numerator / denominator) * 100;
+        return denominator === 0 ? null : Math.round((numerator / denominator) * 100);
       })() : null,
       gradUsers: gradUsersForSchool
     };

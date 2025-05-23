@@ -52,7 +52,7 @@
           <template v-else>
             <SchoolCategoryTable
               v-if="type === 'SchoolYear'"
-              :reporting-period-i-d="collectionObject.reportingPeriodID"
+              :collection-object="collectionObject"
               :pre-selected-category="selectedCategoryForDetail"
               :available-categories="availableCategoriesForDetail"
               :reporting-period-type="'SchoolYear'"
@@ -104,7 +104,7 @@
           <template v-else>
             <SchoolCategoryTable
               v-if="type === 'Summer'"
-              :reporting-period-i-d="collectionObject.reportingPeriodID"
+              :collection-object="collectionObject"
               :pre-selected-category="selectedCategoryForDetail"
               :available-categories="availableCategoriesForDetail"
               :reporting-period-type="'Summer'"
