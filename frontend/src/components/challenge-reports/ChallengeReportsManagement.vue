@@ -59,6 +59,7 @@
             :rules="[rules.required()]"
             variant="outlined"
             tabindex="-1"
+            :disabled="challengeReportsSessionStatus === 'FINALIZED'"
             label="Funding Rate Details"
           />
         </v-col>
@@ -76,6 +77,7 @@
             model-type="yyyy/MM/dd"
             density="compact"
             variant="outlined"
+            :disabled="challengeReportsSessionStatus === 'FINALIZED'"
             @update:model-value="validateForm"
           />
         </v-col>
@@ -93,7 +95,7 @@
             icon-left
             width="6em"
             text="Save"
-            :disabled="!isFormValid || !hasChanges"
+            :disabled="!isFormValid || !hasChanges || challengeReportsSessionStatus === 'FINALIZED'"
             @click-action="updateSessionValues"
           />
         </v-col>

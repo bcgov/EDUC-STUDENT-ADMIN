@@ -33,6 +33,7 @@
         <v-card-text>
           <v-window v-model="tab">
             <v-window-item
+              v-if="hasPermissionToManageChallengeReporting"
               value="reportingDatesTab"
               transition="false"
               reverse-transition="false"
@@ -40,6 +41,7 @@
               <ChallengeReportsReportingProcess />
             </v-window-item>
             <v-window-item
+              v-if="hasPermissionToViewChallengeReporting"
               value="schoolsTab"
               transition="false"
               reverse-transition="false"
