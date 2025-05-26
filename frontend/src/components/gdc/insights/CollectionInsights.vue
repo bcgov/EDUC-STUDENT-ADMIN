@@ -45,7 +45,7 @@
             </v-row>
             <SummaryTable
               :summary-data="summaryData"
-              :header="panel1Status === 'Complete' ? completeHeaders : ongoingHeaders"
+              :header="panel1Status === 'Ongoing' ? ongoingHeaders : completeHeaders"
               @category-clicked="handleCategoryClicked"
             />
           </template>
@@ -97,7 +97,7 @@
           <template v-if="!showSchoolCategoryTable">
             <SummaryTable
               :summary-data="summaryData"
-              :header="panel2Status === 'Complete' ? completeHeaders : ongoingHeaders"
+              :header="panel2Status === 'Ongoing' ? ongoingHeaders : completeHeaders"
               @category-clicked="handleCategoryClicked"
             />
           </template>
