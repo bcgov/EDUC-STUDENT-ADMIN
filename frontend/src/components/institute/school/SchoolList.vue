@@ -374,7 +374,7 @@ export default {
     hasRequiredPermission,
     ...mapActions(edxStore, ['setSchoolSearchParams']),
     canViewMenu(canIssueTranscripts) {
-      return canIssueTranscripts === 'Y' && !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION);
+      return canIssueTranscripts === 'Y' && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION);
     },
     openSchoolInEdx(schoolID) {
       window.open(`${this.edxURL}/api/auth/silent_sdc_idir_login?schoolID=${schoolID}&idir_guid=${this.userInfo.userGuid.toLowerCase()}&gradDashboard=true`, '_blank');
