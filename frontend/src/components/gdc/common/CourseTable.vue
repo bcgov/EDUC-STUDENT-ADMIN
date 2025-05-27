@@ -6,18 +6,30 @@
     v-model:page="pageNumber"
     mobile-breakpoint="0"
   >
-    <template #headers>
+    <template #headers="{ getSortIcon, toggleSort }">
       <tr>
         <th
           v-for="column in headers"
           id="header"
           :key="column.key"
+          :class="{
+            'text-center': column.align === 'center',
+            'text-start': column.align === 'start',
+            'text-end': column.align === 'end',
+            'v-data-table__th--sortable': column.sortable,
+          }"
+          :style="{ cursor: column.sortable ? 'pointer' : 'default' }"
+          @click="column.sortable && toggleSort(column)"
         >
-          <v-row>
-            <v-col class="header-text mr-12">
-              {{ column.title }}
-            </v-col>
-          </v-row>
+          <div class="v-data-table-header__content d-flex align-center">
+            <span class="header-text">{{ column.title }}</span>
+            <v-icon
+              v-if="column.sortable"
+              class="v-data-table-header__sort-icon ml-1"
+              :icon="getSortIcon(column)"
+              size="x-small"
+            />
+          </div>
         </th>
       </tr>
     </template>

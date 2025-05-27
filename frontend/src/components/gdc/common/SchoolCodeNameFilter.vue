@@ -114,10 +114,7 @@ export default {
         if (!school.openedDate) return;
 
         let openDate = LocalDateTime.parse(school.openedDate);
-        let endOfCloseDateGraceWindow = school.closedDate ? LocalDateTime.parse(school.closedDate).plusMonths(3) : null;
-
         if (cutoff.isBefore(openDate)) return;
-        if (endOfCloseDateGraceWindow && cutoff.isAfter(endOfCloseDateGraceWindow)) return;
 
         let schoolItem = {
           schoolCodeName: `${school.mincode} - ${school.schoolName}`,
