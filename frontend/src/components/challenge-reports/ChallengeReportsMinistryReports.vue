@@ -17,7 +17,7 @@
         <v-alert
           type="info"
           variant="tonal"
-          text="Reports will be abailable for download once the data is finalized. Teams will be notified when ready."
+          text="Reports will be available for download once the data is finalized. Teams will be notified when ready."
         />
       </v-col>
     </v-row>
