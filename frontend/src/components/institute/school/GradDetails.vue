@@ -27,7 +27,7 @@
               class="d-flex justify-end"
             >
               <PrimaryButton
-                v-if="hasAccess"
+                v-if="canEditGradSchoolDetail()"
                 id="schoolDetailsEditButton"
                 icon-left
                 width="6em"
@@ -201,6 +201,7 @@ import {deepCloneObject} from '@/utils/common';
 import {isNumber} from '@/utils/institute/formInput';
 import {authStore} from '@/store/modules/auth';
 import {notificationsStore} from '@/store/modules/notifications';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 
 export default {
   name: 'GradDetails',
@@ -211,10 +212,6 @@ export default {
   props: {
     schoolID: {
       type: String,
-      required: true
-    },
-    hasAccess: {
-      type: Boolean,
       required: true
     },
     canEditAllSchools: {
@@ -260,6 +257,10 @@ export default {
         return submissionMode.charAt(0).toUpperCase() + submissionMode.toLowerCase().slice(1);
       }
     },
+    canEditGradSchoolDetail() {
+      console.log('User: ' + JSON.stringify(this.userInfo));
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);
+    },
     getGradSchoolsDetails() {
       this.loading = true;
       this.gradSchool = '';
@@ -274,6 +275,7 @@ export default {
           this.loading = false;
         });
     },
+    hasRequiredPermission,
     deepCloneObject,
     isNumber,
     async toggleEdit() {
