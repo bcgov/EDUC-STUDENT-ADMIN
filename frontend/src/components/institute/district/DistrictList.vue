@@ -198,7 +198,7 @@ export default {
   methods: {
     hasRequiredPermission,
     canViewMenu(districtStatusCode) {
-      return districtStatusCode === 'ACTIVE' && !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION);
+      return districtStatusCode === 'ACTIVE' && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION);
     },
     applyDistrictCodeNameFilter($event) {
       this.searchFilter.districtId = $event;
