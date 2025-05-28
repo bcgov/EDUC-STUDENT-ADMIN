@@ -369,6 +369,8 @@ export default {
     });
     this.setSearchValues();
     this.getSchoolList();
+    this.getActiveDistrictDropDownItems();
+    this.getActiveAuthorityDropDownItems();
   },
   methods: {
     hasRequiredPermission,
