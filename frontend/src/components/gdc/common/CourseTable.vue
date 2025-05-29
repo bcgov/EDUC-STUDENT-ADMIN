@@ -43,8 +43,8 @@
           class="pt-2 row-text"
         >
           <span v-if="column.key === 'course'">
-            <span v-if="(props.item['courseCode'] === null) && (props.item['courseLevel'] === null)">-</span>
-            <span v-else>{{ props.item['courseCode'] }}{{ props.item['courseLevel'] }}</span>
+            <span v-if="(props.item.raw['courseCode'] === null) && (props.item.raw['courseLevel'] === null)">-</span>
+            <span v-else>{{ props.item.raw['courseCode'] }}{{ props.item.raw['courseLevel'] }}</span>
           </span>
           <span v-else-if="column.key === 'status'">
             <v-icon
