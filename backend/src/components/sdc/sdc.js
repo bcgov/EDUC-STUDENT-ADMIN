@@ -979,6 +979,17 @@ async function getDistrictHeadcounts(req, res) {
   }
 }
 
+async function getCollectionClosureSagaStatus(req, res){
+  try {
+    const url = `${config.get('sdc:rootURL')}/collection/${req.params.collectionID}/closure-saga-status`;
+    let data = await getData(url);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    await logApiError(e, 'getCollectionClosureSagaStatus', 'Error getting collection closure saga status.');
+    return errorResponse(res);
+  }
+}
+
 function getFileDetails(reportType) {
   const mappings = {
     'ALL_STUDENT_DIS_CSV': { filename: 'AllDistrictStudents.csv', contentType: 'text/csv' },
@@ -1024,4 +1035,5 @@ module.exports = {
   getSdcSchoolCollectionsFromSdcDistrictCollectionID,
   getSDCSchoolCollectionStudentSldHistoryPaginated,
   removeSDCSchoolCollectionStudents,
+  getCollectionClosureSagaStatus
 };

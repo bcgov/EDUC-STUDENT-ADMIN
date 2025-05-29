@@ -225,7 +225,8 @@ export default {
       isPostProvincialDuplicatesButtonDisabled: false,
       isCloseCollectionButtonDisabled: false,
       sdcSchoolCollectionsNotCompleted: false,
-      sdcDistrictCollectionsNotCompleted: false
+      sdcDistrictCollectionsNotCompleted: false,
+      collectionClosureSagaUnderway: false
     };
   },
   computed: {
@@ -242,6 +243,7 @@ export default {
     await this.getSdcSchoolCollections();
     await this.getSdcDistrictCollectionMonitoring();
     await this.loadStudents();
+    await this.checkForCollectionClosureSaga();
     sdcCollectionStore().getCollectionTypeCodesMap().finally(() => {
       this.getActiveCollection();
     });
@@ -288,7 +290,7 @@ export default {
     },
     checkIsCloseCollectionButtonDisabled() {
       if(this.collectionObject?.collectionTypeCode !== 'JULY') {
-        this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotCompleted > 0 || this.sdcSchoolCollectionsNotCompleted > 0;
+        this.isCloseCollectionButtonDisabled = this.sdcDistrictCollectionsNotCompleted > 0 || this.sdcSchoolCollectionsNotCompleted > 0 || this.collectionClosureSagaUnderway;
       }
     },
     async postProvincialDuplicates() {
@@ -382,6 +384,21 @@ export default {
       this.newCollection.signoffDueDate = threeWeeksLater.atStartOfDay().format(DateTimeFormatter.ofPattern(this.datePattern));
 
       this.fireFormValidate();
+    },
+    async checkForCollectionClosureSaga(){
+      this.isLoading = true;
+      ApiService.apiAxios.get(`${Routes.sdc.BASE_URL}/collection/${this.collectionID}/collection-closure-status`)
+        .then((response) => {
+          if (response.data === true){
+            this.collectionClosureSagaUnderway = true;
+          }
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while checking if collection closure is already underway.');
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     async closeCollection() {
       const confirmation = await this.$refs.confirmCloseCollection.open('Close Collection.', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Confirm', rejectText: 'Cancel'});

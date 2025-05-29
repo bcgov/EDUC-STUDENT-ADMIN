@@ -9,7 +9,7 @@ const { getSnapshotFundingDataForSchool, getAllCollectionsForSchool, getActiveCo
   getSDCSchoolCollectionStudentPaginated, getSDCSchoolCollectionStudentDetail, updateStudentPEN, checkDuplicatesInCollection, updateAndValidateSdcSchoolCollectionStudent, resolveDuplicates, postProvincialDuplicates, resolveRemainingDuplicates,
   closeCollection, getCollectionPaginated, getSDCSchoolCollectionDetail, downloadSdcReport,
   getCollectionByID, getSdcSchoolCollections, getSdcDistrictCollections, updateBandCode, moveSld, getDistrictHeadcounts, getSdcSchoolCollectionsFromSdcDistrictCollectionID,
-  getSDCSchoolCollectionStudentSldHistoryPaginated, removeSDCSchoolCollectionStudents
+  getSDCSchoolCollectionStudentSldHistoryPaginated, removeSDCSchoolCollectionStudents, getCollectionClosureSagaStatus
 } = require('../components/sdc/sdc');
 const {getCachedSDCData} = require('../components/sdc/sdc-cache');
 const constants = require('../util/constants');
@@ -48,6 +48,7 @@ router.get('/collection/:collectionID/indySdcSchoolCollectionMonitoring', passpo
 router.get('/collection/:collectionID/students-paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), getSDCSchoolCollectionStudentPaginated);
 router.get('/collection/:collectionID/students-paginated-slice', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), getSDCSchoolCollectionStudentPaginatedSlice);
 router.get('/collection/:collectionID/duplicates', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), checkDuplicatesInCollection);
+router.get('/collection/:collectionID/collection-closure-status', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), getCollectionClosureSagaStatus);
 
 router.post('/collection/:collectionID/in-province-duplicates', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), postProvincialDuplicates);
 router.post('/collection/:collectionID/resolve-duplicates', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('collectionID'), resolveRemainingDuplicates);
