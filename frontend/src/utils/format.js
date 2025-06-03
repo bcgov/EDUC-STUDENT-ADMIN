@@ -91,6 +91,10 @@ export function formatDate(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/
   return formatDateTime(rawDate,from, to);
 }
 
+export function formatReportingDateTime(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd HH:mm'){
+  return formatDateTime(rawDate, from, to, true);
+}
+
 export function formatDisplayDate(date) {
   if (!date) return null;
   const [year, month, day] = date.split('-');
