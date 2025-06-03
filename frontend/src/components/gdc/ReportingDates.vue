@@ -59,8 +59,8 @@
             </v-icon>
             School Year
           </td>
-          <td>{{ formatDate(collectionObject?.schYrStart) }}</td>
-          <td>{{ formatDate(collectionObject?.schYrEnd) }}</td>
+          <td>{{ formatReportingDateTime(collectionObject?.schYrStart) }}</td>
+          <td>{{ formatReportingDateTime(collectionObject?.schYrEnd) }}</td>
           <td>
             <v-btn
               v-if="!isPrevious && hasWritePermission()"
@@ -81,8 +81,8 @@
             </v-icon>
             Summer
           </td>
-          <td>{{ formatDate(collectionObject?.summerStart) }}</td>
-          <td>{{ formatDate(collectionObject?.summerEnd) }}</td>
+          <td>{{ formatReportingDateTime(collectionObject?.summerStart) }}</td>
+          <td>{{ formatReportingDateTime(collectionObject?.summerEnd) }}</td>
           <td>
             <v-btn
               v-if="!isPrevious && hasWritePermission()"
@@ -150,7 +150,7 @@
 <script>
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {formatDate, formatDateAsMonthYear} from '@/utils/format';
+import {formatDate, formatDateAsMonthYear, formatReportingDateTime} from '@/utils/format';
 import DatePicker from '@/components/util/DatePicker.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {findReportingPeriodStatus, getStatusColorGdcSession} from '@/utils/institute/status';
@@ -204,6 +204,7 @@ export default {
     },
   },
   methods: {
+    formatReportingDateTime,
     formatDateAsMonthYear,
     findReportingPeriodStatus,
     formatDate,
@@ -231,7 +232,7 @@ export default {
         this.editDates.min = toYYYYMMDD(startDateLocal);
 
         const endDateString = this.collectionObject.periodEnd.split('T')[0];
-        const endDateLocal = new Date(endDateString + 'T00:00:00');
+        const endDateLocal = new Date(endDateString + 'T23:59:59');
         if (isNaN(endDateLocal.getTime())) throw new Error('Invalid end date');
         endDateLocal.setDate(endDateLocal.getDate() + 1);
         this.editDates.max = toYYYYMMDD(endDateLocal);
@@ -259,16 +260,17 @@ export default {
     updateReportingDates() {
       this.saving = true;
 
-      const toISOStringWithTime = (dateStr) => `${dateStr}T00:00:00`;
+      const toISOStringWithTimeStartOfDay = (dateStr) => `${dateStr}T00:00:00`;
+      const toISOStringWithTimeEndOfDay = (dateStr) => `${dateStr}T23:59:59`;
 
       const payload = { ...this.collectionObject };
 
       if (this.editMode === 'school') {
-        payload.schYrStart = toISOStringWithTime(this.editDates.start);
-        payload.schYrEnd = toISOStringWithTime(this.editDates.end);
+        payload.schYrStart = toISOStringWithTimeStartOfDay(this.editDates.start);
+        payload.schYrEnd = toISOStringWithTimeEndOfDay(this.editDates.end);
       } else {
-        payload.summerStart = toISOStringWithTime(this.editDates.start);
-        payload.summerEnd = toISOStringWithTime(this.editDates.end);
+        payload.summerStart = toISOStringWithTimeStartOfDay(this.editDates.start);
+        payload.summerEnd = toISOStringWithTimeEndOfDay(this.editDates.end);
       }
 
       ApiService.apiAxios.put(`${Routes.gdc.REPORTING_PERIOD}`, payload)
