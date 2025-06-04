@@ -131,14 +131,11 @@
             :class="`text-${header.align}`"
             :style="{ width: header.width ? header.width : 'auto' }"
           >
-            <template v-if="header.key === 'facilityType'">
-              {{
-                facilityTypeLabelMap.get(dataTableRow.selectable.facilityType) ||
-                  dataTableRow.selectable.facilityType
-              }}
+            <template v-if="header.key === 'facilityTypeLabel'">
+              {{ dataTableRow?.raw?.facilityTypeLabel ?? '-' }}
             </template>
             <template v-else-if="header.key === 'lastSubmission'">
-              {{ formatDate(dataTableRow.selectable[header.key]) }}
+              {{ formatDate(dataTableRow?.raw?.[header.key]) }}
             </template>
             <template v-else-if="header.key === 'actions'">
               <v-menu
@@ -156,18 +153,18 @@
                 <v-list density="compact">
                   <v-list-item>
                     <v-list-item-title class="text-subtitle-2 font-weight-bold">
-                      {{ dataTableRow.selectable.schoolName }}
+                      {{ dataTableRow?.raw?.schoolName ?? 'N/A' }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
                       <v-icon> mdi-phone-outline</v-icon>
-                      {{ dataTableRow.selectable.schoolPhoneNumber }}
+                      {{ dataTableRow?.raw?.schoolPhoneNumber ?? 'N/A' }}
                     </v-list-item-subtitle>
                   </v-list-item>
                   <v-divider class="my-1" />
                   <v-list-subheader><strong>Grad Administrators</strong></v-list-subheader>
-                  <template v-if="dataTableRow.selectable.gradUsers && dataTableRow.selectable.gradUsers.length > 0">
+                  <template v-if="dataTableRow?.raw?.gradUsers && dataTableRow.raw.gradUsers.length > 0">
                     <v-list-item
-                      v-for="(gradUser, i) in dataTableRow.selectable.gradUsers"
+                      v-for="(gradUser, i) in dataTableRow.raw.gradUsers"
                       :key="i"
                       density="compact"
                     >
@@ -190,23 +187,22 @@
                     </v-list-item>
                   </template>
                   <v-divider class="my-1" />
-
                   <v-list-item>
-                    <v-list-item-title 
+                    <v-list-item-title
                       class="text-subtitle-2 pb-2"
                     >
                       <a
-                        :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${dataTableRow.selectable.schoolID}&gradDashboard=true&idir_guid=${userInfo.userGuid.toLowerCase()}`"
+                        :href="`${edxURL}/api/auth/silent_sdc_idir_login?schoolID=${dataTableRow?.raw?.schoolID}&gradDashboard=true&idir_guid=${userInfo?.userGuid?.toLowerCase()}`"
                         target="_link"
                       >
                         <v-icon>mdi-school-outline</v-icon>
                         Graduation Dashboard
                       </a>
                     </v-list-item-title>
-                    <v-list-item-title 
+                    <v-list-item-title
                       class="text-subtitle-2"
                     >
-                      <a @click="openSchool(dataTableRow.selectable.schoolID)">
+                      <a @click="openSchool(dataTableRow?.raw?.schoolID)">
                         <v-icon>mdi-domain</v-icon>
                         School Details
                       </a>
@@ -216,7 +212,7 @@
               </v-menu>
             </template>
             <template v-else>
-              {{ dataTableRow.selectable[header.key] ?? '-' }}
+              {{ dataTableRow?.raw?.[header.key] ?? '-' }}
             </template>
           </td>
         </tr>
@@ -234,8 +230,8 @@ import ApiService from '@/common/apiService';
 import { Routes, GRAD_SCHOOL_CATEGORY_MAP } from '@/utils/constants';
 import { instituteStore } from '@/store/modules/institute';
 import { mapState } from 'pinia';
-import {appStore} from '@/store/modules/app';
-import {authStore} from '@/store/modules/auth';
+import { appStore } from '@/store/modules/app';
+import { authStore } from '@/store/modules/auth';
 
 export default {
   name: 'SchoolCategoryTable',
@@ -269,7 +265,7 @@ export default {
         { title: 'School', key: 'schoolName', align: 'start', sortable: true },
         {
           title: 'Facility Type',
-          key: 'facilityType',
+          key: 'facilityTypeLabel',
           align: 'center',
           sortable: true,
         },
@@ -313,7 +309,7 @@ export default {
         { title: 'School', key: 'schoolName', align: 'start', sortable: true },
         {
           title: 'Facility Type',
-          key: 'facilityType',
+          key: 'facilityTypeLabel',
           align: 'center',
           sortable: true,
         },
@@ -342,7 +338,6 @@ export default {
       if (!this.facilityTypeCodes) {
         return new Map();
       }
-
       return new Map(
         this.facilityTypeCodes.map((type) => [type.facilityTypeCode, type.label])
       );
@@ -464,7 +459,22 @@ export default {
             }
           }
         );
-        this.detailedData = response.data;
+
+        if (response.data && Array.isArray(response.data)) {
+          const transformedData = response.data.map(apiItem => {
+            const originalFacilityTypeCode = apiItem.facilityType;
+            const facilityTypeLabel =
+                (this.facilityTypeLabelMap.get(originalFacilityTypeCode) || originalFacilityTypeCode || '').toString();
+
+            return {
+              ...apiItem,
+              facilityTypeLabel: facilityTypeLabel,
+            };
+          });
+          this.detailedData = transformedData;
+        } else {
+          this.detailedData = [];
+        }
       } catch (error) {
         console.error('Error fetching detailed data:', error);
         this.setFailureAlert('Failed to load school submission data.');
@@ -474,6 +484,7 @@ export default {
       }
     },
     openSchool(schoolID) {
+      if (!schoolID) return;
       const routeData = this.$router.resolve({
         name: 'schoolDetails',
         params: { schoolID: schoolID }
