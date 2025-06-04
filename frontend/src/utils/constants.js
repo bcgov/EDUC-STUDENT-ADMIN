@@ -21,7 +21,7 @@ const gdcRoot = baseRoot + '/gdc';
 const challengeReportsRoot = baseRoot + '/challengeReports';
 const gradSchoolRoot = baseRoot + '/grad-school';
 const ministrySDCReportsRoot = baseRoot + '/ministrySDCReports';
-const studentAssessmentRoot = baseRoot + '/student-assessment';
+const studentAssessmentRoot = baseRoot + '/assessments';
 
 let object = {
   LOGIN: authRoot + '/login',

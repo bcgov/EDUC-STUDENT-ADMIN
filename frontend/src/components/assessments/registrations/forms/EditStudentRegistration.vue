@@ -261,7 +261,6 @@ import { mapState } from 'pinia';
 import {assessmentsStore} from '@/store/modules/assessments';
 import { PROFICIENCY_SCORE_RANGE_FILTER } from '@/utils/assessments/StudentRegistrationTableConfiguration.js';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
-import moment from 'moment';
 
 export default {
   name: 'EditStudentRegistration',
@@ -388,7 +387,7 @@ export default {
         this.sessionSearchNames.push({
           sessionCourseMonth: parseInt(session.courseMonth),
           sessionCourseYear: parseInt(session.courseYear),
-          sessionCodeName: this.formatMonth(session.courseMonth) + ' ' + session.courseYear,
+          sessionCodeName: session.courseMonth + '/' + session.courseYear,
           sessionCodeValue: session.sessionID
         });
       });
@@ -528,9 +527,6 @@ export default {
     },
     validateForm() {
       this.$refs?.registrationDetailsForm?.validate();
-    },
-    formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
     },
     getFieldColor(editPermitted) {
       return editPermitted ? '#003366' : '#7f7f7f' ;

@@ -193,7 +193,6 @@
 import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
 import { sortBy } from 'lodash';
 import { mapState } from 'pinia';
-import moment from 'moment';
 import Spinner from '@/components/common/Spinner.vue';
 import * as Rules from '@/utils/institute/formRules.js';
 import {appStore} from '@/store/modules/app';
@@ -306,7 +305,7 @@ export default {
         sessions.push({
           sessionCourseMonth: parseInt(session.courseMonth),
           sessionCourseYear: parseInt(session.courseYear),
-          sessionCodeName: this.formatMonth(session.courseMonth) + ' ' + session.courseYear,
+          sessionCodeName: session.courseMonth + '/' + session.courseYear,
           sessionCodeValue: session.sessionID
         });
       });
@@ -385,9 +384,6 @@ export default {
     },
     validateForm() {
       this.$refs?.addRegistrationForm?.validate();
-    },
-    formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
     },
     cancel() {
       this.$emit('close-new-student-registration');

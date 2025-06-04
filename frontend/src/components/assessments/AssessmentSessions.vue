@@ -99,8 +99,9 @@ import SessionCard from './sessions/SessionCard.vue';
 import EditSession from './sessions/SessionEdit.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '@/utils/constants';
-import moment from 'moment';
-import {DateTimeFormatter, LocalDate} from "@js-joda/core";
+import {DateTimeFormatter, LocalDate, Month} from "@js-joda/core";
+import {capitalize} from 'lodash';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'AssessmentSessions',
@@ -206,10 +207,10 @@ export default {
       this.editSessionSheet = !this.editSessionSheet;
     },
     formattoDate(date) {
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
+      return formatDateTime(date, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd', false);
     },
     formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
+      return capitalize(Month.of(month).toString());
     },
     goToSchoolYearRegistrations() {
       this.$router.push({name: 'assessment-session-detail', params: {schoolYear:  this.schoolYear?.replace(/\//g, '-'), sessionID: null}});

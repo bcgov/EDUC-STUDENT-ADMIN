@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'SessionCard',
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     formattoDate(date) {
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
+      return formatDateTime(date, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd', false);
     },
     goToSessionRegistrations() {
       this.$router.push({name: 'assessment-session-detail', params: {schoolYear:  this.session.schoolYear.replace(/\//g, '-'), sessionID: this.session.sessionID}});
