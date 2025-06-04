@@ -244,12 +244,12 @@
 </template>
 
 <script>
-import moment from 'moment';
-import { sortBy } from 'lodash';
+import { sortBy, capitalize } from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
+import { Month } from '@js-joda/core';
 
 export default {
   name: 'AssessmentKeyUpload',
@@ -464,7 +464,7 @@ export default {
       this.sessionSearchNames = sortBy(this.sessionSearchNames, ['courseYear','courseMonth']);
     },
     formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
+      return capitalize(Month.of(month).toString());;
     },
   },
 };

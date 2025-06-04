@@ -273,13 +273,12 @@
 <script>
 import alertMixin from '../../../mixins/alertMixin';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import { isEmpty, sortBy, cloneDeep } from 'lodash';
+import { isEmpty, sortBy, cloneDeep, capitalize } from 'lodash';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
 import {assessmentsStore} from '@/store/modules/assessments';
-
 import { mapState } from 'pinia';
-import moment from 'moment';
+import { Month } from '@js-joda/core';
 
 export default {
   name: 'StudentRegistrationsFilter',
@@ -500,7 +499,7 @@ export default {
       this.$emit('apply-assessment-filters', this.selected);
     },
     formatMonth(month) {
-      return moment(month, 'MM').format('MMMM');
+      return capitalize(Month.of(month).toString());
     }
   },
 };

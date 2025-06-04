@@ -114,11 +114,10 @@ import StudentRegistrationsCustomTable from './StudentRegistrationsCustomTable.v
 import { SCHOOL_YEAR_REGISTRATIONS_VIEW, SESSION_REGISTRATIONS_VIEW } from '@/utils/assessments/StudentRegistrationTableConfiguration.js';
 import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
-import { cloneDeep, isEmpty, omitBy } from 'lodash';
+import { cloneDeep, isEmpty, omitBy, capitalize } from 'lodash';
 import StudentRegistrationsFilter from './StudentRegistrationsFilter.vue';
 import StudentRegistrationDetail from './StudentRegistrationDetail.vue';
-
-import moment from 'moment';
+import { Month } from '@js-joda/core';
 import AddStudentRegistration from "@/components/assessments/registrations/forms/AddStudentRegistration.vue";
 
 export default {
@@ -200,7 +199,7 @@ export default {
           (session) => session.sessionID === this.sessionID
         );
         this.filterSearchParams.moreFilters.session = [
-          { title: moment(activeSession.courseMonth, 'MM').format('MMMM') , id: activeSession.sessionID, value: activeSession.sessionID },
+          { title: capitalize(Month.of(activeSession.courseMonth).toString()), id: activeSession.sessionID, value: activeSession.sessionID },
         ];
       }      
     },
