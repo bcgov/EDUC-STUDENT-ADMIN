@@ -79,6 +79,13 @@ router.get('/silent_idir_login', async function (req, res, next) {
     }
     await client.set(idir_guid + '::studentDetails', true, 'EX', 1800);
     await client.set(idir_guid + '::studentID', studentID, 'EX', 1800);
+  }else if(req.query.studentDetailsSLD && req.query.studentID){
+    let studentID = req.query.studentID;
+    if (!validate(studentID)) {
+      res.status(401).json('Invalid Student ID.');
+    }
+    await client.set(idir_guid + '::studentDetailsSLD', true, 'EX', 1800);
+    await client.set(idir_guid + '::studentID', studentID, 'EX', 1800);
   }
   else{
     res.status(401).json(UnauthorizedRsp);
@@ -106,6 +113,7 @@ router.get(
     let districtID = await client.get(idir_guid + '::districtID');
     let studentDetails = await client.get(idir_guid + '::studentDetails');
     let studentID = await client.get(idir_guid + '::studentID');
+    let studentDetailsSLD = await client.get(idir_guid + '::studentDetailsSLD');
 
     await client.del(idir_guid + '::schoolSearch');
     await client.del(idir_guid + '::schoolDetails');
@@ -114,6 +122,7 @@ router.get(
     await client.del(idir_guid + '::districtID');
     await client.del(idir_guid + '::studentDetails');
     await client.del(idir_guid + '::studentID');
+    await client.del(idir_guid + '::studentDetailsSLD');
 
     if(schoolSearch){
       res.redirect(config.get('server:frontend') + '/institute/school' );
@@ -123,6 +132,8 @@ router.get(
       res.redirect(config.get('server:frontend') + '/district/' + districtID);
     }else if(studentDetails){
       res.redirect(config.get('server:frontend') + '/student/' + studentID);
+    }else if(studentDetailsSLD){
+      res.redirect(config.get('server:frontend') + '/student/' + studentID +'?activeTab=sld');
     }else{
       res.status(401).json(UnauthorizedRsp);
     }
