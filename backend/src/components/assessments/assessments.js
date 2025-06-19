@@ -188,7 +188,7 @@ async function uploadAssessmentKeyFile(req, res) {
       createUser: createUpdateUser,
       updateUser: createUpdateUser
     };
-    let data = await utils.postData(`${config.get('server:assessments:assessmentKeyURL')}/${req.params.sessionID}/file`, payload, null, userInfo.idir_username);
+    let data = await utils.postData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/key-file`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     console.log(JSON.stringify(e));

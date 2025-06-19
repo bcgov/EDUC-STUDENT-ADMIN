@@ -157,8 +157,7 @@ nconf.defaults({
       assessmentSessionsURL: process.env.ASSESSMENTS_API_URL+ '/sessions',
       assessmentTypeCodeURL: process.env.ASSESSMENTS_API_URL+ '/assessment-types',
       assessmentSpecialCaseTypeCodeURL: process.env.ASSESSMENTS_API_URL+ '/assessment-specialcase-types',
-      assessmentStudentsURL: process.env.ASSESSMENTS_API_URL+ '/student',
-      assessmentKeyURL: process.env.ASSESSMENTS_API_URL+ '/assessment-keys',
+      assessmentStudentsURL: process.env.ASSESSMENTS_API_URL+ '/student'
     },
     gdc:{
       rootURL: process.env.GDC_API_URL,
