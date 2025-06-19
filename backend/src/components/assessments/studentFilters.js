@@ -13,7 +13,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     
     //Default Filter Begin
     if (key === 'schoolYear' && pValue) {
-      searchCriteriaList.push({ key: 'assessmentEntity.sessionEntity.schoolYear', value: pValue[0].replace('-', '/'), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+      searchCriteriaList.push({ key: 'assessmentEntity.assessmentSessionEntity.schoolYear', value: pValue[0].replace('-', '/'), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }  
     //Default Filter End
     
@@ -46,7 +46,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }
 
     if (key === 'session' && pValue) {
-      searchCriteriaList.push({ key: 'assessmentEntity.sessionEntity.sessionID', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
+      searchCriteriaList.push({ key: 'assessmentEntity.assessmentSessionEntity.sessionID', value: pValue.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
     if (key === 'assessmentTypeCode' && pValue) {
