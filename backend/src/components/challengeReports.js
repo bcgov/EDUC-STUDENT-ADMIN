@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const config = require('../config');
 const utils = require('./utils');
+const {Year} = require("@js-joda/core");
 let reportTypes = ['DISTRICT_FUNDING_REPORT', 'INDEPENDENT_SCHOOL_FUNDING_REPORT'];
 
 async function getActiveChallengeReportsPeriod(req, res) {
@@ -89,7 +90,13 @@ async function downloadMinistryChallengeReport(req, res) {
     const urlSession = `${config.get('server:challengeReports:rootURL')}/activeSession`;
     const dataSession = await getData(urlSession);
 
-    const fileDetails = getFileDetails(req.params.reportType, dataSession.schoolYear);
+    let yearString = dataSession.schoolYear;
+    if(dataSession.schoolYear){
+      const lastYear = Year.of(dataSession.schoolYear).minusYears(1).toString();
+      yearString = lastYear + '/' + dataSession.schoolYear;
+    }
+
+    const fileDetails = getFileDetails(req.params.reportType, yearString);
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(data.documentData, 'base64');
     return res.status(200).send(buffer);
