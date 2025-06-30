@@ -24,13 +24,13 @@
           v-if="challengeReportsSessionStatus === 'PRELIM'"
           color="warning"
         >
-          Preliminary Phase
+          Preliminary - Updates due by {{ activePeriod.preliminaryCompletionDate }}
         </v-chip>
         <v-chip
           v-else-if="challengeReportsSessionStatus === 'FINALIZED'"
           color="success"
         >
-          Finalized
+          Final - Data as of {{ activePeriod.finalCompletionDate }}
         </v-chip>
         <v-chip v-else>
           Preliminary Phase Not Started
