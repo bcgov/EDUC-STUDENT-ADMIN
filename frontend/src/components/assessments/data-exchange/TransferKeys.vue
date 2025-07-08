@@ -1,123 +1,41 @@
 <template>
   <v-container class="mb-6" fluid>
-    <div class="borderless">
-      <v-row>
-        <v-col class="d-flex justify-center">
-          <h1>Upload Assessment Keys</h1>
-        </v-col>
-      </v-row>
-
-      <v-row no-gutters>
-        <v-col align-self="start" />
-        <v-col cols="2" offset="0" align-self="center">
-          <v-sheet class="pa-1 ma-1">
-            <v-autocomplete
-              id="Session"
-              v-model="selectedSessionID"
-              variant="underlined"
-              :items="sessionSearchNames"
-              label="Please select the session"
-              :clearable="true"
-              color="#003366"
-              item-title="title"
-              item-value="value"
-              autocomplete="off"
-            />
-          </v-sheet>
-        </v-col>
-        <v-col align-self="end" />
-      </v-row>
-      <v-row>
-        <v-col class="d-flex justify-center">
-          <span class="mr-1">
-            Please choose the session and click the button below to select your
-            Assessment Keys for upload and processing.</span>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col class="d-flex justify-center">
-          <span class="mr-1">Check the status of your files in the "Summary of Uploaded Data"
-            table below.</span>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col class="d-flex justify-space-evenly">
-          <v-btn
-            id="uploadButton"
-            prepend-icon="mdi-file-upload"
-            variant="elevated"
-            color="#003366"
-            text="Upload Assessment Key Data Files"
-            :loading="isLoadingFiles"
-            :disabled="!selectedSessionID"
-            @click="handleFileImport"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <p class="schools-in-progress-header">Summary of Uploaded Data</p>
-        </v-col>
-      </v-row>
-      <v-data-table-server
-        v-model:page.sync="pageNumber"
-        v-model:items-per-page.sync="pageSize"
-        :items-length="totalElements"
-        :items="filesetList"
-        :headers="headers"
-        mobile-breakpoint="0"
+    <v-expansion-panels v-model="type">
+      <v-expansion-panel
+        class="border"
+        v-for="(session, index) in schoolYearSessions"
+        :key="index"
+        :value="session.sessionID"
       >
-        <template #item="props">
-          <tr>
-            <td v-for="column in headers" :key="column.key">
-              <span v-if="column.key === 'errorLink'">
-                <a
-                  v-if="isFilesetComplete(props.item)"
-                  class="ml-1"
-                  @click="navigateToErrors(props.item)"
-                >View Report</a>
-              </span>
-              <span
-                v-else-if="column.key === 'demFileUploadDate' || column.key === 'xamFileUploadDate' || column.key === 'crsFileUploadDate'"
-              >
-                {{ props.item[column.key] ? props.item[column.key].substring(0, 19).replaceAll("-", "/").replaceAll("T", " ") : "-" }}
-              </span>
-              <div
-                v-else-if="column.key === 'demFileStatusCode' || column.key === 'xamFileStatusCode' || column.key === 'crsFileStatusCode'"
-              >
-                <div v-if="props.item[column.key] === 'LOADED'">
-                  <span v-if="isFilesetInProgress(props.item)">
-                    <v-progress-circular
-                      :size="20"
-                      :width="4"
-                      color="primary"
-                      indeterminate
-                    />
-                    Processing
-                  </span>
-                  <span v-else>
-                    <v-icon icon="mdi-clock-alert-outline" color="warning" />
-                    Awaiting Other Files
-                  </span>
-                </div>
-                <span v-if="props.item[column.key] === 'NOTLOADED'">
-                  <v-icon icon="mdi-alert-circle-outline" color="error" />
-                  Not Loaded
-                </span>
-                <span v-if="props.item[column.key] === 'COMPLETED'">
-                  <v-icon icon="mdi-check-circle-outline" color="success" />
-                  Processed
-                </span>
-              </div>
-              <span v-else-if="props.item[column.key]">
-                {{ props.item[column.key] }}
-              </span>
-              <span v-else>-</span>
-            </td>
-          </tr>
-        </template>
-      </v-data-table-server>
-    </div>
+      <v-expansion-panel-title
+          disable-icon-rotate
+          prepend-icon="mdi-account"
+        >
+          <h4>{{ session.courseYear }}/{{ session.courseMonth }} Session</h4>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <AssessmentKeyTable
+            :headers="headers"
+            :data="session.assessments"
+          />
+          <v-row>
+            <v-col class="d-flex justify-end">
+              <v-btn
+                id="uploadButton"
+                prepend-icon="mdi-file-upload"
+                variant="elevated"
+                color="#003366"
+                text="Upload Assessment Key Data Files"
+                :loading="isLoadingFiles"
+                :disabled="!session.isOpen"
+                @click="handleFileImport(session)"
+              />
+            </v-col>
+          </v-row>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
     <v-form ref="documentForm" v-model="validForm">
       <v-file-input
         id="selectFileInput"
@@ -229,14 +147,8 @@
     <ConfirmationDialog ref="confirmReplacementFile">
       <template #message>
         <p>
-          Uploading a replacement file will remove all data associated with the
-          existing file you have uploaded.
-        </p>
-        &nbsp;
-        <p>
-          Once this action is completed <strong>it cannot be undone</strong> and
-          <strong>any fixes to data issues or changes to student data will need to be
-            completed again.</strong>
+          A key has already been uploaded for {{ assessmentTypeCode }}. If you continue with this upload the previously loaded key and all associated forms will be replaced. 
+          Please confirm that you would like to replace the existing key for {{ assessmentTypeCode }}.
         </p>
       </template>
     </ConfirmationDialog>
@@ -244,33 +156,39 @@
 </template>
 
 <script>
-import { sortBy, capitalize } from 'lodash';
+import { capitalize } from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
+import AssessmentKeyTable from './AssessmentKeyTable.vue';
 
 export default {
-  name: 'AssessmentKeyUpload',
+  name: 'TransferKeys',
   components: {
     ConfirmationDialog,
+    AssessmentKeyTable
   },
   mixins: [],
   props: {
-    schoolYear: {
-      type: String,
-      required: true,
-    },
     schoolYearSessions: {
-      type: Object,
+      type: Array,
       required: true,
     },
   },
+  emits: ['refresh-sessions'],
   data() {
     return {
+      type:'',
+      headers: [
+        { title: 'Assessment', key: 'assessmentTypeCode', align: 'start', sortable: true },
+        { title: 'Form', key: 'form', align: 'start', sortable: true },
+        { title: 'Upload Date', key: 'uploadDate', align: 'start', sortable: true },
+        { title: 'Uploaded by', key: 'uploadBy', align: 'start', sortable: true },
+        { title: '', key: 'report', align: 'start', sortable: true },
+      ],
       isLoading: false,
-      sessionSearchNames: [],
       selectedSessionID: null,
       acceptableFileExtensions: ['.txt'],
       requiredRules: [(v) => !!v || 'Required'],      
@@ -294,10 +212,7 @@ export default {
       fileUploadPending: FILE_UPLOAD_STATUS.PENDING,
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
-      headers: [
-        { title: 'File Name', key: 'fileName' },
-        { title: 'Upload Date', key: 'uploadDate' },
-      ],
+      assessmentTypeCode: ''
     };
   },
   computed: {},
@@ -307,9 +222,17 @@ export default {
         this.importFile();
       }
     },
+    schoolYearSessions: {
+      handler(value) {
+        if(value.length > 0) {
+          let openSession = value.filter(sch => sch.isOpen);
+          this.type = openSession[0].sessionID;
+        }
+      },
+      immediate: true
+    }
   },
   async created() {
-    this.setupAssessmentSessions();
   },
   methods: {
     closeOverlay() {
@@ -322,7 +245,6 @@ export default {
       const extension = `.${fileJSON.name.split('.').slice(-1)}`;
       const failMessage =
         'File extension is invalid. Extension must be ".txt".';
-
       if (
         extension &&
         this.acceptableFileExtensions.find(
@@ -435,33 +357,39 @@ export default {
         this.successfulUploadCount += 1;
         fileJSON.status = this.fileUploadSuccess;
       } catch (e) {
-        console.error(e);
-        fileJSON.error = e.response.data;
-        fileJSON.status = this.fileUploadError;
+        if(e?.message.includes('428')){
+          this.assessmentTypeCode = e.response.data;
+          const confirmation = await this.$refs.confirmReplacementFile.open('Confirm Key Replacement', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Replace Key', rejectText: 'Cancel'});
+          if (!confirmation) {
+            fileJSON.error = 'Abandoned';
+            fileJSON.status = this.fileUploadError;
+            return;
+          }
+          try {
+            await ApiService.apiAxios.post(Routes.assessments.ASSESSMENT_KEYS + '/session/' + this.selectedSessionID + '/upload-file?replaceKeyFlag=true', document)
+              .then(() => {});
+            this.successfulUploadCount += 1;
+            fileJSON.status = this.fileUploadSuccess;
+          }catch (e2) {
+            console.error(e);
+            fileJSON.error = 'Error occurred during upload, please try again later.';
+            fileJSON.status = this.fileUploadError;
+          }
+        }else{
+          console.error(e);
+          fileJSON.error = e.response.data;
+          fileJSON.status = this.fileUploadError;
+        }
       }
     },
     async getFileSummaryPaginated() {
-      //Implement logic to get file summary.
+      this.$emit('refresh-sessions');
     },
-    handleFileImport() {
-      if (this.selectedSessionID) {
-        this.populatedSuccessMessage = null;
-        this.successfulUploadCount = 0;
-        this.$refs.uploader.click();
-      }
-    },
-    setupAssessmentSessions() {
-      this.sessionSearchNames = [];
-      this.schoolYearSessions.forEach((session) => {
-        this.sessionSearchNames.push({
-          id: session.sessionID,
-          courseMonth: parseInt(session.courseMonth),
-          courseYear: parseInt(session.courseYear),
-          title: this.formatMonth(session.courseMonth),
-          value: session.sessionID,
-        });
-      });
-      this.sessionSearchNames = sortBy(this.sessionSearchNames, ['courseYear','courseMonth']);
+    handleFileImport(session) {
+      this.selectedSessionID = session.sessionID;
+      this.populatedSuccessMessage = null;
+      this.successfulUploadCount = 0;
+      this.$refs.uploader.click();
     },
     formatMonth(month) {
       return capitalize(Month.of(month).toString());;
@@ -471,10 +399,16 @@ export default {
 </script>
 
 <style scoped>
-.borderless {
-  border: 0px;
-  margin: 2em;
+.border {
+  border: 2px solid grey;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
+
+h4, .v-icon {
+  color: #38598a;
+}
+
 .schools-in-progress-header {
   margin-top: 12px;
   margin-bottom: 1em;

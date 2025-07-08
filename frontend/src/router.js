@@ -55,7 +55,7 @@ import CollectionView from '@/components/data-collection/CollectionView.vue';
 import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
 import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue';
 import AssessmentSessionDetail from '@/components/assessments/AssessmentSessionsDetail.vue';
-import AssessmentDataExchange from '@/components/assessments/AssessmentDataExchange.vue';
+import AssessmentTabs from '@/components/assessments/AssessmentTabs.vue';
 import GraduationTabs from '@/components/gdc/GraduationTabs.vue';
 import ChallengeReports from '@/components/challenge-reports/ChallengeReports.vue';
 
@@ -556,9 +556,9 @@ const router = createRouter({
     {
       path: '/assessment-data-exchange',
       name: 'assessment-data-exchange',
-      component: AssessmentDataExchange,
+      component: AssessmentTabs,
       meta: {
-        pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
+        pageTitle: PAGE_TITLES.GRADUATION_ASSESSMENTS,
         requiresAuth: true,
         permission: PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION
       },
