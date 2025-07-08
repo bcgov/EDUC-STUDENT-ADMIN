@@ -1,47 +1,68 @@
 <template>
   <v-container class="containerSetup" :fluid="true">
-    <v-row class="d-flex justify-start">
-      <v-col>
-        <h2 class="subjectHeading">
-          School Year: {{ schoolYear?.replace("-", "/") }}
-        </h2>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
-      <v-col>
-        <v-divider class="divider" />
-      </v-col>
-    </v-row>
     <v-row v-if="isLoading" class="mt-0">
       <v-col>
         <Spinner />
       </v-col>
     </v-row>
     <v-row v-else>
-      <v-col class="border">
-        <v-tabs v-model="tab" color="#38598a">
-          <v-tab :value="1">Assessment Keys</v-tab>
-          <v-tab :value="2">Assessment Results</v-tab>
+      <v-col>
+        <v-tabs v-model="tab" style="color: #38598a">
+          <v-tab
+           value="summary"
+           id="summary"
+           prepend-icon="mdi-file-document-outline"
+           >
+           Registrations Summary
+          </v-tab>
+          <v-tab
+           value="registrations"
+           id="registrations"
+           prepend-icon="mdi-file-arrow-up-down-outline"
+           >
+           Transfer Registrations
+          </v-tab>
+          <v-tab
+           value="transferKeys"
+           id="transferKeys"
+           prepend-icon="mdi-file-key-outline"
+           >
+           Transfer Keys
+          </v-tab>
+          <v-tab
+           value="transferResults"
+           id="transferResults"
+           prepend-icon="mdi-file-arrow-left-right-outline"
+           >
+           Transfer Results
+          </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
-            :value="1"
+            value="summary"
             transition="false"
             reverse-transition="false"
           >
-            <AssessmentKeyUpload 
-              v-if="activeSessions?.length > 0"
-              :school-year="schoolYear"
-              :school-year-sessions="activeSessions"
-            />
           </v-window-item>
           <v-window-item
-            :value="2"
+            value="registrations"
             transition="false"
             reverse-transition="false"
           />
           <v-window-item
-            :value="3"
+            value="transferKeys"
+            transition="false"
+            reverse-transition="false"
+          >
+          <TransferKeys 
+              v-if="activeSessions?.length > 0"
+              :school-year="schoolYear"
+              :school-year-sessions="activeSessions"
+              @refresh-sessions="refreshSession"
+            />
+          </v-window-item>
+          <v-window-item
+            value="transferResults"
             transition="false"
             reverse-transition="false"
           />
@@ -54,14 +75,14 @@
 import Spinner from '@/components/common/Spinner.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '../../utils/constants';
-import AssessmentKeyUpload from './data-exchange/AssessmentKeyUpload.vue';
+import TransferKeys from './data-exchange/TransferKeys.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 
 export default {
-  name: 'AssessmentSessionDetail',
+  name: 'AssessmentTabs',
   components: {
     Spinner,
-    AssessmentKeyUpload,
+    TransferKeys,
   },
   mixins: [],
   props: {},
@@ -104,6 +125,9 @@ export default {
     backToAssesmentSessions() {
       this.$router.push({ name: 'assessment-sessions' });
     },
+    refreshSession() {
+      this.getActiveSessions();
+    }
   },
 };
 </script>

@@ -185,15 +185,19 @@ async function uploadAssessmentKeyFile(req, res) {
       fileContents: req.body.fileContents,
       fileName: req.body.fileName,
       fileType: req.body.fileType,
+      replaceKeyFlag: req.query.replaceKeyFlag ? 'Y' : 'N',
       createUser: createUpdateUser,
       updateUser: createUpdateUser
     };
+
     let data = await utils.postData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/key-file`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     console.log(JSON.stringify(e));
     if (e.status === 400) {
       return res.status(HttpStatus.BAD_REQUEST).json(e.data.subErrors[0].message);
+    } else if (e.status === 428) {
+      return res.status(HttpStatus.PRECONDITION_REQUIRED).json(e.data.message);
     }
     log.error('uploadAssessmentKeyFile Error', e.stack);
     return handleExceptionResponse(e, res);

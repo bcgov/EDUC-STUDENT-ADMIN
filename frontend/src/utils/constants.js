@@ -669,7 +669,7 @@ export const PAGE_TITLES = Object.freeze(
     ASSESSMENTS: 'Assessments',
     GRADUATION: 'Graduation',
     ASSESSMENT_SESSIONS_MANAGEMENT: 'Assessment Sessions',
-    ASSESSMENT_DATA_EXCHANGE: 'Assessment Data Exchange',
+    GRADUATION_ASSESSMENTS: 'Graduation Assessments',
   }
 );
 
