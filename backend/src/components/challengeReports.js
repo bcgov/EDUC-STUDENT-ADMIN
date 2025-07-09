@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const config = require('../config');
 const utils = require('./utils');
-const {Year} = require("@js-joda/core");
+const {Year, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 let reportTypes = ['DISTRICT_FUNDING_REPORT', 'INDEPENDENT_SCHOOL_FUNDING_REPORT'];
 
 async function getActiveChallengeReportsPeriod(req, res) {
@@ -18,7 +18,7 @@ async function getActiveChallengeReportsPeriod(req, res) {
       schoolYear: data.schoolYear,
       challengeReportsSessionStatus: data.challengeReportsStatusCode,
       finalDateForChanges: data.finalDateForChanges ? formatCompletionDate(data.finalDateForChanges) : null,
-      preliminaryCompletionDate: data.preliminaryCompletionDate ? formatCompletionDate(data.preliminaryCompletionDate) : null,
+      preliminaryCompletionDate: data.preliminaryStageCompletionDate ? formatCompletionDate(data.preliminaryStageCompletionDate) : null,
       finalCompletionDate: data.finalStageCompletionDate ? formatCompletionDate(data.finalStageCompletionDate) : null
     };
 
@@ -121,11 +121,11 @@ function setResponseHeaders(res, { filename, contentType }) {
 }
 
 function formatCompletionDate(rawDate) {
-  const date = new Date(rawDate);
+  const date = LocalDate.parse(rawDate.substring(0, 10), DateTimeFormatter.ofPattern('yyyy-MM-dd'));
 
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
+  const year = date.year();
+  const month = date.monthValue().toString().padStart(2, '0');
+  const day = date.dayOfMonth().toString().padStart(2, '0');
 
   return `${year}/${month}/${day}`;
 }
