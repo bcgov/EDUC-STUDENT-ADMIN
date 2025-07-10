@@ -24,7 +24,7 @@
           v-if="challengeReportsSessionStatus === 'PRELIM'"
           color="warning"
         >
-          Preliminary - Updates due by {{ activePeriod.preliminaryCompletionDate }}
+          Preliminary - Updates due by {{ activePeriod.finalDateForChanges }}
         </v-chip>
         <v-chip
           v-else-if="challengeReportsSessionStatus === 'FINALIZED'"
