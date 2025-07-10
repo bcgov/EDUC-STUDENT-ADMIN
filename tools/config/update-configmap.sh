@@ -686,6 +686,18 @@ manageAssessmentAssessmentKeysPermissionJson=$(curl -sX GET "https://$SOAM_KC/au
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN")
 
+echo Creating MANAGE_ASSESSMENT_RESULTS_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"MANAGE_ASSESSMENT_RESULTS_PERMISSION\",\"description\" : \"Permission to manage assessment results\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving MANAGE_ASSESSMENT_RESULTS_PERMISSION permission
+manageAssessmentResultsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_ASSESSMENT_RESULTS_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
 echo
 echo Creating ASSESSMENT_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
@@ -698,7 +710,7 @@ echo Assigning permissions to ASSESSMENT_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/ASSESSMENT_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$manageSessionsPermissionJson, $viewAssessmentStudentsPermissionJson, $editAssessmentStudentsPermissionJson, $editAssessmentHistoryPermissionJson, $manageAssessmentAssessmentKeysPermissionJson]"
+  -d "[$manageSessionsPermissionJson, $viewAssessmentStudentsPermissionJson, $editAssessmentStudentsPermissionJson, $editAssessmentHistoryPermissionJson, $manageAssessmentAssessmentKeysPermissionJson, $manageAssessmentResultsPermissionJson]"
 
 echo
 echo Retrieving client ID for student-admin-soam
