@@ -364,7 +364,7 @@ export default {
             {
               title: 'Data Exchange',
               link: 'assessment-data-exchange',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION)
+              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION)
             }
           ],
         }

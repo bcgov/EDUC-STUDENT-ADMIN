@@ -560,7 +560,7 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.GRADUATION_ASSESSMENTS,
         requiresAuth: true,
-        permission: PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION
+        permission: PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION
       },
     },
     {

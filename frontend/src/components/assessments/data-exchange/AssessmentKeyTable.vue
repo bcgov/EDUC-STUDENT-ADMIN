@@ -45,8 +45,15 @@
           <span v-if="column.key === 'form'">
             {{ props.item.selectable['form'] }}
           </span>
-          <span v-else-if="column.key === 'report'" class="report-link">
-            Summary Report
+          <span v-else-if="column.key === 'report'">
+            <v-btn
+              id="summary"
+              color="#1976d2"
+              text="Summary Report"
+              class="mb-1"
+              prepend-icon="mdi-tray-arrow-down"
+              variant="text"
+            />
           </span>
           <span v-else-if="column.key === 'assessmentTypeCode'">
             {{ props.item.selectable['assessmentTypeCode'] }}
@@ -158,9 +165,6 @@ export default {
   
    .row-text {
     vertical-align: text-top;
-   }
-   .report-link {
-    color: #1976d2;
    }
 
         </style>

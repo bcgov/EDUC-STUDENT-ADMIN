@@ -2,7 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const { postAssessmentStudent, getAssessmentSessions, getAssessmentSessionsBySchoolYear, updateAssessmentSession, getAssessmentStudentsPaginated, getAssessmentStudentByID, updateAssessmentStudentByID, getAssessmentSpecialCases, deleteAssessmentStudentByID, 
-  uploadAssessmentKeyFile } = require('../components/assessments/assessments');
+  uploadAssessmentKeyFile , uploadAssessmentResultsFile, getResultUploadSummary} = require('../components/assessments/assessments');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const permUtils = require('../components/permissionUtils');
@@ -27,6 +27,9 @@ router.delete('/assessment-registrations/student/:assessmentStudentID', passport
 
 router.post('/assessment-keys/session/:sessionID/upload-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION), extendSession, validate(fileUploadSchema), scanFilePayload, uploadAssessmentKeyFile);
 
+router.post('/assessment-results/session/:sessionID/upload-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_RESULTS_PERMISSION), extendSession, validate(fileUploadSchema), scanFilePayload, uploadAssessmentResultsFile);
 router.get('/assessment-specialcase-types', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getAssessmentSpecialCases);
+
+router.get('/assessment-results/session/:sessionID/summary', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getResultUploadSummary);
 
 module.exports = router;
