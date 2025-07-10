@@ -191,7 +191,6 @@ async function uploadAssessmentResultsFile(req, res) {
     let data = await utils.postData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/results-file`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
-    console.log(JSON.stringify(e));
     if (e.status === 400) {
       return res.status(HttpStatus.BAD_REQUEST).json(e.data.subErrors[0].message);
     }
@@ -202,7 +201,7 @@ async function uploadAssessmentResultsFile(req, res) {
 
 async function getResultUploadSummary(req, res) {
   try {
-    let data = await getData(`http://localhost:8082/api/v1/student-assessment/${req.params.sessionID}/result-summary`);
+    let data = await getData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/result-summary`);
     return res.status(200).json(data);
   } catch (e) {
     await logApiError(e, 'Error getting assessment result summary');

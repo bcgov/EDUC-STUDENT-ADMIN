@@ -365,7 +365,6 @@ export default {
       this.isLoading= true;
       this.resultsSummary=[];
       ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/summary').then((response) => {
-        console.log(response);
         this.resultsSummary = response.data;
       }).catch(error => {
         console.error(error);
