@@ -177,6 +177,38 @@ async function deleteAssessmentStudentByID(req, res) {
   }
 }
 
+async function uploadAssessmentResultsFile(req, res) {
+  try {
+    const userInfo = utils.getUser(req);
+    let createUpdateUser =  userInfo.idir_username;
+    const payload = {
+      fileContents: req.body.fileContents,
+      fileName: req.body.fileName,
+      createUser: createUpdateUser,
+      updateUser: createUpdateUser
+    };
+
+    let data = await utils.postData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/results-file`, payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e.status === 400) {
+      return res.status(HttpStatus.BAD_REQUEST).json(e.data.subErrors[0].message);
+    }
+    log.error('uploadAssessmentResultsFile Error', e.stack);
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getResultUploadSummary(req, res) {
+  try {
+    let data = await getData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/result-summary`);
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error getting assessment result summary');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function uploadAssessmentKeyFile(req, res) {
   try {
     const userInfo = utils.getUser(req);
@@ -184,7 +216,6 @@ async function uploadAssessmentKeyFile(req, res) {
     const payload = {
       fileContents: req.body.fileContents,
       fileName: req.body.fileName,
-      fileType: req.body.fileType,
       replaceKeyFlag: req.query.replaceKeyFlag ? 'Y' : 'N',
       createUser: createUpdateUser,
       updateUser: createUpdateUser
@@ -256,5 +287,7 @@ module.exports = {
   deleteAssessmentStudentByID,
   getAssessmentSpecialCases,
   postAssessmentStudent,
-  uploadAssessmentKeyFile
+  uploadAssessmentKeyFile,
+  uploadAssessmentResultsFile,
+  getResultUploadSummary
 };

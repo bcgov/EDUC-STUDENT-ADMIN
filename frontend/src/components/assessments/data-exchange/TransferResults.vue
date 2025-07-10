@@ -1,6 +1,9 @@
 <template>
   <v-container class="mb-6" fluid>
-    <v-expansion-panels v-model="type">
+    <v-expansion-panels 
+      v-model="type"
+      @update:modelValue="getResultSummary()"
+      >
       <v-expansion-panel
         class="border"
         v-for="(session, index) in schoolYearSessions"
@@ -14,18 +17,41 @@
           <h4>{{ session.courseYear }}/{{ session.courseMonth }} Session</h4>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          <AssessmentKeyTable
+          <v-data-table
             :headers="headers"
-            :data="session.assessments"
-          />
+            :items="resultsSummary"
+          >
+            <template  v-slot:item.resultsUploaded="{ item }">
+              <v-icon style="color: red;" v-if="item.raw.uploadedBy === null">mdi-close</v-icon>
+              <v-icon style="color: green;" v-else>mdi-check</v-icon>
+            </template>
+          </v-data-table>
           <v-row>
+            <v-col>
+              <v-btn
+                id="summary"
+                color="#1976d2"
+                text="Summary Report"
+                class="mb-1"
+                prepend-icon="mdi-tray-arrow-down"
+                variant="text"
+              />
+              <v-btn
+                id="detailed"
+                color="#1976d2"
+                text="Detailed Results"
+                class="mr-2 mb-1"
+                prepend-icon="mdi-tray-arrow-down"
+                variant="text"
+              />
+            </v-col>
             <v-col class="d-flex justify-end">
               <v-btn
                 id="uploadButton"
                 prepend-icon="mdi-file-upload"
                 variant="elevated"
                 color="#003366"
-                text="Upload Assessment Key Data Files"
+                text="Upload Assessment Results"
                 :loading="isLoadingFiles"
                 :disabled="!session.isOpen"
                 @click="handleFileImport(session)"
@@ -144,18 +170,11 @@
         </v-card-actions>
       </v-card>
     </v-overlay>
-    <ConfirmationDialog ref="confirmReplacementFile">
-      <template #message>
-        <p>
-          A key has already been uploaded for {{ assessmentTypeCode }}. If you continue with this upload the previously loaded key and all associated forms will be replaced. 
-          Please confirm that you would like to replace the existing key for {{ assessmentTypeCode }}.
-        </p>
-      </template>
-    </ConfirmationDialog>
   </v-container>
 </template>
 
 <script>
+import alertMixin from '@/mixins/alertMixin';
 import { capitalize } from 'lodash';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
@@ -165,28 +184,27 @@ import { Month } from '@js-joda/core';
 import AssessmentKeyTable from './AssessmentKeyTable.vue';
 
 export default {
-  name: 'TransferKeys',
+  name: 'TransferResults',
   components: {
     ConfirmationDialog,
     AssessmentKeyTable
   },
-  mixins: [],
+  mixins: [alertMixin],
   props: {
     schoolYearSessions: {
       type: Array,
       required: true,
     },
   },
-  emits: ['refresh-sessions'],
+  emits: [],
   data() {
     return {
       type:'',
       headers: [
-        { title: 'Assessment', key: 'assessmentTypeCode', align: 'start', sortable: true },
-        { title: 'Form(s)', key: 'form', align: 'start', sortable: true },
+        { title: 'Assessment Keys', key: 'assessmentType', align: 'start', sortable: true },
+        { title: 'Results Uploaded', key: 'resultsUploaded', align: 'start', sortable: true },
         { title: 'Upload Date', key: 'uploadDate', align: 'start', sortable: true },
-        { title: 'Uploaded by', key: 'uploadBy', align: 'start', sortable: true },
-        { title: '', key: 'report', align: 'start', sortable: true },
+        { title: 'Uploaded by', key: 'uploadedBy', align: 'start', sortable: true }
       ],
       isLoading: false,
       selectedSessionID: null,
@@ -211,7 +229,8 @@ export default {
       fileUploadPending: FILE_UPLOAD_STATUS.PENDING,
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
-      assessmentTypeCode: ''
+      assessmentTypeCode: '',
+      resultsSummary: []
     };
   },
   computed: {},
@@ -226,12 +245,14 @@ export default {
         if(value.length > 0) {
           let openSession = value.filter(sch => sch.isOpen);
           this.type = openSession[0].sessionID;
+          this.selectedSessionID = openSession[0].sessionID;
         }
       },
       immediate: true
     }
   },
   async created() {
+    await this.getResultSummary();
   },
   methods: {
     closeOverlay() {
@@ -311,7 +332,7 @@ export default {
             }
           }
           this.uploadFileValue = null;
-          await this.getFileSummaryPaginated();
+          await this.getResultSummary();
         }
       }
     },
@@ -329,39 +350,28 @@ export default {
         };
         await ApiService.apiAxios
           .post(
-            Routes.assessments.ASSESSMENT_KEYS + '/session/' + this.selectedSessionID + '/upload-file', document
+            Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/upload-file', document
           )
           .then(() => {});
         this.successfulUploadCount += 1;
         fileJSON.status = this.fileUploadSuccess;
       } catch (e) {
-        if(e?.message.includes('428')){
-          this.assessmentTypeCode = e.response.data;
-          const confirmation = await this.$refs.confirmReplacementFile.open('Confirm Key Replacement', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Replace Key', rejectText: 'Cancel'});
-          if (!confirmation) {
-            fileJSON.error = 'Abandoned';
-            fileJSON.status = this.fileUploadError;
-            return;
-          }
-          try {
-            await ApiService.apiAxios.post(Routes.assessments.ASSESSMENT_KEYS + '/session/' + this.selectedSessionID + '/upload-file?replaceKeyFlag=true', document)
-              .then(() => {});
-            this.successfulUploadCount += 1;
-            fileJSON.status = this.fileUploadSuccess;
-          }catch (e2) {
-            console.error(e);
-            fileJSON.error = 'Error occurred during upload, please try again later.';
-            fileJSON.status = this.fileUploadError;
-          }
-        }else{
           console.error(e);
           fileJSON.error = e.response.data;
           fileJSON.status = this.fileUploadError;
-        }
       }
     },
-    async getFileSummaryPaginated() {
-      this.$emit('refresh-sessions');
+    async getResultSummary() {
+      this.isLoading= true;
+      this.resultsSummary=[];
+      ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/summary').then((response) => {
+        this.resultsSummary = response.data;
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
+      }).finally(() => {
+        this.isLoading = false;
+      })
     },
     handleFileImport(session) {
       this.selectedSessionID = session.sessionID;
@@ -439,4 +449,7 @@ h4, .v-icon {
 :deep(.v-data-table-footer__items-per-page) {
   display: none;
 }
+:deep(.v-data-table-footer) {
+       display: none;
+ }
 </style>

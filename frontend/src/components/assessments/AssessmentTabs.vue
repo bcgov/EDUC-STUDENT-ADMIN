@@ -56,7 +56,6 @@
           >
           <TransferKeys 
               v-if="activeSessions?.length > 0"
-              :school-year="schoolYear"
               :school-year-sessions="activeSessions"
               @refresh-sessions="refreshSession"
             />
@@ -65,7 +64,13 @@
             value="transferResults"
             transition="false"
             reverse-transition="false"
+          >
+          <TransferResults 
+              v-if="activeSessions?.length > 0"
+              :school-year-sessions="activeSessions"
+              @refresh-sessions="refreshSession"
           />
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -76,6 +81,7 @@ import Spinner from '@/components/common/Spinner.vue';
 import ApiService from '../../common/apiService';
 import { Routes } from '../../utils/constants';
 import TransferKeys from './data-exchange/TransferKeys.vue';
+import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 
 export default {
@@ -83,6 +89,7 @@ export default {
   components: {
     Spinner,
     TransferKeys,
+    TransferResults
   },
   mixins: [],
   props: {},
