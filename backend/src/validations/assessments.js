@@ -47,7 +47,9 @@ const fileUploadSchema =  object({
   params: object({
     sessionID: string().nonNullable()
   }).noUnknown(),
-  query: object().noUnknown(),
+  query: object({
+    replaceKeyFlag: boolean().nullable().optional()
+  }).noUnknown(),
 }).noUnknown();
 
 const postStudentAssessmentSchema = object({
