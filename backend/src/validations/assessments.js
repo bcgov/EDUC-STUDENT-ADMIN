@@ -48,7 +48,8 @@ const fileUploadSchema =  object({
     sessionID: string().nonNullable()
   }).noUnknown(),
   query: object({
-    replaceKeyFlag: boolean().nullable().optional()
+    replaceKeyFlag: boolean().nullable().optional(),
+    replaceResultsFlag: boolean().nullable().optional()
   }).noUnknown(),
 }).noUnknown();
 

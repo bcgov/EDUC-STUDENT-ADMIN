@@ -1,16 +1,19 @@
 <template>
-  <v-container class="mb-6" fluid>
+  <v-container
+    class="mb-6"
+    fluid
+  >
     <v-expansion-panels 
       v-model="type"
       @update:modelValue="getResultSummary()"
-      >
+    >
       <v-expansion-panel
-        class="border"
         v-for="(session, index) in schoolYearSessions"
         :key="index"
+        class="border"
         :value="session.sessionID"
       >
-      <v-expansion-panel-title
+        <v-expansion-panel-title
           disable-icon-rotate
           prepend-icon="mdi-account"
         >
@@ -21,9 +24,22 @@
             :headers="headers"
             :items="resultsSummary"
           >
-            <template  v-slot:item.resultsUploaded="{ item }">
-              <v-icon style="color: red;" v-if="item.raw.uploadedBy === null">mdi-close</v-icon>
-              <v-icon style="color: green;" v-else>mdi-check</v-icon>
+            <template #item.resultsUploaded="{ item }">
+              <v-icon
+                v-if="item.raw.uploadedBy === null"
+                style="color: red;"
+              >
+                mdi-close
+              </v-icon>
+              <v-icon
+                v-else
+                style="color: green;"
+              >
+                mdi-check
+              </v-icon>
+            </template>
+            <template #item.uploadDate="{ item }">
+              {{ formatUploadDate(item) }}
             </template>
           </v-data-table>
           <v-row>
@@ -62,7 +78,10 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-form ref="documentForm" v-model="validForm">
+    <v-form
+      ref="documentForm"
+      v-model="validForm"
+    >
       <v-file-input
         id="selectFileInput"
         ref="uploader"
@@ -170,6 +189,14 @@
         </v-card-actions>
       </v-card>
     </v-overlay>
+    <ConfirmationDialog ref="confirmReplacementFile">
+      <template #message>
+        <p>
+          Results have already been uploaded for {{ assessmentTypeCode }} If you continue with this upload the previously loaded results will be replaced. 
+          Please confirm that you would like to replace the existing results for {{ assessmentTypeCode }}.
+        </p>
+      </template>
+    </ConfirmationDialog>
   </v-container>
 </template>
 
@@ -181,13 +208,12 @@ import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
-import AssessmentKeyTable from './AssessmentKeyTable.vue';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'TransferResults',
   components: {
-    ConfirmationDialog,
-    AssessmentKeyTable
+    ConfirmationDialog
   },
   mixins: [alertMixin],
   props: {
@@ -255,6 +281,11 @@ export default {
     await this.getResultSummary();
   },
   methods: {
+    formatUploadDate(item) {
+      if(item.raw.uploadDate) {
+        return formatDateTime(item.raw.uploadDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd HH:mm:ss', true);
+      }
+    },
     closeOverlay() {
       this.isLoadingFiles = !this.isLoadingFiles;
       this.fileUploadList = [];
@@ -356,9 +387,29 @@ export default {
         this.successfulUploadCount += 1;
         fileJSON.status = this.fileUploadSuccess;
       } catch (e) {
+        if(e?.message.includes('428')){
+          this.assessmentTypeCode = e.response.data;
+          const confirmation = await this.$refs.confirmReplacementFile.open('Confirm Results Replacement', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Replace Results', rejectText: 'Cancel'});
+          if (!confirmation) {
+            fileJSON.error = 'Abandoned';
+            fileJSON.status = this.fileUploadError;
+            return;
+          }
+          try {
+            await ApiService.apiAxios.post(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/upload-file?replaceResultsFlag=true', document)
+              .then(() => {});
+            this.successfulUploadCount += 1;
+            fileJSON.status = this.fileUploadSuccess;
+          }catch (e2) {
+            console.error(e);
+            fileJSON.error = 'Error occurred during upload, please try again later.';
+            fileJSON.status = this.fileUploadError;
+          }
+        }else{
           console.error(e);
           fileJSON.error = e.response.data;
           fileJSON.status = this.fileUploadError;
+        }
       }
     },
     async getResultSummary() {
@@ -371,7 +422,7 @@ export default {
         this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
       }).finally(() => {
         this.isLoading = false;
-      })
+      });
     },
     handleFileImport(session) {
       this.selectedSessionID = session.sessionID;
@@ -380,7 +431,7 @@ export default {
       this.$refs.uploader.click();
     },
     formatMonth(month) {
-      return capitalize(Month.of(month).toString());;
+      return capitalize(Month.of(month).toString());
     },
   },
 };

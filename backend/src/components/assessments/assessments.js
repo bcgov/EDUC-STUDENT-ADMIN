@@ -184,15 +184,17 @@ async function uploadAssessmentResultsFile(req, res) {
     const payload = {
       fileContents: req.body.fileContents,
       fileName: req.body.fileName,
+      replaceResultsFlag: req.query.replaceResultsFlag ? 'Y' : 'N',
       createUser: createUpdateUser,
       updateUser: createUpdateUser
     };
-
     let data = await utils.postData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/results-file`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     if (e.status === 400) {
       return res.status(HttpStatus.BAD_REQUEST).json(e.data.subErrors[0].message);
+    } else if (e.status === 428) {
+      return res.status(HttpStatus.PRECONDITION_REQUIRED).json(e.data.message);
     }
     log.error('uploadAssessmentResultsFile Error', e.stack);
     return handleExceptionResponse(e, res);
@@ -205,6 +207,16 @@ async function getResultUploadSummary(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     await logApiError(e, 'Error getting assessment result summary');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getRegistrationSummary(req, res) {
+  try {
+    let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}`);
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error getting registrationsummary');
     return handleExceptionResponse(e, res);
   }
 }
@@ -289,5 +301,6 @@ module.exports = {
   postAssessmentStudent,
   uploadAssessmentKeyFile,
   uploadAssessmentResultsFile,
-  getResultUploadSummary
+  getResultUploadSummary,
+  getRegistrationSummary
 };

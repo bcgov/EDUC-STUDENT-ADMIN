@@ -107,13 +107,13 @@ export default {
       let mappedData = filteredData.flatMap(assessment => {
         let forms = assessment.assessmentForms.map(form => form.formCode).sort((a,b) => a.localeCompare(b));
         return {
-            assessmentTypeCode: assessment.assessmentTypeCode,
-            form: forms.toString(),
-            uploadDate: formatDateTime(assessment.assessmentForms[0].createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd HH:mm:ss', true),
-            uploadBy: assessment.assessmentForms[0].createUser
-          }
+          assessmentTypeCode: assessment.assessmentTypeCode,
+          form: forms.toString(),
+          uploadDate: formatDateTime(assessment.assessmentForms[0].createDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd HH:mm:ss', true),
+          uploadBy: assessment.assessmentForms[0].createUser
+        };
       });
-      return mappedData.sort((a,b) => {return a.assessmentTypeCode.localeCompare(b.assessmentTypeCode) || a.form.localeCompare(b.form);})
+      return mappedData.sort((a,b) => {return a.assessmentTypeCode.localeCompare(b.assessmentTypeCode) || a.form.localeCompare(b.form);});
     }
   },
   watch: {

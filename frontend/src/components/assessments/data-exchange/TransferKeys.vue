@@ -1,13 +1,16 @@
 <template>
-  <v-container class="mb-6" fluid>
+  <v-container
+    class="mb-6"
+    fluid
+  >
     <v-expansion-panels v-model="type">
       <v-expansion-panel
-        class="border"
         v-for="(session, index) in schoolYearSessions"
         :key="index"
+        class="border"
         :value="session.sessionID"
       >
-      <v-expansion-panel-title
+        <v-expansion-panel-title
           disable-icon-rotate
           prepend-icon="mdi-account"
         >
@@ -36,7 +39,10 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-form ref="documentForm" v-model="validForm">
+    <v-form
+      ref="documentForm"
+      v-model="validForm"
+    >
       <v-file-input
         id="selectFileInput"
         ref="uploader"
@@ -370,7 +376,7 @@ export default {
       this.$refs.uploader.click();
     },
     formatMonth(month) {
-      return capitalize(Month.of(month).toString());;
+      return capitalize(Month.of(month).toString());
     },
   },
 };
