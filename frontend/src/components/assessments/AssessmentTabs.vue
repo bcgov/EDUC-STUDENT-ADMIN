@@ -1,40 +1,49 @@
 <template>
-  <v-container class="containerSetup" :fluid="true">
-    <v-row v-if="isLoading" class="mt-0">
+  <v-container
+    class="containerSetup"
+    :fluid="true"
+  >
+    <v-row
+      v-if="isLoading"
+      class="mt-0"
+    >
       <v-col>
         <Spinner />
       </v-col>
     </v-row>
     <v-row v-else>
       <v-col>
-        <v-tabs v-model="tab" style="color: #38598a">
+        <v-tabs
+          v-model="tab"
+          style="color: #38598a"
+        >
           <v-tab
-           value="summary"
-           id="summary"
-           prepend-icon="mdi-file-document-outline"
-           >
-           Registrations Summary
+            id="summary"
+            value="summary"
+            prepend-icon="mdi-file-document-outline"
+          >
+            Registrations Summary
           </v-tab>
           <v-tab
-           value="registrations"
-           id="registrations"
-           prepend-icon="mdi-file-arrow-up-down-outline"
-           >
-           Transfer Registrations
+            id="registrations"
+            value="registrations"
+            prepend-icon="mdi-file-arrow-up-down-outline"
+          >
+            Transfer Registrations
           </v-tab>
           <v-tab
-           value="transferKeys"
-           id="transferKeys"
-           prepend-icon="mdi-file-key-outline"
-           >
-           Transfer Keys
+            id="transferKeys"
+            value="transferKeys"
+            prepend-icon="mdi-file-key-outline"
+          >
+            Transfer Keys
           </v-tab>
           <v-tab
-           value="transferResults"
-           id="transferResults"
-           prepend-icon="mdi-file-arrow-left-right-outline"
-           >
-           Transfer Results
+            id="transferResults"
+            value="transferResults"
+            prepend-icon="mdi-file-arrow-left-right-outline"
+          >
+            Transfer Results
           </v-tab>
         </v-tabs>
         <v-window v-model="tab">
@@ -43,9 +52,9 @@
             transition="false"
             reverse-transition="false"
           >
-          <RegistrationSummary
-            :school-year-sessions="activeSessions"
-          />
+            <RegistrationSummary
+              :school-year-sessions="activeSessions"
+            />
           </v-window-item>
           <v-window-item
             value="registrations"
@@ -57,7 +66,7 @@
             transition="false"
             reverse-transition="false"
           >
-          <TransferKeys 
+            <TransferKeys 
               v-if="activeSessions?.length > 0"
               :school-year-sessions="activeSessions"
               @refresh-sessions="refreshSession"
@@ -68,11 +77,11 @@
             transition="false"
             reverse-transition="false"
           >
-          <TransferResults 
+            <TransferResults 
               v-if="activeSessions?.length > 0"
               :school-year-sessions="activeSessions"
               @refresh-sessions="refreshSession"
-          />
+            />
           </v-window-item>
         </v-window>
       </v-col>

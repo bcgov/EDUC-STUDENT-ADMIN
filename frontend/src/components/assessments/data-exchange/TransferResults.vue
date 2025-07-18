@@ -1,16 +1,19 @@
 <template>
-  <v-container class="mb-6" fluid>
+  <v-container
+    class="mb-6"
+    fluid
+  >
     <v-expansion-panels 
       v-model="type"
       @update:modelValue="getResultSummary()"
-      >
+    >
       <v-expansion-panel
-        class="border"
         v-for="(session, index) in schoolYearSessions"
         :key="index"
+        class="border"
         :value="session.sessionID"
       >
-      <v-expansion-panel-title
+        <v-expansion-panel-title
           disable-icon-rotate
           prepend-icon="mdi-account"
         >
@@ -21,11 +24,21 @@
             :headers="headers"
             :items="resultsSummary"
           >
-            <template  v-slot:item.resultsUploaded="{ item }">
-              <v-icon style="color: red;" v-if="item.raw.uploadedBy === null">mdi-close</v-icon>
-              <v-icon style="color: green;" v-else>mdi-check</v-icon>
+            <template #item.resultsUploaded="{ item }">
+              <v-icon
+                v-if="item.raw.uploadedBy === null"
+                style="color: red;"
+              >
+                mdi-close
+              </v-icon>
+              <v-icon
+                v-else
+                style="color: green;"
+              >
+                mdi-check
+              </v-icon>
             </template>
-            <template  v-slot:item.uploadDate="{ item }">
+            <template #item.uploadDate="{ item }">
               {{ formatUploadDate(item) }}
             </template>
           </v-data-table>
@@ -65,7 +78,10 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-form ref="documentForm" v-model="validForm">
+    <v-form
+      ref="documentForm"
+      v-model="validForm"
+    >
       <v-file-input
         id="selectFileInput"
         ref="uploader"
@@ -192,14 +208,12 @@ import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
-import AssessmentKeyTable from './AssessmentKeyTable.vue';
 import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'TransferResults',
   components: {
-    ConfirmationDialog,
-    AssessmentKeyTable
+    ConfirmationDialog
   },
   mixins: [alertMixin],
   props: {
@@ -242,8 +256,7 @@ export default {
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
       assessmentTypeCode: '',
-      resultsSummary: [],
-      assessmentTypeCode: ''
+      resultsSummary: []
     };
   },
   computed: {},
@@ -409,7 +422,7 @@ export default {
         this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
       }).finally(() => {
         this.isLoading = false;
-      })
+      });
     },
     handleFileImport(session) {
       this.selectedSessionID = session.sessionID;
@@ -418,7 +431,7 @@ export default {
       this.$refs.uploader.click();
     },
     formatMonth(month) {
-      return capitalize(Month.of(month).toString());;
+      return capitalize(Month.of(month).toString());
     },
   },
 };

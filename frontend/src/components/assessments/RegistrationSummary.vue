@@ -1,5 +1,8 @@
 <template>
-  <v-container class="mb-6" fluid>
+  <v-container
+    class="mb-6"
+    fluid
+  >
     <v-row>
       <v-col cols="2">
         <v-select
@@ -14,123 +17,123 @@
         />
       </v-col>
     </v-row>
-         <v-data-table
-            id="dataTable"
-            :headers="headers"
-            :items="summaryData?.rows"
-            class="elevation-1 rounded mb-4"
-            mobile-breakpoint="0"
-      >
-      <template  v-slot:item.TOTAL="{ item }">
-              <span style="font-weight: bold;">{{ item.raw.TOTAL }}</span>
-        </template>
-      </v-data-table>
+    <v-data-table
+      id="dataTable"
+      :headers="headers"
+      :items="summaryData?.rows"
+      class="elevation-1 rounded mb-4"
+      mobile-breakpoint="0"
+    >
+      <template #item.TOTAL="{ item }">
+        <span style="font-weight: bold;">{{ item.raw.TOTAL }}</span>
+      </template>
+    </v-data-table>
 
-      <v-row v-if="selectedSession">
-            <v-col>
-              <v-btn
-                id="summary"
-                color="#1976d2"
-                text="Assessment Registration Details"
-                prepend-icon="mdi-tray-arrow-down"
-                class="mb-n6"
-                variant="text"
-              />
-            </v-col>
-            </v-row>
+    <v-row v-if="selectedSession">
+      <v-col>
+        <v-btn
+          id="summary"
+          color="#1976d2"
+          text="Assessment Registration Details"
+          prepend-icon="mdi-tray-arrow-down"
+          class="mb-n6"
+          variant="text"
+        />
+      </v-col>
+    </v-row>
 
-            <v-row v-if="selectedSession">
-            <v-col>
-              <v-btn
-                id="detailed"
-                color="#1976d2"
-                text="Assessment Registration Totals by School"
-                prepend-icon="mdi-tray-arrow-down"
-                variant="text"
-              />
-            </v-col>
-            </v-row>
-    </v-container>
-  </template>
-  <script>
-  import { Routes } from '@/utils/constants';
-    import ApiService from '@/common/apiService';
-    import alertMixin from '@/mixins/alertMixin';
+    <v-row v-if="selectedSession">
+      <v-col>
+        <v-btn
+          id="detailed"
+          color="#1976d2"
+          text="Assessment Registration Totals by School"
+          prepend-icon="mdi-tray-arrow-down"
+          variant="text"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+<script>
+import { Routes } from '@/utils/constants';
+import ApiService from '@/common/apiService';
+import alertMixin from '@/mixins/alertMixin';
 
-  export default {
-    name: 'RegistrationSummary',
-    components: {
-    },
-    mixins: [alertMixin],
-    props: {
-     schoolYearSessions: {
-        type: Array,
-        required: true,
-      }
-    },
-    watch: {
+export default {
+  name: 'RegistrationSummary',
+  components: {
+  },
+  mixins: [alertMixin],
+  props: {
+    schoolYearSessions: {
+      type: Array,
+      required: true,
+    }
+  },
+  data() {
+    return {
+      sessions: [],
+      selectedSession: null,
+      isLoading: false,
+      summaryData: null,
+      headers: []
+    };
+  },
+  computed: {},
+  watch: {
     schoolYearSessions: {
       handler(value) {
         if(value.length > 0) {
-            this.setupAssessmentSessions();
+          this.setupAssessmentSessions();
         }
       },
       immediate: true
     }
   },
-    data() {
-      return {
-        sessions: [],
-        selectedSession: null,
-        isLoading: false,
-        summaryData: null,
-        headers: []
-      };
-    },
-    computed: {},
-    created() {
+  created() {
      
+  },
+  methods: {
+    setupAssessmentSessions() {
+      this.sessions = [];
+      this.schoolYearSessions.forEach(session => {
+        console.log(session);
+        this.sessions.push({
+          title: session.courseMonth + '/' + session.courseYear,
+          value: session.sessionID,
+        });
+      });
     },
-    methods: {
-        setupAssessmentSessions() {
-           this.sessions = [];
-            this.schoolYearSessions.forEach(session => {
-                console.log(session)
-                this.sessions.push({
-                title: session.courseMonth + "/" + session.courseYear,
-                value: session.sessionID,
-                });
-            });
-        },
-        getRegistrationSummary(reportType) {
-            this.isLoading= true;
-            console.log(Routes.assessments.BASE_URL)
-            ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/registration-summary/session/${this.selectedSession}/type/${reportType}`).then(response => {
-                console.log(response)
-                this.headers = [];
-                response?.data?.headers?.forEach(header => {
-                let formattedHeader =
+    getRegistrationSummary(reportType) {
+      this.isLoading= true;
+      console.log(Routes.assessments.BASE_URL);
+      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/registration-summary/session/${this.selectedSession}/type/${reportType}`).then(response => {
+        console.log(response);
+        this.headers = [];
+        response?.data?.headers?.forEach(header => {
+          let formattedHeader =
                     {
-                    title: header,
-                    text: header,
-                    value: header,
-                    key: header,
-                    align: 'start'
+                      title: header,
+                      text: header,
+                      value: header,
+                      key: header,
+                      align: 'start'
                     };
-                this.headers.push(formattedHeader);
-                this.summaryData = response.data;
-                })
-            }).catch(error => {
-                console.error(error);
-                this.setFailureAlert('An error occurred while trying to retrieve summary. Please try again later.');
-            }).finally(() => {
-                this.isLoading = false;
-            });
-        }
+          this.headers.push(formattedHeader);
+          this.summaryData = response.data;
+        });
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while trying to retrieve summary. Please try again later.');
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    }
 
-    },
-  };
-  </script>
+  },
+};
+</script>
   <style scoped>
  :deep(.v-data-table-footer__items-per-page) {
   display: none;
