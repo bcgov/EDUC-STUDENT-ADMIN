@@ -43,6 +43,9 @@
             transition="false"
             reverse-transition="false"
           >
+          <RegistrationSummary
+            :school-year-sessions="activeSessions"
+          />
           </v-window-item>
           <v-window-item
             value="registrations"
@@ -83,13 +86,15 @@ import { Routes } from '../../utils/constants';
 import TransferKeys from './data-exchange/TransferKeys.vue';
 import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
+import RegistrationSummary from './RegistrationSummary.vue';
 
 export default {
   name: 'AssessmentTabs',
   components: {
     Spinner,
     TransferKeys,
-    TransferResults
+    TransferResults,
+    RegistrationSummary
   },
   mixins: [],
   props: {},

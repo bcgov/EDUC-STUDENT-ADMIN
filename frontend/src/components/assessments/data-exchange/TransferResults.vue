@@ -25,6 +25,9 @@
               <v-icon style="color: red;" v-if="item.raw.uploadedBy === null">mdi-close</v-icon>
               <v-icon style="color: green;" v-else>mdi-check</v-icon>
             </template>
+            <template  v-slot:item.uploadDate="{ item }">
+              {{ formatUploadDate(item) }}
+            </template>
           </v-data-table>
           <v-row>
             <v-col>
@@ -170,6 +173,14 @@
         </v-card-actions>
       </v-card>
     </v-overlay>
+    <ConfirmationDialog ref="confirmReplacementFile">
+      <template #message>
+        <p>
+          Results have already been uploaded for {{ assessmentTypeCode }} If you continue with this upload the previously loaded results will be replaced. 
+          Please confirm that you would like to replace the existing results for {{ assessmentTypeCode }}.
+        </p>
+      </template>
+    </ConfirmationDialog>
   </v-container>
 </template>
 
@@ -182,6 +193,7 @@ import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
 import AssessmentKeyTable from './AssessmentKeyTable.vue';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'TransferResults',
@@ -230,7 +242,8 @@ export default {
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
       assessmentTypeCode: '',
-      resultsSummary: []
+      resultsSummary: [],
+      assessmentTypeCode: ''
     };
   },
   computed: {},
@@ -255,6 +268,11 @@ export default {
     await this.getResultSummary();
   },
   methods: {
+    formatUploadDate(item) {
+      if(item.raw.uploadDate) {
+        return formatDateTime(item.raw.uploadDate.substring(0, 19), 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd HH:mm:ss', true);
+      }
+    },
     closeOverlay() {
       this.isLoadingFiles = !this.isLoadingFiles;
       this.fileUploadList = [];
@@ -356,9 +374,29 @@ export default {
         this.successfulUploadCount += 1;
         fileJSON.status = this.fileUploadSuccess;
       } catch (e) {
+        if(e?.message.includes('428')){
+          this.assessmentTypeCode = e.response.data;
+          const confirmation = await this.$refs.confirmReplacementFile.open('Confirm Results Replacement', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Replace Results', rejectText: 'Cancel'});
+          if (!confirmation) {
+            fileJSON.error = 'Abandoned';
+            fileJSON.status = this.fileUploadError;
+            return;
+          }
+          try {
+            await ApiService.apiAxios.post(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/upload-file?replaceResultsFlag=true', document)
+              .then(() => {});
+            this.successfulUploadCount += 1;
+            fileJSON.status = this.fileUploadSuccess;
+          }catch (e2) {
+            console.error(e);
+            fileJSON.error = 'Error occurred during upload, please try again later.';
+            fileJSON.status = this.fileUploadError;
+          }
+        }else{
           console.error(e);
           fileJSON.error = e.response.data;
           fileJSON.status = this.fileUploadError;
+        }
       }
     },
     async getResultSummary() {
