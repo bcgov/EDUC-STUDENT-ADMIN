@@ -1,9 +1,9 @@
 <template>
   <v-data-table
-    :items="data"
-    v-model:items-per-page="pageSize"
-    :headers="headers"
     v-model:page="pageNumber"
+    v-model:items-per-page="pageSize"
+    :items="data"
+    :headers="headers"
     mobile-breakpoint="0"
   >
     <template #headers="{ getSortIcon, toggleSort }">
@@ -22,7 +22,7 @@
           @click="column.sortable && toggleSort(column)"
         >
           <div class="v-data-table-header__content d-flex align-center">
-            <span class="header-text">{{ column.title }}</span>
+            <span class="header-text mr-12">{{ column.title }}</span>
             <v-icon
               v-if="column.sortable"
               class="v-data-table-header__sort-icon ml-1"
@@ -33,6 +33,7 @@
         </th>
       </tr>
     </template>
+
     <template #item="props">
       <tr
         class="mt-2"
@@ -42,26 +43,13 @@
           :key="column.key"
           class="pt-2 row-text"
         >
-          <span v-if="column.key === 'course'">
-            <span v-if="(props.item.raw['courseCode'] === null) && (props.item.raw['courseLevel'] === null)">-</span>
-            <span v-else>{{ props.item.raw['courseCode'] }}{{ props.item.raw['courseLevel'] }}</span>
-          </span>
-          <span v-else-if="column.key === 'status'">
+          <span v-if="column.key === 'status'">
             <v-icon
               size="25"
               :color="getIssueIconColor(props.item.raw['studentStatusCode'])"
             >
               {{ getIssueIcon(props.item.raw['studentStatusCode']) }}
             </v-icon>
-          </span>
-          <span v-else-if="column.key === 'session'">
-            <span v-if="props.item.raw['courseMonth'] === null || props.item.raw['courseYear'] === null">-</span>
-            <span v-else> {{ props.item.raw['courseYear'] }}/{{ props.item.raw['courseMonth'] }}</span>
-          </span>
-          <span v-else-if="column.key === 'relatedCourse'">
-            <span v-if="props.item.raw['relatedCourse'] === null">-</span>
-            <span v-else-if="props.item.raw['relatedLevel'] === null">-</span>
-            <span v-else>{{ props.item.raw['relatedCourse'] }}{{ props.item.raw['relatedLevel'] }}</span>
           </span>
           <span v-else-if="props.item.raw[column.key]">
             {{ props.item.raw[column.key] }}
