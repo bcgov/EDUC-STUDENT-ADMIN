@@ -42,11 +42,7 @@
           :key="column.key"
           class="pt-2 row-text"
         >
-          <span v-if="column.key === 'session'">
-            <span v-if="props.item.raw['courseMonth'] === null || props.item.raw['courseYear'] === null">-</span>
-            <span v-else>{{ props.item.raw['courseYear'] }}/{{ props.item.raw['courseMonth'] }}</span>
-          </span>
-          <span v-else-if="column.key === 'status'">
+          <span v-if="column.key === 'status'">
             <v-icon
               size="25"
               :color="getIssueIconColor(props.item.raw['studentStatusCode'])"
