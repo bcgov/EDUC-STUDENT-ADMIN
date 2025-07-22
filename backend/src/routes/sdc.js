@@ -9,7 +9,7 @@ const { getSnapshotFundingDataForSchool, getAllCollectionsForSchool, getActiveCo
   getSDCSchoolCollectionStudentPaginated, getSDCSchoolCollectionStudentDetail, updateStudentPEN, checkDuplicatesInCollection, updateAndValidateSdcSchoolCollectionStudent, resolveDuplicates, postProvincialDuplicates, resolveRemainingDuplicates,
   closeCollection, getCollectionPaginated, getSDCSchoolCollectionDetail, downloadSdcReport,
   getCollectionByID, getSdcSchoolCollections, getSdcDistrictCollections, updateBandCode, moveSld, getDistrictHeadcounts, getSdcSchoolCollectionsFromSdcDistrictCollectionID,
-  getSDCSchoolCollectionStudentSldHistoryPaginated, removeSDCSchoolCollectionStudents, getCollectionClosureSagaStatus
+  getSDCSchoolCollectionStudentSldHistoryPaginated, removeSDCSchoolCollectionStudents, getCollectionClosureSagaStatus, reprocessSdcSchoolCollection
 } = require('../components/sdc/sdc');
 const {getCachedSDCData} = require('../components/sdc/sdc-cache');
 const constants = require('../util/constants');
@@ -68,8 +68,7 @@ router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionStudentID/update-pe
 //update student
 router.post('/sdcSchoolCollectionStudent', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, updateAndValidateSdcSchoolCollectionStudent);
 router.post('/move-sld', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), validate(moveSldSchema), extendSession, moveSld);
-router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionID/students/remove', passport.authenticate('jwt', {session: false}, undefined), 
-permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, removeSDCSchoolCollectionStudents);
+router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionID/students/remove', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, removeSDCSchoolCollectionStudents);
 
 //district collection
 router.post('/sdcDistrictCollection/:sdcDistrictCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('sdcDistrictCollectionID'), unsubmitSdcDistrictCollection);
@@ -85,6 +84,7 @@ router.get('/sdcSchoolCollection/search/:schoolID', passport.authenticate('jwt',
 
 router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/unsubmit', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), unsubmitSdcSchoolCollection);
 router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/resolve-duplicates/:sdcDuplicateID/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.STUDENT_EDIT_STUDENT_DATA_COLLECTION_PERMISSIONDATA_COLLECTION), extendSession, permUtils.isValidUUIDParam('sdcDuplicateID'), resolveDuplicates);
+router.post('/sdcSchoolCollection/:sdcSchoolCollectionID/reprocess', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), reprocessSdcSchoolCollection);
 
 router.get('/:sdcSchoolCollectionID/report/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, permUtils.isValidUUIDParam('sdcSchoolCollectionID'), downloadSdcReport);
 

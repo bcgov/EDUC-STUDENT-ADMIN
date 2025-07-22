@@ -38,6 +38,42 @@ function errorResponse(res, msg, code) {
   });
 }
 
+/**
+ * Safely extracts user-friendly error messages from API error responses
+ * Prioritizes sub-error messages over main error messages
+ * Filters out sensitive internal information
+ */
+function extractErrorMessage(error, fallbackMessage = 'An error occurred. Please try again later.') {
+  // Check for sub-errors
+  if (error?.data?.subErrors && Array.isArray(error.data.subErrors) && error.data.subErrors.length > 0) {
+    return error.data.subErrors
+      .filter(subError => subError?.message)
+      .map(subError => subError.message)
+      .join('. ');
+  }
+
+  // Fall back
+  if (error?.data?.message && typeof error.data.message === 'string') {
+    return error.data.message;
+  }
+
+  return fallbackMessage;
+}
+
+/**
+ * Handles API error responses consistently by extracting safe error messages
+ * and returning appropriate HTTP status codes
+ */
+function handleApiErrorResponse(error, res, fallbackMessage) {
+  const errorMessage = extractErrorMessage(error, fallbackMessage);
+  const statusCode = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+  return res.status(statusCode).json({
+    status: statusCode >= 400 && statusCode < 500 ? 'BAD_REQUEST' : 'INTERNAL_SERVER_ERROR',
+    message: errorMessage
+  });
+}
+
 function validateAccessToken(token, res) {
   if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -307,7 +343,7 @@ async function getCodeTable(key, url, useCache = true) {
   }
 }
 
-function getPaginatedListForSCGroups(apiName, url, handleResponse) {
+function getPaginatedListForSCGroups(apiName, urlKey, extraPath, handleResponse) {
   return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
       let pageSize = req.query.pageSize;
@@ -582,7 +618,9 @@ const utils = {
   isImage,
   stripNumberFormattingNumberOfCourses,
   formatNumberOfCourses,
-  handleExceptionResponse
+  handleExceptionResponse,
+  extractErrorMessage,
+  handleApiErrorResponse
 };
 
 module.exports = utils;

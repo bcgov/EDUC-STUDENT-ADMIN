@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError, getData, errorResponse, postData, stripNumberFormattingNumberOfCourses, formatNumberOfCourses, handleExceptionResponse} = require('../utils');
+const { logApiError, getData, errorResponse, postData, stripNumberFormattingNumberOfCourses, formatNumberOfCourses, handleExceptionResponse, handleApiErrorResponse} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const utils = require('../utils');
@@ -746,6 +746,22 @@ async function updateAndValidateSdcSchoolCollectionStudent(req, res) {
 
 }
 
+async function reprocessSdcSchoolCollection(req, res) {
+  try {
+    const userInfo = utils.getUser(req);
+    const payload = {
+      'updateUser': userInfo.idir_username,
+      'sdcSchoolCollectionID': req.params.sdcSchoolCollectionID
+    };
+
+    const data = await postData(`${config.get('sdc:schoolCollectionURL')}/reprocess`, payload);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'Error reprocessing sdcSchoolCollection');
+    return handleApiErrorResponse(e, res, 'An error occurred while trying to reprocess school collection. Please try again later.');
+  }
+}
+
 async function resolveDuplicates(req, res) {
   try {
     let sdcDuplicateID = req.body.duplicate.sdcDuplicateID;
@@ -1035,5 +1051,6 @@ module.exports = {
   getSdcSchoolCollectionsFromSdcDistrictCollectionID,
   getSDCSchoolCollectionStudentSldHistoryPaginated,
   removeSDCSchoolCollectionStudents,
-  getCollectionClosureSagaStatus
+  getCollectionClosureSagaStatus,
+  reprocessSdcSchoolCollection
 };
