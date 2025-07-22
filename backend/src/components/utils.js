@@ -343,7 +343,7 @@ async function getCodeTable(key, url, useCache = true) {
   }
 }
 
-function getPaginatedListForSCGroups(apiName, urlKey, extraPath, handleResponse) {
+function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
       let pageSize = req.query.pageSize;
