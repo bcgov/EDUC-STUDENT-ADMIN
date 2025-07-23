@@ -38,49 +38,54 @@
           color="#38598a"
         >
           <v-tab
-            :value="1"
+            :value="'districtSubmissionsTab'"
           >
             District Submissions
           </v-tab>
           <v-tab
-            :value="2"
+            :value="'independentSchoolSubmissionsTab'"
           >
             Independent School Data Submissions
           </v-tab>
           <v-tab
             v-if="isCollectionActive"
-            :value="3"
+            :value="'penFixesTab'"
           >
             PEN Fixes
           </v-tab>
           <v-tab
-            :value="4"
+            :value="'allStudentsTab'"
           >
             All Students
           </v-tab>
           <v-tab
+            :value="'reprocessSchoolTab'"
+          >
+            Reprocess School
+          </v-tab>
+          <v-tab
             v-if="isCollectionActive"
-            :value="5"
+            :value="'duplicatesPostingTab'"
           >
             Duplicates Posting and Collection Closure
           </v-tab>
           <v-tab
             v-if="hasAccessToReports()"
-            :value="6"
+            :value="'reportsTab'"
           >
             Reports
           </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
-            :value="1"
+            :value="'districtSubmissionsTab'"
             transition="false"
             reverse-transition="false"
           >
             <DistrictMonitoring :collection-object="collectionObject" />
           </v-window-item>
           <v-window-item
-            :value="2"
+            :value="'independentSchoolSubmissionsTab'"
             transition="false"
             reverse-transition="false"
           >
@@ -90,7 +95,7 @@
           </v-window-item>
           <v-window-item
             v-if="isCollectionActive"
-            :value="3"
+            :value="'penFixesTab'"
             transition="false"
             reverse-transition="false"
           >
@@ -99,15 +104,22 @@
             />
           </v-window-item>
           <v-window-item
-            :value="4"
+            :value="'allStudentsTab'"
             transition="false"
             reverse-transition="false"
           >
             <AllStudentsComponent :collection-object="collectionObject" />
           </v-window-item>
           <v-window-item
+            :value="'reprocessSchoolTab'"
+            transition="false"
+            reverse-transition="false"
+          >
+            <ReprocessSchool :collection-object="collectionObject" />
+          </v-window-item>
+          <v-window-item
             v-if="isCollectionActive"
-            :value="5"
+            :value="'duplicatesPostingTab'"
             transition="false"
             reverse-transition="false"
           >
@@ -117,7 +129,7 @@
             />
           </v-window-item>
           <v-window-item
-            :value="6"
+            :value="'reportsTab'"
             transition="false"
             reverse-transition="false"
           >
@@ -144,10 +156,12 @@ import Reports from '@/components/data-collection/Reports.vue';
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
+import ReprocessSchool from '@/components/data-collection/ReprocessSchool.vue';
 
 export default {
   name: 'CollectionView',
   components: {
+    ReprocessSchool,
     Reports,
     DuplicatesPosting,
     Spinner,
