@@ -48,11 +48,6 @@
             Independent School Data Submissions
           </v-tab>
           <v-tab
-            :value="'reprocessSchoolTab'"
-          >
-            Reprocess School
-          </v-tab>
-          <v-tab
             v-if="isCollectionActive"
             :value="'penFixesTab'"
           >
@@ -62,6 +57,11 @@
             :value="'allStudentsTab'"
           >
             All Students
+          </v-tab>
+          <v-tab
+            :value="'reprocessSchoolTab'"
+          >
+            Reprocess School
           </v-tab>
           <v-tab
             v-if="isCollectionActive"
@@ -94,13 +94,6 @@
             />
           </v-window-item>
           <v-window-item
-            :value="'reprocessSchoolTab'"
-            transition="false"
-            reverse-transition="false"
-          >
-            <ReprocessSchool :collection-object="collectionObject" />
-          </v-window-item>
-          <v-window-item
             v-if="isCollectionActive"
             :value="'penFixesTab'"
             transition="false"
@@ -116,6 +109,13 @@
             reverse-transition="false"
           >
             <AllStudentsComponent :collection-object="collectionObject" />
+          </v-window-item>
+          <v-window-item
+            :value="'reprocessSchoolTab'"
+            transition="false"
+            reverse-transition="false"
+          >
+            <ReprocessSchool :collection-object="collectionObject" />
           </v-window-item>
           <v-window-item
             v-if="isCollectionActive"

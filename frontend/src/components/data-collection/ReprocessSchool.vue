@@ -10,10 +10,20 @@
     fluid
   >
     <v-row>
-      <h4>Reprocess School</h4>
+      <h4 class="mb-4">
+        Reprocess School
+      </h4>
     </v-row>
     <v-row>
-      <p>Only schools not in provincial duplicates show in the dropdown.</p>
+      <p class="mb-4">
+        Select a school below to reprocess all the school's current students in the collection.
+      </p>
+      <p class="mb-4">
+        Reprocessing the students will run them through all validation rules again. This will cause previous edits made to the students to be reverted, including manual PEN matches. Student records will be set back to the status "loaded" which can not be undone.
+      </p>
+      <p class="mb-4">
+        Schools will not appear in the dropdown menu if they have made it to the provincial duplicates step of the collection.
+      </p>
     </v-row>
 
     <v-row>
@@ -61,10 +71,10 @@
           Confirm Reprocessing
         </v-card-title>
         <v-card-text>
-          Are you sure you want to reprocess this school's data? This action cannot be undone.
+          Are you sure you want to reprocess this school's student data? This action can not be undone.
         </v-card-text>
         <v-card-text>
-          All students will be set back to loaded, update context and manual PEN matching will be lost.
+          Reprocessing will cause previous edits made to the students to be reverted, including manual PEN matches. Student records will be set back to the status "loaded" which can not be undone.
         </v-card-text>
         <v-card-actions>
           <v-spacer />
