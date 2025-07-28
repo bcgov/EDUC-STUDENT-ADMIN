@@ -130,7 +130,7 @@ export default {
     },
     downloadReport(type) {
       try {
-        var selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSession);
+        let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSession);
         const url = `${Routes.assessments.BASE_URL}/${this.selectedSession}/report/${type}/${selection[0].courseMonth}/${selection[0].courseYear}/download`;
         window.open(url);
       } catch (error) {

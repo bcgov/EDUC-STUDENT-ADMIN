@@ -237,7 +237,7 @@ async function downloadReport(req, res) {
       });
     }
     let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`);
-    var session = req.params.courseYear + req.params.courseMonth;
+    let session = req.params.courseYear + req.params.courseMonth;
     const fileDetails = getFileDetails(reportType, session);
 
     setResponseHeaders(res, fileDetails);
