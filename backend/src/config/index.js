@@ -71,7 +71,6 @@ nconf.defaults({
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
-    schoolAPIURL: process.env.SCHOOL_API_URL,
     penTraxURL: process.env.PEN_TRAX_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
     sld: {
