@@ -61,7 +61,7 @@
                 variant="text"
               />
             </v-col>
-            <v-col class="d-flex justify-end">
+            <v-col v-if="session.isOpen" class="d-flex justify-end">
               <v-btn
                 id="uploadButton"
                 prepend-icon="mdi-file-upload"
@@ -69,7 +69,6 @@
                 color="#003366"
                 text="Upload Assessment Results"
                 :loading="isLoadingFiles"
-                :disabled="!session.isOpen"
                 @click="handleFileImport(session)"
               />
             </v-col>
@@ -415,7 +414,7 @@ export default {
     async getResultSummary() {
       this.isLoading= true;
       this.resultsSummary=[];
-      ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/summary').then((response) => {
+      ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.type + '/summary').then((response) => {
         this.resultsSummary = response.data;
       }).catch(error => {
         console.error(error);
