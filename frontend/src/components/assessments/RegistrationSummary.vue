@@ -107,7 +107,6 @@ export default {
     },
     getRegistrationSummary(reportType) {
       this.isLoading= true;
-      console.log(Routes.assessments.BASE_URL);
       ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/registration-summary/session/${this.selectedSession}/type/${reportType}`).then(response => {
         console.log(response);
         this.headers = [];

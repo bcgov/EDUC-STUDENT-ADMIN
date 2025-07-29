@@ -60,7 +60,13 @@
             value="registrations"
             transition="false"
             reverse-transition="false"
-          />
+          >
+            <TransferRegistrations
+              v-if="activeSessions?.length > 0"
+              :school-year-sessions="activeSessions"
+              @refresh-sessions="refreshSession"
+            />
+          </v-window-item>
           <v-window-item
             value="transferKeys"
             transition="false"
@@ -96,10 +102,12 @@ import TransferKeys from './data-exchange/TransferKeys.vue';
 import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import RegistrationSummary from './RegistrationSummary.vue';
+import TransferRegistrations from '@/components/assessments/data-exchange/TransferRegistrations.vue';
 
 export default {
   name: 'AssessmentTabs',
   components: {
+    TransferRegistrations,
     Spinner,
     TransferKeys,
     TransferResults,

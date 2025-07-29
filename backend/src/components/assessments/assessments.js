@@ -221,6 +221,17 @@ async function getRegistrationSummary(req, res) {
   }
 }
 
+async function getDownloadableReport(req, res) {
+  try {
+    let updateUser = utils.getUser(req).idir_username;
+    let data = await getData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/${req.params.type}/download/${updateUser}`);
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, `Error getting ${req.params.type} downloadable report`);
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function uploadAssessmentKeyFile(req, res) {
   try {
     const userInfo = utils.getUser(req);
@@ -302,5 +313,6 @@ module.exports = {
   uploadAssessmentKeyFile,
   uploadAssessmentResultsFile,
   getResultUploadSummary,
-  getRegistrationSummary
+  getRegistrationSummary,
+  getDownloadableReport
 };
