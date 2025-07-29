@@ -87,8 +87,20 @@ const postStudentAssessmentSchema = object({
   }).noUnknown(),
 }).noUnknown();
 
+const reportSchema =  object({
+  params: object({
+    sessionID: string().nonNullable(),
+    type: string().nonNullable(),
+    courseMonth: string().nullable().optional(),
+    courseYear: string().nullable().optional()
+  }).noUnknown(),
+  query: object().noUnknown(),
+  body: object().noUnknown(),
+}).noUnknown();
+
 module.exports = {
   putStudentAssessmentSchema,
   fileUploadSchema,
-  postStudentAssessmentSchema
+  postStudentAssessmentSchema,
+  reportSchema
 };

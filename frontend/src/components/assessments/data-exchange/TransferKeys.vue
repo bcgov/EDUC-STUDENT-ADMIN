@@ -21,7 +21,7 @@
             :headers="headers"
             :data="session.assessments"
           />
-          <v-row>
+          <v-row v-if="session.isOpen">
             <v-col class="d-flex justify-end">
               <v-btn
                 id="uploadButton"
@@ -30,7 +30,6 @@
                 color="#003366"
                 text="Upload Assessment Key Data Files"
                 :loading="isLoadingFiles"
-                :disabled="!session.isOpen"
                 @click="handleFileImport(session)"
               />
             </v-col>

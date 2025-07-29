@@ -221,13 +221,29 @@ async function getRegistrationSummary(req, res) {
   }
 }
 
-async function getDownloadableReport(req, res) {
+async function downloadReport(req, res) {
+  const reportTypeValues = [
+    ['registration-detail-csv', 'REGISTRATION_DETAIL_CSV'],
+  ];
+  const REPORT_TYPE_CODE_MAP = Object.freeze(new Map(reportTypeValues));
+  
   try {
-    let updateUser = utils.getUser(req).idir_username;
-    let data = await getData(`${config.get('server:assessments:rootURL')}/${req.params.sessionID}/${req.params.type}/download/${updateUser}`);
-    return res.status(200).json(data);
+    const userInfo = utils.getUser(req);
+    let createUpdateUser =  userInfo.idir_username;
+    const reportType = REPORT_TYPE_CODE_MAP.get(req.params.type);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+    let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`);
+    let session = req.params.courseYear + req.params.courseMonth;
+    const fileDetails = getFileDetails(reportType, session);
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(data.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
   } catch (e) {
-    await logApiError(e, `Error getting ${req.params.type} downloadable report`);
     return handleExceptionResponse(e, res);
   }
 }
@@ -299,6 +315,19 @@ function getAssessmentSpecialCases(req, res) {
   }
 }
 
+function getFileDetails(reportType, session) {
+  const mappings = {
+    'REGISTRATION_DETAIL_CSV': { filename: `${session}Session Registration Details-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
+  };
+  return mappings[reportType] || mappings['DEFAULT'];
+}
+
+function setResponseHeaders(res, { filename, contentType }) {
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', contentType);
+}
+
 
 module.exports = {
   getAssessmentSessions,
@@ -314,5 +343,5 @@ module.exports = {
   uploadAssessmentResultsFile,
   getResultUploadSummary,
   getRegistrationSummary,
-  getDownloadableReport
+  downloadReport
 };

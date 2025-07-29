@@ -72,7 +72,8 @@ export default {
   },
   data() {
     return {
-      type: ''
+      type: '',
+      selectedSession: null
     };
   },
   watch: {
@@ -89,7 +90,7 @@ export default {
   methods: {
     getDownloadableReport(reportType) {
       this.isLoading = true;
-      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/downloadable-report/${this.selectedSession}/${reportType}/download`).then(response => {
+      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/${this.selectedSession.courseMonth}/${this.selectedSession.courseYear}/download`).then(response => {
         console.log(response);
       }).catch(error => {
         console.error(error);

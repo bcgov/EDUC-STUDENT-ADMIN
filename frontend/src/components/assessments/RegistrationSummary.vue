@@ -38,6 +38,7 @@
           prepend-icon="mdi-tray-arrow-down"
           class="mb-n6"
           variant="text"
+          @click="downloadReport('registration-detail-csv')"
         />
       </v-col>
     </v-row>
@@ -98,7 +99,6 @@ export default {
     setupAssessmentSessions() {
       this.sessions = [];
       this.schoolYearSessions.forEach(session => {
-        console.log(session);
         this.sessions.push({
           title: session.courseMonth + '/' + session.courseYear,
           value: session.sessionID,
@@ -107,18 +107,17 @@ export default {
     },
     getRegistrationSummary(reportType) {
       this.isLoading= true;
-      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/registration-summary/session/${this.selectedSession}/type/${reportType}`).then(response => {
-        console.log(response);
+      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/${this.selectedSession}/summary/${reportType}`).then(response => {
         this.headers = [];
         response?.data?.headers?.forEach(header => {
           let formattedHeader =
-                    {
-                      title: header,
-                      text: header,
-                      value: header,
-                      key: header,
-                      align: 'start'
-                    };
+            {
+              title: header,
+              text: header,
+              value: header,
+              key: header,
+              align: 'start'
+            };
           this.headers.push(formattedHeader);
           this.summaryData = response.data;
         });
@@ -128,8 +127,19 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    downloadReport(type) {
+      try {
+        let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSession);
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession}/report/${type}/${selection[0].courseMonth}/${selection[0].courseYear}/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve report.'
+        );
+      }
     }
-
   },
 };
 </script>
