@@ -36,10 +36,18 @@
           <v-table>
             <thead>
               <tr>
-                <th>Registration File</th>
-                <th>Last Exported</th>
-                <th>Exported By</th>
-                <th>Action</th>
+                <th scope="col">
+                  Registration File
+                </th>
+                <th scope="col">
+                  Last Exported
+                </th>
+                <th scope="col">
+                  Exported By
+                </th>
+                <th scope="col">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
