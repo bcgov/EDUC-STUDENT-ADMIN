@@ -54,6 +54,7 @@
           >
             <RegistrationSummary
               :school-year-sessions="activeSessions"
+              :selected-session-id="selectedSessionForSummary"
             />
           </v-window-item>
           <v-window-item
@@ -65,6 +66,7 @@
               v-if="activeSessions?.length > 0"
               :school-year-sessions="activeSessions"
               @refresh-sessions="refreshSession"
+              @view-registrations="viewRegistrations"
             />
           </v-window-item>
           <v-window-item
@@ -121,6 +123,7 @@ export default {
       schoolYear: null,
       isLoading: false,
       tab: '',
+      selectedSessionForSummary: null
     };
   },
   computed: {},
@@ -156,6 +159,10 @@ export default {
     },
     refreshSession() {
       this.getActiveSessions();
+    },
+    viewRegistrations(session) {
+      this.selectedSessionForSummary = session.sessionID;
+      this.tab = 'summary';
     }
   },
 };

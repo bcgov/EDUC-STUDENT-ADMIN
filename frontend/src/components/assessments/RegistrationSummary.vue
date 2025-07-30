@@ -70,6 +70,11 @@ export default {
     schoolYearSessions: {
       type: Array,
       required: true,
+    },
+    selectedSessionId: {
+      type: String,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -87,6 +92,15 @@ export default {
       handler(value) {
         if(value.length > 0) {
           this.setupAssessmentSessions();
+        }
+      },
+      immediate: true
+    },
+    selectedSessionId: {
+      handler(newSessionId) {
+        if (newSessionId && this.sessions.length > 0) {
+          this.selectedSession = newSessionId;
+          this.getRegistrationSummary('registration-summary');
         }
       },
       immediate: true

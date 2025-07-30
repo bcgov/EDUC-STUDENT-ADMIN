@@ -90,7 +90,13 @@
               </tr>
               <tr>
                 <td>
-                  <a>View Registrations</a>
+                  <a
+                    href="#"
+                    style="color: #1976d2; text-decoration: underline; cursor: pointer;"
+                    @click.prevent="viewRegistrations(session)"
+                  >
+                    View Registrations
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -131,7 +137,7 @@ export default {
       required: true,
     },
   },
-  emits: ['refresh-sessions'],
+  emits: ['refresh-sessions', 'view-registrations'],
   data() {
     return {
       type: '',
@@ -262,6 +268,9 @@ export default {
           text: 'Registrations Ongoing'
         };
       }
+    },
+    viewRegistrations(session) {
+      this.$emit('view-registrations', session);
     }
   }
 };
