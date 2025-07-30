@@ -224,6 +224,9 @@ async function getRegistrationSummary(req, res) {
 async function downloadReport(req, res) {
   const reportTypeValues = [
     ['registration-detail-csv', 'REGISTRATION_DETAIL_CSV'],
+    ['ALL_SESSION_REGISTRATIONS', 'ALL_SESSION_REGISTRATIONS'],
+    ['ATTEMPTS', 'ATTEMPTS'],
+    ['PEN_MERGES', 'PEN_MERGES']
   ];
   const REPORT_TYPE_CODE_MAP = Object.freeze(new Map(reportTypeValues));
   
@@ -318,6 +321,9 @@ function getAssessmentSpecialCases(req, res) {
 function getFileDetails(reportType, session) {
   const mappings = {
     'REGISTRATION_DETAIL_CSV': { filename: `${session}Session Registration Details-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'ALL_SESSION_REGISTRATIONS': { filename: `${session}Assessment Registrations-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'ATTEMPTS': { filename: `${session}Session Writing Attempts-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'PEN_MERGES': { filename: `${session}PEN Merges-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];

@@ -31,19 +31,46 @@
                 <td>Assessment Registrations</td>
                 <td>{{ session.assessmentRegistrationsExportDate }}</td>
                 <td>{{ session.assessmentRegistrationsExportUserID }}</td>
-                <td>button</td>
+                <td>
+                  <v-btn
+                    :id="`assessmentDownload-${index}`"
+                    prepend-icon="mdi-file-upload"
+                    variant="elevated"
+                    color="#003366"
+                    text="Export for Transfer"
+                    @click="handleConfirmation(session, 'ALL_SESSION_REGISTRATIONS')"
+                  />
+                </td>
               </tr>
               <tr>
                 <td>Session Writing Attempts</td>
                 <td>{{ session.sessionWritingAttemptsExportDate }}</td>
                 <td>{{ session.sessionWritingAttemptsExportUserID }}</td>
-                <td>button</td>
+                <td>
+                  <v-btn
+                    :id="`sessionWritingDownload-${index}`"
+                    prepend-icon="mdi-file-upload"
+                    variant="elevated"
+                    color="#003366"
+                    text="Export for Transfer"
+                    @click="handleConfirmation(session, 'ATTEMPTS')"
+                  />
+                </td>
               </tr>
               <tr>
                 <td>PEN Merges</td>
                 <td>{{ session.penMergesExportDate }}</td>
                 <td>{{ session.penMergesExportUserID }}</td>
-                <td>button</td>
+                <td>
+                  <v-btn
+                    :id="`penMergesDownload-${index}`"
+                    prepend-icon="mdi-file-upload"
+                    variant="elevated"
+                    color="#003366"
+                    text="Export for Transfer"
+                    @click="handleConfirmation(session, 'PEN_MERGES')"
+                  />
+                </td>
               </tr>
               <tr>
                 <td>
@@ -55,15 +82,19 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
+    <ConfirmationDialog ref="confirmExport" />
   </v-container>
 </template>
 <script>
 
 import {Routes} from '@/utils/constants';
-import ApiService from '@/common/apiService';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'TransferRegistrations',
+  components: {ConfirmationDialog},
+  mixins: [alertMixin],
   props: {
     schoolYearSessions: {
       type: Array,
@@ -88,16 +119,42 @@ export default {
     }
   },
   methods: {
-    getDownloadableReport(reportType) {
+    async handleConfirmation(session, type) {
+      this.selectedSession = session;
+      let confirmationReportType;
+      let confirmationDate;
+      switch (type) {
+      case 'assessmentRegistrations':
+        confirmationReportType = 'Assessment Registrations';
+        confirmationDate = session.assessmentRegistrationsExportDate;
+        break;
+      case 'sessionWritingAttempts':
+        confirmationReportType = 'Session Writing Attempts';
+        confirmationDate = session.sessionWritingAttemptsExportDate;
+        break;
+      case 'penMerges':
+        confirmationReportType = 'PEN Merges';
+        confirmationDate = session.penMergesExportDate;
+        break;
+      }
+      const confirmation = confirmationDate ? await this.$refs.confirmExport.open('Confirm Re-Export', `The ${confirmationReportType} file was already exported on ${confirmationDate}`, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Re-Export File', rejectText: 'Cancel'})
+        : true;
+      console.log(confirmation);
+      if (confirmation) {
+        this.handleDownloadReport(type, confirmationReportType);
+      }
+    },
+    handleDownloadReport(reportType) {
       this.isLoading = true;
-      ApiService.apiAxios.get(`${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/${this.selectedSession.courseMonth}/${this.selectedSession.courseYear}/download`).then(response => {
-        console.log(response);
-      }).catch(error => {
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/${this.selectedSession.courseMonth}/${this.selectedSession.courseYear}/download`;
+        window.open(url);
+      } catch (error) {
         console.error(error);
-        this.setFailureAlert('An error occurred while trying to retrieve summary. Please try again later.');
-      }).finally(() => {
-        this.isLoading = false;
-      });
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve report.'
+        );
+      }
     }
   }
 };
