@@ -224,6 +224,7 @@ async function getRegistrationSummary(req, res) {
 async function downloadReport(req, res) {
   const reportTypeValues = [
     ['registration-detail-csv', 'REGISTRATION_DETAIL_CSV'],
+    ['pen-issues-csv', 'PEN_ISSUES_CSV']
   ];
   const REPORT_TYPE_CODE_MAP = Object.freeze(new Map(reportTypeValues));
   
@@ -237,7 +238,7 @@ async function downloadReport(req, res) {
       });
     }
     let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`);
-    let session = req.params.courseYear + req.params.courseMonth;
+    let session = req.query.sessionCode;
     const fileDetails = getFileDetails(reportType, session);
 
     setResponseHeaders(res, fileDetails);
@@ -318,6 +319,7 @@ function getAssessmentSpecialCases(req, res) {
 function getFileDetails(reportType, session) {
   const mappings = {
     'REGISTRATION_DETAIL_CSV': { filename: `${session}Session Registration Details-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'PEN_ISSUES_CSV': {filename: 'PenIssues.csv', contentType: 'text/csv'},
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];

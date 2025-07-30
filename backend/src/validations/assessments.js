@@ -91,10 +91,10 @@ const reportSchema =  object({
   params: object({
     sessionID: string().nonNullable(),
     type: string().nonNullable(),
-    courseMonth: string().nullable().optional(),
-    courseYear: string().nullable().optional()
   }).noUnknown(),
-  query: object().noUnknown(),
+  query: object({
+    sessionCode: string().nullable().optional()
+  }).noUnknown(),
   body: object().noUnknown(),
 }).noUnknown();
 

@@ -43,25 +43,33 @@
             </template>
           </v-data-table>
           <v-row>
-            <v-col>
-              <v-btn
-                id="summary"
-                color="#1976d2"
-                text="Summary Report"
-                class="mb-1"
-                prepend-icon="mdi-tray-arrow-down"
-                variant="text"
-              />
-              <v-btn
-                id="detailed"
-                color="#1976d2"
-                text="Detailed Results"
-                class="mr-2 mb-1"
-                prepend-icon="mdi-tray-arrow-down"
-                variant="text"
-              />
+            <v-col class="d-flex justify-end">
+              <v-menu>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    color="primary"
+                    v-bind="props"
+                    prepend-icon="mdi-tray-arrow-down"
+                    variant="outlined"
+                  >
+                    Reports
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-title class="report-item">Result Summary</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-title class="report-item">Detailed Results</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item v-if="session.isOpen" @click="downloadReport('pen-issues-csv')">
+                    <v-list-item-title class="report-item">PEN Issues for session</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </v-col>
-            <v-col v-if="session.isOpen" class="d-flex justify-end">
+            <v-col cols="3" v-if="session.isOpen" class="d-flex justify-end ml-n5">
               <v-btn
                 id="uploadButton"
                 prepend-icon="mdi-file-upload"
@@ -432,6 +440,17 @@ export default {
     formatMonth(month) {
       return capitalize(Month.of(month).toString());
     },
+    downloadReport(type) {
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve report.'
+        );
+      }
+    }
   },
 };
 </script>
@@ -501,5 +520,9 @@ h4, .v-icon {
 }
 :deep(.v-data-table-footer) {
        display: none;
+ }
+
+ .report-item {
+  color: #1976d2
  }
 </style>

@@ -131,7 +131,7 @@ export default {
     downloadReport(type) {
       try {
         let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSession);
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession}/report/${type}/${selection[0].courseMonth}/${selection[0].courseYear}/download`;
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession}/report/${type}/download?sessionCode=${selection[0].courseMonth}${selection[0].courseYear}`;
         window.open(url);
       } catch (error) {
         console.error(error);
