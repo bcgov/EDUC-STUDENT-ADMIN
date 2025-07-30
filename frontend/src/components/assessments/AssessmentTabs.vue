@@ -54,13 +54,21 @@
           >
             <RegistrationSummary
               :school-year-sessions="activeSessions"
+              :selected-session-id="selectedSessionForSummary"
             />
           </v-window-item>
           <v-window-item
             value="registrations"
             transition="false"
             reverse-transition="false"
-          />
+          >
+            <TransferRegistrations
+              v-if="activeSessions?.length > 0"
+              :school-year-sessions="activeSessions"
+              @refresh-sessions="refreshSession"
+              @view-registrations="viewRegistrations"
+            />
+          </v-window-item>
           <v-window-item
             value="transferKeys"
             transition="false"
@@ -96,10 +104,12 @@ import TransferKeys from './data-exchange/TransferKeys.vue';
 import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import RegistrationSummary from './RegistrationSummary.vue';
+import TransferRegistrations from '@/components/assessments/data-exchange/TransferRegistrations.vue';
 
 export default {
   name: 'AssessmentTabs',
   components: {
+    TransferRegistrations,
     Spinner,
     TransferKeys,
     TransferResults,
@@ -113,6 +123,7 @@ export default {
       schoolYear: null,
       isLoading: false,
       tab: '',
+      selectedSessionForSummary: null
     };
   },
   computed: {},
@@ -148,6 +159,10 @@ export default {
     },
     refreshSession() {
       this.getActiveSessions();
+    },
+    viewRegistrations(session) {
+      this.selectedSessionForSummary = session.sessionID;
+      this.tab = 'summary';
     }
   },
 };
