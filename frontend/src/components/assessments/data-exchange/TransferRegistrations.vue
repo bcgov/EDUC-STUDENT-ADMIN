@@ -45,9 +45,7 @@
                 <th scope="col">
                   Exported By
                 </th>
-                <th scope="col">
-                  Action
-                </th>
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>
@@ -55,7 +53,7 @@
                 <td>Assessment Registrations</td>
                 <td>{{ formatDate(session.assessmentRegistrationsExportDate) }}</td>
                 <td>{{ session.assessmentRegistrationsExportUserID }}</td>
-                <td>
+                <td class="text-right">
                   <v-btn
                     :id="`assessmentDownload-${index}`"
                     prepend-icon="mdi-file-upload"
@@ -70,7 +68,7 @@
                 <td>Session Writing Attempts</td>
                 <td>{{ formatDate(session.sessionWritingAttemptsExportDate) }}</td>
                 <td>{{ session.sessionWritingAttemptsExportUserID }}</td>
-                <td>
+                <td class="text-right">
                   <v-btn
                     :id="`sessionWritingDownload-${index}`"
                     prepend-icon="mdi-file-upload"
@@ -85,7 +83,7 @@
                 <td>PEN Merges</td>
                 <td>{{ formatDate(session.penMergesExportDate) }}</td>
                 <td>{{ session.penMergesExportUserID }}</td>
-                <td>
+                <td class="text-right">
                   <v-btn
                     :id="`penMergesDownload-${index}`"
                     prepend-icon="mdi-file-upload"
@@ -217,7 +215,7 @@ export default {
     async handleDownloadReport(reportType) {
       this.isLoading = true;
       try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/${this.selectedSession.courseMonth}/${this.selectedSession.courseYear}/download`;
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/download`;
 
         const response = await ApiService.apiAxios.get(url, { responseType: 'blob' });
 

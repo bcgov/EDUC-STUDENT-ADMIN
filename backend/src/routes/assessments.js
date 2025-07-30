@@ -32,5 +32,5 @@ router.get('/assessment-specialcase-types', passport.authenticate('jwt', {sessio
 router.get('/assessment-results/session/:sessionID/summary', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getResultUploadSummary);
 
 router.get('/:sessionID/summary/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), getRegistrationSummary);
-router.get('/:sessionID/report/:type/:courseMonth/:courseYear/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), downloadReport);
+router.get('/:sessionID/report/:type/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), downloadReport);
 module.exports = router;
