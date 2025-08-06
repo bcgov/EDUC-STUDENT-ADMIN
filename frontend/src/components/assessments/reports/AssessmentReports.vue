@@ -1,0 +1,566 @@
+<template>
+  <v-container fluid>
+    <v-row>
+      <v-col>
+        <h3>Individual Student Reports</h3>
+      </v-col>
+    </v-row>
+    <v-card
+      class="mt-2"
+      width="30em"
+      border="sm"
+    >
+      <v-card-text
+        style="color: gray;font-size: small"
+        class="mt-n3"
+      >
+        Find assessment results for individual students using their PEN.
+      </v-card-text>
+      <v-form
+        id="studentPENForm"
+        v-model="studentPENIsValid"
+      >
+        <v-row class="pl-3">
+          <v-col cols="8">
+            <v-text-field
+              id="studentPENField"
+              ref="studentPENField"
+              v-model="studentPENTranscript"
+              placeholder="Enter PEN"
+              :rules="penRules"
+              variant="underlined"
+            />
+          </v-col>
+          <v-col
+            cols="4"
+            class="mt-3"
+          >
+            <v-btn
+              color="primary"
+              :disabled="!studentPENIsValid"
+              @click="searchStudentForGivenPEN()"
+            >
+              Search
+            </v-btn>
+          </v-col>
+        </v-row>
+        <div v-if="showPENSearchResultArea">
+          <v-row class="pl-3 pb-3">
+            <v-col
+              style="font-weight: bold"
+              cols="3"
+            >
+              Name:
+            </v-col>
+            <v-col cols="9">
+              {{ studentForSearch.fullName }}
+            </v-col>
+            <v-col
+              style="font-weight: bold"
+              cols="3"
+            >
+              Local ID:
+            </v-col>
+            <v-col cols="9">
+              {{ studentForSearch.localID }}
+            </v-col>
+            <v-col
+              style="font-weight: bold"
+              cols="3"
+            >
+              Birthdate:
+            </v-col>
+            <v-col cols="9">
+              {{ studentForSearch.dob }}
+            </v-col>
+            <v-col
+              style="font-weight: bold"
+              cols="3"
+            >
+              Gender:
+            </v-col>
+            <v-col cols="9">
+              {{ studentForSearch.gender }}
+            </v-col>
+            <v-col
+              cols="12"
+              class="mt-n2"
+            >
+              <DownloadLink
+                label="Student Report"
+                :download-action="downloadStudentReport"
+              />
+            </v-col>
+          </v-row>
+        </div>
+      </v-form>
+    </v-card>
+
+    <v-row class="mt-2">
+      <v-col>
+        <h3>Provincial Level Session Reports</h3>
+      </v-col>
+    </v-row>
+    <v-row
+      class="mt-n6"
+    >
+      <v-col>
+        <span
+          style="color: gray;font-size: small"
+        >
+          Select a session below to find the reports available for download.
+        </span>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-n2">
+      <v-col cols="4">
+        <v-select
+          id="selectedSession"
+          v-model="selectedSessionID"
+          variant="underlined"
+          :items="sessions"
+          label="Session"
+          item-title="title"
+          item-value="value"
+          :rules="[rules.required()]"
+          :clearable="true"
+        />
+      </v-col>
+    </v-row>
+    <div :class="{ 'disabled-section': disableProvincialCondition }">
+      <v-row
+        no-gutters
+        class="d-flex"
+      >
+        <v-card
+          class="mt-2 mr-4"
+          width="30em"
+          border="sm"
+          style="border: 1px solid black;border-radius: 10px;"
+        >
+          <v-card-title style="font-size: medium;">
+            Distribution of Assessment Results (DOAR)
+          </v-card-title>
+
+          <v-row class="pl-3 pb-3">
+            <v-col cols="12">
+              <DownloadLink
+                label="Summary DOAR.pdf"
+                :download-action="() => downloadSummaryDOAR()"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="pl-3 pb-3 mt-n6">
+            <v-col cols="12">
+              <DownloadLink
+                label="NME10 Detailed DOAR.csv"
+                :download-action="() => downloadNMEDetailedDOAR()"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="pl-3 pb-3 mt-n6">
+            <v-col cols="12">
+              <DownloadLink
+                label="NMF10 Detailed DOAR.csv"
+                :download-action="() => downloadNMFDetailedDOAR()"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+
+        <v-card
+          class="mt-2"
+          width="30em"
+          border="sm"
+          style="border: 1px solid black;border-radius: 10px;"
+        >
+          <v-card-title style="font-size: medium;">
+            <v-row>
+              <v-col class="d-flex justify-start">
+                Other Reports
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-row class="pl-3 pb-3">
+            <v-col 
+              cols="12"
+            >
+              <DownloadLink
+                label="Yukon Assessment Counts for Invoice.csv"
+                :download-action="() => downloadYukonCountsReport()"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-row>
+    </div>
+
+    <v-row class="mt-2">
+      <v-col>
+        <h3>School Level Session Results</h3>
+      </v-col>
+    </v-row>
+    <v-row
+      class="mt-n6"
+    >
+      <v-col>
+        <span
+          style="color: gray;font-size: small"
+        >
+          Select a school and a session below to find the reports available for download.
+        </span>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-n2">
+      <v-col
+        cols="4"
+      >
+        <v-autocomplete
+          id="selectSchool"
+          v-model="schoolNameNumberFilter"
+          variant="underlined"
+          :items="schoolSearchNames"
+          color="#003366"
+          label="School Name or Number"
+          single-line
+          :clearable="true"
+          item-title="schoolCodeName"
+          item-value="schoolCodeValue"
+          :rules="[rules.required()]"
+          autocomplete="off"
+        />
+      </v-col>
+
+      <v-col cols="4">
+        <v-select
+          id="selectedSchoolLevelSession"
+          v-model="selectedSchoolLevelSessionID"
+          variant="underlined"
+          :items="sessions"
+          label="Session"
+          item-title="title"
+          item-value="value"
+          :rules="[rules.required()]"
+          :clearable="true"
+        />
+      </v-col>
+    </v-row>
+    <div :class="{ 'disabled-section': disableSchoolLevelCondition }">
+      <v-row
+        no-gutters
+        class="d-flex"
+      >
+        <v-card
+          class="mt-2 mr-4"
+          width="30em"
+          border="sm"
+          style="border: 1px solid black;border-radius: 10px;"
+        >
+          <v-card-title style="font-size: medium;">
+            Assessment Results
+          </v-card-title>
+
+          <v-row class="pl-3 pb-3">
+            <v-col cols="12">
+              <DownloadLink
+                label="Session Results.csv"
+                :download-action="() => downloadAssessmentResultCSV()"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="pl-3 pb-3 mt-n6">
+            <v-col cols="12">
+              <DownloadLink
+                label="Session Results.xam"
+                :download-action="() => downloadXamFile()"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="pl-3 pb-3 mt-n6">
+            <v-col cols="12">
+              <DownloadLink
+                label="Session Results by Student.pdf"
+                :download-action="() => downloadSessionResultsByStudentPDF()"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="pl-3 pb-3 mt-n6">
+            <v-col cols="12">
+              <DownloadLink
+                label="Session Results by Assessment.pdf"
+                :download-action="() => downloadSessionResultsByAssessmentPDF()"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+
+        <v-card
+          class="mt-2"
+          width="30em"
+          border="sm"
+          style="border: 1px solid black;border-radius: 10px;"
+        >
+          <v-card-title style="font-size: medium;">
+            <v-row>
+              <v-col class="d-flex justify-start">
+                Distribution of Assessment Results (DOAR)
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-row class="pl-3 pb-3">
+            <v-col 
+              cols="12"
+            >
+              <DownloadLink
+                label="Summary DOAR.pdf"
+                :download-action="() => downloadSummarySchoolDOARReport()"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-row>
+    </div>
+  </v-container>
+</template>
+
+<script>
+import { isValidPEN } from '../../../utils/validation';
+import alertMixin from '@/mixins/alertMixin';
+import { mapState } from 'pinia';
+import {appStore} from '@/store/modules/app';
+import DownloadLink from '../../common/DownloadLink.vue';
+import ApiService from '@/common/apiService';
+import { Routes } from '../../../utils/constants';
+import { sortBy } from 'lodash';
+import * as Rules from '../../../utils/institute/formRules';
+
+export default {
+  name: 'AssessmentReports',
+  components: { DownloadLink },
+  mixins: [alertMixin],
+  props: {
+    schoolYearSessions: {
+      type: Array,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      isLoading: false,
+      showPENSearchResultArea: false,
+      studentForSearch: {},
+      studentPENTranscript: null,
+      studentPENIsValid: false,
+      penRules: [v => !!v || 'Required', v => (!v || isValidPEN(v) || 'Invalid PEN')],
+      isSearchingStudent: false,
+      rules: Rules,
+      schoolNameNumberFilter: null,
+      schoolSearchNames: [],
+      selectedSessionID: null,
+      selectedSchoolLevelSessionID: null,
+      sessions: [],
+    };
+  },
+  watch: {
+    schoolYearSessions: {
+      handler(value) {
+        if(value.length > 0) {
+          this.setupAssessmentSessions();
+        }
+      },
+      immediate: true
+    }
+  },
+  computed: {
+    ...mapState(appStore, ['schoolMap']),
+    disableProvincialCondition() {
+      return !this.selectedSessionID;
+    },
+    disableSchoolLevelCondition() {
+      return !this.selectedSchoolLevelSessionID || !this.schoolNameNumberFilter;
+    },
+    schoolIdentifierForReports() {
+      return this.schoolNameNumberFilter;
+    }
+  },
+  async created() {
+    this.setupSchoolLists();
+  },
+  methods: {
+    setupAssessmentSessions() {
+      this.sessions = [];
+      this.schoolYearSessions.forEach(session => {
+        this.sessions.push({
+          title: session.courseMonth + '/' + session.courseYear,
+          value: session.sessionID,
+        });
+      });
+      this.selectedSessionID = this.sessions[0].value;
+    },
+    setupSchoolLists() {
+      this.schoolSearchNames = [];
+      this.schoolMap?.forEach((school) => {
+        let schoolCodeName = school.schoolName + ' - ' + school.mincode;
+        this.schoolSearchNames.push({schoolCodeName: schoolCodeName, schoolCodeValue: school.schoolID});
+      });
+      this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+    },
+    openDOARSummaryHelp() {
+      const routeData = this.$router.resolve({name: 'doar-summary'});
+      window.open(routeData.href, '_blank');
+    },
+    searchStudentForGivenPEN() {
+      this.isSearchingStudent = true;
+      ApiService.apiAxios.get(Routes.student.SEARCH_BY_PEN_URL, {
+        params: {
+          pen: this.studentPENTranscript
+        }
+      })
+        .then(response => {
+          this.studentForSearch = {
+            pen: response.data.pen,
+            studentID: response.data.studentID,
+            fullName: response?.data?.legalFirstName + ' ' + (response?.data?.legalMiddleNames ?? '') + ' ' + response?.data?.legalLastName,
+            localID: response.data.localID,
+            gender: response.data.genderCode,
+            dob: response.data.dob
+          };
+          this.showPENSearchResultArea = true;
+          this.isSearchingStudent = false;
+        })
+        .catch(error => {
+          console.log(error);
+          if (error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
+          } else {
+            this.setFailureAlert('PEN must be a valid.');
+          }
+        }).finally(() => {
+          this.isSearchingStudent = false;
+        });
+    },
+    async downloadAssessmentResultCSV() {
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SESSION_RESULTS/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
+
+    },
+    async downloadSessionResultsByStudentPDF() {
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SCHOOL_STUDENTS_IN_SESSION/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
+
+    },
+    async downloadSessionResultsByAssessmentPDF() {
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SCHOOL_STUDENTS_BY_ASSESSMENT/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
+
+    },
+    async downloadStudentReport() {
+     
+    },
+    async downloadNMFDetailedDOAR() {
+
+    },
+    async downloadNMEDetailedDOAR() {
+
+    },
+    async downloadYukonCountsReport() {
+      
+    },
+    async downloadSummarySchoolDOARReport() {
+
+    },
+    async downloadXamFile() {
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/xam/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async downloadGradProjections(){
+
+    },
+    async downloadSummaryDOAR() {
+
+    }
+  },
+};
+</script>
+
+<style scoped>
+
+h3 {
+  color: #38598a;
+}
+
+button {
+  color: #1976d2;
+}
+
+v-text-field {
+  width: 4em;
+}
+
+ul {
+  list-style-type: none;
+  padding-top: 1em;
+  padding-bottom: 2em;
+}
+
+li {
+  padding-top: 1em;
+}
+
+p {
+  padding-top: 1em;
+  font-style: italic;
+}
+
+i {
+  font-size: 1.25em;
+}
+
+.disabled-section {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+</style>

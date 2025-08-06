@@ -45,6 +45,13 @@
           >
             Transfer Results
           </v-tab>
+          <v-tab
+            id="reports"
+            value="reports"
+            prepend-icon="mdi-finance"
+          >
+            Reports
+          </v-tab>
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item
@@ -91,6 +98,15 @@
               @refresh-sessions="refreshSession"
             />
           </v-window-item>
+          <v-window-item
+            value="reports"
+            transition="false"
+            reverse-transition="false"
+          >
+            <AssessmentReports 
+              :school-year-sessions="approvedSessions"
+            />
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -105,6 +121,9 @@ import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import RegistrationSummary from './RegistrationSummary.vue';
 import TransferRegistrations from '@/components/assessments/data-exchange/TransferRegistrations.vue';
+import AssessmentReports from './reports/AssessmentReports.vue';
+import {appStore} from '@/store/modules/app';
+import { mapState } from 'pinia';
 
 export default {
   name: 'AssessmentTabs',
@@ -113,7 +132,8 @@ export default {
     Spinner,
     TransferKeys,
     TransferResults,
-    RegistrationSummary
+    RegistrationSummary,
+    AssessmentReports
   },
   mixins: [],
   props: {},
@@ -123,29 +143,38 @@ export default {
       schoolYear: null,
       isLoading: false,
       tab: '',
-      selectedSessionForSummary: null
+      selectedSessionForSummary: null,
+      approvedSessions: []
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(appStore, ['schoolMap']),
+  },
   created() {
     this.loading = true;
     this.getActiveSessions();
   },
+  async beforeMount() {
+    if (this.schoolMap.size === 0) {
+      await appStore().getInstituteCodes();
+    }    
+  },
   methods: {
     async getActiveSessions() {
       this.loading = true;
-      const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+      const formatter = DateTimeFormatter.ISO_LOCAL_DATE;
       ApiService.apiAxios
         .get(`${Routes.assessments.ASSESSMENT_SESSIONS}`, {})
         .then((response) => {
           const allSessions = response.data;
           allSessions.sort((a, b) => {
-            const dateA = LocalDate.parse(a.activeUntilDate, formatter);
-            const dateB = LocalDate.parse(b.activeUntilDate, formatter);
+            const dateA = LocalDate.parse(a.courseYear +"-"+ a.courseMonth + "-01", formatter);
+            const dateB = LocalDate.parse(b.courseYear +"-"+ b.courseMonth + "-01", formatter);
             return dateB.compareTo(dateA);
           });
           this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;
           this.activeSessions = allSessions.filter((session) => session.schoolYear === this.schoolYear);
+          this.approvedSessions = allSessions.filter(session => !session.isOpen && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
         })
         .catch((error) => {
           console.error(error);
