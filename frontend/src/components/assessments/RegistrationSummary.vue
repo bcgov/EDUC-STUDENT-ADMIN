@@ -51,6 +51,7 @@
           text="Assessment Registration Totals by School"
           prepend-icon="mdi-tray-arrow-down"
           variant="text"
+          @click="downloadReport('registration-summary-by-school')"
         />
       </v-col>
     </v-row>
