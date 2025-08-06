@@ -253,7 +253,7 @@ async function downloadXamFile(req, res) {
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
 
-    if (data && data.documentData) {
+    if (data?.documentData) {
       const buffer = Buffer.from(data.documentData, 'base64');
       return res.send(buffer);
     } else {
