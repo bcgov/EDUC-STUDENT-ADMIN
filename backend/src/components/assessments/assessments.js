@@ -8,6 +8,7 @@ const { createMoreFiltersSearchCriteria } = require('./studentFilters');
 const moment = require('moment');
 const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const log = require('../logger');
+const {ASSESSMENTS_REPORT_TYPE_CODE_MAP} = require('../../util/constants');
 
 async function getAssessmentSessions(req, res) {
   try {
@@ -222,20 +223,10 @@ async function getRegistrationSummary(req, res) {
 }
 
 async function downloadReport(req, res) {
-  const reportTypeValues = [
-    ['registration-detail-csv', 'REGISTRATION_DETAIL_CSV'],
-    ['ALL_SESSION_REGISTRATIONS', 'ALL_SESSION_REGISTRATIONS'],
-    ['ATTEMPTS', 'ATTEMPTS'],
-    ['PEN_MERGES', 'PEN_MERGES'],
-    ['pen-issues-csv', 'PEN_ISSUES_CSV'],
-    ['registration-summary-by-school', 'REGISTRATION_SUMMARY_BY_SCHOOL']
-  ];
-  const REPORT_TYPE_CODE_MAP = Object.freeze(new Map(reportTypeValues));
-  
   try {
     const userInfo = utils.getUser(req);
     let createUpdateUser =  userInfo.idir_username;
-    const reportType = REPORT_TYPE_CODE_MAP.get(req.params.type);
+    const reportType = ASSESSMENTS_REPORT_TYPE_CODE_MAP.get(req.params.type);
     if (!reportType) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Invalid report type provided'
@@ -243,12 +234,58 @@ async function downloadReport(req, res) {
     }
     let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`);
     let session = req.query.sessionCode;
-    const fileDetails = getFileDetails(reportType, session);
+    const fileDetails = getFileDetails(reportType, session, null);
 
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(data.documentData, 'base64');
     return res.status(HttpStatus.OK).send(buffer);
   } catch (e) {
+    return handleExceptionResponse(e, res);
+  }
+}
+
+
+async function downloadXamFile(req, res) {
+  try {
+    const data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/school/${req.params.schoolID}/XAM_FILE/download`);
+
+    const fileName = `${data?.reportType || 'SessionResults.xam'}`;
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+
+    if (data && data.documentData) {
+      const buffer = Buffer.from(data.documentData, 'base64');
+      return res.send(buffer);
+    } else {
+      const emptyBuffer = Buffer.from('');
+      return res.send(emptyBuffer);
+    }
+  } catch (e) {
+    log.error(e, 'downloadXamFile', 'Error occurred while attempting to download XAM file.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function downloadSchoolLevelReport(req, res) {
+  try {
+    const reportType = ASSESSMENTS_REPORT_TYPE_CODE_MAP.get(req.params.reportTypeCode);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+    
+    let mincode = cacheService.getSchoolBySchoolID(req.params.schoolID).mincode;
+    let url = `${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/school/${req.params.schoolID}/${reportType}/download`;
+
+    const resData = await getData(url);
+    const fileDetails = getFileDetails(reportType, null, mincode);
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(resData.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
+  } catch (e) {
+    log.error('downloadAssessmentReport Error', e.stack);
     return handleExceptionResponse(e, res);
   }
 }
@@ -320,7 +357,7 @@ function getAssessmentSpecialCases(req, res) {
   }
 }
 
-function getFileDetails(reportType, session) {
+function getFileDetails(reportType, session, mincode) {
   const mappings = {
     'REGISTRATION_DETAIL_CSV': { filename: `${session}Session Registration Details-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'ALL_SESSION_REGISTRATIONS': { filename: `${session}Assessment Registrations-${LocalDate.now()}.csv`, contentType: 'text/csv' },
@@ -328,6 +365,9 @@ function getFileDetails(reportType, session) {
     'PEN_MERGES': { filename: `${session}PEN Merges-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'PEN_ISSUES_CSV': { filename: 'PenIssues.csv', contentType: 'text/csv' },
     'REGISTRATION_SUMMARY_BY_SCHOOL': { filename:  `${session}Registration Summary by School-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'SESSION_RESULTS': { filename: `SessionResults_${mincode}.csv`, contentType: 'text/csv' },
+    'SCHOOL_STUDENTS_IN_SESSION': { filename: `SchoolStudentsInSession_${mincode}.pdf`, contentType: 'application/pdf' },
+    'SCHOOL_STUDENTS_BY_ASSESSMENT': { filename: `SchoolStudentsByAssessment_${mincode}.pdf`, contentType: 'application/pdf' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
@@ -353,5 +393,7 @@ module.exports = {
   uploadAssessmentResultsFile,
   getResultUploadSummary,
   getRegistrationSummary,
-  downloadReport
+  downloadReport,
+  downloadXamFile,
+  downloadSchoolLevelReport
 };

@@ -2,7 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const { postAssessmentStudent, getAssessmentSessions, getAssessmentSessionsBySchoolYear, updateAssessmentSession, getAssessmentStudentsPaginated, getAssessmentStudentByID, updateAssessmentStudentByID, getAssessmentSpecialCases, deleteAssessmentStudentByID, 
-  uploadAssessmentKeyFile , uploadAssessmentResultsFile, getResultUploadSummary, getRegistrationSummary, downloadReport} = require('../components/assessments/assessments');
+  uploadAssessmentKeyFile , uploadAssessmentResultsFile, getResultUploadSummary, getRegistrationSummary, downloadReport, downloadXamFile, downloadSchoolLevelReport} = require('../components/assessments/assessments');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const permUtils = require('../components/permissionUtils');
@@ -33,4 +33,8 @@ router.get('/assessment-results/session/:sessionID/summary', passport.authentica
 
 router.get('/:sessionID/summary/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), getRegistrationSummary);
 router.get('/:sessionID/report/:type/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), downloadReport);
+
+router.get('/:sessionID/:schoolID/xam/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, downloadXamFile);
+router.get('/:sessionID/school/:schoolID/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, downloadSchoolLevelReport);
+
 module.exports = router;
