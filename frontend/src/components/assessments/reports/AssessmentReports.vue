@@ -328,7 +328,6 @@
 <script>
 import { isValidPEN } from '../../../utils/validation';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '../../util/PrimaryButton.vue';
 import { mapState } from 'pinia';
 import {appStore} from '@/store/modules/app';
 import DownloadLink from '../../common/DownloadLink.vue';
@@ -339,7 +338,7 @@ import * as Rules from '../../../utils/institute/formRules';
 
 export default {
   name: 'AssessmentReports',
-  components: { PrimaryButton, DownloadLink },
+  components: { DownloadLink },
   mixins: [alertMixin],
   props: {
     schoolYearSessions: {
