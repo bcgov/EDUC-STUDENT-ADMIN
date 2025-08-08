@@ -244,6 +244,7 @@ export default {
       ],
       isLoading: false,
       selectedSessionID: null,
+      selectedSessionDesc: null,
       acceptableFileExtensions: ['.txt'],
       requiredRules: [(v) => !!v || 'Required'],      
       uploadFileValue: null,
@@ -282,6 +283,7 @@ export default {
           let openSession = value.filter(sch => sch.isOpen);
           this.type = openSession[0].sessionID;
           this.selectedSessionID = openSession[0].sessionID;
+          this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
         }
       },
       immediate: true
@@ -445,7 +447,7 @@ export default {
     },
     downloadReport(type) {
       try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/download`;
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/download?sessionCode=${this.selectedSessionDesc}`;
         window.open(url);
       } catch (error) {
         console.error(error);
