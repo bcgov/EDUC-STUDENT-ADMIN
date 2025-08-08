@@ -57,10 +57,13 @@
                 </template>
 
                 <v-list>
-                  <v-list-item>
-                    <v-list-item-title class="report-item">Result Summary</v-list-item-title>
+                  <v-list-item @click="downloadReport('summary-by-form-for-session')">
+                    <v-list-item-title class="report-item">Result Summary by Form</v-list-item-title>
                   </v-list-item>
-                  <v-list-item>
+                  <v-list-item @click="downloadReport('summary-by-grade-for-session')">
+                    <v-list-item-title class="report-item">Result Summary by Grade</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="downloadReport('all-detailed-students-in-session-csv')">
                     <v-list-item-title class="report-item">Detailed Results</v-list-item-title>
                   </v-list-item>
                   <v-list-item v-if="session.isOpen" @click="downloadReport('pen-issues-csv')">
@@ -68,10 +71,10 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-col>
-            <v-col cols="3" v-if="session.isOpen" class="d-flex justify-end ml-n5">
               <v-btn
+                v-if="session.isOpen"
                 id="uploadButton"
+                class="ml-3"
                 prepend-icon="mdi-file-upload"
                 variant="elevated"
                 color="#003366"

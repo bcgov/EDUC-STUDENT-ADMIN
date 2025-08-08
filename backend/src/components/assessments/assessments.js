@@ -368,6 +368,9 @@ function getFileDetails(reportType, session, mincode) {
     'SESSION_RESULTS': { filename: `SessionResults_${mincode}.csv`, contentType: 'text/csv' },
     'SCHOOL_STUDENTS_IN_SESSION': { filename: `SchoolStudentsInSession_${mincode}.pdf`, contentType: 'application/pdf' },
     'SCHOOL_STUDENTS_BY_ASSESSMENT': { filename: `SchoolStudentsByAssessment_${mincode}.pdf`, contentType: 'application/pdf' },
+    'summary-by-form-for-session': { filename: `SummaryByForm_${session}.csv`, contentType: 'text/csv' },
+    'summary-by-grade-for-session': { filename: `SummaryByGrade_${session}.csv`, contentType: 'text/csv' },
+    'all-detailed-students-in-session-csv': { filename: `AllDetailedStudentsInSession_${session}.csv`, contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
