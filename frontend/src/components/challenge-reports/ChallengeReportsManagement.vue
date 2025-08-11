@@ -13,13 +13,10 @@
   </div>
   <div v-else>
     <v-row>
-      <v-col cols="8">
-        <h3 class="subHeading pb-1">
-          School Year for Challenge Reporting
-        </h3>
-        <p>{{ schoolYear }}</p>
-      </v-col>
-      <v-col cols="4">
+      <v-col
+        cols="12"
+        class="d-flex justify-end mb-n8"
+      >
         <v-chip
           v-if="challengeReportsSessionStatus === 'PRELIM'"
           color="warning"
@@ -38,11 +35,108 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col cols="12">
+        <h3 class="subHeading pb-1">
+          Challenge Report Description
+        </h3>
+        <p>The Funding Report for Course Challenges includes students that were eligible for funding and received a passing grade when challenging a course during the school year.</p>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <h3 class="subHeading pb-3">
+          Reporting Parameters
+        </h3>
+        <p><b>School Year:</b> {{ schoolYear }}</p>
+        <p style="font-style: italic; color: dimgrey">
+          Used to determine which course sessions to use when looking for challenges.
+        </p>
+        <p class="mt-3">
+          <b>Student Data Collections:</b> {{ sdcCollections }}
+        </p>
+        <p style="font-style: italic; color: dimgrey">
+          Used to determine funding eligibility for students who sucessfully completed course challenges.
+        </p>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="9">
         <h3 class="subHeading pb-1">
           District Notification Email
         </h3>
-        <p>The details below are used to populate the notification emails sent to the districts for the Preliminary and Final Phases.</p>
+        <p>
+          Enter the following details to automatically populate the <v-menu
+            location="bottom"
+          >
+            <template #activator="{ props }">
+              <a
+                v-bind="props"
+                @click="toggleMoreInfoTooltip"
+              >
+                Preliminary
+              </a>
+            </template>
+            <v-card
+              style="max-width: 30em;"
+              border="sm"
+              class="pa-2"
+            >
+              <div>
+                Hello,
+              </div><br>
+              <div>
+                The Preliminary Funding Report for Course Challenges for <b>*SCHOOL_YEAR*</b> is now available for your district to download through the Education Data Exchange. This report lists all students who, according to our records, successfully completed a course challenge during the <b>*SCHOOL_YEAR*</b> school year.
+              </div><br>
+
+              <div>For the <b>*SCHOOL_YEAR*</b> school year, each successful course challenge will be funded at a rate of <b>*FUNDING_RATE*</b>. Once confirmed, the funding will be disbursed to your district by the ministry’s Financial Management Division following the funding recalculation in December. It will be included in a subsequent bi-monthly electronic funds transfer.</div><br>
+
+              <div>Please review the report carefully to ensure the information matches your district’s records. If there are discrepancies, submit corrections via the EDX Upload Graduation Data File process or a GRAD Change Form by <b>*DEADLINE_FOR_COURSE_UPDATES*</b></div><br>
+
+              <div>If you have any questions, please contact the Student Certification Unit at: student.certification@gov.bc.ca.</div><br>
+
+              <div>Regards,</div>
+              <div><b>Student Certification Unit</b></div>
+              <div>Ministry of Education and Child Care</div>
+            </v-card>
+          </v-menu> and <v-menu
+            location="bottom"
+          >
+            <template #activator="{ props }">
+              <a
+                v-bind="props"
+                @click="toggleMoreInfoTooltip"
+              >
+                Final
+              </a>
+            </template>
+            <v-card
+              style="max-width: 30em;"
+              border="sm"
+              class="pa-2"
+            >
+              <div>
+                Hello,
+              </div><br>
+              <div>
+                The Final Funding Report for Course Challenges <b>*SCHOOL_YEAR*</b> is now available for your district to download through the Education Data Exchange (EDX). This report lists all students who, according to our records, successfully completed a course challenge during the <b>*SCHOOL_YEAR*</b> school year.
+              </div><br>
+
+              <div>For the 2024/2025 school year, each successful course challenge will be funded at a rate of <b>*FUNDING_RATE*</b>. This funding will be disbursed to your district by the ministry’s Financial Management Division following the funding recalculation in December. It will be included in a subsequent bi-monthly electronic funds transfer.</div><br>
+
+              <div>If you have any questions, please contact the Student Certification Unit at: student.certification@gov.bc.ca.</div><br>
+              
+              <div>Regards,</div>
+              <div><b>Student Certification Unit</b></div>
+              <div>Ministry of Education and Child Care</div>
+            </v-card>
+          </v-menu> Phase notification emails to districts.
+        </p>
+        <p class="mt-3">
+          <b>Funding Rate:</b> Current rate, obtained from the Financial Team (e.g., $279.00 - 1/32 of Basic Allocation).
+        </p>
+        <p class="mt-3 mb-3">
+          <b>Deadline for Course Updates:</b> Final date for submissions or corrections (e.g., November 15, YYYY).
+        </p>
       </v-col>
     </v-row>
     <v-form
@@ -189,6 +283,7 @@ export default {
       fundingRate: null,
       loading: true,
       schoolYear: null,
+      sdcCollections: null,
       challengeReportsSessionStatus: null,
       finalDateForChanges: null,
       activePeriod: null,
@@ -226,6 +321,7 @@ export default {
           this.fundingRate = this.activePeriod.fundingRate;
           this.finalDateForChanges = this.activePeriod.finalDateForChanges;
           this.schoolYear = 'July 1,' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' to June 30,' + this.activePeriod.schoolYear ;
+          this.sdcCollections = 'September ' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' and February ' + this.activePeriod.schoolYear ;
         })
         .catch((error) => {
           console.error(error);
