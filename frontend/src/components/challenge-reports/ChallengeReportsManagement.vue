@@ -121,7 +121,7 @@
                 The Final Funding Report for Course Challenges <b>*SCHOOL_YEAR*</b> is now available for your district to download through the Education Data Exchange (EDX). This report lists all students who, according to our records, successfully completed a course challenge during the <b>*SCHOOL_YEAR*</b> school year.
               </div><br>
 
-              <div>For the 2024/2025 school year, each successful course challenge will be funded at a rate of <b>*FUNDING_RATE*</b>. This funding will be disbursed to your district by the ministry’s Financial Management Division following the funding recalculation in December. It will be included in a subsequent bi-monthly electronic funds transfer.</div><br>
+              <div>For the <b>*SCHOOL_YEAR*</b> school year, each successful course challenge will be funded at a rate of <b>*FUNDING_RATE*</b>. This funding will be disbursed to your district by the ministry’s Financial Management Division following the funding recalculation in December. It will be included in a subsequent bi-monthly electronic funds transfer.</div><br>
 
               <div>If you have any questions, please contact the Student Certification Unit at: student.certification@gov.bc.ca.</div><br>
               
