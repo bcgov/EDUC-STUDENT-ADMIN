@@ -504,7 +504,7 @@ export default {
     async downloadXamFile() {
       this.isLoading = true;
       try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/xam/download`;
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/${this.schoolIdentifierForReports}/xam/download`;
         window.open(url);
       } catch (error) {
         console.error(error);
