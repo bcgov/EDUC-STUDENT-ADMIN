@@ -215,7 +215,8 @@ export default {
     async handleDownloadReport(reportType) {
       this.isLoading = true;
       try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/download`;
+        let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSession.sessionID);
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${reportType}/download?sessionCode=${selection[0].courseMonth}${selection[0].courseYear}`;
 
         const response = await ApiService.apiAxios.get(url, { responseType: 'blob' });
 

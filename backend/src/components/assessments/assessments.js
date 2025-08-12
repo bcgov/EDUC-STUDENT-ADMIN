@@ -359,12 +359,12 @@ function getAssessmentSpecialCases(req, res) {
 
 function getFileDetails(reportType, session, mincode) {
   const mappings = {
-    'REGISTRATION_DETAIL_CSV': { filename: `${session}Session Registration Details-${LocalDate.now()}.csv`, contentType: 'text/csv' },
-    'ALL_SESSION_REGISTRATIONS': { filename: `${session}Assessment Registrations-${LocalDate.now()}.csv`, contentType: 'text/csv' },
-    'ATTEMPTS': { filename: `${session}Session Writing Attempts-${LocalDate.now()}.csv`, contentType: 'text/csv' },
-    'PEN_MERGES': { filename: `${session}PEN Merges-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'REGISTRATION_DETAIL_CSV': { filename: `SessionRegistrationDetails_${session}.csv`, contentType: 'text/csv' },
+    'ALL_SESSION_REGISTRATIONS': { filename: `AssessmentRegistrations_${session}.csv`, contentType: 'text/csv' },
+    'ATTEMPTS': { filename: `SessionWritingAttempts_${session}.csv`, contentType: 'text/csv' },
+    'PEN_MERGES': { filename: `PENMerges_${session}.csv`, contentType: 'text/csv' },
     'PEN_ISSUES_CSV': { filename: 'PenIssues.csv', contentType: 'text/csv' },
-    'REGISTRATION_SUMMARY_BY_SCHOOL': { filename:  `${session}Registration Summary by School-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'REGISTRATION_SUMMARY_BY_SCHOOL': { filename:  `RegistrationSummaryBySchool_${session}.csv`, contentType: 'text/csv' },
     'SESSION_RESULTS': { filename: `SessionResults_${mincode}.csv`, contentType: 'text/csv' },
     'SCHOOL_STUDENTS_IN_SESSION': { filename: `SchoolStudentsInSession_${mincode}.pdf`, contentType: 'application/pdf' },
     'SCHOOL_STUDENTS_BY_ASSESSMENT': { filename: `SchoolStudentsByAssessment_${mincode}.pdf`, contentType: 'application/pdf' },
