@@ -230,7 +230,12 @@ export default {
       handler(value) {
         if(value.length > 0) {
           let openSession = value.filter(sch => sch.isOpen);
-          this.type = openSession[0].sessionID;
+          if (openSession.length > 0) {
+            this.type = openSession[0].sessionID;
+          } else {
+            // Fallback to first session if no open sessions are found
+            this.type = value[0].sessionID;
+          }
         }
       },
       immediate: true

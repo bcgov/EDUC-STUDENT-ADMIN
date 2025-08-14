@@ -281,9 +281,16 @@ export default {
       handler(value) {
         if(value.length > 0) {
           let openSession = value.filter(sch => sch.isOpen);
-          this.type = openSession[0].sessionID;
-          this.selectedSessionID = openSession[0].sessionID;
-          this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
+          if (openSession.length > 0) {
+            this.type = openSession[0].sessionID;
+            this.selectedSessionID = openSession[0].sessionID;
+            this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
+          } else {
+            // Fallback to first session if no open sessions are found
+            this.type = value[0].sessionID;
+            this.selectedSessionID = value[0].sessionID;
+            this.selectedSessionDesc = value[0].courseYear + '' + value[0].courseMonth;
+          }
         }
       },
       immediate: true
