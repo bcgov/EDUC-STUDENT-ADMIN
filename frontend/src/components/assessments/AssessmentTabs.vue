@@ -46,6 +46,13 @@
             Transfer Results
           </v-tab>
           <v-tab
+            id="approveResults"
+            value="approveResults"
+            prepend-icon="mdi-file-arrow-left-right-outline"
+          >
+            Approve Results
+          </v-tab>
+          <v-tab
             id="reports"
             value="reports"
             prepend-icon="mdi-finance"
@@ -99,6 +106,18 @@
             />
           </v-window-item>
           <v-window-item
+            value="approveResults"
+            transition="false"
+            reverse-transition="false"
+          >
+            <ApproveResults
+              v-if="activeSessions?.length > 0"
+              :school-year-sessions="activeSessions"
+              @refresh-sessions="refreshSession"
+              @view-registrations="viewRegistrations"
+            />
+          </v-window-item>
+          <v-window-item
             value="reports"
             transition="false"
             reverse-transition="false"
@@ -124,10 +143,12 @@ import TransferRegistrations from '@/components/assessments/data-exchange/Transf
 import AssessmentReports from './reports/AssessmentReports.vue';
 import {appStore} from '@/store/modules/app';
 import { mapState } from 'pinia';
+import ApproveResults from '@/components/assessments/data-exchange/ApproveResults.vue';
 
 export default {
   name: 'AssessmentTabs',
   components: {
+    ApproveResults,
     TransferRegistrations,
     Spinner,
     TransferKeys,
@@ -168,8 +189,8 @@ export default {
         .then((response) => {
           const allSessions = response.data;
           allSessions.sort((a, b) => {
-            const dateA = LocalDate.parse(a.courseYear +"-"+ a.courseMonth + "-01", formatter);
-            const dateB = LocalDate.parse(b.courseYear +"-"+ b.courseMonth + "-01", formatter);
+            const dateA = LocalDate.parse(a.courseYear +'-'+ a.courseMonth + '-01', formatter);
+            const dateB = LocalDate.parse(b.courseYear +'-'+ b.courseMonth + '-01', formatter);
             return dateB.compareTo(dateA);
           });
           this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;

@@ -316,6 +316,45 @@ async function uploadAssessmentKeyFile(req, res) {
   }
 }
 
+async function approveResults(req, res) {
+  if (req.params.sessionID !== req.body.session.sessionID) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'The sessionID in the URL didn\'t match the sessionID in the request body.'
+    });
+  }
+  try {
+    const userInfo = utils.getUser(req);
+    const payload = {
+      sessionID: req.body.session.sessionID,
+      approvalStudentCertUserID: req.body.session.approvalStudentCertUserID,
+      approvalAssessmentDesignUserID: req.body.session.approvalAssessmentDesignUserID,
+      approvalAssessmentAnalysisUserID: req.body.session.approvalAssessmentAnalysisUserID
+    };
+
+    switch (req.body.approvalType) {
+    case 'cert_user':
+      payload.approvalStudentCertUserID = userInfo.idir_username;
+      break;
+    case 'design_user':
+      payload.approvalAssessmentDesignUserID = userInfo.idir_username;
+      break;
+    case 'analysis_user':
+      payload.approvalAssessmentAnalysisUserID = userInfo.idir_username;
+      break;
+    default:
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid approval type provided.'
+      });
+    }
+
+    const result = await utils.postData(`${config.get('server:assessments:rootURL')}/sessions/approval/${req.params.sessionID}`, payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'approveResults', 'Error occurred while attempting to approve assessment results.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 function includeAssessmentStudentProps(assessmentStudent) {
   if(assessmentStudent) {
     let school = cacheService.getSchoolBySchoolID(assessmentStudent.schoolID);
@@ -398,5 +437,6 @@ module.exports = {
   getRegistrationSummary,
   downloadReport,
   downloadXamFile,
-  downloadSchoolLevelReport
+  downloadSchoolLevelReport,
+  approveResults
 };

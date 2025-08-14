@@ -98,9 +98,26 @@ const reportSchema =  object({
   body: object().noUnknown(),
 }).noUnknown();
 
+const approvalSchema = object({
+  body: object({
+    session: object({
+      sessionID: string().nonNullable(),
+      approvalStudentCertUserID: string().nullable().optional(),
+      approvalAssessmentDesignUserID: string().nullable().optional(),
+      approvalAssessmentAnalysisUserID: string().nullable().optional(),
+    }).nonNullable(),
+    approvalType: string().oneOf(['cert_user', 'design_user', 'analysis_user']).nonNullable(),
+  }).concat(baseRequestSchema).noUnknown(),
+  params: object({
+    sessionID: string().nonNullable(),
+  }).noUnknown(),
+  query: object().noUnknown(),
+}).noUnknown();
+
 module.exports = {
   putStudentAssessmentSchema,
   fileUploadSchema,
   postStudentAssessmentSchema,
-  reportSchema
+  reportSchema,
+  approvalSchema
 };
