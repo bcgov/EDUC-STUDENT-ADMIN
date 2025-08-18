@@ -53,7 +53,6 @@ import ActiveCollectionPage from '@/components/data-collection/ActiveCollectionP
 import EDXInvitations from '@/components/secure-message/EDXInvitations.vue';
 import CollectionView from '@/components/data-collection/CollectionView.vue';
 import PenMatchStudentDetails from '@/components/data-collection/PenMatchStudentDetails.vue';
-import AssessmentSessions from '@/components/assessments/AssessmentSessions.vue';
 import AssessmentSessionDetail from '@/components/assessments/AssessmentSessionsDetail.vue';
 import AssessmentTabs from '@/components/assessments/AssessmentTabs.vue';
 import GraduationTabs from '@/components/gdc/GraduationTabs.vue';
@@ -530,16 +529,6 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.CHALLENGE_REPORTS,
         requiresAuth: true,
         permission: PERMISSION.CHALLENGE_REPORT_PERMISSION
-      },
-    },
-    {
-      path: '/assessment-sessions',
-      name: 'assessment-sessions',
-      component: AssessmentSessions,
-      meta: {
-        pageTitle: PAGE_TITLES.ASSESSMENT_SESSIONS_MANAGEMENT,
-        requiresAuth: true,
-        permission: PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION
       },
     },
     {
