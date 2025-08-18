@@ -343,31 +343,20 @@ export default {
         },
         {
           title: PAGE_TITLES.GRADUATION,
-          authorized: !this.config.DISABLE_GDC_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION),
+          authorized: (this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION) && !this.config.DISABLE_GDC_FUNCTIONALITY) || (this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION) && !this.config.DISABLE_ASSESSMENT_FUNCTIONALITY),
           items: [
             {
               title: 'Graduation Records and Achievement Data Collection',
               link: 'graduationTabs',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION)
-            }
-          ],
-        },
-        {
-          title: PAGE_TITLES.ASSESSMENTS,
-          authorized:  !this.config.DISABLE_ASSESSMENT_FUNCTIONALITY && this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION),
-          items: [                      
-            {
-              title: 'Sessions',
-              link: 'assessment-sessions',
-              authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION)
             },
             {
-              title: 'Data Exchange',
+              title: 'Graduation Assessments',
               link: 'assessment-data-exchange',
               authorized: this.hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION)
             }
           ],
-        }
+        },
       ];
     }
   },
