@@ -134,7 +134,7 @@
 <script>
 import Spinner from '@/components/common/Spinner.vue';
 import ApiService from '../../common/apiService';
-import { Routes } from '../../utils/constants';
+import { Routes } from '@/utils/constants';
 import TransferKeys from './data-exchange/TransferKeys.vue';
 import TransferResults from './data-exchange/TransferResults.vue';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
