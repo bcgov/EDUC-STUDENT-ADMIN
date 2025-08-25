@@ -244,13 +244,13 @@ export default {
       return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
     },
     getRegistrationStatus(session) {
-      if (session.approval_student_cert_sign_date &&
-          session.approval_assessment_design_sign_date &&
-          session.approval_assessment_analysis_sign_date) {
+      if (session.approvalStudentCertSignDate &&
+          session.approvalAssessmentDesignSignDate &&
+          session.approvalAssessmentAnalysisSignDate) {
         const approvalDates = [
-          session.approval_student_cert_sign_date,
-          session.approval_assessment_design_sign_date,
-          session.approval_assessment_analysis_sign_date
+          session.approvalStudentCertSignDate,
+          session.approvalAssessmentDesignSignDate,
+          session.approvalAssessmentAnalysisSignDate
         ].filter(date => date);
 
         const latestApprovalDate = approvalDates.reduce((latest, current) => {
@@ -268,9 +268,9 @@ export default {
 
       const isCurrentSession = session.sessionID === this.mostCurrentSession.sessionID;
 
-      const hasAnyApproval = session.approval_student_cert_sign_date ||
-                           session.approval_assessment_design_sign_date ||
-                           session.approval_assessment_analysis_sign_date;
+      const hasAnyApproval = session.approvalStudentCertSignDate ||
+                           session.approvalAssessmentDesignSignDate ||
+                           session.approvalAssessmentAnalysisSignDate;
 
       if (isCurrentSession && hasAnyApproval) {
         return {
