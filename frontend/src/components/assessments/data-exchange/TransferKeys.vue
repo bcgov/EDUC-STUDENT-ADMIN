@@ -195,7 +195,7 @@ export default {
       ],
       isLoading: false,
       selectedSessionID: null,
-      acceptableFileExtensions: ['.TAB'],
+      acceptableFileExtensions: ['.TAB','.TXT'],
       requiredRules: [(v) => !!v || 'Required'],      
       uploadFileValue: null,
       hasFileAttached: false,
@@ -253,7 +253,7 @@ export default {
     validateFileExtension(fileJSON) {
       const extension = `.${fileJSON.name.split('.').slice(-1)}`;
       const failMessage =
-        'File extension is invalid. Extension must be ".TAB".';
+        'File extension is invalid. Extension must be ".TAB" or ".TXT".';
       if (
         extension &&
         this.acceptableFileExtensions.find(
