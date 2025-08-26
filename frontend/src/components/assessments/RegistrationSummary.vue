@@ -48,6 +48,7 @@
 import { Routes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import {sortBy} from "lodash";
 
 export default {
   name: 'RegistrationSummary',
@@ -102,10 +103,15 @@ export default {
       this.sessions = [];
       this.schoolYearSessions.forEach(session => {
         this.sessions.push({
-          title: session.courseMonth + '/' + session.courseYear,
+          title: session.courseYear + '/' + session.courseMonth,
           value: session.sessionID,
         });
+        this.sessions = sortBy(this.sessions, ['title'], ['desc']);
       });
+      if(this.sessions.length > 0) {
+        this.selectedSession = this.sessions[0].value;
+        this.getRegistrationSummary('registration-summary');
+      }
     },
     getRegistrationSummary(reportType) {
       this.isLoading= true;
