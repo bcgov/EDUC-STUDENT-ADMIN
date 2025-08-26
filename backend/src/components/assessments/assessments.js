@@ -326,9 +326,9 @@ async function approveResults(req, res) {
     const userInfo = utils.getUser(req);
     const payload = {
       sessionID: req.body.session.sessionID,
-      approvalStudentCertUserID: req.body.session.approvalStudentCertUserID,
-      approvalAssessmentDesignUserID: req.body.session.approvalAssessmentDesignUserID,
-      approvalAssessmentAnalysisUserID: req.body.session.approvalAssessmentAnalysisUserID
+      approvalStudentCertUserID: null,
+      approvalAssessmentDesignUserID: null,
+      approvalAssessmentAnalysisUserID: null
     };
 
     switch (req.body.approvalType) {

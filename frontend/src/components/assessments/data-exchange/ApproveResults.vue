@@ -51,8 +51,8 @@
             <tbody>
               <tr>
                 <td>Director, Student Certification and Data Management, SIDENS</td>
-                <td>{{ session.approval_student_cert_user_id }}</td>
-                <td>{{ formatDate(session.approval_student_cert_sign_date) }}</td>
+                <td>{{ session.approvalStudentCertUserID }}</td>
+                <td>{{ formatDate(session.approvalStudentCertSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
                     :id="`approve1-${index}`"
@@ -60,15 +60,15 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="session.approval_student_cert_sign_date"
+                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'cert_user')"
                   />
                 </td>
               </tr>
               <tr>
                 <td>Director, Provincial Assessment Design, SLB</td>
-                <td>{{ session.approval_assessment_design_user_id }}</td>
-                <td>{{ formatDate(session.approval_assessment_design_sign_date) }}</td>
+                <td>{{ session.approvalAssessmentDesignUserID }}</td>
+                <td>{{ formatDate(session.approvalAssessmentDesignSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
                     :id="`approve2-${index}`"
@@ -76,15 +76,15 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="session.approval_assessment_design_sign_date"
+                    :disabled="!!session.approvalAssessmentDesignSignDate || !hasProvincialAssessmentApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'design_user')"
                   />
                 </td>
               </tr>
               <tr>
                 <td>Director, Assessment Admin, Analysis and Reporting, SLB</td>
-                <td>{{ session.approval_assessment_analysis_user_id }}</td>
-                <td>{{ formatDate(session.approval_assessment_analysis_sign_date) }}</td>
+                <td>{{ session.approvalAssessmentAnalysisUserID }}</td>
+                <td>{{ formatDate(session.approvalAssessmentAnalysisSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
                     :id="`approve3-${index}`"
@@ -92,7 +92,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="session.approval_assessment_analysis_sign_date"
+                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'analysis_user')"
                   />
                 </td>
@@ -120,6 +120,9 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {Routes} from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 
 export default {
   name: 'ApproveResults',
@@ -137,8 +140,28 @@ export default {
       type: '',
       isLoading: false,
       selectedSession: null,
-      previouslySelectedSessionID: null
+      previouslySelectedSessionID: null,
+      user: null
     };
+  },
+  computed: {
+    ...mapState(authStore, ['userInfo']),
+    mostCurrentSession() {
+      return this.schoolYearSessions.reduce((latest, current) => {
+        const latestDate = new Date(`${latest.courseYear}-${latest.courseMonth.padStart(2, '0')}-01`);
+        const currentDate = new Date(`${current.courseYear}-${current.courseMonth.padStart(2, '0')}-01`);
+        return currentDate > latestDate ? current : latest;
+      });
+    },
+    hasStudentCertificationApproverPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.ASSESSMENT_APPROVER_STUDENT_CERTIFICATION_AND_DATA_MANAGEMENT_PERMISSION);
+    },
+    hasProvincialAssessmentApproverPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.ASSESSMENT_APPROVER_PROVINCIAL_ASSESSMENT_DESIGN_PERMISSION);
+    },
+    hasAnalysisAndReportingApproverPermission() {
+      return this.hasRequiredPermission(this.user, PERMISSION.ASSESSMENT_APPROVER_ASSESSMENT_ANALYSIS_AND_REPORTING_PERMISSION);
+    }
   },
   watch: {
     schoolYearSessions: {
@@ -171,7 +194,13 @@ export default {
       }
     }
   },
+  created() {
+    authStore().getUserInfo().then(()=> {
+      this.user = this.userInfo;
+    });
+  },
   methods: {
+    hasRequiredPermission,
     async handleApprovalConfirmation(session, type) {
       this.selectedSession = session;
       const confirmation = await this.$refs.confirmApproval.open('Confirm Approval', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Confirm Approval', rejectText: 'Cancel'});
@@ -215,13 +244,13 @@ export default {
       return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
     },
     getRegistrationStatus(session) {
-      if (session.approval_student_cert_sign_date &&
-          session.approval_assessment_design_sign_date &&
-          session.approval_assessment_analysis_sign_date) {
+      if (session.approvalStudentCertSignDate &&
+          session.approvalAssessmentDesignSignDate &&
+          session.approvalAssessmentAnalysisSignDate) {
         const approvalDates = [
-          session.approval_student_cert_sign_date,
-          session.approval_assessment_design_sign_date,
-          session.approval_assessment_analysis_sign_date
+          session.approvalStudentCertSignDate,
+          session.approvalAssessmentDesignSignDate,
+          session.approvalAssessmentAnalysisSignDate
         ].filter(date => date);
 
         const latestApprovalDate = approvalDates.reduce((latest, current) => {
@@ -237,17 +266,11 @@ export default {
         };
       }
 
-      const mostCurrentSession = this.schoolYearSessions.reduce((latest, current) => {
-        const latestDate = new Date(`${latest.courseYear}-${latest.courseMonth.padStart(2, '0')}-01`);
-        const currentDate = new Date(`${current.courseYear}-${current.courseMonth.padStart(2, '0')}-01`);
-        return currentDate > latestDate ? current : latest;
-      });
+      const isCurrentSession = session.sessionID === this.mostCurrentSession.sessionID;
 
-      const isCurrentSession = session.sessionID === mostCurrentSession.sessionID;
-
-      const hasAnyApproval = session.approval_student_cert_sign_date ||
-                           session.approval_assessment_design_sign_date ||
-                           session.approval_assessment_analysis_sign_date;
+      const hasAnyApproval = session.approvalStudentCertSignDate ||
+                           session.approvalAssessmentDesignSignDate ||
+                           session.approvalAssessmentAnalysisSignDate;
 
       if (isCurrentSession && hasAnyApproval) {
         return {
