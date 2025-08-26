@@ -42,19 +42,6 @@
         />
       </v-col>
     </v-row>
-
-    <v-row v-if="selectedSession">
-      <v-col>
-        <v-btn
-          id="detailed"
-          color="#1976d2"
-          text="Assessment Registration Totals by School"
-          prepend-icon="mdi-tray-arrow-down"
-          variant="text"
-          @click="downloadReport('registration-summary-by-school')"
-        />
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 <script>
