@@ -134,42 +134,6 @@
         class="d-flex"
       >
         <v-card
-          class="mt-2 mr-4"
-          width="30em"
-          border="sm"
-          style="border: 1px solid black;border-radius: 10px;"
-        >
-          <v-card-title style="font-size: medium;">
-            Distribution of Assessment Results (DOAR)
-          </v-card-title>
-
-          <v-row class="pl-3 pb-3">
-            <v-col cols="12">
-              <DownloadLink
-                label="Summary DOAR.pdf"
-                :download-action="() => downloadSummaryDOAR()"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="pl-3 pb-3 mt-n6">
-            <v-col cols="12">
-              <DownloadLink
-                label="NME10 Detailed DOAR.csv"
-                :download-action="() => downloadNMEDetailedDOAR()"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="pl-3 pb-3 mt-n6">
-            <v-col cols="12">
-              <DownloadLink
-                label="NMF10 Detailed DOAR.csv"
-                :download-action="() => downloadNMFDetailedDOAR()"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-
-        <v-card
           class="mt-2"
           width="30em"
           border="sm"
@@ -189,133 +153,6 @@
               <DownloadLink
                 label="Yukon Assessment Counts for Invoice.csv"
                 :download-action="() => downloadYukonCountsReport()"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
-    </div>
-
-    <v-row class="mt-2">
-      <v-col>
-        <h3>School Level Session Results</h3>
-      </v-col>
-    </v-row>
-    <v-row
-      class="mt-n6"
-    >
-      <v-col>
-        <span
-          style="color: gray;font-size: small"
-        >
-          Select a school and a session below to find the reports available for download.
-        </span>
-      </v-col>
-    </v-row>
-
-    <v-row class="mt-n2">
-      <v-col
-        cols="4"
-      >
-        <v-autocomplete
-          id="selectSchool"
-          v-model="schoolNameNumberFilter"
-          variant="underlined"
-          :items="schoolSearchNames"
-          color="#003366"
-          label="School Name or Number"
-          single-line
-          :clearable="true"
-          item-title="schoolCodeName"
-          item-value="schoolCodeValue"
-          :rules="[rules.required()]"
-          autocomplete="off"
-        />
-      </v-col>
-
-      <v-col cols="4">
-        <v-select
-          id="selectedSchoolLevelSession"
-          v-model="selectedSchoolLevelSessionID"
-          variant="underlined"
-          :items="sessions"
-          label="Session"
-          item-title="title"
-          item-value="value"
-          :rules="[rules.required()]"
-          :clearable="true"
-        />
-      </v-col>
-    </v-row>
-    <div :class="{ 'disabled-section': disableSchoolLevelCondition }">
-      <v-row
-        no-gutters
-        class="d-flex"
-      >
-        <v-card
-          class="mt-2 mr-4"
-          width="30em"
-          border="sm"
-          style="border: 1px solid black;border-radius: 10px;"
-        >
-          <v-card-title style="font-size: medium;">
-            Assessment Results
-          </v-card-title>
-
-          <v-row class="pl-3 pb-3">
-            <v-col cols="12">
-              <DownloadLink
-                label="Session Results.csv"
-                :download-action="() => downloadAssessmentResultCSV()"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="pl-3 pb-3 mt-n6">
-            <v-col cols="12">
-              <DownloadLink
-                label="Session Results.xam"
-                :download-action="() => downloadXamFile()"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="pl-3 pb-3 mt-n6">
-            <v-col cols="12">
-              <DownloadLink
-                label="Session Results by Student.pdf"
-                :download-action="() => downloadSessionResultsByStudentPDF()"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="pl-3 pb-3 mt-n6">
-            <v-col cols="12">
-              <DownloadLink
-                label="Session Results by Assessment.pdf"
-                :download-action="() => downloadSessionResultsByAssessmentPDF()"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-
-        <v-card
-          class="mt-2"
-          width="30em"
-          border="sm"
-          style="border: 1px solid black;border-radius: 10px;"
-        >
-          <v-card-title style="font-size: medium;">
-            <v-row>
-              <v-col class="d-flex justify-start">
-                Distribution of Assessment Results (DOAR)
-              </v-col>
-            </v-row>
-          </v-card-title>
-          <v-row class="pl-3 pb-3">
-            <v-col 
-              cols="12"
-            >
-              <DownloadLink
-                label="Summary DOAR.pdf"
-                :download-action="() => downloadSummarySchoolDOARReport()"
               />
             </v-col>
           </v-row>
@@ -378,9 +215,6 @@ export default {
     disableProvincialCondition() {
       return !this.selectedSessionID;
     },
-    disableSchoolLevelCondition() {
-      return !this.selectedSchoolLevelSessionID || !this.schoolNameNumberFilter;
-    },
     schoolIdentifierForReports() {
       return this.schoolNameNumberFilter;
     }
@@ -406,10 +240,6 @@ export default {
         this.schoolSearchNames.push({schoolCodeName: schoolCodeName, schoolCodeValue: school.schoolID});
       });
       this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
-    },
-    openDOARSummaryHelp() {
-      const routeData = this.$router.resolve({name: 'doar-summary'});
-      window.open(routeData.href, '_blank');
     },
     searchStudentForGivenPEN() {
       this.isSearchingStudent = true;
@@ -441,65 +271,11 @@ export default {
           this.isSearchingStudent = false;
         });
     },
-    async downloadAssessmentResultCSV() {
-      this.isLoading = true;
-      try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SESSION_RESULTS/download`;
-        window.open(url);
-      } catch (error) {
-        console.error(error);
-        this.setFailureAlert(
-          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
-        );
-      } finally {
-        this.isLoading = false;
-      }
-
-    },
-    async downloadSessionResultsByStudentPDF() {
-      this.isLoading = true;
-      try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SCHOOL_STUDENTS_IN_SESSION/download`;
-        window.open(url);
-      } catch (error) {
-        console.error(error);
-        this.setFailureAlert(
-          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
-        );
-      } finally {
-        this.isLoading = false;
-      }
-
-    },
-    async downloadSessionResultsByAssessmentPDF() {
-      this.isLoading = true;
-      try {
-        const url = `${Routes.assessments.BASE_URL}/${this.selectedSchoolLevelSessionID}/school/${this.schoolIdentifierForReports}/SCHOOL_STUDENTS_BY_ASSESSMENT/download`;
-        window.open(url);
-      } catch (error) {
-        console.error(error);
-        this.setFailureAlert(
-          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve your school\'s report.'
-        );
-      } finally {
-        this.isLoading = false;
-      }
-
-    },
     async downloadStudentReport() {
      
     },
-    async downloadNMFDetailedDOAR() {
-
-    },
-    async downloadNMEDetailedDOAR() {
-
-    },
     async downloadYukonCountsReport() {
       
-    },
-    async downloadSummarySchoolDOARReport() {
-
     },
     async downloadXamFile() {
       this.isLoading = true;
