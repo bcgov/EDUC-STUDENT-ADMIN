@@ -238,6 +238,7 @@ let object = {
     GET_ASSESSMENT_STUDENTS_PAGINATED: studentAssessmentRoot + '/assessment-registrations/paginated',
     ASSESSMENT_KEYS: studentAssessmentRoot + '/assessment-keys',
     ASSESSMENT_RESULTS: studentAssessmentRoot + '/assessment-results',
+    BASE_REPORTS_URL: studentAssessmentRoot + '/reports'
   }
 };
 

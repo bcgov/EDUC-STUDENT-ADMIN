@@ -8,7 +8,7 @@ const { createMoreFiltersSearchCriteria } = require('./studentFilters');
 const moment = require('moment');
 const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const log = require('../logger');
-const {ASSESSMENTS_REPORT_TYPE_CODE_MAP} = require('../../util/constants');
+const {ASSESSMENTS_REPORT_TYPE_CODE_MAP, ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP} = require('../../util/constants');
 
 async function getAssessmentSessions(req, res) {
   try {
@@ -316,6 +316,27 @@ async function uploadAssessmentKeyFile(req, res) {
   }
 }
 
+async function downloadAssessmentStudentReport(req, res) {
+  try {
+    const reportType = ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP.get(req.params.reportTypeCode);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+
+    const resData = await getData(`${config.get('server:assessments:rootURL')}/report/student/${req.params.studentID}/${reportType}/download`);
+    const fileDetails = getFileDetails(reportType, null, null);
+
+    setResponseHeaders(res, fileDetails);
+    const buffer = Buffer.from(resData.documentData, 'base64');
+    return res.status(HttpStatus.OK).send(buffer);
+  } catch (e) {
+    log.error('downloadAssessmentReport Error', e.stack);
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function approveResults(req, res) {
   if (req.params.sessionID !== req.body.session.sessionID) {
     return res.status(HttpStatus.BAD_REQUEST).json({
@@ -410,6 +431,7 @@ function getFileDetails(reportType, session, mincode) {
     'summary-by-form-for-session': { filename: `SummaryByForm_${session}.csv`, contentType: 'text/csv' },
     'summary-by-grade-for-session': { filename: `SummaryByGrade_${session}.csv`, contentType: 'text/csv' },
     'all-detailed-students-in-session-csv': { filename: `AllDetailedStudentsInSession_${session}.csv`, contentType: 'text/csv' },
+    'ISR': { filename: 'Individual Student Report.pdf', contentType: 'application/pdf' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
@@ -438,5 +460,6 @@ module.exports = {
   downloadReport,
   downloadXamFile,
   downloadSchoolLevelReport,
-  approveResults
+  approveResults,
+  downloadAssessmentStudentReport
 };

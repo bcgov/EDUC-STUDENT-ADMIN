@@ -233,6 +233,11 @@ const assessmentsReportTypeValues = [
 ];
 const ASSESSMENTS_REPORT_TYPE_CODE_MAP = Object.freeze(new Map(assessmentsReportTypeValues));
 
+const assessmentsStudentReportTypeValues = [
+  ['ISR', 'ISR']
+];
+const ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP = Object.freeze(new Map(assessmentsStudentReportTypeValues));
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -251,5 +256,6 @@ module.exports = {
   DUPLICATE_TYPE_CODES,
   STUDENT_TYPE_CODES,
   WS_CLOSE_COLLECTION_TOPIC,
-  ASSESSMENTS_REPORT_TYPE_CODE_MAP
+  ASSESSMENTS_REPORT_TYPE_CODE_MAP, 
+  ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP
 };

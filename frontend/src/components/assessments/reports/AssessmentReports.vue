@@ -272,7 +272,18 @@ export default {
         });
     },
     async downloadStudentReport() {
-     
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_REPORTS_URL}/student/${this.studentForSearch.studentID}/ISR/download`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve the student\'s report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
     },
     async downloadYukonCountsReport() {
       
