@@ -20,6 +20,7 @@
           <AssessmentKeyTable
             :headers="headers"
             :data="session.assessments"
+            :selected-session="session"
           />
           <v-row v-if="session.isOpen">
             <v-col class="d-flex justify-end">
