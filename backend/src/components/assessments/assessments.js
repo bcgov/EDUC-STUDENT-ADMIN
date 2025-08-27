@@ -16,13 +16,12 @@ async function getAssessmentSessions(req, res) {
     const data = await getData(url);
     const today = LocalDate.now();
     const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
+    
     data.forEach(session => {
       const activeFromDate = LocalDate.parse(session.activeFromDate, formatter);
       const activeUntilDate = LocalDate.parse(session.activeUntilDate, formatter);
       session.isOpen = activeFromDate.isBefore(today) && activeUntilDate.isAfter(today);
     });
-
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
@@ -432,6 +431,13 @@ function getFileDetails(reportType, session, mincode) {
     'summary-by-grade-for-session': { filename: `SummaryByGrade_${session}.csv`, contentType: 'text/csv' },
     'all-detailed-students-in-session-csv': { filename: `AllDetailedStudentsInSession_${session}.csv`, contentType: 'text/csv' },
     'ISR': { filename: 'Individual Student Report.pdf', contentType: 'application/pdf' },
+    'lte10-key-summary': { filename: `Key Summary-LTE10-${session}.csv`, contentType: 'text/csv' },
+    'lte12-key-summary': { filename: `Key Summary-LTE12-${session}.csv`, contentType: 'text/csv' },
+    'ltf12-key-summary': { filename: `Key Summary-LTF12-${session}.csv`, contentType: 'text/csv' },
+    'ltp10-key-summary': { filename: `Key Summary-LTP10-${session}.csv`, contentType: 'text/csv' },
+    'ltp12-key-summary': { filename: `Key Summary-LTP12-${session}.csv`, contentType: 'text/csv' },
+    'nme-key-summary': { filename: `Key Summary-NME10-${session}.csv`, contentType: 'text/csv' },
+    'nmf-key-summary': { filename: `Key Summary-NMF10-${session}.csv`, contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
