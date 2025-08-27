@@ -357,20 +357,6 @@ async function getDemographicStudentByPenIncomingFilesetIdAndSchoolId(req, res) 
       }else{
         cs.course = '-';
       }
-      if(cs.interimPercentage && cs.interimLetterGrade){
-        cs.interimGrade = cs.interimPercentage + ' (' + cs.interimLetterGrade + ')';
-      }else if(cs.interimPercentage){
-        cs.interimGrade = cs.interimPercentage;
-      }else{
-        cs.interimGrade = cs.interimLetterGrade;
-      }
-      if(cs.finalPercentage && cs.finalLetterGrade){
-        cs.finalGrade = cs.finalPercentage + ' (' + cs.finalLetterGrade + ')';
-      }else if(cs.interimPercentage){
-        cs.finalGrade = cs.finalPercentage;
-      }else{
-        cs.finalGrade = cs.finalLetterGrade;
-      }
       if(!cs.relatedCourse){
         cs.relatedCourseValue = '-';
       }else if(!cs.relatedLevel){
