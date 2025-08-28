@@ -229,7 +229,14 @@ const assessmentsReportTypeValues = [
   ['SCHOOL_STUDENTS_BY_ASSESSMENT', 'SCHOOL_STUDENTS_BY_ASSESSMENT'],
   ['summary-by-form-for-session', 'summary-by-form-for-session'],
   ['summary-by-grade-for-session', 'summary-by-grade-for-session'],
-  ['all-detailed-students-in-session-csv', 'all-detailed-students-in-session-csv']
+  ['all-detailed-students-in-session-csv', 'all-detailed-students-in-session-csv'],
+  ['NME10', 'nme10-item-analysis'],
+  ['NMF10', 'nmf10-item-analysis'],
+  ['LTE10', 'lte10-item-analysis'],
+  ['LTE12', 'lte12-item-analysis'],
+  ['LTP10', 'ltp10-item-analysis'],
+  ['LTP12', 'ltp12-item-analysis'],
+  ['LTF12', 'ltf12-item-analysis']
 ];
 const ASSESSMENTS_REPORT_TYPE_CODE_MAP = Object.freeze(new Map(assessmentsReportTypeValues));
 
