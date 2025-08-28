@@ -53,6 +53,7 @@
               class="mb-1"
               prepend-icon="mdi-tray-arrow-down"
               variant="text"
+              @click.prevent.stop="openKeySummaryReport(getReportName(props.item.selectable['assessmentTypeCode']))"
             />
           </span>
           <span v-else-if="column.key === 'assessmentTypeCode'">
@@ -76,12 +77,14 @@
         
 <script>
 import {formatDateTime} from '@/utils/format';
+import { Routes } from '../../../utils/constants';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'AssessmentKeyTable',
   components: {
   },
-  mixins: [],
+  mixins: [alertMixin],
   props: {
     headers: {
       type: Array,
@@ -90,6 +93,11 @@ export default {
     },
     data: {
       type: Array,
+      required: true,
+      default: null
+    },
+    selectedSession: {
+      type: Object,
       required: true,
       default: null
     }
@@ -125,6 +133,20 @@ export default {
             
   },
   methods: {
+    openKeySummaryReport(type) {
+      this.isLoading = true;
+      try {
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSession.sessionID}/report/${type}/download?sessionCode=${this.selectedSession.courseYear}${this.selectedSession.courseMonth}`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve the key summary report.'
+        );
+      } finally {
+        this.isLoading = false;
+      }
+    },
     getIssueIcon(issue){
       switch (issue) {
       case 'ERROR':
@@ -145,7 +167,24 @@ export default {
         return '';
       }
     },
-
+  getReportName(assessmentTypeCode) {
+      switch(assessmentTypeCode) {
+        case 'LTE10':
+          return 'lte10-key-summary';
+        case 'LTE12':
+          return 'lte12-key-summary';
+        case 'LTF12':
+          return 'ltf12-key-summary';
+        case 'LTP10':
+          return 'ltp10-key-summary';
+        case 'LTP12':
+          return 'ltp12-key-summary';
+        case 'NME10':
+          return 'nme-key-summary';
+        case 'NMF10':
+          return 'nmf-key-summary';
+      }
+    }
   }
 };
 </script>
