@@ -128,37 +128,100 @@
         />
       </v-col>
     </v-row>
-    <div :class="{ 'disabled-section': disableProvincialCondition }">
-      <v-row
-        no-gutters
-        class="d-flex"
-      >
-        <v-card
-          class="mt-2"
-          width="30em"
-          border="sm"
-          style="border: 1px solid black;border-radius: 10px;"
+    <v-row>
+      <div :class="{ 'disabled-section': disableProvincialCondition }">
+        <v-row
+          no-gutters
+          class="d-flex"
         >
-          <v-card-title style="font-size: medium;">
-            <v-row>
-              <v-col class="d-flex justify-start">
-                Other Reports
+          <v-card
+            class="mt-2"
+            width="4S0em"
+            border="sm"
+            style="border: 1px solid black;border-radius: 10px;"
+          >
+            <v-card-title style="font-size: medium;">
+              <v-row>
+                <v-col class="d-flex justify-start">
+                  Other Reports
+                </v-col>
+              </v-row>
+            </v-card-title>
+            <v-row class="pl-3 pb-3">
+              <v-col
+                cols="12"
+              >
+                <DownloadLink
+                  label="Yukon Assessment Counts for Invoice.csv"
+                  :download-action="() => downloadYukonCountsReport()"
+                />
               </v-col>
             </v-row>
-          </v-card-title>
-          <v-row class="pl-3 pb-3">
-            <v-col 
-              cols="12"
-            >
-              <DownloadLink
-                label="Yukon Assessment Counts for Invoice.csv"
-                :download-action="() => downloadYukonCountsReport()"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
-    </div>
+          </v-card>
+        </v-row>
+      </div>
+      <div class="pl-2">
+        <v-row
+          no-gutters
+          class="d-flex"
+        >
+          <v-card
+            class="mt-2"
+            width="40em"
+            border="sm"
+            style="border: 1px solid black;border-radius: 10px;"
+          >
+            <v-card-title style="font-size: medium;">
+              <v-row>
+                <v-col class="d-flex justify-start">
+                  Data for Item Analysis
+                </v-col>
+              </v-row>
+            </v-card-title>
+            <v-row class="pl-3 pb-3">
+              <v-col
+                cols="6"
+                class="d-flex flex-column"
+              >
+                <DownloadLink
+                  label="NME10 for Item Analysis.csv"
+                  :download-action="() => downloadReport('NME10')"
+                />
+                <DownloadLink
+                  label="NMF10 for Item Analysis.csv"
+                  :download-action="() => downloadReport('NMF10')"
+                />
+                <DownloadLink
+                  label="LTE10 for Item Analysis.csv"
+                  :download-action="() => downloadReport('LTE10')"
+                />
+                <DownloadLink
+                  label="LTE12 for Item Analysis.csv"
+                  :download-action="() => downloadReport('LTE12')"
+                />
+              </v-col>
+              <v-col
+                cols="6"
+                class="d-flex flex-column"
+              >
+                <DownloadLink
+                  label="LTP10 for Item Analysis.csv"
+                  :download-action="() => downloadReport('LTP10')"
+                />
+                <DownloadLink
+                  label="LTP12 for Item Analysis.csv"
+                  :download-action="() => downloadReport('LTP12')"
+                />
+                <DownloadLink
+                  label="LTF12 for Item Analysis.csv"
+                  :download-action="() => downloadReport('LTF12')"
+                />
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-row>
+      </div>
+    </v-row>
   </v-container>
 </template>
 
@@ -287,6 +350,18 @@ export default {
     },
     async downloadYukonCountsReport() {
       
+    },
+    async downloadReport(type) {
+      try {
+        let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSessionID);
+        const url = `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/download?sessionCode=${selection[0].courseYear}${selection[0].courseMonth}`;
+        window.open(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(
+          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve report.'
+        );
+      }
     },
     async downloadXamFile() {
       this.isLoading = true;
