@@ -236,7 +236,7 @@ const assessmentsReportTypeValues = [
   ['LTE12', 'lte12-item-analysis'],
   ['LTP10', 'ltp10-item-analysis'],
   ['LTP12', 'ltp12-item-analysis'],
-  ['LTF12', 'ltf12-item-analysis']
+  ['LTF12', 'ltf12-item-analysis'],
   ['lte10-key-summary', 'lte10-key-summary'],
   ['lte12-key-summary', 'lte12-key-summary'],
   ['ltf12-key-summary', 'ltf12-key-summary'],
