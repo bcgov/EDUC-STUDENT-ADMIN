@@ -88,6 +88,55 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
+    <v-row>
+      <v-col cols="3" class="mr-n8">
+        <a class="report-item" @click="openResultCorrectDialog = !openResultCorrectDialog">Upload a Correction to Results</a>
+      </v-col>
+      <v-col class="ml-n8">
+         <v-menu
+                location="bottom"
+              >
+                <template #activator="{ props }">
+                  <a
+                    class="mt-n1 mr-1"
+                    style="font-weight: bold"
+                    v-bind="props"
+                    @click="toggleMoreInfoTooltip"
+                  ><v-icon
+                        color="#003366"
+                        icon="mdi-information"
+                      />
+                    </a>
+                </template>
+                <v-card
+                  style="max-width: 30em;"
+                  border="sm"
+                  class="pa-2"
+                >
+                  <div>Uploaded results will be <span style="font-weight: bold">added to existing data</span> for the session — 
+                    they <span style="font-weight: bold">won’t overwrite all results</span> for all students.</div>
+                  <div class="mt-4">
+                   If a student already has results for the same assessment and session, those results will be <span style="font-weight: bold">replaced</span> with the new ones from your file.
+                  </div>
+                  <div class="mt-4">
+                    Results <span style="font-weight: bold">can not</span> be added for a <span style="font-weight: bold">future session</span>.
+                  </div>
+                  <div class="mt-4">
+                    If uploading to:
+                  </div>
+                  <div class="mt-4">
+                    <span style="font-weight: bold">An in-progress session (not yet approved):</span> Results will be added to staged results and go through the standard approval process.
+                  </div>
+                  <div
+                    class="mt-4"
+                  >
+                    <span style="font-weight: bold">A past session (already approved):</span> Results will be added directly to the approved results and considered immediately approved.
+                  </div>
+                </v-card>
+              </v-menu>
+      </v-col>
+    </v-row>
+
     <v-form
       ref="documentForm"
       v-model="validForm"
@@ -207,6 +256,63 @@
         </p>
       </template>
     </ConfirmationDialog>
+    <v-dialog
+      v-model="openResultCorrectDialog"
+      persistent
+      max-width="675px"
+    >
+      <v-card style="overflow: visible">
+        <v-card-title class="header">
+          <v-row>
+            <v-col class="d-flex justify-start">
+              Upload a Correction to Results
+            </v-col>
+            <v-col class="d-flex justify-end">
+              <v-btn
+                id="cancel"
+                color="white"
+                text="Close"
+                size="30"
+                icon="mdi-close"
+                variant="tonal"
+                @click="openResultCorrectDialog= !openResultCorrectDialog"
+              />
+            </v-col>
+          </v-row>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <p>Select a session for the results:</p>
+            <v-row>
+              <v-col cols="6">
+                <v-select
+                  id="session"
+                  v-model="selectedSession"
+                  :items="schoolYearSessions"
+                  item-value="sessionID"
+                  item-title="desc"
+                  label="Session"
+                  variant="underlined"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-btn
+                  :disabled="!selectedSession"
+                  id="uploadButton"
+                  class="mt-4"
+                  prepend-icon="mdi-file-upload"
+                  variant="elevated"
+                  color="#003366"
+                  text="Upload Assessment Results"
+                  :loading="isLoadingFiles"
+                  @click="handleSingleResultFileImport(selectedSession)"
+                />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -235,6 +341,8 @@ export default {
   emits: [],
   data() {
     return {
+      openResultCorrectDialog: false,
+      selectedSession: null,
       type:'',
       headers: [
         { title: 'Assessment Keys', key: 'assessmentType', align: 'start', sortable: true },
@@ -267,7 +375,8 @@ export default {
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
       assessmentTypeCode: '',
-      resultsSummary: []
+      resultsSummary: [],
+      singleResult: false
     };
   },
   computed: {},
@@ -285,6 +394,10 @@ export default {
             this.type = openSession[0].sessionID;
             this.selectedSessionID = openSession[0].sessionID;
             this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
+
+            value.forEach(item => {
+              item.desc = item.courseYear + '/' + item.courseMonth;
+            });
           } else {
             // Fallback to first session if no open sessions are found
             this.type = value[0].sessionID;
@@ -377,13 +490,43 @@ export default {
           for await (const fileJSON of this.fileUploadList) {
             if (fileJSON.error === null) {
               await new Promise((resolve) => setTimeout(resolve, 3000));
-              await this.uploadFile(fileJSON, fileJSON.index);
+              if(this.singleResult) {
+                await this.uploadResultCorrectionFile(fileJSON, fileJSON.index);
+              } else {
+                await this.uploadFile(fileJSON, fileJSON.index);
+              }
               this.inputKey++;
             }
           }
           this.uploadFileValue = null;
+          this.singleResult = false;
           await this.getResultSummary();
         }
+      }
+    },
+    async uploadResultCorrectionFile(fileJSON, index) {
+      let document;
+      try {
+        document = {
+          fileName: getFileNameWithMaxNameLength(
+            this.uploadFileValue[index].name
+          ),
+          fileContents: btoa(
+            unescape(encodeURIComponent(fileJSON.fileContents))
+          ),
+          fileType: this.uploadFileValue[index].name.split('.')[1],
+        };
+        await ApiService.apiAxios
+          .post(
+            Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.selectedSessionID + '/upload-file?isSingleUpload=true', document
+          )
+          .then(() => {});
+        this.successfulUploadCount += 1;
+        fileJSON.status = this.fileUploadSuccess;
+      } catch (e) {
+          console.error(e);
+          fileJSON.error = e.response.data;
+          fileJSON.status = this.fileUploadError;
       }
     },
     async uploadFile(fileJSON, index) {
@@ -434,20 +577,29 @@ export default {
     async getResultSummary() {
       this.isLoading= true;
       this.resultsSummary=[];
-      ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.type + '/summary').then((response) => {
-        this.resultsSummary = response.data;
-      }).catch(error => {
-        console.error(error);
-        this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
-      }).finally(() => {
-        this.isLoading = false;
-      });
+      if(this.type) {
+        ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.type + '/summary').then((response) => {
+          this.resultsSummary = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
+        }).finally(() => {
+          this.isLoading = false;
+        });
+      }
     },
     handleFileImport(session) {
       this.selectedSessionID = session.sessionID;
       this.populatedSuccessMessage = null;
       this.successfulUploadCount = 0;
       this.$refs.uploader.click();
+    },
+    handleSingleResultFileImport(sessionID) {
+      this.selectedSessionID = sessionID;
+      this.populatedSuccessMessage = null;
+      this.successfulUploadCount = 0;
+      this.$refs.uploader.click();
+      this.singleResult=true;
     },
     formatMonth(month) {
       return capitalize(Month.of(month).toString());
@@ -536,5 +688,12 @@ h4, .v-icon {
 
  .report-item {
   color: #1976d2
+ }
+
+ .header {
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
  }
 </style>

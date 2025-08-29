@@ -185,6 +185,7 @@ async function uploadAssessmentResultsFile(req, res) {
       fileContents: req.body.fileContents,
       fileName: req.body.fileName,
       replaceResultsFlag: req.query.replaceResultsFlag ? 'Y' : 'N',
+      isSingleUpload: req.query.isSingleUpload ? 'Y' : 'N',
       createUser: createUpdateUser,
       updateUser: createUpdateUser
     };
