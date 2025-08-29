@@ -49,7 +49,8 @@ const fileUploadSchema =  object({
   }).noUnknown(),
   query: object({
     replaceKeyFlag: boolean().nullable().optional(),
-    replaceResultsFlag: boolean().nullable().optional()
+    replaceResultsFlag: boolean().nullable().optional(),
+    isSingleUpload: boolean().nullable().optional()
   }).noUnknown(),
 }).noUnknown();
 
