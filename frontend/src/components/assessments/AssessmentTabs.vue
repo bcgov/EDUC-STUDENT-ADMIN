@@ -102,6 +102,7 @@
             <TransferResults 
               v-if="activeSessions?.length > 0"
               :school-year-sessions="activeSessions"
+              :sessions="allSessions"
               @refresh-sessions="refreshSession"
             />
           </v-window-item>
@@ -165,7 +166,8 @@ export default {
       isLoading: false,
       tab: '',
       selectedSessionForSummary: null,
-      approvedSessions: []
+      approvedSessions: [],
+      allSessions: []
     };
   },
   computed: {
@@ -193,6 +195,7 @@ export default {
             const dateB = LocalDate.parse(b.courseYear +'-'+ b.courseMonth + '-01', formatter);
             return dateB.compareTo(dateA);
           });
+          this.allSessions = allSessions;
           this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;
           this.activeSessions = allSessions.filter((session) => session.schoolYear === this.schoolYear);
           this.approvedSessions = allSessions.filter(session => !session.isOpen && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());

@@ -3,6 +3,52 @@
     class="mb-6"
     fluid
   >
+    <v-row class="mb-1">
+      <v-col class="d-flex justify-end">
+        <a class="report-item mr-2" @click="openResultCorrectDialog = !openResultCorrectDialog">Upload a Correction to Results</a>
+        <v-menu
+                location="bottom"
+              >
+                <template #activator="{ props }">
+                  <a
+                    class="mt-n1 mr-1"
+                    style="font-weight: bold"
+                    v-bind="props"
+                    @click="toggleMoreInfoTooltip"
+                  ><v-icon
+                        color="#003366"
+                        icon="mdi-information"
+                      />
+                    </a>
+                </template>
+                <v-card
+                  style="max-width: 30em;"
+                  border="sm"
+                  class="pa-2"
+                >
+                  <div>Uploaded results will be <span style="font-weight: bold">added to existing data</span> for the session — 
+                    they <span style="font-weight: bold">won’t overwrite all results</span> for all students.</div>
+                  <div class="mt-4">
+                   If a student already has results for the same assessment and session, those results will be <span style="font-weight: bold">replaced</span> with the new ones from your file.
+                  </div>
+                  <div class="mt-4">
+                    Results <span style="font-weight: bold">can not</span> be added for a <span style="font-weight: bold">future session</span>.
+                  </div>
+                  <div class="mt-4">
+                    If uploading to:
+                  </div>
+                  <div class="mt-4">
+                    <span style="font-weight: bold">An in-progress session (not yet approved):</span> Results will be added to staged results and go through the standard approval process.
+                  </div>
+                  <div
+                    class="mt-4"
+                  >
+                    <span style="font-weight: bold">A past session (already approved):</span> Results will be added directly to the approved results and considered immediately approved.
+                  </div>
+                </v-card>
+              </v-menu>
+      </v-col>
+    </v-row>
     <v-expansion-panels 
       v-model="type"
       @update:modelValue="getResultSummary()"
@@ -87,55 +133,6 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-
-    <v-row>
-      <v-col cols="3" class="mr-n8">
-        <a class="report-item" @click="openResultCorrectDialog = !openResultCorrectDialog">Upload a Correction to Results</a>
-      </v-col>
-      <v-col class="ml-n8">
-         <v-menu
-                location="bottom"
-              >
-                <template #activator="{ props }">
-                  <a
-                    class="mt-n1 mr-1"
-                    style="font-weight: bold"
-                    v-bind="props"
-                    @click="toggleMoreInfoTooltip"
-                  ><v-icon
-                        color="#003366"
-                        icon="mdi-information"
-                      />
-                    </a>
-                </template>
-                <v-card
-                  style="max-width: 30em;"
-                  border="sm"
-                  class="pa-2"
-                >
-                  <div>Uploaded results will be <span style="font-weight: bold">added to existing data</span> for the session — 
-                    they <span style="font-weight: bold">won’t overwrite all results</span> for all students.</div>
-                  <div class="mt-4">
-                   If a student already has results for the same assessment and session, those results will be <span style="font-weight: bold">replaced</span> with the new ones from your file.
-                  </div>
-                  <div class="mt-4">
-                    Results <span style="font-weight: bold">can not</span> be added for a <span style="font-weight: bold">future session</span>.
-                  </div>
-                  <div class="mt-4">
-                    If uploading to:
-                  </div>
-                  <div class="mt-4">
-                    <span style="font-weight: bold">An in-progress session (not yet approved):</span> Results will be added to staged results and go through the standard approval process.
-                  </div>
-                  <div
-                    class="mt-4"
-                  >
-                    <span style="font-weight: bold">A past session (already approved):</span> Results will be added directly to the approved results and considered immediately approved.
-                  </div>
-                </v-card>
-              </v-menu>
-      </v-col>
-    </v-row>
 
     <v-form
       ref="documentForm"
@@ -288,7 +285,7 @@
                 <v-select
                   id="session"
                   v-model="selectedSession"
-                  :items="schoolYearSessions"
+                  :items="allowedforUpload"
                   item-value="sessionID"
                   item-title="desc"
                   label="Session"
@@ -325,6 +322,7 @@ import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
 import {formatDateTime} from '@/utils/format';
+import { LocalDate, DateTimeFormatter } from '@js-joda/core';
 
 export default {
   name: 'TransferResults',
@@ -337,6 +335,10 @@ export default {
       type: Array,
       required: true,
     },
+    sessions: {
+      type: Array,
+      required: true,
+    }
   },
   emits: [],
   data() {
@@ -376,7 +378,8 @@ export default {
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
       assessmentTypeCode: '',
       resultsSummary: [],
-      singleResult: false
+      singleResult: false,
+      allowedforUpload: []
     };
   },
   computed: {},
@@ -394,16 +397,23 @@ export default {
             this.type = openSession[0].sessionID;
             this.selectedSessionID = openSession[0].sessionID;
             this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
-
-            value.forEach(item => {
-              item.desc = item.courseYear + '/' + item.courseMonth;
-            });
           } else {
             // Fallback to first session if no open sessions are found
             this.type = value[0].sessionID;
             this.selectedSessionID = value[0].sessionID;
             this.selectedSessionDesc = value[0].courseYear + '' + value[0].courseMonth;
           }
+        }
+      },
+      immediate: true
+    },
+    sessions: {
+      handler(value) {
+         if(value.length > 0) {
+          this.allowedforUpload = value.filter(session => session.isOpen || (session.activeFromDate !== null && session.activeUntilDate!== null && LocalDate.now().isAfter(LocalDate.parse(session.activeFromDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && LocalDate.now().isAfter(LocalDate.parse(session.activeUntilDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+          this.allowedforUpload.forEach(item => {
+            item.desc = item.courseYear + '/' + item.courseMonth;
+          });
         }
       },
       immediate: true
@@ -500,6 +510,7 @@ export default {
           }
           this.uploadFileValue = null;
           this.singleResult = false;
+          this.openResultCorrectDialog = false;
           await this.getResultSummary();
         }
       }
