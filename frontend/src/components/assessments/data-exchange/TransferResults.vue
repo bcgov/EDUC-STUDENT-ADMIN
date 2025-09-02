@@ -320,9 +320,8 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
-import { Month } from '@js-joda/core';
 import {formatDateTime} from '@/utils/format';
-import { LocalDate, DateTimeFormatter } from '@js-joda/core';
+import { LocalDate, DateTimeFormatter, Month } from '@js-joda/core';
 
 export default {
   name: 'TransferResults',
