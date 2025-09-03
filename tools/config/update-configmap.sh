@@ -622,58 +622,6 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/GRAD_D
   -H "Authorization: Bearer $TKN" \
   -d "[$viewGradDataCollectionPermissionJson]"
 
-echo
-echo Creating MANAGE_ASSESSMENT_SESSIONS_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"MANAGE_ASSESSMENT_SESSIONS_PERMISSION\",\"description\" : \"Permission to manage assessment sessions\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Retrieving MANAGE_ASSESSMENT_SESSIONS_PERMISSION permission
-manageSessionsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_ASSESSMENT_SESSIONS_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
-echo
-echo Creating VIEW_ASSESSMENT_STUDENT_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"VIEW_ASSESSMENT_STUDENT_PERMISSION\",\"description\" : \"Permission to view assessment student\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Retrieving VIEW_ASSESSMENT_STUDENT_PERMISSION permission
-viewAssessmentStudentsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_ASSESSMENT_STUDENT_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
-echo
-echo Creating EDIT_ASSESSMENT_STUDENT_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EDIT_ASSESSMENT_STUDENT_PERMISSION\",\"description\" : \"Permission to edit assessment student\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Retrieving EDIT_ASSESSMENT_STUDENT_PERMISSION permission
-editAssessmentStudentsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_ASSESSMENT_STUDENT_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
-echo
-echo Creating EDIT_ASSESSMENT_HISTORY_PERMISSION permission
-curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"EDIT_ASSESSMENT_HISTORY_PERMISSION\",\"description\" : \"Permission to edit assessment historical registrations\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
-
-echo
-echo Retrieving EDIT_ASSESSMENT_HISTORY_PERMISSION permission
-editAssessmentHistoryPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/EDIT_ASSESSMENT_HISTORY_PERMISSION" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN")
-
 echo Creating MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION permission
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -699,6 +647,73 @@ manageAssessmentResultsPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admi
   -H "Authorization: Bearer $TKN")
 
 echo
+echo Creating VIEW_ASSESSMENTS_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_ASSESSMENTS_PERMISSION\",\"description\" : \"Permission to view assessments.\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving VIEW_ASSESSMENTS_PERMISSION permission
+assessmentViewPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_ASSESSMENTS_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Creating MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION\",\"description\" : \"Permission to transfer registrations.\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION permission
+assessmentTransferRegistrationPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Creating VIEW_PSYCHOMETRICIAN_REPORT_PERMISSION permission
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_PSYCHOMETRICIAN_REPORT_PERMISSION\",\"description\" : \"Permission to view psychometrician report.\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Retrieving VIEW_PSYCHOMETRICIAN_REPORT_PERMISSION permission
+assessmentViewPsychometricianReportPermissionJson=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_PSYCHOMETRICIAN_REPORT_PERMISSION" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN")
+
+echo
+echo Creating VIEW_PSYCHOMETRICIAN_REPORT role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_PSYCHOMETRICIAN_REPORT\",\"description\" : \"Allow access to view psychometrician reports.\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to VIEW_PSYCHOMETRICIAN_REPORT role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_PSYCHOMETRICIAN_REPORT/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$assessmentViewPsychometricianReportPermissionJson]"
+
+echo
+echo Creating VIEW_ASSESSMENTS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"VIEW_ASSESSMENTS\",\"description\" : \"Allow access to view assessment reports.\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
+echo Assigning permissions to VIEW_ASSESSMENTS role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_ASSESSMENTS/composites" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "[$assessmentViewPermissionJson]"
+
+echo
 echo Creating ASSESSMENT_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
@@ -710,7 +725,7 @@ echo Assigning permissions to ASSESSMENT_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/ASSESSMENT_ADMIN/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$manageSessionsPermissionJson, $viewAssessmentStudentsPermissionJson, $editAssessmentStudentsPermissionJson, $editAssessmentHistoryPermissionJson, $manageAssessmentAssessmentKeysPermissionJson, $manageAssessmentResultsPermissionJson]"
+  -d "[$manageAssessmentAssessmentKeysPermissionJson, $manageAssessmentResultsPermissionJson, $assessmentViewPermissionJson, $assessmentTransferRegistrationPermissionJson]"
 
 echo
 echo Creating ASSESSMENT_APPROVER_ASSESSMENT_ANALYSIS_AND_REPORTING_PERMISSION permission

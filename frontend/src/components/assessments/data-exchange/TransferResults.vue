@@ -3,7 +3,7 @@
     class="mb-6"
     fluid
   >
-    <v-row class="mb-1">
+    <v-row v-if="hasEditPermission" class="mb-1">
       <v-col class="d-flex justify-end">
         <a class="report-item mr-2" @click="openResultCorrectDialog = !openResultCorrectDialog">Upload a Correction to Results</a>
         <v-menu
@@ -118,7 +118,7 @@
                 </v-list>
               </v-menu>
               <v-btn
-                v-if="session.isOpen"
+                v-if="session.isOpen && hasEditPermission"
                 id="uploadButton"
                 class="ml-3"
                 prepend-icon="mdi-file-upload"
@@ -322,6 +322,9 @@ import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import {formatDateTime} from '@/utils/format';
 import { LocalDate, DateTimeFormatter, Month } from '@js-joda/core';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'TransferResults',
@@ -381,7 +384,12 @@ export default {
       allowedforUpload: []
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(authStore, ['userInfo']),
+    hasEditPermission() {
+      return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_RESULTS_PERMISSION);
+    }
+  },
   watch: {
     uploadFileValue() {
       if (this.uploadFileValue) {
