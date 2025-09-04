@@ -50,29 +50,29 @@
             </thead>
             <tbody>
               <tr>
-                <td>Director, Student Certification and Data Management, SIDENS</td>
-                <td>{{ session.approvalStudentCertUserID }}</td>
-                <td>{{ formatDate(session.approvalStudentCertSignDate) }}</td>
+                <td>Manager, Graduation Assessment, SLB</td>
+                <td>{{ session.approvalAssessmentAnalysisUserID }}</td>
+                <td>{{ formatDate(session.approvalAssessmentAnalysisSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
-                    :id="`approve1-${index}`"
-                    prepend-icon="mdi-file-upload"
+                    :id="`approve3-${index}`"
+                    prepend-icon="mdi-checkbox-marked-circle"
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
-                    @click="handleApprovalConfirmation(session, 'cert_user')"
+                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
+                    @click="handleApprovalConfirmation(session, 'analysis_user')"
                   />
                 </td>
               </tr>
               <tr>
-                <td>Director, Provincial Assessment Design, SLB</td>
+                <td>Director, Provincial Assessment, SLB</td>
                 <td>{{ session.approvalAssessmentDesignUserID }}</td>
                 <td>{{ formatDate(session.approvalAssessmentDesignSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
                     :id="`approve2-${index}`"
-                    prepend-icon="mdi-file-upload"
+                    prepend-icon="mdi-checkbox-marked-circle"
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
@@ -82,18 +82,18 @@
                 </td>
               </tr>
               <tr>
-                <td>Director, Assessment Admin, Analysis and Reporting, SLB</td>
-                <td>{{ session.approvalAssessmentAnalysisUserID }}</td>
-                <td>{{ formatDate(session.approvalAssessmentAnalysisSignDate) }}</td>
+                <td>Manager, Student Certification, SIDENS</td>
+                <td>{{ session.approvalStudentCertUserID }}</td>
+                <td>{{ formatDate(session.approvalStudentCertSignDate) }}</td>
                 <td class="text-right">
                   <v-btn
-                    :id="`approve3-${index}`"
-                    prepend-icon="mdi-file-upload"
+                    :id="`approve1-${index}`"
+                    prepend-icon="mdi-checkbox-marked-circle"
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
-                    @click="handleApprovalConfirmation(session, 'analysis_user')"
+                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
+                    @click="handleApprovalConfirmation(session, 'cert_user')"
                   />
                 </td>
               </tr>
