@@ -160,7 +160,7 @@
           </v-card>
         </v-row>
       </div>
-      <div class="pl-2">
+      <div v-if="hasEditPermission" class="pl-2">
         <v-row
           no-gutters
           class="d-flex"
@@ -235,6 +235,8 @@ import ApiService from '@/common/apiService';
 import { Routes } from '../../../utils/constants';
 import { sortBy } from 'lodash';
 import * as Rules from '../../../utils/institute/formRules';
+import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'AssessmentReports',
@@ -275,6 +277,10 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['schoolMap']),
+    ...mapState(authStore, ['userInfo']),
+    hasEditPermission() {
+      return hasRequiredPermission(this.userInfo, PERMISSION.VIEW_PSYCHOMETRICIAN_REPORT_PERMISSION);
+    },
     disableProvincialCondition() {
       return !this.selectedSessionID;
     },

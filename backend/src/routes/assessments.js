@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { postAssessmentStudent, getAssessmentSessions, getAssessmentSessionsBySchoolYear, updateAssessmentSession, getAssessmentStudentsPaginated, getAssessmentStudentByID, updateAssessmentStudentByID, getAssessmentSpecialCases, deleteAssessmentStudentByID, downloadAssessmentStudentReport,
+const { getAssessmentSessions, getAssessmentSessionsBySchoolYear, updateAssessmentSession, getAssessmentSpecialCases, downloadAssessmentStudentReport,
   uploadAssessmentKeyFile , uploadAssessmentResultsFile, getResultUploadSummary, getRegistrationSummary, downloadReport, downloadXamFile, downloadSchoolLevelReport, approveResults} = require('../components/assessments/assessments');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
@@ -9,35 +9,28 @@ const permUtils = require('../components/permissionUtils');
 const perm = require('../util/Permission');
 const validate = require('../components/validator');
 const auth = require('../components/auth');
-const {putStudentAssessmentSchema, postStudentAssessmentSchema, fileUploadSchema, reportSchema, approvalSchema} = require('../validations/assessments');
+const {fileUploadSchema, reportSchema, approvalSchema} = require('../validations/assessments');
 const { scanFilePayload } = require('../components/fileUtils');
 
 const PERMISSION = perm.PERMISSION;
 
 
-router.get('/assessment-sessions', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getAssessmentSessions);
-router.get('/assessment-sessions/school-year/:schoolYear', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getAssessmentSessionsBySchoolYear);
-router.put('/assessment-sessions/:sessionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, updateAssessmentSession);
-
-router.post('/assessment-registrations/student', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_ASSESSMENT_STUDENT_PERMISSION), extendSession, validate(postStudentAssessmentSchema), postAssessmentStudent);
-router.get('/assessment-registrations/student/:assessmentStudentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENT_STUDENT_PERMISSION), extendSession, getAssessmentStudentByID);
-router.put('/assessment-registrations/student/:assessmentStudentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_ASSESSMENT_STUDENT_PERMISSION), extendSession, validate(putStudentAssessmentSchema), updateAssessmentStudentByID);
-router.get('/assessment-registrations/paginated', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENT_STUDENT_PERMISSION), extendSession, getAssessmentStudentsPaginated);
-router.delete('/assessment-registrations/student/:assessmentStudentID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_ASSESSMENT_STUDENT_PERMISSION), extendSession, deleteAssessmentStudentByID);
-
+router.get('/assessment-sessions', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, getAssessmentSessions);
+router.get('/assessment-sessions/school-year/:schoolYear', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, getAssessmentSessionsBySchoolYear);
+router.put('/assessment-sessions/:sessionID', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, updateAssessmentSession);
 router.post('/assessment-keys/session/:sessionID/upload-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION), extendSession, validate(fileUploadSchema), scanFilePayload, uploadAssessmentKeyFile);
 
 router.post('/assessment-results/session/:sessionID/upload-file', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_RESULTS_PERMISSION), extendSession, validate(fileUploadSchema), scanFilePayload, uploadAssessmentResultsFile);
-router.get('/assessment-specialcase-types', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getAssessmentSpecialCases);
-router.get('/assessment-results/session/:sessionID/summary', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, getResultUploadSummary);
+router.get('/assessment-specialcase-types', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, getAssessmentSpecialCases);
+router.get('/assessment-results/session/:sessionID/summary', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, getResultUploadSummary);
 
-router.get('/:sessionID/summary/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), getRegistrationSummary);
-router.get('/:sessionID/report/:type/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(reportSchema), downloadReport);
+router.get('/:sessionID/summary/:type', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, validate(reportSchema), getRegistrationSummary);
+router.get('/:sessionID/report/:type/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, validate(reportSchema), downloadReport);
 
-router.get('/:sessionID/:schoolID/xam/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, downloadXamFile);
-router.get('/:sessionID/school/:schoolID/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, downloadSchoolLevelReport);
+router.get('/:sessionID/:schoolID/xam/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, downloadXamFile);
+router.get('/:sessionID/school/:schoolID/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, downloadSchoolLevelReport);
 
-router.post('/:sessionID/approve', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.MANAGE_ASSESSMENT_SESSIONS_PERMISSION), extendSession, validate(approvalSchema), approveResults);
-router.get('/reports/student/:studentID/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENT_STUDENT_PERMISSION), extendSession, downloadAssessmentStudentReport);
+router.post('/:sessionID/approve', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, validate(approvalSchema), approveResults);
+router.get('/reports/student/:studentID/:reportTypeCode/download', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.VIEW_ASSESSMENTS_PERMISSION), extendSession, downloadAssessmentStudentReport);
 
 module.exports = router;

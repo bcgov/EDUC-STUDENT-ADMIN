@@ -22,7 +22,7 @@
             :data="session.assessments"
             :selected-session="session"
           />
-          <v-row v-if="session.isOpen">
+          <v-row v-if="session.isOpen && hasEditPermission">
             <v-col class="d-flex justify-end">
               <v-btn
                 id="uploadButton"
@@ -169,6 +169,9 @@ import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import { Month } from '@js-joda/core';
 import AssessmentKeyTable from './AssessmentKeyTable.vue';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'TransferKeys',
@@ -220,7 +223,12 @@ export default {
       assessmentTypeCode: ''
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(authStore, ['userInfo']),
+    hasEditPermission() {
+      return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION);
+    }
+  },
   watch: {
     uploadFileValue() {
       if (this.uploadFileValue) {

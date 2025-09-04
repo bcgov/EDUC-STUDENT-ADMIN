@@ -55,6 +55,7 @@
                 <td>{{ session.assessmentRegistrationsExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
+                    v-if="hasEditPermission"
                     :id="`assessmentDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -70,6 +71,7 @@
                 <td>{{ session.sessionWritingAttemptsExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
+                    v-if="hasEditPermission"
                     :id="`sessionWritingDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -85,6 +87,7 @@
                 <td>{{ session.penMergesExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
+                    v-if="hasEditPermission"
                     :id="`penMergesDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -131,7 +134,9 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner.vue';
 import {formatDateTime} from '@/utils/format';
-
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
 
 export default {
   name: 'TransferRegistrations',
@@ -153,6 +158,12 @@ export default {
       confirmationDate: '',
       previouslySelectedSessionID: null
     };
+  },
+  computed: {
+    ...mapState(authStore, ['userInfo']),
+    hasEditPermission() {
+      return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION);
+    }
   },
   watch: {
     schoolYearSessions: {
