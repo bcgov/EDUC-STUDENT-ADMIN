@@ -198,7 +198,7 @@ export default {
           this.allSessions = allSessions;
           this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;
           this.activeSessions = allSessions.filter((session) => session.schoolYear === this.schoolYear);
-          this.approvedSessions = allSessions.filter(session => !session.isOpen && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
+          this.approvedSessions = allSessions.filter(session => session.completionDate !== null && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
         })
         .catch((error) => {
           console.error(error);
