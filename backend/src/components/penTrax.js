@@ -37,7 +37,7 @@ async function getGradDataByStudentID(req, res) {
   }
   try {
     const [studentData, studentCourses, studentAssessments] = await Promise.all([
-      getGradStudentDataViaMessaging(studentID),
+      getGradStudentData(studentID),
       getStudentCourses(studentID),
       getStudentAssessments(studentID)
     ]);
@@ -63,7 +63,7 @@ async function getGradDataByStudentID(req, res) {
   }
 }
 
-async function getGradStudentDataViaMessaging(studentID) {
+async function getGradStudentData(studentID) {
   try {
     const correlationId = uuidv4();
     const event = {
