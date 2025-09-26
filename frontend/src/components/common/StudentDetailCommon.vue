@@ -907,6 +907,7 @@ import {studentStore} from '@/store/modules/student';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 import {studentSearchStore} from '@/store/modules/studentSearch';
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'StudentDetailCommon',
@@ -1024,6 +1025,7 @@ export default {
     });
   },
   computed: {
+    ...mapState(appStore, ['config']),
     ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     ...mapState(studentStore, ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'documentTypeCodes']),
     ...mapState(studentSearchStore, ['isAdvancedSearch']),
@@ -1550,22 +1552,36 @@ export default {
       this.setStudent(student);
       this.merges = merges;
       this.possibleMatches = possibleMatches;
-      this.getTraxData(student.pen);
+      this.getTraxData(student);
       this.getDigitalIDData(student.studentID);
     },
-    formatGradDate(date) {
-      return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
+    formatGradDate(date, formatString) {
+      return moment(date + '', formatString).format('YYYY/MM');
     },
-    getTraxData(pen) {
+    getTraxData(student) {
       this.traxStatus = '';
       this.gradDateAndMincode = [];
       this.loadingTraxData = true;
+      let param;
+      let url = Routes.PEN_TRAX_URL;
+      if(this.config.DISABLE_ASSESSMENT_FUNCTIONALITY) {
+        param = { pen: student.pen };
+      } else {
+        param = { studentID: student.studentID };
+        url += '/student';
+      }
       ApiService.apiAxios
-        .get(Routes.PEN_TRAX_URL, {params: {pen}})
+        .get(url, {params: param})
         .then(response => {
           this.traxStatus = response.data.traxStatus;
-          if (response.data.student?.gradDate > 0) {
-            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
+          if(this.config.DISABLE_ASSESSMENT_FUNCTIONALITY) {
+            if (response.data.student?.gradDate > 0) {
+              this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate, 'YYYYMM'), formatMincode(response.data.student?.mincodeGrad || '')];
+            }
+          } else {
+            if (response.data.student?.programCompletionDate) {
+              this.gradDateAndMincode = [this.formatGradDate(response.data.student?.programCompletionDate, 'YYYY-MM-DD'), formatMincode(response.data.student?.mincode || '')];
+            }
           }
         })
         .catch(error => {
