@@ -1578,10 +1578,8 @@ export default {
             if (response.data.student?.gradDate > 0) {
               this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate, 'YYYYMM'), formatMincode(response.data.student?.mincodeGrad || '')];
             }
-          } else {
-            if (response.data.student?.programCompletionDate) {
-              this.gradDateAndMincode = [this.formatGradDate(response.data.student?.programCompletionDate, 'YYYY-MM-DD'), formatMincode(response.data.student?.mincode || '')];
-            }
+          } else if (response.data.student?.programCompletionDate) {
+            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.programCompletionDate, 'YYYY-MM-DD'), formatMincode(response.data.student?.mincode || '')];
           }
         })
         .catch(error => {
