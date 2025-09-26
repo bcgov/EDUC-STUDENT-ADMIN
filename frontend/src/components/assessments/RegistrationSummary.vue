@@ -48,7 +48,7 @@
 import { Routes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import {orderBy, sortBy} from 'lodash';
+import {orderBy} from 'lodash';
 
 export default {
   name: 'RegistrationSummary',
