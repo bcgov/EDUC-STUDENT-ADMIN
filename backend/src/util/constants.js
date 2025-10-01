@@ -253,6 +253,14 @@ const assessmentsStudentReportTypeValues = [
 ];
 const ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP = Object.freeze(new Map(assessmentsStudentReportTypeValues));
 
+const GRAD_TO_PEN_STUDENT_STATUS = Object.freeze({
+  DEC: 'D',
+  CUR: 'A',
+  ARC: 'A',
+  MER: 'M',
+  TER: 'T'
+});
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -272,5 +280,6 @@ module.exports = {
   STUDENT_TYPE_CODES,
   WS_CLOSE_COLLECTION_TOPIC,
   ASSESSMENTS_REPORT_TYPE_CODE_MAP, 
-  ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP
+  ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP,
+  GRAD_TO_PEN_STUDENT_STATUS
 };
