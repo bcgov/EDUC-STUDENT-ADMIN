@@ -849,6 +849,15 @@ async function getCollectionPaginated(req, res) {
         searchCriteriaList: [{ key: 'submissionDueDate', value: `${yearStart},${yearEnd}`, operation: FILTER_OPERATION.BETWEEN, valueType: VALUE_TYPE.DATE }]
       });
     }
+    
+    if (req.query.searchParams?.['submissionDueDateRangeStart'] && req.query.searchParams?.['submissionDueDateRangeEnd']) {
+      const periodStart = req.query.searchParams?.['submissionDueDateRangeStart'];
+      const periodEnd = req.query.searchParams?.['submissionDueDateRangeEnd'];
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: [{ key: 'submissionDueDate', value: `${periodStart},${periodEnd}`, operation: FILTER_OPERATION.BETWEEN, valueType: VALUE_TYPE.DATE }]
+      });
+    }
 
     const params = {
       params: {
@@ -971,7 +980,7 @@ async function removeSDCSchoolCollectionStudents(req, res) {
     let payload = {
       softDeleteStudentIDs: req.body,
       updateUser: utils.getUser(req).idir_username
-    }
+    };
     let deletedSdcSchoolCollectionStudentData = await postData(`${config.get('sdc:schoolCollectionStudentURL')}/soft-delete-students`, payload);
     return res.status(HttpStatus.OK).json(deletedSdcSchoolCollectionStudentData);
   } catch (e) {

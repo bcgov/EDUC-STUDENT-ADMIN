@@ -83,86 +83,71 @@ async function getSchoolSubmissionCounts(req, res) {
   }
 }
 
-async function getReportingInsights(req, res) {
+async function getSummerReportingInsights(req, res) {
   try {
-    let schools = cacheService.getAllSchoolsJSON();
-    let gradSchools = cacheService.getGradSchoolsMap();
-
-    let collectionObject = req.query.collectionObject;
-    if (typeof collectionObject === 'string') {
-      try {
-        collectionObject = JSON.parse(collectionObject);
-      } catch {
-        collectionObject = null;
-      }
-    }
-
-    let cutoff;
-    if (collectionObject) {
-      if (req.params.reportingPeriodType === 'SchoolYear' && collectionObject.schYrEnd) {
-        cutoff = LocalDateTime.parse(collectionObject.schYrEnd);
-      } else if (req.params.reportingPeriodType === 'Summer' && collectionObject.summerEnd) {
-        cutoff = LocalDateTime.parse(collectionObject.summerEnd);
-      } else {
-        cutoff = LocalDateTime.now();
-      }
-    } else {
-      cutoff = LocalDateTime.now();
-    }
-
-    let filteredSchoolIDs = [];
-    for (const school of schools) {
-      let gradSchool = gradSchools.get(school.schoolID);
-      if (school.schoolCategoryCode !== req.params.schoolCategory) continue;
-      if (gradSchool?.canIssueTranscripts === 'N') continue;
-      if (!school.openedDate) continue;
-
-      let openDate = LocalDateTime.parse(school.openedDate);
-      let endOfCloseDateGraceWindow = school.closedDate ? LocalDateTime.parse(school.closedDate).plusMonths(3) : null;
-
-      if (cutoff.isBefore(openDate)) continue;
-      if (endOfCloseDateGraceWindow && cutoff.isAfter(endOfCloseDateGraceWindow)) continue;
-
-      filteredSchoolIDs.push(school.schoolID);
-    }
-
-    const grade = '12';
-
     const gdcParams = {
       params: {
         categoryCode: req.params.schoolCategory
       }
     };
-    const gdcURL = `${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/school-submission-counts`;
-    const gdcData = await getData(gdcURL, gdcParams);
-
-    let sdcData = null;
-    let gradData = null;
-
-    const activeSDCURL = `${config.get('sdc:activeCollectionURL')}`;
-    const activeSDC = await getData(activeSDCURL, {});
-    const septSDCInFlight = activeSDC.collectionTypeCode === 'SEPTEMBER';
-
-    if(req.params.reportingPeriodType === 'SchoolYear' && !septSDCInFlight){
-      const sdcURL = `${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}`;
-      const sdcRequestBody = { schoolIDs: filteredSchoolIDs };
-      sdcData = await postData(sdcURL, sdcRequestBody, {});
-
-      const gradURL = `${config.get('server:gradStudent:rootURL')}/graduation-counts`;
-      const gradRequestBody = { schoolID: filteredSchoolIDs };
-      gradData = await postData(gradURL, gradRequestBody, {});
-    }
-
-    const reportingInsights = req.params.reportingPeriodType === 'SchoolYear'
-      ? await createSchoolYearReportingInsights(filteredSchoolIDs, sdcData, gradData, gdcData)
-      : await createSummerReportingInsights(filteredSchoolIDs, gdcData);
+    const reportingPeriod = await getData(`${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}`);
+    const gdcData = await getData(`${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/school-submission-counts`, gdcParams);
+    const filteredSchoolIDs = await getSchoolIDsForReportingInsightsInPeriod(req.params.schoolCategory, LocalDateTime.parse(reportingPeriod.summerStart), LocalDateTime.parse(reportingPeriod.summerEnd));
+    const reportingInsights = await createSummerReportingInsights(filteredSchoolIDs, gdcData);
     reportingInsights.sort((a, b) => a.schoolName.localeCompare(b.schoolName, undefined, { sensitivity: 'base' }));
-
     return res.status(200).json(reportingInsights);
   } catch (e) {
-    logApiError(e, 'getReportingSummary', 'Error occurred while attempting to GET GDC Reporting summary.');
+    await logApiError(e, 'getSummerReportingInsights', 'Error occurred while attempting to GET GDC Reporting summary.');
     return handleExceptionResponse(e, res);
   }
+}
+
+async function getSchoolYearReportingInsights(req, res) {
+  try {
+    const reportingPeriod = await getData(`${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}`);
+    const gdcParams = {
+      params: {
+        categoryCode: req.params.schoolCategory
+      }
+    };
+    const gdcData = await getData(`${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}/school-submission-counts`, gdcParams);
+    const filteredSchoolIDs = await getSchoolIDsForReportingInsightsInPeriod(req.params.schoolCategory, LocalDateTime.parse(reportingPeriod.schYrStart), LocalDateTime.parse(reportingPeriod.schYrEnd));
+
+    const grade = '12';
+    const sdcRequestBody = { schoolIDs: filteredSchoolIDs };
+    let sdcData = await postData(`${config.get('sdc:rootURL')}/collection/${req.params.sdcCollectionID}/counts/${grade}`, sdcRequestBody, {});
+
+    const gradRequestBody = { schoolID: filteredSchoolIDs };
+    let gradData = await postData(`${config.get('server:gradStudent:rootURL')}/graduation-counts`, gradRequestBody, {});
+    
+    const reportingInsights = await createSchoolYearReportingInsights(filteredSchoolIDs, sdcData, gradData, gdcData);
+    reportingInsights.sort((a, b) => a.schoolName.localeCompare(b.schoolName, undefined, { sensitivity: 'base' }));
+    return res.status(200).json(reportingInsights);
+  } catch (e) {
+    await logApiError(e, 'getSchoolYearReportingInsights', 'Error occurred while attempting to GET GDC Reporting summary.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function getSchoolIDsForReportingInsightsInPeriod(schoolCategory, periodStartDate, periodEndDate) {
+  let schools = cacheService.getAllSchoolsJSON();
+  let gradSchools = cacheService.getGradSchoolsMap();
+  let filteredSchoolIDs = [];
+  for (const school of schools) {
+    if (school.schoolCategoryCode !== schoolCategory) continue;
+    
+    if (!school.openedDate) continue;
+    let openDate = LocalDateTime.parse(school.openedDate);
+    let closeDate = school.closedDate ? LocalDateTime.parse(school.closedDate) : LocalDateTime.MAX;
+    let isSchoolOpenDuringReportingPeriod = openDate.isBefore(periodEndDate) && periodStartDate.isBefore(closeDate);
+    if (!isSchoolOpenDuringReportingPeriod) continue;
+    
+    let gradSchool = gradSchools.get(school.schoolID);        
+    if (gradSchool?.canIssueTranscripts === 'N') continue;
+
+    filteredSchoolIDs.push(school.schoolID);
+  }
+  return filteredSchoolIDs;
 }
 
 async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, gdcData){
@@ -208,7 +193,7 @@ async function createSchoolYearReportingInsights(schoolIDs, sdcData, gradData, g
 }
 
 async function createSummerReportingInsights(schoolIDs, gdcData){
-  const insights = await Promise.all(schoolIDs
+  return await Promise.all(schoolIDs
     .filter(schoolID => {
       return gdcData.summerSubmissions.some(item => item.schoolID === schoolID);
     })
@@ -237,7 +222,6 @@ async function createSummerReportingInsights(schoolIDs, gdcData){
         gradUsers: gradUsersForSchool
       };
     }));
-  return insights;
 }
 
 function createGradUsersList (schoolUsers, schoolID) {
@@ -384,6 +368,7 @@ module.exports = {
   getReportingSummary,
   getFilesetsPaginated,
   getDemographicStudentByPenIncomingFilesetIdAndSchoolId,
-  getReportingInsights,
+  getSummerReportingInsights,
+  getSchoolYearReportingInsights,
   getSchoolSubmissionCounts
 };
