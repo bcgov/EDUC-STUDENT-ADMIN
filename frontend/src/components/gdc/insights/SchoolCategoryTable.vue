@@ -1,5 +1,18 @@
 <template>
   <div>
+    <v-row
+      v-if="displaySeptemberCollectionWarning"
+      justify="start"
+    >
+      <v-col>
+        <v-alert
+          type="info"
+          variant="tonal"
+          text="The September Student Data Collection is still ongoing. The table below will be populated once the collection is complete."
+        />
+      </v-col>
+    </v-row>
+    
     <v-row justify="start">
       <v-col
         cols="12"
@@ -32,7 +45,7 @@
           clearable
           class="pt-0"
         />
-      </v-col>
+      </v-col>  
     </v-row>
 
     <v-progress-linear
@@ -40,6 +53,7 @@
       indeterminate
       color="primary"
     />
+
     <v-data-table
       v-else
       v-model:items-per-page="itemsPerPage"
@@ -232,6 +246,8 @@ import { instituteStore } from '@/store/modules/institute';
 import { mapState } from 'pinia';
 import { appStore } from '@/store/modules/app';
 import { authStore } from '@/store/modules/auth';
+import {setFailureAlert} from '@/components/composable/alertComposable';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'SchoolCategoryTable',
@@ -258,9 +274,14 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      selectedCategory: null,
+      loadingCount: 0,
+      userSelectedCategory: null,
+      septemberSdcCollection: null,
       detailedData: [],
+      page: 1,
+      itemsPerPage: 25,
+      search: '',
+      edxURL: '',
       schoolYearCategoryTableHeader: [
         { title: 'School', key: 'schoolName', align: 'start', sortable: true },
         {
@@ -323,17 +344,38 @@ export default {
           width: '50px',
         },
       ],
-      sdcCollectionID: null,
-      page: 1,
-      itemsPerPage: 25,
-      search: '',
-      edxURL: '',
     };
   },
   computed: {
     ...mapState(instituteStore, ['facilityTypeCodes']),
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['config']),
+    loading() {
+      return this.loadingCount > 0;
+    },
+    canFetchSchoolYearDetailReport() {
+      if (!this.septemberSdcCollection) {
+        return false;
+      }
+      return this.septemberSdcCollection.collectionStatusCode === 'COMPLETED';
+    },
+    displaySeptemberCollectionWarning() {
+      return this.reportingPeriodType === 'SchoolYear' && !this.canFetchSchoolYearDetailReport;
+    },
+    selectedCategory: {
+      get() {
+        if (this.userSelectedCategory === null) {
+          return this.preSelectedCategory;
+        }
+        return this.userSelectedCategory;
+      },
+      set(selectedCategory) {
+        if (!this.availableCategories.includes(selectedCategory)) {
+          return;
+        }
+        this.userSelectedCategory = selectedCategory;
+      }
+    },
     facilityTypeLabelMap() {
       if (!this.facilityTypeCodes) {
         return new Map();
@@ -343,62 +385,19 @@ export default {
       );
     },
     tableHeaders() {
-      return this.reportingPeriodType === 'SchoolYear'
-        ? this.schoolYearCategoryTableHeader
-        : this.summerCategoryTableHeader;
+      return this.reportingPeriodType === 'SchoolYear' ? this.schoolYearCategoryTableHeader : this.summerCategoryTableHeader;
     },
   },
   watch: {
-    availableCategories: {
-      handler(value) {
-        if (value && value.length > 0) {
-          if (
-            this.preSelectedCategory &&
-              value.includes(this.preSelectedCategory)
-          ) {
-            this.selectedCategory = this.preSelectedCategory;
-          } else if (!this.selectedCategory) {
-            this.selectedCategory = value[0];
-          }
-          if (this.selectedCategory) {
-            this.fetchDetailedData();
-          }
-        } else {
-          this.selectedCategory = null;
-          this.detailedData = [];
-          this.page = 1;
-        }
-      },
-      immediate: true,
-    },
-    preSelectedCategory: {
-      handler(value) {
-        if (
-          value &&
-            value !== this.selectedCategory &&
-            this.availableCategories &&
-            this.availableCategories.length > 0 &&
-            this.availableCategories.includes(value)
-        ) {
-          this.selectedCategory = value;
-          this.page = 1;
-        }
-      },
-    },
-    selectedCategory(newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.fetchDetailedData();
-        this.page = 1;
-      } else if (newValue === null) {
-        this.detailedData = [];
-        this.page = 1;
+    async collectionObject(newValue, oldValue) {
+      if (newValue === oldValue) {
+        return;
       }
-    },
-    detailedData() {
-      this.page = 1;
-    },
+      await this.findSeptemberSdcCollection();
+      await this.fetchDetailedData();
+    }
   },
-  created() {
+  async created() {
     const store = instituteStore();
     if (!this.facilityTypeCodes || this.facilityTypeCodes.length === 0) {
       store.getAllFacilityTypeCodes().catch((error) => {
@@ -408,8 +407,93 @@ export default {
     appStore().getConfig().then(() => {
       this.edxURL = this.config.EDX_URL;
     });
+    await this.findSeptemberSdcCollection();
+    await this.fetchDetailedData();
   },
   methods: {
+    async findSeptemberSdcCollection() {
+      if (this.reportingPeriodType !== 'SchoolYear') {
+        return;
+      }
+      this.loadingCount += 1;
+      try {
+        let results = await ApiService.apiAxios.get(Routes.sdc.COLLECTION_PAGINATED, {
+          params: {
+            pageNumber: 0,
+            pageSize: 1,
+            searchParams: {
+              collectionType: 'SEPTEMBER',
+              submissionDueDateRangeStart: LocalDate.parse(this.collectionObject.periodStart, DateTimeFormatter.ISO_LOCAL_DATE_TIME).format(DateTimeFormatter.ISO_LOCAL_DATE),
+              submissionDueDateRangeEnd:  LocalDate.parse(this.collectionObject.periodEnd, DateTimeFormatter.ISO_LOCAL_DATE_TIME).format(DateTimeFormatter.ISO_LOCAL_DATE)
+            },
+            sort: {
+              submissionDueDate: 'DESC'
+            },
+          },
+        });
+        this.septemberSdcCollection = results.data?.content?.[0];
+      }
+      catch(error) {
+        console.error(error);
+        await setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to find the closest SDC September Collection. Please try again later.');
+      }
+      finally {
+        this.loadingCount -= 1;
+      }
+    },
+    async fetchDetailedData() {
+      this.detailedData = [];
+      this.page = 1;
+      if (this.reportingPeriodType === 'SchoolYear') {
+        await this.fetchSchoolYearDetailData();
+      } else if (this.reportingPeriodType === 'Summer') {
+        await this.fetchSummerDetailData();
+      }
+    },
+    async fetchSchoolYearDetailData() {
+      if (!this.canFetchSchoolYearDetailReport) {
+        return;
+      }
+      this.loadingCount += 1;
+      try {
+        const response = await ApiService.apiAxios.get(`${Routes.gdc.REPORTING_INSIGHTS}/${this.collectionObject?.reportingPeriodID}/${this.reportingPeriodType}/${this.septemberSdcCollection?.collectionID}/${GRAD_SCHOOL_CATEGORY_MAP[this.selectedCategory]}`);
+        this.detailedData = this.transformReportResponseData(response);
+      } catch (error) {
+        console.error('Error fetching School Year detailed data:', error);
+        this.setFailureAlert('Failed to load School Year submission data.');
+        this.detailedData = [];
+      } finally {
+        this.loadingCount -= 1;
+      }
+    },
+    async fetchSummerDetailData() {
+      this.loadingCount += 1;
+      try {
+        const response = await ApiService.apiAxios.get(`${Routes.gdc.REPORTING_INSIGHTS}/${this.collectionObject?.reportingPeriodID}/${this.reportingPeriodType}/${GRAD_SCHOOL_CATEGORY_MAP[this.selectedCategory]}`);
+        this.detailedData = this.transformReportResponseData(response);
+      } catch (error) {
+        console.error('Error fetching Summer detailed data:', error);
+        this.setFailureAlert('Failed to load Summer submission data.');
+        this.detailedData = [];
+      } finally {
+        this.loadingCount -= 1;
+      }
+    },
+    transformReportResponseData(reportResponse) {
+      if (!reportResponse.data || !Array.isArray(reportResponse.data)) {
+        return [];
+      }
+      return reportResponse.data.map(apiItem => {
+        const originalFacilityTypeCode = apiItem.facilityType;
+        const facilityTypeLabel =
+            (this.facilityTypeLabelMap.get(originalFacilityTypeCode) || originalFacilityTypeCode || '').toString();
+
+        return {
+          ...apiItem,
+          facilityTypeLabel: facilityTypeLabel,
+        };
+      });
+    },
     formatDate(dateTimeString) {
       if (!dateTimeString) {
         return '-';
@@ -419,69 +503,6 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}/${month}/${day}`;
-    },
-    async fetchDetailedData() {
-      this.loading = true;
-      this.detailedData = [];
-
-      try {
-        if (this.sdcCollectionID === null) {
-          const sdcResponse = await ApiService.apiAxios.get(
-            `${Routes.sdc.COLLECTION_PAGINATED}`,
-            {
-              params: {
-                pageNumber: 0,
-                pageSize: 1,
-                searchParams: {
-                  collectionType: 'SEPTEMBER',
-                },
-                sort: {
-                  submissionDueDate: 'DESC',
-                },
-              },
-            }
-          );
-          this.sdcCollectionID = sdcResponse?.data?.content?.[0]?.collectionID;
-          if (!this.sdcCollectionID) {
-            this.setFailureAlert('Required SDC collection data not found.');
-            this.loading = false;
-            return;
-          }
-        }
-
-        const response = await ApiService.apiAxios.get(
-          `${Routes.gdc.REPORTING_INSIGHTS}/${this.collectionObject?.reportingPeriodID}/${this.reportingPeriodType}/${this.sdcCollectionID}/${
-            GRAD_SCHOOL_CATEGORY_MAP[this.selectedCategory]
-          }`,
-          {
-            params: {
-              collectionObject: this.collectionObject
-            }
-          }
-        );
-
-        if (response.data && Array.isArray(response.data)) {
-          const transformedData = response.data.map(apiItem => {
-            const originalFacilityTypeCode = apiItem.facilityType;
-            const facilityTypeLabel =
-                (this.facilityTypeLabelMap.get(originalFacilityTypeCode) || originalFacilityTypeCode || '').toString();
-
-            return {
-              ...apiItem,
-              facilityTypeLabel: facilityTypeLabel,
-            };
-          });
-          this.detailedData = transformedData;
-        } else {
-          this.detailedData = [];
-        }
-      } catch (error) {
-        console.error('Error fetching detailed data:', error);
-        this.setFailureAlert('Failed to load school submission data.');
-        this.detailedData = [];
-      } finally {
-        this.loading = false;
-      }
     },
     openSchool(schoolID) {
       if (!schoolID) return;
