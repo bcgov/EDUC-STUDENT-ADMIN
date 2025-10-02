@@ -189,7 +189,7 @@ export default {
       ApiService.apiAxios
         .get(`${Routes.assessments.ASSESSMENT_SESSIONS}`, {})
         .then((response) => {
-          const allSessions = response.data;
+          let allSessions = response.data;
           allSessions.sort((a, b) => {
             const dateA = LocalDate.parse(a.courseYear +'-'+ a.courseMonth + '-01', formatter);
             const dateB = LocalDate.parse(b.courseYear +'-'+ b.courseMonth + '-01', formatter);
@@ -198,6 +198,11 @@ export default {
           this.allSessions = allSessions;
           this.schoolYear = allSessions?.length > 0 ? allSessions[0].schoolYear : null;
           this.activeSessions = allSessions.filter((session) => session.schoolYear === this.schoolYear);
+          this.activeSessions.sort((a, b) => {
+            const dateA = LocalDate.parse(a.courseYear +'-'+ a.courseMonth + '-01', formatter);
+            const dateB = LocalDate.parse(b.courseYear +'-'+ b.courseMonth + '-01', formatter);
+            return dateA.compareTo(dateB);
+          });
           this.approvedSessions = allSessions.filter(session => session.completionDate !== null && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
         })
         .catch((error) => {
