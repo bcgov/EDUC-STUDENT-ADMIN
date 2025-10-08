@@ -164,7 +164,7 @@ export function findReportingPeriodStatus() {
     this.panel2Status = 'Pending Start';
     this.type = 'SchoolYear';
   } else if ((currentDate.isEqual(schoolYearStart) || currentDate.isAfter(schoolYearStart))
-      && currentDate.isBefore(schoolYearEnd.plusDays(1))) {
+      && currentDate.isBefore(schoolYearEnd)) {
     this.panel1Status = 'Ongoing';
     this.panel2Status = 'Pending Start';
     this.type = 'SchoolYear';
@@ -173,7 +173,7 @@ export function findReportingPeriodStatus() {
     this.panel2Status = 'Pending Start';
     this.type = 'Summer';
   } else if ((currentDate.isEqual(summerStart) || currentDate.isAfter(summerStart))
-      && currentDate.isBefore(summerEnd.plusDays(1))) {
+      && currentDate.isBefore(summerEnd)) {
     this.panel1Status = 'Complete';
     this.panel2Status = 'Ongoing';
     this.type = 'Summer';
