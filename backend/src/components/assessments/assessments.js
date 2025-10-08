@@ -20,7 +20,7 @@ async function getAssessmentSessions(req, res) {
     data.forEach(session => {
       const activeFromDate = LocalDate.parse(session.activeFromDate, formatter);
       const activeUntilDate = LocalDate.parse(session.activeUntilDate, formatter);
-      session.isOpen = (activeFromDate.isBefore(today) || activeFromDate.isEqual(today)) 
+      session.isOpen = session.completionDate === null && (activeFromDate.isBefore(today) || activeFromDate.isEqual(today)) 
       && (activeUntilDate.isEqual(today) ||activeUntilDate.isAfter(today));
     });
     return res.status(200).json(data);
