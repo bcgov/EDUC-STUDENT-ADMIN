@@ -16,6 +16,16 @@
           @update:model-value="getRegistrationSummary('registration-summary')"
         />
       </v-col>
+      <v-col class="d-flex justify-end mt-2">
+        <v-chip
+          :color="getRegistrationStatus(selectedSession).color"
+          variant="flat"
+          size="small"
+          class="text-white font-weight-bold"
+        >
+          {{ getRegistrationStatus(selectedSession).text }}
+        </v-chip>
+      </v-col>
     </v-row>
     <v-data-table
       id="dataTable"
@@ -49,6 +59,7 @@ import { Routes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {orderBy} from 'lodash';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'RegistrationSummary',
@@ -105,15 +116,17 @@ export default {
         this.sessions.push({
           title: session.courseYear + '/' + session.courseMonth,
           value: session.sessionID,
+          completionDate: session.completionDate
         });
       });
       this.sessions = orderBy(this.sessions, ['title'], ['asc']);
       if(this.sessions.length > 0) {
-        this.sessions.forEach(session => {
+        for(let session of this.sessions) {
           if(!session.completionDate){
             this.selectedSession = session.value;
+            break;
           }
-        });
+        }
         this.getRegistrationSummary('registration-summary');
       }
     },
@@ -139,6 +152,35 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    formatDate(date) {
+      if (!date) return '';
+
+      let dateString = date;
+      if (typeof date === 'string' && date.includes('.')) {
+        const parts = date.split('.');
+        if (parts.length === 2) {
+          const milliseconds = parts[1].substring(0, 3);
+          dateString = `${parts[0]}.${milliseconds}`;
+        }
+      }
+
+      return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
+    },
+    getRegistrationStatus(sessionID) {
+      let session = this.schoolYearSessions.filter(session => session.sessionID === sessionID).at(0);
+      if (session?.assessmentRegistrationsExportDate) {
+        const exportDate = this.formatDate(session.assessmentRegistrationsExportDate);
+        return {
+          color: 'success',
+          text: `Registrations Exported - ${exportDate}`
+        };
+      } else {
+        return {
+          color: 'info',
+          text: 'Registrations Ongoing'
+        };
+      }
     },
     downloadReport(type) {
       try {
