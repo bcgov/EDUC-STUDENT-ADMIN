@@ -424,6 +424,15 @@ export default {
         }
       },
       immediate: true
+    },
+    type: {
+      handler(value) {
+        if(value) {
+          let selectedSession = this.schoolYearSessions.filter(sess => sess.sessionID === value);
+          this.selectedSessionID = selectedSession[0]?.sessionID;
+          this.selectedSessionDesc = selectedSession[0]?.courseYear + '' + selectedSession[0]?.courseMonth;
+        }
+      }
     }
   },
   async created() {
