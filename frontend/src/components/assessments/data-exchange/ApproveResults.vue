@@ -287,3 +287,14 @@ export default {
   }
 };
 </script>
+<style scoped>
+.border {
+  border: 2px solid grey;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+h4, .v-icon {
+  color: #38598a;
+}
+</style>

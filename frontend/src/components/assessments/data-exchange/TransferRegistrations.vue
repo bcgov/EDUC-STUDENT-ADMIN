@@ -61,6 +61,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Export for Transfer"
+                    :disabled="!session.isOpen"
                     @click="handleConfirmation(session, 'ALL_SESSION_REGISTRATIONS')"
                   />
                 </td>
@@ -77,6 +78,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Export for Transfer"
+                    :disabled="!session.isOpen"
                     @click="handleConfirmation(session, 'ATTEMPTS')"
                   />
                 </td>
@@ -93,6 +95,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Export for Transfer"
+                    :disabled="!session.isOpen"
                     @click="handleConfirmation(session, 'PEN_MERGES')"
                   />
                 </td>
@@ -298,3 +301,14 @@ export default {
   }
 };
 </script>
+<style scoped>
+.border {
+  border: 2px solid grey;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+h4, .v-icon {
+  color: #38598a;
+}
+</style>

@@ -127,6 +127,9 @@ export default {
             break;
           }
         }
+        if(this.selectedSession === null) {
+          this.selectedSession = this.sessions[0].value;
+        }
         this.getRegistrationSummary('registration-summary');
       }
     },
