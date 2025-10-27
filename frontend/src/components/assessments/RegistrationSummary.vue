@@ -122,10 +122,8 @@ export default {
       this.sessions = orderBy(this.sessions, ['title'], ['asc']);
       if(this.sessions.length > 0) {
         for(let session of this.sessions) {
-          if(!session.completionDate){
             this.selectedSession = session.value;
             break;
-          }
         }
         this.getRegistrationSummary('registration-summary');
       }
