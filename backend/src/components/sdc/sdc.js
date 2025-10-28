@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const utils = require('../utils');
 const cacheService = require('../cache-service');
-const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP, DUPLICATE_TYPE_CODES} = require('../../util/constants');
+const { FILTER_OPERATION, VALUE_TYPE, CONDITION, ENROLLED_PROGRAM_TYPE_CODE_MAP} = require('../../util/constants');
 const {createMoreFiltersSearchCriteria, createSchoolNameNumberSearchCriteria, createDistrictNameNumberSearchCriteria} = require('../studentFilters');
 const {LocalDate} = require('@js-joda/core');
 
@@ -598,11 +598,6 @@ async function updateStudentPEN(req, res) {
     }
     return handleExceptionResponse(e, res); 
   }
-}
-
-function setProgramDuplicateTypeMessage(sdcDuplicate) {
-  const programDuplicateTypeCodes = cacheService.getAllProgramDuplicateTypeCodesMap();
-  sdcDuplicate.programDuplicateTypeCodeDescription = programDuplicateTypeCodes.get(sdcDuplicate.programDuplicateTypeCode)?.label;
 }
 
 async function checkDuplicatesInCollection(req, res) {
