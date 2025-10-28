@@ -574,51 +574,6 @@ async function getSDCSchoolCollectionStudentDetail(req, res) {
   }
 }
 
-async function getInDistrictDuplicates(req, res) {
-  try {
-    let sdcDuplicates = await getData(`${config.get('sdc:collectionURL')}/${req.params.collectionID}/in-province-duplicates`);
-    res.status(HttpStatus.OK).json(setDuplicatesForDisplay(sdcDuplicates));
-  } catch (e) {
-    logApiError(e, 'Error retrieving the in district duplicates');
-  }
-}
-
-function setDuplicatesForDisplay(sdcDuplicates) {
-  const result = {
-    enrollmentDuplicates: [],
-    programDuplicates: []
-  };
-  sdcDuplicates.forEach(sdcDuplicate => {
-    const school1 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent1Entity?.schoolID);
-    const school2 = cacheService.getSchoolBySchoolID(sdcDuplicate.sdcSchoolCollectionStudent2Entity?.schoolID);
-    sdcDuplicate.sdcSchoolCollectionStudent1Entity.schoolName = getSchoolName(school1);
-    sdcDuplicate.sdcSchoolCollectionStudent2Entity.schoolName = getSchoolName(school2);
-
-    if(sdcDuplicate.sdcSchoolCollectionStudent1Entity.sdcDistrictCollectionID) {
-      const district1 = cacheService.getDistrictJSONByDistrictId(school1.districtID);
-      sdcDuplicate.sdcSchoolCollectionStudent1Entity.districtName = getDistrictName(district1);
-      sdcDuplicate.sdcSchoolCollectionStudent1Entity.districtID = district1.districtId;
-    }
-
-    if(sdcDuplicate.sdcSchoolCollectionStudent2Entity.sdcDistrictCollectionID) {
-      const district2 = cacheService.getDistrictJSONByDistrictId(school2.districtID);
-      sdcDuplicate.sdcSchoolCollectionStudent2Entity.districtName = getDistrictName(district2);
-      sdcDuplicate.sdcSchoolCollectionStudent2Entity.districtID = district2.districtId;
-    }
-
-    toTableRow(sdcDuplicate.sdcSchoolCollectionStudent1Entity);
-    toTableRow(sdcDuplicate.sdcSchoolCollectionStudent2Entity);
-
-    if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.ENROLLMENT) {
-      result.enrollmentDuplicates.push(sdcDuplicate);
-    }else if (sdcDuplicate?.duplicateTypeCode === DUPLICATE_TYPE_CODES.PROGRAM) {
-      setProgramDuplicateTypeMessage(sdcDuplicate);
-      result.programDuplicates.push(sdcDuplicate);
-    }
-  });
-  return result;
-}
-    
 async function updateStudentPEN(req, res) {
   try {
     const payload = req.body;
@@ -1040,7 +995,6 @@ module.exports = {
   getSDCSchoolCollectionDetail,
   getSDCSchoolCollectionStudentPaginated,
   getSDCSchoolCollectionStudentDetail,
-  getInDistrictDuplicates,
   updateStudentPEN,
   updateAndValidateSdcSchoolCollectionStudent,
   checkDuplicatesInCollection,
