@@ -424,7 +424,7 @@ function getFileDetails(reportType, session, mincode) {
     'ALL_SESSION_REGISTRATIONS': { filename: `AssessmentRegistrations_${session}.csv`, contentType: 'text/csv' },
     'ATTEMPTS': { filename: `SessionWritingAttempts_${session}.csv`, contentType: 'text/csv' },
     'PEN_MERGES': { filename: `PENMerges_${session}.csv`, contentType: 'text/csv' },
-    'PEN_ISSUES_CSV': { filename: 'PenIssues.csv', contentType: 'text/csv' },
+    'PEN_ISSUES_CSV': { filename: `${session} - PEN Issues from Results.csv`, contentType: 'text/csv' },
     'REGISTRATION_SUMMARY_BY_SCHOOL': { filename:  `RegistrationSummaryBySchool_${session}.csv`, contentType: 'text/csv' },
     'SESSION_RESULTS': { filename: `SessionResults_${mincode}.csv`, contentType: 'text/csv' },
     'SCHOOL_STUDENTS_IN_SESSION': { filename: `SchoolStudentsInSession_${mincode}.pdf`, contentType: 'application/pdf' },
