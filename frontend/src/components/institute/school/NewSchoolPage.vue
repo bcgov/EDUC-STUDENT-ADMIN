@@ -128,6 +128,7 @@
                 <v-select
                   id="newSchoolGradesOfferedInput"
                   v-model="newSchool.grades"
+                  :rules="isGradeOfferedRequired && [rules.required()]"
                   :items="filteredGradeOptions"
                   item-value="schoolGradeCode"
                   item-title="label"
@@ -575,6 +576,7 @@ export default {
       processing: false,
       isFacilityTypeDisabled: false,
       isGradeOfferedDisabled: false,
+      isGradeOfferedRequired: true,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       offshoreArray: ['OFFSHORE'],
@@ -872,9 +874,11 @@ export default {
       }
       if (this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode)) {
         this.isGradeOfferedDisabled = true;
+        this.isGradeOfferedRequired = false;
         this.newSchool.grades = null;
       } else {
         this.isGradeOfferedDisabled = false;
+        this.isGradeOfferedRequired = true;
       }
       await this.validateForm();
     },
