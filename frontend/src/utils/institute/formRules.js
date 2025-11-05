@@ -120,6 +120,22 @@ const requiredIf = (bool = true, message = 'Required') => {
 };
 
 /**
+ * Rule for required array fields (e.g., multi-select dropdowns).
+ * Validates that the array has at least one element.
+ *
+ * @param {String} message - error message to display
+ * @returns {Function} validation function
+ */
+const requiredArray = (message = 'Required') => {
+  return v => {
+    if (Array.isArray(v) && v.length > 0) {
+      return true;
+    }
+    return message;
+  };
+};
+
+/**
  * Custom endDate Rule! Checks that we have start date and that end date
  * happens after start date. Date format should be 2022-12-10 YYYY-MM-DD.
  * @param {String} effectiveDate
@@ -248,6 +264,7 @@ export {
   required,
   requiredWithOtherFieldValues,
   requiredIf,
+  requiredArray,
   website,
   penIsValid,
 };

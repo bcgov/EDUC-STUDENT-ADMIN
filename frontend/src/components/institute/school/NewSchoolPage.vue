@@ -128,6 +128,7 @@
                 <v-select
                   id="newSchoolGradesOfferedInput"
                   v-model="newSchool.grades"
+                  :rules="[gradesRequiredRule]"
                   :items="filteredGradeOptions"
                   item-value="schoolGradeCode"
                   item-title="label"
@@ -800,6 +801,13 @@ export default {
       } else {
         return true;
       }
+    },
+    gradesRequiredRule(value) {
+      if (this.isGradeOfferedDisabled) {
+        return true;
+      }
+
+      return this.rules.requiredArray()(value);
     },
     calculateDefaultOpenDate() {
       return findUpcomingDate(7, 1).toString();
