@@ -28,7 +28,7 @@
                 <v-text-field
                   id="legacySafeSchoolNameInput"
                   v-model="newSchool.displayNameNoSpecialChars"
-                  :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(newSchool.displayName)]"
+                  :rules="[legacySafeSchoolNameRules]"
                   class="pt-0"
                   variant="underlined"
                   :maxlength="255"
@@ -812,6 +812,20 @@ export default {
       }
 
       return this.rules.requiredArray()(value);
+    },
+    legacySafeSchoolNameRules(value) {
+      const noSpecialCharsResult = this.rules.noSpecialCharactersSchDisAuthName()(value);
+      if (noSpecialCharsResult !== true) {
+        return noSpecialCharsResult;
+      }
+
+      if (this.newSchool.displayName && /[^A-Za-z.'0-9#@&():?/\s-]/.test(this.newSchool.displayName)) {
+        if (!value || !value.trim()) {
+          return 'Required. Enter a school name without special characters.';
+        }
+      }
+
+      return true;
     },
     calculateDefaultOpenDate() {
       return findUpcomingDate(7, 1).toString();
