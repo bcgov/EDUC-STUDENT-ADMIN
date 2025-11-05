@@ -128,7 +128,7 @@
                 <v-select
                   id="newSchoolGradesOfferedInput"
                   v-model="newSchool.grades"
-                  :rules="isGradeOfferedRequired && [rules.required()]"
+                  :rules="[gradesRequiredRule]"
                   :items="filteredGradeOptions"
                   item-value="schoolGradeCode"
                   item-title="label"
@@ -802,6 +802,16 @@ export default {
       } else {
         return true;
       }
+    },
+    gradesRequiredRule(value) {
+      // Grades are required unless a school category that explicitly doesn't require them is selected
+      const isExemptCategory = this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode);
+
+      if (isExemptCategory) {
+        return true;
+      }
+
+      return this.rules.requiredArray()(value);
     },
     calculateDefaultOpenDate() {
       return findUpcomingDate(7, 1).toString();
