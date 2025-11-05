@@ -576,7 +576,6 @@ export default {
       processing: false,
       isFacilityTypeDisabled: false,
       isGradeOfferedDisabled: false,
-      isGradeOfferedRequired: true,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       offshoreArray: ['OFFSHORE'],
@@ -804,10 +803,7 @@ export default {
       }
     },
     gradesRequiredRule(value) {
-      // Grades are required unless a school category that explicitly doesn't require them is selected
-      const isExemptCategory = this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode);
-
-      if (isExemptCategory) {
+      if (this.isGradeOfferedDisabled) {
         return true;
       }
 
@@ -898,11 +894,9 @@ export default {
       }
       if (this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode)) {
         this.isGradeOfferedDisabled = true;
-        this.isGradeOfferedRequired = false;
         this.newSchool.grades = null;
       } else {
         this.isGradeOfferedDisabled = false;
-        this.isGradeOfferedRequired = true;
       }
       await this.validateForm();
     },
