@@ -74,15 +74,6 @@
               {{ studentForSearch.dob }}
             </v-col>
             <v-col
-              style="font-weight: bold"
-              cols="3"
-            >
-              Gender:
-            </v-col>
-            <v-col cols="9">
-              {{ studentForSearch.gender }}
-            </v-col>
-            <v-col
               cols="12"
               class="mt-n2"
             >
@@ -160,7 +151,10 @@
           </v-card>
         </v-row>
       </div>
-      <div v-if="hasEditPermission" class="pl-2">
+      <div
+        v-if="hasEditPermission"
+        class="pl-2"
+      >
         <v-row
           no-gutters
           class="d-flex"
@@ -226,13 +220,13 @@
 </template>
 
 <script>
-import { isValidPEN } from '../../../utils/validation';
+import { isValidPEN } from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import { mapState } from 'pinia';
 import {appStore} from '@/store/modules/app';
 import DownloadLink from '../../common/DownloadLink.vue';
 import ApiService from '@/common/apiService';
-import { Routes } from '../../../utils/constants';
+import { Routes } from '@/utils/constants';
 import { sortBy } from 'lodash';
 import * as Rules from '../../../utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';
@@ -265,16 +259,6 @@ export default {
       sessions: [],
     };
   },
-  watch: {
-    schoolYearSessions: {
-      handler(value) {
-        if(value.length > 0) {
-          this.setupAssessmentSessions();
-        }
-      },
-      immediate: true
-    }
-  },
   computed: {
     ...mapState(appStore, ['schoolMap']),
     ...mapState(authStore, ['userInfo']),
@@ -286,6 +270,16 @@ export default {
     },
     schoolIdentifierForReports() {
       return this.schoolNameNumberFilter;
+    }
+  },
+  watch: {
+    schoolYearSessions: {
+      handler(value) {
+        if(value.length > 0) {
+          this.setupAssessmentSessions();
+        }
+      },
+      immediate: true
     }
   },
   async created() {
