@@ -626,7 +626,6 @@ export default {
       if(this.type) {
         ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.type + '/summary').then((response) => {
           this.resultsSummary = response.data;
-          console.log(this.resultsSummary);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
