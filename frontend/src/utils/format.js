@@ -24,7 +24,19 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd', hasTi
       const date = localDateTime.parse(datetime, fromFormatter);
       result = date.format(toFormatter);
     } catch (err) {
-      console.info(`could not parse date ${datetime}: ${from} to ${to} as date provided is invalid`);
+      if (from.includes('.SSS')) {
+        const fallbackFrom = from.replace('.SSS', '');
+        try {
+          const fallbackFormatter = getDateFormatter(fallbackFrom);
+          const date = localDateTime.parse(datetime, fallbackFormatter);
+          result = date.format(toFormatter);
+          return result;
+        } catch (fallbackErr) {
+          console.info(`could not parse date ${datetime}: ${from} to ${to} as date provided is invalid`);
+        }
+      } else {
+        console.info(`could not parse date ${datetime}: ${from} to ${to} as date provided is invalid`);
+      }
     }
   }
   return result;

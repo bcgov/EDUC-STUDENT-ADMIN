@@ -3,50 +3,58 @@
     class="mb-6"
     fluid
   >
-    <v-row v-if="hasEditPermission" class="mb-1">
+    <v-row
+      v-if="hasEditPermission"
+      class="mb-1"
+    >
       <v-col class="d-flex justify-end">
-        <a class="report-item mr-2" @click="openResultCorrectDialog = !openResultCorrectDialog">Upload a Correction to Results</a>
+        <a
+          class="report-item mr-2"
+          @click="openResultCorrectDialog = !openResultCorrectDialog"
+        >Upload a Correction to Results</a>
         <v-menu
-                location="bottom"
-              >
-                <template #activator="{ props }">
-                  <a
-                    class="mt-n1 mr-1"
-                    style="font-weight: bold"
-                    v-bind="props"
-                    @click="toggleMoreInfoTooltip"
-                  ><v-icon
-                        color="#003366"
-                        icon="mdi-information"
-                      />
-                    </a>
-                </template>
-                <v-card
-                  style="max-width: 30em;"
-                  border="sm"
-                  class="pa-2"
-                >
-                  <div>Uploaded results will be <span style="font-weight: bold">added to existing data</span> for the session — 
-                    they <span style="font-weight: bold">won’t overwrite all results</span> for all students.</div>
-                  <div class="mt-4">
-                   If a student already has results for the same assessment and session, those results will be <span style="font-weight: bold">replaced</span> with the new ones from your file.
-                  </div>
-                  <div class="mt-4">
-                    Results <span style="font-weight: bold">can not</span> be added for a <span style="font-weight: bold">future session</span>.
-                  </div>
-                  <div class="mt-4">
-                    If uploading to:
-                  </div>
-                  <div class="mt-4">
-                    <span style="font-weight: bold">An in-progress session (not yet approved):</span> Results will be added to staged results and go through the standard approval process.
-                  </div>
-                  <div
-                    class="mt-4"
-                  >
-                    <span style="font-weight: bold">A past session (already approved):</span> Results will be added directly to the approved results and considered immediately approved.
-                  </div>
-                </v-card>
-              </v-menu>
+          location="bottom"
+        >
+          <template #activator="{ props }">
+            <a
+              class="mt-n1 mr-1"
+              style="font-weight: bold"
+              v-bind="props"
+              @click="toggleMoreInfoTooltip"
+            ><v-icon
+              color="#003366"
+              icon="mdi-information"
+            />
+            </a>
+          </template>
+          <v-card
+            style="max-width: 30em;"
+            border="sm"
+            class="pa-2"
+          >
+            <div>
+              Uploaded results will be <span style="font-weight: bold">added to existing data</span> for the session — 
+              they <span style="font-weight: bold">won’t overwrite all results</span> for all students.
+            </div>
+            <div class="mt-4">
+              If a student already has results for the same assessment and session, those results will be <span style="font-weight: bold">replaced</span> with the new ones from your file.
+            </div>
+            <div class="mt-4">
+              Results <span style="font-weight: bold">can not</span> be added for a <span style="font-weight: bold">future session</span>.
+            </div>
+            <div class="mt-4">
+              If uploading to:
+            </div>
+            <div class="mt-4">
+              <span style="font-weight: bold">An in-progress session (not yet approved):</span> Results will be added to staged results and go through the standard approval process.
+            </div>
+            <div
+              class="mt-4"
+            >
+              <span style="font-weight: bold">A past session (already approved):</span> Results will be added directly to the approved results and considered immediately approved.
+            </div>
+          </v-card>
+        </v-menu>
       </v-col>
     </v-row>
     <v-expansion-panels 
@@ -91,7 +99,7 @@
           <v-row>
             <v-col class="d-flex justify-end">
               <v-menu>
-                <template v-slot:activator="{ props }">
+                <template #activator="{ props }">
                   <v-btn
                     color="primary"
                     v-bind="props"
@@ -104,16 +112,27 @@
 
                 <v-list>
                   <v-list-item @click="downloadReport('summary-by-form-for-session')">
-                    <v-list-item-title class="report-item">Result Summary by Form</v-list-item-title>
+                    <v-list-item-title class="report-item">
+                      Result Summary by Form
+                    </v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="downloadReport('summary-by-grade-for-session')">
-                    <v-list-item-title class="report-item">Result Summary by Grade</v-list-item-title>
+                    <v-list-item-title class="report-item">
+                      Result Summary by Grade
+                    </v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="downloadReport('all-detailed-students-in-session-csv')">
-                    <v-list-item-title class="report-item">Detailed Results</v-list-item-title>
+                    <v-list-item-title class="report-item">
+                      Detailed Results
+                    </v-list-item-title>
                   </v-list-item>
-                  <v-list-item v-if="session.isOpen" @click="downloadReport('pen-issues-csv')">
-                    <v-list-item-title class="report-item">PEN Issues for session</v-list-item-title>
+                  <v-list-item
+                    v-if="session.isOpen"
+                    @click="downloadReport('pen-issues-csv')"
+                  >
+                    <v-list-item-title class="report-item">
+                      PEN Issues for session
+                    </v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -294,8 +313,8 @@
               </v-col>
               <v-col cols="6">
                 <v-btn
-                  :disabled="!selectedSession"
                   id="uploadButton"
+                  :disabled="!selectedSession"
                   class="mt-4"
                   prepend-icon="mdi-file-upload"
                   variant="elevated"
@@ -416,7 +435,7 @@ export default {
     },
     sessions: {
       handler(value) {
-         if(value.length > 0) {
+        if(value.length > 0) {
           this.allowedforUpload = value.filter(session => session.isOpen || (session.activeFromDate !== null && session.activeUntilDate!== null && LocalDate.now().isAfter(LocalDate.parse(session.activeFromDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && LocalDate.now().isAfter(LocalDate.parse(session.activeUntilDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
           this.allowedforUpload.forEach(item => {
             item.desc = item.courseYear + '/' + item.courseMonth;
@@ -551,9 +570,9 @@ export default {
         this.successfulUploadCount += 1;
         fileJSON.status = this.fileUploadSuccess;
       } catch (e) {
-          console.error(e);
-          fileJSON.error = e.response.data;
-          fileJSON.status = this.fileUploadError;
+        console.error(e);
+        fileJSON.error = e.response.data;
+        fileJSON.status = this.fileUploadError;
       }
     },
     async uploadFile(fileJSON, index) {
@@ -607,6 +626,7 @@ export default {
       if(this.type) {
         ApiService.apiAxios.get(Routes.assessments.ASSESSMENT_RESULTS + '/session/' + this.type + '/summary').then((response) => {
           this.resultsSummary = response.data;
+          console.log(this.resultsSummary);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert('An error occurred while trying to get result summary. Please try again later.');
