@@ -147,6 +147,15 @@
                   <div>-</div>
                 </template>
               </div>
+              <span v-else-if="column.key === 'history'">
+                <v-btn
+                  icon
+                  size="small"
+                  @click.stop="viewHistory(props.item.raw)"
+                >
+                  <v-icon>mdi-history</v-icon>
+                </v-btn>
+              </span>
               <span v-else-if="column.key === 'resolution'">
                 <slot
                   :sdc-school-collection-student="props.item.raw"
@@ -251,7 +260,7 @@ export default {
       default: false
     }
   },
-  emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow', 'loadPrevious', 'loadNext'],
+  emits: ['reload', 'openStudentDetails', 'selections', 'editSelectedRow', 'loadPrevious', 'loadNext', 'viewHistory'],
   data() {
     return {
       masterCheckbox: false,
@@ -386,6 +395,9 @@ export default {
       } else {
         return 'Under Review';
       }
+    },
+    viewHistory(student) {
+      this.$emit('viewHistory', student);
     },
     displayName
   }

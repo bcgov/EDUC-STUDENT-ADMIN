@@ -76,6 +76,7 @@
             :read-only="readOnly"
             @reload="reload"
             @editSelectedRow="editStudent"
+            @viewHistory="viewHistory"
             @selections="selectedStudents = $event"
             @loadNext="loadNext"
             @loadPrevious="loadPrevious"
@@ -132,6 +133,19 @@
       @open-edit="closeAddStudentWindow"
     />
   </v-bottom-sheet>
+  <v-bottom-sheet
+    v-model="historySheet"
+    :inset="true"
+    :no-click-animation="true"
+    :scrollable="true"
+    :persistent="true"
+  >
+    <StudentHistoryDialog
+      v-if="studentForHistory"
+      :sdc-school-collection-student-i-d="studentForHistory"
+      @close="closeHistory"
+    />
+  </v-bottom-sheet>
 </template>
 
 <script>
@@ -142,11 +156,12 @@ import {cloneDeep, isEmpty, omitBy} from 'lodash';
 import {sdcCollectionStore} from '@/store/modules/sdcCollection';
 import ViewStudentDetailsComponent from './ViewStudentDetailsComponent.vue';
 import AddStudentDetails from './AddStudentDetails.vue';
+import StudentHistoryDialog from './StudentHistoryDialog.vue';
 import Filters from '../../common/Filters.vue';
 import {mapState} from 'pinia';
 import CustomTableSlice from '@/components/common/CustomTableSlice.vue';
-import {hasRequiredPermission, PERMISSION} from "@/utils/constants/Permission";
-import {authStore} from "@/store/modules/auth";
+import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'DetailComponent',
@@ -154,7 +169,8 @@ export default {
     CustomTableSlice,
     Filters,
     ViewStudentDetailsComponent,
-    AddStudentDetails
+    AddStudentDetails,
+    StudentHistoryDialog
   },
   mixins: [alertMixin],
   props: {
@@ -212,7 +228,9 @@ export default {
       editStudentSheet: false,
       resetFlag: false,
       reloadStudentsFlag: false,
-      isStudentRemoved: false
+      isStudentRemoved: false,
+      historySheet: false,
+      studentForHistory: null
     };
   },
   computed: {
@@ -262,6 +280,15 @@ export default {
       this.studentForEdit.push(selectedStudent?.sdcSchoolCollectionStudentID);
       this.isStudentRemoved = selectedStudent?.sdcSchoolCollectionStudentStatusCode === 'DELETED';
       this.editStudentSheet = true;
+    },
+    viewHistory($event) {
+      const selectedStudent = cloneDeep($event);
+      this.studentForHistory = selectedStudent?.sdcSchoolCollectionStudentID;
+      this.historySheet = true;
+    },
+    closeHistory() {
+      this.historySheet = false;
+      this.studentForHistory = null;
     },
     applyFilters($event) {
       this.filterSearchParams.moreFilters = cloneDeep($event);

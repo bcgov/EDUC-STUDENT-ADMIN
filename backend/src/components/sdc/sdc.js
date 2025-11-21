@@ -264,6 +264,75 @@ async function getSDCSchoolCollectionStudentSldHistoryPaginated(req, res) {
   }
 }
 
+async function getSDCSchoolCollectionStudentHistoryPaginated(req, res) {
+  try {
+    const search = [];
+    if(req.query.searchParams) {
+      search.push({
+        condition: CONDITION.AND,
+        searchCriteriaList: createSearchCriteria(req.query.searchParams)
+      });
+    }
+
+    if(req.query.sdcSchoolCollectionStudentID) {
+      search.push({
+        condition: null,
+        searchCriteriaList: [{ key: 'sdcSchoolCollectionStudentID', value: req.query.sdcSchoolCollectionStudentID, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID }]
+      });
+    }
+
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      }
+    };
+
+    let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated-student-history`, params);
+
+    if (req?.query?.returnKey) {
+      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      return res.status(HttpStatus.OK).json(result);
+    }
+
+    if(req?.query?.tableFormat){
+      data.content = data?.content.map(toTableRow);
+    }
+
+    data?.content.forEach(value => {
+      ['updateUser', 'createUser'].forEach(field => {
+        if (value[field]?.startsWith('EDX/')) {
+          const edxUserID = value[field].substring(4);
+          const displayName = cacheService.getEdxUserByID(edxUserID)?.displayName;
+          if (displayName) {
+            value[field] = displayName;
+          }
+        }
+      });
+
+      if (value.schoolID) {
+        let school = cacheService.getSchoolBySchoolID(value.schoolID);
+        if (school) {
+          value.schoolName = getSchoolName(school);
+          value.districtName = getDistrictName(cacheService.getDistrictJSONByDistrictId(school.districtID));
+          value.districtID = school.districtID;
+        }
+      }
+    });
+
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e?.status === 404) {
+      res.status(HttpStatus.OK).json(null);
+    } else {
+      await logApiError(e, 'Error getting sdc school collection student history paginated list');
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getSDCSchoolCollectionStudentPaginatedSlice(req, res) {
   try {
     const search = [];
@@ -1061,5 +1130,6 @@ module.exports = {
   getSDCSchoolCollectionStudentSldHistoryPaginated,
   removeSDCSchoolCollectionStudents,
   getCollectionClosureSagaStatus,
-  reprocessSdcSchoolCollection
+  reprocessSdcSchoolCollection,
+  getSDCSchoolCollectionStudentHistoryPaginated
 };
