@@ -179,7 +179,6 @@ export default {
           this.selectHistoryItem(this.historyData[0]);
         }
 
-        console.log('Student History:', response.data);
       } catch (error) {
         console.error('Error fetching student history:', error);
         this.setFailureAlert('An error occurred while loading student history. Please try again later.');

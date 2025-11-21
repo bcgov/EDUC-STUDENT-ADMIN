@@ -55,6 +55,38 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
+              School:
+            </v-col>
+            <v-col
+              cols="8"
+              class="pb-0 pt-0"
+            >
+              {{ studentHistory.schoolName || '-' }}
+            </v-col>
+          </v-row>
+
+          <v-row class="pb-2">
+            <v-col
+              cols="4"
+              class="pb-0 pt-0 field-label"
+            >
+              District:
+            </v-col>
+            <v-col
+              cols="8"
+              class="pb-0 pt-0"
+            >
+              {{ studentHistory.districtName || '-' }}
+            </v-col>
+          </v-row>
+
+
+
+          <v-row class="pb-2">
+            <v-col
+              cols="4"
+              class="pb-0 pt-0 field-label"
+            >
               Legal Name:
             </v-col>
             <v-col
@@ -62,6 +94,21 @@
               class="pb-0 pt-0"
             >
               {{ displayName(studentHistory.legalFirstName, studentHistory.legalMiddleNames, studentHistory.legalLastName) }}
+            </v-col>
+          </v-row>
+
+          <v-row class="pb-2">
+            <v-col
+              cols="4"
+              class="pb-0 pt-0 field-label"
+            >
+              Usual Name:
+            </v-col>
+            <v-col
+              cols="8"
+              class="pb-0 pt-0"
+            >
+              {{ displayName(studentHistory.usualFirstName, studentHistory.usualMiddleNames, studentHistory.usualLastName) }}
             </v-col>
           </v-row>
 
@@ -475,6 +522,21 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
+              Snapshot Date:
+            </v-col>
+            <v-col
+              cols="8"
+              class="pb-0 pt-0"
+            >
+              {{ formatSnapshotDate(studentHistory.snapshotDate) }}
+            </v-col>
+          </v-row>
+
+          <v-row class="pb-2">
+            <v-col
+              cols="4"
+              class="pb-0 pt-0 field-label"
+            >
               Updated By:
             </v-col>
             <v-col
@@ -506,7 +568,7 @@
 </template>
 
 <script>
-import { formatIsoDateTime, formatDob, displayName } from '@/utils/format';
+import { formatIsoDateTime, formatDob, displayName, formatDisplayDate } from '@/utils/format';
 
 export default {
   name: 'StudentHistoryDetailPanel',
@@ -534,6 +596,10 @@ export default {
       if (value === 'true' || value === true) return 'Yes';
       if (value === 'false' || value === false) return 'No';
       return '-';
+    },
+    formatSnapshotDate(date) {
+      if (!date) return '-';
+      return formatDisplayDate(date);
     },
     formatIsoDateTime,
     formatDob,
