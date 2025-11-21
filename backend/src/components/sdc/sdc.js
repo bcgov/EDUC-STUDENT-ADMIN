@@ -302,20 +302,15 @@ async function getSDCSchoolCollectionStudentHistoryPaginated(req, res) {
     }
 
     data?.content.forEach(value => {
-      if (value.updateUser && value.updateUser.startsWith('EDX/')) {
-        const edxUserID = value.updateUser.substring(4);
-        const user = cacheService.getEdxUserByID(edxUserID);
-        if (user?.displayName) {
-          value.updateUser = user.displayName;
+      ['updateUser', 'createUser'].forEach(field => {
+        if (value[field]?.startsWith('EDX/')) {
+          const edxUserID = value[field].substring(4);
+          const displayName = cacheService.getEdxUserByID(edxUserID)?.displayName;
+          if (displayName) {
+            value[field] = displayName;
+          }
         }
-      }
-      if (value.createUser && value.createUser.startsWith('EDX/')) {
-        const edxUserID = value.createUser.substring(4);
-        const user = cacheService.getEdxUserByID(edxUserID);
-        if (user?.displayName) {
-          value.createUser = user.displayName;
-        }
-      }
+      });
 
       if (value.schoolID) {
         let school = cacheService.getSchoolBySchoolID(value.schoolID);
