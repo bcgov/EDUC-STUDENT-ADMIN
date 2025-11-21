@@ -152,6 +152,7 @@
             <v-text-field
               id="searchInput"
               v-model="studentPen"
+              maxlength="9"
               label="Student Pen"
               color="primary"
               variant="underlined"
@@ -164,6 +165,7 @@
             <v-text-field
               id="searchInput"
               v-model="assignedPen"
+              maxlength="9"
               label="Assigned Pen"
               color="primary"
               variant="underlined"

@@ -27,6 +27,7 @@
               ref="studentPENField"
               v-model="studentPENTranscript"
               placeholder="Enter PEN"
+              maxlength="9"
               :rules="penRules"
               variant="underlined"
             />
