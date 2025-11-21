@@ -35,10 +35,10 @@ env:
   MAX_REPLICAS_DEV: "2"
   MIN_CPU: "400m"
   MAX_CPU: "800m"
-  MIN_MEM: "600Mi"
-  MAX_MEM: "1000Mi"
-  MIN_REPLICAS_TEST: "2"
-  MAX_REPLICAS_TEST: "3"
+  MIN_MEM: "800Mi"
+  MAX_MEM: "1200Mi"
+  MIN_REPLICAS_TEST: "3"
+  MAX_REPLICAS_TEST: "4"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
