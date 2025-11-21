@@ -207,6 +207,7 @@ let object = {
     SDC_SCHOOL_FUNDING_CODES: sdcRoot + '/school-funding-codes',
     SDC_SPECIAL_ED_CODES: sdcRoot + '/specialEducation-codes',
     SDC_SCHOOL_COLLECTION_STUDENT: sdcRoot + '/sdcSchoolCollectionStudent',
+    SDC_SCHOOL_COLLECTION_STUDENT_HISTORY_PAGINATED: sdcRoot + '/sdcSchoolCollectionStudent/studentHistoryPaginated',
     SDC_VALIDATION_ISSUE_TYPE_CODES: sdcRoot + '/validation-issue-type-codes',
     SDC_PROGRAM_ELIGIBILITY_TYPE_CODES: sdcRoot + '/program-eligibility-issue-codes',
     SDC_ZERO_FTE_REASON_CODES: sdcRoot + '/zero-fte-reason-codes',

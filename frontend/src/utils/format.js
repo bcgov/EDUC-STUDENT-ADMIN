@@ -107,6 +107,14 @@ export function formatReportingDateTime(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss',
   return formatDateTime(rawDate, from, to, true);
 }
 
+export function formatIsoDateTime(isoString, to='uuuu-MM-dd HH:mm:ss') {
+  if (!isoString) return '-';
+
+  const normalizedDate = isoString.split('.')[0];
+
+  return formatDateTime(normalizedDate, 'uuuu-MM-dd\'T\'HH:mm:ss', to, true);
+}
+
 export function formatDisplayDate(date) {
   if (!date) return null;
   const [year, month, day] = date.split('-');
