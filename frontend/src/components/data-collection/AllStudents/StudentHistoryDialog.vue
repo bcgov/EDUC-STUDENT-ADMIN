@@ -6,7 +6,7 @@
     >
       <v-row no-gutters>
         <v-col class="d-flex justify-start">
-          Student History
+          Student History - PEN: {{ studentPen }} ({{ studentName }})
         </v-col>
         <v-col class="d-flex justify-end">
           <v-btn
@@ -22,63 +22,83 @@
       </v-row>
     </v-card-title>
     <v-divider />
-    <v-card-text class="fill-height pa-0">
+    <v-card-text class="pa-0">
       <v-progress-linear
         v-if="loading"
         indeterminate
         color="primary"
       />
-      <div
+      <v-row
         v-else-if="historyData.length === 0"
+        no-gutters
         class="pa-4"
       >
-        <v-alert
-          type="info"
-          variant="tonal"
-        >
-          No history records found for this student.
-        </v-alert>
-      </div>
-      <v-data-table
-        v-else
-        :headers="headers"
-        :items="historyData"
-        :items-per-page="15"
-        :sort-by="[{ key: 'updateDate', order: 'desc' }]"
-        class="history-table"
-        density="compact"
-        fixed-header
-      >
-        <template #[`item.legalName`]="{ item }">
-          {{ displayName(item.raw.legalFirstName, item.raw.legalMiddleNames, item.raw.legalLastName) }}
-        </template>
-        <template #[`item.updateDate`]="{ item }">
-          {{ formatIsoDateTime(item.raw.updateDate) }}
-        </template>
-        <template #[`item.sdcSchoolCollectionStudentStatusCode`]="{ item }">
-          <v-chip
-            :color="getStatusColor(item.raw.sdcSchoolCollectionStudentStatusCode)"
-            size="small"
+        <v-col>
+          <v-alert
+            type="info"
+            variant="tonal"
           >
-            {{ item.raw.sdcSchoolCollectionStudentStatusCode }}
-          </v-chip>
-        </template>
-        <template #[`item.dob`]="{ item }">
-          {{ formatDob(item.raw.dob, 'uuuuMMdd', 'uuuu-MM-dd') }}
-        </template>
-        <template #[`item.isAdult`]="{ item }">
-          {{ formatBoolean(item.raw.isAdult) }}
-        </template>
-        <template #[`item.isSchoolAged`]="{ item }">
-          {{ formatBoolean(item.raw.isSchoolAged) }}
-        </template>
-        <template #[`item.isGraduated`]="{ item }">
-          {{ formatBoolean(item.raw.isGraduated) }}
-        </template>
-        <template #[`item.nativeAncestryInd`]="{ item }">
-          {{ item.raw.nativeAncestryInd === 'Y' ? 'Yes' : item.raw.nativeAncestryInd === 'N' ? 'No' : '-' }}
-        </template>
-      </v-data-table>
+            No history records found for this student.
+          </v-alert>
+        </v-col>
+      </v-row>
+      <v-row
+        v-else
+        no-gutters
+      >
+        <v-col :cols="showRecordDetail ? 6 : 12">
+          <v-data-table
+            v-model="selectedHistory"
+            :headers="getHeaders()"
+            :items="historyData"
+            :items-per-page="15"
+            :sort-by="[{ key: 'updateDate', order: 'desc' }]"
+            class="history-table"
+            density="compact"
+            fixed-header
+          >
+            <template #no-data>
+              <v-row no-gutters>
+                <v-col class="d-flex justify-center">
+                  There is no history.
+                </v-col>
+              </v-row>
+            </template>
+            <template #item="{ item }">
+              <tr
+                class="hoverTable"
+                :class="tableRowClass(item.raw)"
+                @click="selectHistoryItem(item.raw)"
+              >
+                <td>{{ formatIsoDateTime(item.raw.updateDate) }}</td>
+                <td>{{ item.raw.updateUser }}</td>
+                <td
+                  v-if="!showRecordDetail"
+                >
+                  {{ displayName(item.raw.legalFirstName, item.raw.legalMiddleNames, item.raw.legalLastName) }}
+                </td>
+                <td>
+                  <v-chip
+                    :color="getStatusColor(item.raw.sdcSchoolCollectionStudentStatusCode)"
+                    size="small"
+                  >
+                    {{ item.raw.sdcSchoolCollectionStudentStatusCode }}
+                  </v-chip>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-col>
+        <v-col
+          v-if="showRecordDetail"
+          cols="6"
+        >
+          <StudentHistoryDetailPanel
+            :student-history="selectedStudentHistory"
+            @close-panel="closeDetailPanel"
+          />
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -88,9 +108,13 @@ import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import { formatIsoDateTime, formatDob, displayName } from '@/utils/format';
+import StudentHistoryDetailPanel from './StudentHistoryDetailPanel.vue';
 
 export default {
   name: 'StudentHistoryDialog',
+  components: {
+    StudentHistoryDetailPanel
+  },
   mixins: [alertMixin],
   props: {
     sdcSchoolCollectionStudentID: {
@@ -103,38 +127,21 @@ export default {
     return {
       loading: false,
       historyData: [],
-      headers: [
-        { title: 'Updated Date', key: 'updateDate', value: 'updateDate', width: '160px' },
-        { title: 'Updated By', key: 'updateUser', value: 'updateUser', width: '200px' },
-        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode', width: '120px' },
-        { title: 'Legal Name', key: 'legalName', value: 'legalName', width: '180px' },
-        { title: 'PEN', key: 'studentPen', value: 'studentPen', width: '120px' },
-        { title: 'PEN Match Result', key: 'penMatchResult', value: 'penMatchResult', width: '140px' },
-        { title: 'Local ID', key: 'localID', value: 'localID', width: '100px' },
-        { title: 'DOB', key: 'dob', value: 'dob', width: '100px' },
-        { title: 'Gender', key: 'gender', value: 'gender', width: '80px' },
-        { title: 'Grade', key: 'enrolledGradeCode', value: 'enrolledGradeCode', width: '80px' },
-        { title: 'FTE', key: 'fte', value: 'fte', width: '70px' },
-        { title: 'Courses', key: 'numberOfCourses', value: 'numberOfCourses', width: '90px' },
-        { title: 'Support Blocks', key: 'supportBlocks', value: 'supportBlocks', width: '120px' },
-        { title: 'Enrolled Programs', key: 'enrolledProgramCodes', value: 'enrolledProgramCodes', width: '140px' },
-        { title: 'Career Program', key: 'careerProgramCode', value: 'careerProgramCode', width: '120px' },
-        { title: 'Special Ed', key: 'specialEducationCategoryCode', value: 'specialEducationCategoryCode', width: '100px' },
-        { title: 'School Funding', key: 'schoolFundingCode', value: 'schoolFundingCode', width: '130px' },
-        { title: 'Indigenous Ancestry', key: 'nativeAncestryInd', value: 'nativeAncestryInd', width: '150px' },
-        { title: 'Home Language', key: 'homeLanguageSpokenCode', value: 'homeLanguageSpokenCode', width: '130px' },
-        { title: 'Band Code', key: 'bandCode', value: 'bandCode', width: '100px' },
-        { title: 'Years in ELL', key: 'yearsInEll', value: 'yearsInEll', width: '110px' },
-        { title: 'Is Adult', key: 'isAdult', value: 'isAdult', width: '90px' },
-        { title: 'Is School Aged', key: 'isSchoolAged', value: 'isSchoolAged', width: '130px' },
-        { title: 'Is Graduated', key: 'isGraduated', value: 'isGraduated', width: '120px' },
-        { title: 'FTE Zero Reason', key: 'fteZeroReasonCode', value: 'fteZeroReasonCode', width: '140px' },
-        { title: 'French Inelig', key: 'frenchProgramNonEligReasonCode', value: 'frenchProgramNonEligReasonCode', width: '200px' },
-        { title: 'ELL Inelig', key: 'ellNonEligReasonCode', value: 'ellNonEligReasonCode', width: '200px' },
-        { title: 'Indigenous Inelig', key: 'indigenousSupportProgramNonEligReasonCode', value: 'indigenousSupportProgramNonEligReasonCode', width: '200px' },
-        { title: 'Career Inelig', key: 'careerProgramNonEligReasonCode', value: 'careerProgramNonEligReasonCode', width: '200px' },
-        { title: 'Special Ed Inelig', key: 'specialEducationNonEligReasonCode', value: 'specialEducationNonEligReasonCode', width: '200px' },
-        { title: 'Postal Code', key: 'postalCode', value: 'postalCode', width: '110px' },
+      selectedHistory: [],
+      showRecordDetail: false,
+      selectedStudentHistory: null,
+      studentPen: '',
+      studentName: '',
+      fullHeaders: [
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
+        { title: 'Legal Name', key: 'legalName', value: 'legalName' },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
+      ],
+      shortHeaders: [
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
       ]
     };
   },
@@ -149,6 +156,7 @@ export default {
           params: {
             pageNumber: 0,
             pageSize: 100,
+            sort: { updateDate: 'DESC' },
             sdcSchoolCollectionStudentID: this.sdcSchoolCollectionStudentID
           }
         };
@@ -159,6 +167,17 @@ export default {
         );
 
         this.historyData = response.data.content || [];
+
+        if (this.historyData.length > 0) {
+          this.studentPen = this.historyData[0].studentPen || 'Unknown';
+          this.studentName = displayName(
+            this.historyData[0].legalFirstName,
+            this.historyData[0].legalMiddleNames,
+            this.historyData[0].legalLastName
+          ) || 'Unknown';
+          this.selectHistoryItem(this.historyData[0]);
+        }
+
         console.log('Student History:', response.data);
       } catch (error) {
         console.error('Error fetching student history:', error);
@@ -167,6 +186,25 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    getHeaders() {
+      return this.showRecordDetail ? this.shortHeaders : this.fullHeaders;
+    },
+    tableRowClass(item) {
+      return item.isSelected ? 'selected-record' : '';
+    },
+    selectHistoryItem(historyRecord) {
+      this.historyData.forEach(hist => {
+        hist.isSelected = hist.sdcSchoolCollectionStudentHistoryID === historyRecord.sdcSchoolCollectionStudentHistoryID;
+      });
+      this.selectedStudentHistory = historyRecord;
+      this.showRecordDetail = true;
+    },
+    closeDetailPanel() {
+      this.showRecordDetail = false;
+      this.historyData.forEach(hist => {
+        hist.isSelected = false;
+      });
     },
     getStatusColor(status) {
       const colors = {
@@ -179,11 +217,6 @@ export default {
         'INFOWARN': 'info'
       };
       return colors[status] || 'default';
-    },
-    formatBoolean(value) {
-      if (value === 'true' || value === true) return 'Yes';
-      if (value === 'false' || value === false) return 'No';
-      return '-';
     },
     formatIsoDateTime,
     formatDob,
@@ -210,21 +243,39 @@ export default {
 
 #studentHistoryCard :deep(.v-card-text) {
   flex: 1;
-  position: relative;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#studentHistoryCard :deep(.v-card-text > .v-row) {
+  flex: 1;
   min-height: 0;
 }
 
+.hoverTable:hover {
+  cursor: pointer;
+}
+
+.selected-record td {
+  background-color: #e3f2fd !important;
+}
+
 .history-table {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-table :deep(.v-table) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .history-table :deep(.v-table__wrapper) {
-  height: calc(100% - 60px);
+  flex: 1;
   overflow-y: auto;
 }
 </style>

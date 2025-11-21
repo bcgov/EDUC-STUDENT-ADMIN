@@ -292,8 +292,6 @@ async function getSDCSchoolCollectionStudentHistoryPaginated(req, res) {
 
     let data = await getData(`${config.get('sdc:schoolCollectionStudentURL')}/paginated-student-history`, params);
 
-    console.log(data);
-
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
       return res.status(HttpStatus.OK).json(result);
@@ -305,14 +303,14 @@ async function getSDCSchoolCollectionStudentHistoryPaginated(req, res) {
 
     data?.content.forEach(value => {
       if (value.updateUser && value.updateUser.startsWith('EDX/')) {
-        const edxUserID = value.updateUser.substring(4); // Remove 'EDX/' prefix
+        const edxUserID = value.updateUser.substring(4);
         const user = cacheService.getEdxUserByID(edxUserID);
         if (user?.displayName) {
           value.updateUser = user.displayName;
         }
       }
       if (value.createUser && value.createUser.startsWith('EDX/')) {
-        const edxUserID = value.createUser.substring(4); // Remove 'EDX/' prefix
+        const edxUserID = value.createUser.substring(4);
         const user = cacheService.getEdxUserByID(edxUserID);
         if (user?.displayName) {
           value.createUser = user.displayName;
