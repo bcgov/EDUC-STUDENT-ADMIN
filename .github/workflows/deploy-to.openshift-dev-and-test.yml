@@ -33,10 +33,10 @@ env:
   TAG: "latest"
   MIN_REPLICAS_DEV: "1"
   MAX_REPLICAS_DEV: "2"
-  MIN_CPU: "300m"
+  MIN_CPU: "400m"
   MAX_CPU: "800m"
-  MIN_MEM: "250Mi"
-  MAX_MEM: "800Mi"
+  MIN_MEM: "600Mi"
+  MAX_MEM: "1000Mi"
   MIN_REPLICAS_TEST: "2"
   MAX_REPLICAS_TEST: "3"
 
