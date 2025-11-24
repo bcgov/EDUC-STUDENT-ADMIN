@@ -39,6 +39,39 @@ function checkUserHasPermission(permission) {
     }
   };
 }
+
+function checkUserHasAnyPermission(...permissions) {
+  return function(req, res, next) {
+    try {
+      const jwtToken = auth.getBackendUserToken(req);
+      if (!jwtToken) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'Unauthorized user'
+        });
+      }
+      let userToken;
+      try {
+        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      } catch (e) {
+        log.debug('error is from verify', e);
+        return res.status(HttpStatus.UNAUTHORIZED).json();
+      }
+
+      const userRoles = userToken['realm_access']?.roles || [];
+      const hasPermission = permissions.some(permission => userRoles.includes(permission));
+
+      if (hasPermission) {
+        return next();
+      }
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'User is missing role'
+      });
+    } catch (e) {
+      log.error(e);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
+  };
+}
   
 function hasPermissionToUpdateAuthority() {
   return function(req, res, next) {
@@ -433,6 +466,7 @@ const permUtils = {
   isAuthorized,
   checkIfRoleIsAllowedForSchool,
   checkUserRoleForNewUser,
+  checkUserHasAnyPermission
 };
 
 module.exports = permUtils;
