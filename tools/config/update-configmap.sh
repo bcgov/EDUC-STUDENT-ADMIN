@@ -697,7 +697,7 @@ echo Assigning permissions to VIEW_PSYCHOMETRICIAN_REPORT role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/VIEW_PSYCHOMETRICIAN_REPORT/composites" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "[$assessmentViewPsychometricianReportPermissionJson]"
+  -d "[$assessmentViewPsychometricianReportPermissionJson, $assessmentViewPermissionJson]"
 
 echo
 echo Creating VIEW_ASSESSMENTS role
