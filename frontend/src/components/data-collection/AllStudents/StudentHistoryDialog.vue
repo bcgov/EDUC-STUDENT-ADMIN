@@ -45,8 +45,12 @@
       <v-row
         v-else
         no-gutters
+        class="history-container"
       >
-        <v-col :cols="showRecordDetail ? 6 : 12">
+        <v-col
+          :cols="showRecordDetail ? 6 : 12"
+          class="table-column"
+        >
           <v-data-table
             v-model="selectedHistory"
             :headers="getHeaders()"
@@ -57,6 +61,7 @@
             class="history-table"
             density="compact"
             fixed-header
+            height="100%"
           >
             <template #no-data>
               <v-row no-gutters>
@@ -93,6 +98,7 @@
         <v-col
           v-if="showRecordDetail"
           cols="6"
+          class="detail-column"
         >
           <StudentHistoryDetailPanel
             :student-history="selectedStudentHistory"
@@ -249,9 +255,18 @@ export default {
   overflow: hidden;
 }
 
-#studentHistoryCard :deep(.v-card-text > .v-row) {
+.history-container {
   flex: 1;
   min-height: 0;
+  max-height: 100%;
+}
+
+.table-column,
+.detail-column {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hoverTable:hover {
@@ -264,18 +279,10 @@ export default {
 
 .history-table {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.history-table :deep(.v-table) {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .history-table :deep(.v-table__wrapper) {
-  flex: 1;
+  max-height: calc(70vh - 100px);
   overflow-y: auto;
 }
 </style>

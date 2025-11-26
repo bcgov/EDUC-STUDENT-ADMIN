@@ -611,7 +611,8 @@ export default {
 <style scoped>
 #studentHistoryDetailPanel {
   background-color: rgba(0, 0, 0, 0.06);
-  height: 80vh;
+  height: 100%;
+  max-height: calc(70vh - 100px);
   overflow-y: auto;
 }
 
