@@ -57,6 +57,7 @@
             v-model="selectedHistory"
             v-model:page="currentPage"
             v-model:items-per-page="pageSize"
+            v-model:sort-by="sortBy"
             :headers="getHeaders()"
             :items="historyData"
             :items-length="totalElements"
@@ -122,9 +123,9 @@
 
 <script>
 import ApiService from '@/common/apiService';
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import { formatIsoDateTime, formatDob, displayName } from '@/utils/format';
+import {displayName, formatDob, formatIsoDateTime} from '@/utils/format';
 import StudentHistoryDetailPanel from './StudentHistoryDetailPanel.vue';
 
 export default {
@@ -155,31 +156,37 @@ export default {
       totalElements: 0,
       previousPage: 1,
       previousPageSize: 15,
+      sortBy: [{ key: 'updateDate', order: 'desc' }],
+      previousSortBy: [{ key: 'updateDate', order: 'desc' }],
       fullHeaders: [
-        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
-        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
-        { title: 'Legal Name', key: 'legalName', value: 'legalName' },
-        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate', sortable: true },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser', sortable: true },
+        { title: 'Legal Name', key: 'legalName', value: 'legalName', sortable: false },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode', sortable: false }
       ],
       shortHeaders: [
-        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
-        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
-        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate', sortable: true },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser', sortable: true },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode', sortable: false }
       ]
     };
   },
   mounted() {
-    this.loadHistory();
+    this.loadHistory(0, 15, this.sortBy);
   },
   methods: {
-    async loadHistory(page = 0, itemsPerPage = 15) {
+    async loadHistory(page = 0, itemsPerPage = 15, sortBy = null) {
       this.loading = true;
       try {
+        const sortObj = sortBy && sortBy.length > 0
+          ? { [sortBy[0].key]: sortBy[0].order.toUpperCase() }
+          : { updateDate: 'DESC' };
+
         const params = {
           params: {
             pageNumber: page,
             pageSize: itemsPerPage,
-            sort: { updateDate: 'DESC' },
+            sort: sortObj,
             sdcSchoolCollectionStudentID: this.sdcSchoolCollectionStudentID
           }
         };
@@ -189,7 +196,10 @@ export default {
           params
         );
 
-        this.historyData = response.data.content || [];
+        this.historyData = (response.data.content || []).map(item => ({
+          ...item,
+          isSelected: false
+        }));
         this.totalElements = response.data.totalElements || 0;
         this.pageNumber = response.data.number || 0;
         this.pageSize = response.data.size || 15;
@@ -198,6 +208,7 @@ export default {
         // Update previous values to current loaded state
         this.previousPage = this.currentPage;
         this.previousPageSize = this.pageSize;
+        this.previousSortBy = sortBy && sortBy.length > 0 ? [...sortBy] : [{ key: 'updateDate', order: 'desc' }];
 
         // Only set student info and select first item on initial load
         if (this.historyData.length > 0 && page === 0 && !this.studentPen) {
@@ -219,12 +230,27 @@ export default {
         this.loading = false;
       }
     },
-    handlePageChange({ page, itemsPerPage }) {
+    handlePageChange({ page, itemsPerPage, sortBy }) {
       // v-data-table uses 1-based page numbers, backend uses 0-based
       const backendPage = page - 1;
-      // Only load if page or itemsPerPage actually changed from the last loaded state
-      if (page !== this.previousPage || itemsPerPage !== this.previousPageSize) {
-        this.loadHistory(backendPage, itemsPerPage);
+
+      // Use sortBy from event, fallback to current if empty
+      const effectiveSortBy = (sortBy && sortBy.length > 0) ? sortBy : this.sortBy;
+
+      // Check if anything changed from the last loaded state
+      const pageChanged = page !== this.previousPage;
+      const pageSizeChanged = itemsPerPage !== this.previousPageSize;
+
+      // Compare actual sort values, not Proxy objects
+      const currentSortKey = effectiveSortBy[0]?.key;
+      const currentSortOrder = effectiveSortBy[0]?.order;
+      const previousSortKey = this.previousSortBy[0]?.key;
+      const previousSortOrder = this.previousSortBy[0]?.order;
+      const sortChanged = currentSortKey !== previousSortKey || currentSortOrder !== previousSortOrder;
+
+      if (pageChanged || pageSizeChanged || sortChanged) {
+        // v-model:sort-by will update this.sortBy automatically
+        this.loadHistory(backendPage, itemsPerPage, effectiveSortBy);
       }
     },
     getHeaders() {
@@ -336,7 +362,7 @@ export default {
 }
 
 .history-table :deep(.v-table__wrapper) {
-  height: 80vh;
+  max-height: calc(80vh - 4vh);
   overflow-y: auto;
 }
 </style>
