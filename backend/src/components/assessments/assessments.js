@@ -447,6 +447,7 @@ function getFileDetails(reportType, session, mincode) {
     'ltp12-key-summary': { filename: `Key Summary-LTP12-${session}.csv`, contentType: 'text/csv' },
     'nme-key-summary': { filename: `Key Summary-NME10-${session}.csv`, contentType: 'text/csv' },
     'nmf-key-summary': { filename: `Key Summary-NMF10-${session}.csv`, contentType: 'text/csv' },
+    'doar-prov-summary': { filename: `ProvincialDOARSummary-${session}.pdf`, contentType: 'application/pdf' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
