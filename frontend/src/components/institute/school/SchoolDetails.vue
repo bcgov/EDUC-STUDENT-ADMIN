@@ -381,7 +381,8 @@ export default {
       return this.independentArray.includes(this.school?.schoolCategoryCode) && this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_SCHOOL_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
     },
     canViewGradTabs() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY;
+      console.log(this.school?.schoolCategoryCode);
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.VIEW_GRAD_DATA_COLLECTION_PERMISSION) && !this.config.DISABLE_SDC_FUNCTIONALITY && this.school?.schoolCategoryCode !== 'POST_SEC';
     },
     saveNewSchoolNote(schoolNote) {
       this.noteRequestCount += 1;
