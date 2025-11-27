@@ -60,7 +60,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission"
+                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'analysis_user')"
                   />
                 </td>
@@ -76,7 +76,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalAssessmentDesignSignDate || !hasProvincialAssessmentApproverPermission"
+                    :disabled="!!session.approvalAssessmentDesignSignDate || !hasProvincialAssessmentApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'design_user')"
                   />
                 </td>
@@ -92,7 +92,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission"
+                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
                     @click="handleApprovalConfirmation(session, 'cert_user')"
                   />
                 </td>
@@ -147,6 +147,21 @@ export default {
   computed: {
     ...mapState(authStore, ['userInfo']),
     mostCurrentSession() {
+      const unapprovedSessions = this.schoolYearSessions.filter(session => {
+        return !session.approvalStudentCertSignDate ||
+               !session.approvalAssessmentDesignSignDate ||
+               !session.approvalAssessmentAnalysisSignDate;
+      });
+
+      if (unapprovedSessions.length > 0) {
+        return unapprovedSessions.reduce((earliest, current) => {
+          const earliestDate = new Date(`${earliest.courseYear}-${earliest.courseMonth.padStart(2, '0')}-01`);
+          const currentDate = new Date(`${current.courseYear}-${current.courseMonth.padStart(2, '0')}-01`);
+          return currentDate < earliestDate ? current : earliest;
+        });
+      }
+
+      // If all sessions are approved, fallback to the most recent session by date
       return this.schoolYearSessions.reduce((latest, current) => {
         const latestDate = new Date(`${latest.courseYear}-${latest.courseMonth.padStart(2, '0')}-01`);
         const currentDate = new Date(`${current.courseYear}-${current.courseMonth.padStart(2, '0')}-01`);
