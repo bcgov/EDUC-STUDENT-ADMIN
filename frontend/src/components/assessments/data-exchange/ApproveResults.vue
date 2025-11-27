@@ -60,7 +60,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
+                    :disabled="!!session.approvalAssessmentAnalysisSignDate || !hasAnalysisAndReportingApproverPermission"
                     @click="handleApprovalConfirmation(session, 'analysis_user')"
                   />
                 </td>
@@ -76,7 +76,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalAssessmentDesignSignDate || !hasProvincialAssessmentApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
+                    :disabled="!!session.approvalAssessmentDesignSignDate || !hasProvincialAssessmentApproverPermission"
                     @click="handleApprovalConfirmation(session, 'design_user')"
                   />
                 </td>
@@ -92,7 +92,7 @@
                     variant="elevated"
                     color="#003366"
                     text="Approve Results"
-                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission || session.sessionID !== mostCurrentSession.sessionID"
+                    :disabled="!!session.approvalStudentCertSignDate || !hasStudentCertificationApproverPermission"
                     @click="handleApprovalConfirmation(session, 'cert_user')"
                   />
                 </td>
