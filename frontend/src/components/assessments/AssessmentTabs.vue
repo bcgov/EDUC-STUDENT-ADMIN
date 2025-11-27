@@ -124,7 +124,7 @@
             reverse-transition="false"
           >
             <AssessmentReports 
-              :school-year-sessions="approvedSessions"
+              :school-year-sessions="allSessionInLastTwoYears"
             />
           </v-window-item>
         </v-window>
@@ -167,7 +167,8 @@ export default {
       tab: '',
       selectedSessionForSummary: null,
       approvedSessions: [],
-      allSessions: []
+      allSessions: [],
+      allSessionInLastTwoYears: []
     };
   },
   computed: {
@@ -204,6 +205,7 @@ export default {
             return dateA.compareTo(dateB);
           });
           this.approvedSessions = allSessions.filter(session => session.completionDate !== null && parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
+          this.allSessionInLastTwoYears = allSessions.filter(session => parseInt(session.courseYear) >= LocalDate.now().minusYears(2).year());
         })
         .catch((error) => {
           console.error(error);

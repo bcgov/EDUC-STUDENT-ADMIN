@@ -117,7 +117,22 @@
           item-value="value"
           :rules="[rules.required()]"
           :clearable="true"
-        />
+        >
+          <template #selection="{ item }">
+            <span> {{ item.title }} </span>
+          </template>
+          <template #item="{props, item}">
+            <v-list-item
+              v-bind="props"
+            >
+            <template v-slot:append>
+              <v-chip v-if="item?.raw?.isOpen" color="info">
+                Ongoing
+              </v-chip>
+            </template>
+            </v-list-item>
+          </template>
+        </v-select>
       </v-col>
     </v-row>
     <v-row>
@@ -128,24 +143,20 @@
         >
           <v-card
             class="mt-2"
-            width="4S0em"
+            width="30em"
             border="sm"
             style="border: 1px solid black;border-radius: 10px;"
           >
             <v-card-title style="font-size: medium;">
-              <v-row>
-                <v-col class="d-flex justify-start">
-                  Other Reports
-                </v-col>
-              </v-row>
+              Other Reports
             </v-card-title>
             <v-row class="pl-3 pb-3">
               <v-col
                 cols="12"
               >
                 <DownloadLink
-                  label="Yukon Assessment Counts for Invoice.csv"
-                  :download-action="() => downloadYukonCountsReport()"
+                  label="Provincial DOAR Summary.pdf"
+                  :download-action="() => downloadReport('doar-prov-summary')"
                 />
               </v-col>
             </v-row>
@@ -167,11 +178,7 @@
             style="border: 1px solid black;border-radius: 10px;"
           >
             <v-card-title style="font-size: medium;">
-              <v-row>
-                <v-col class="d-flex justify-start">
-                  Data for Item Analysis
-                </v-col>
-              </v-row>
+              Data for Item Analysis
             </v-card-title>
             <v-row class="pl-3 pb-3">
               <v-col
@@ -293,6 +300,7 @@ export default {
         this.sessions.push({
           title: session.courseMonth + '/' + session.courseYear,
           value: session.sessionID,
+          isOpen: session.isOpen
         });
       });
       this.selectedSessionID = this.sessions[0].value;
@@ -349,9 +357,6 @@ export default {
         this.isLoading = false;
       }
     },
-    async downloadYukonCountsReport() {
-      
-    },
     async downloadReport(type) {
       try {
         let selection = this.schoolYearSessions.filter(session => session.sessionID === this.selectedSessionID);
@@ -377,12 +382,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-    },
-    async downloadGradProjections(){
-
-    },
-    async downloadSummaryDOAR() {
-
     }
   },
 };
