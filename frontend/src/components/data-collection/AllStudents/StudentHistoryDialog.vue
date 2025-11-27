@@ -332,11 +332,11 @@ export default {
 }
 
 .history-table {
-  height: 100%;
+  height: 80vh;
 }
 
 .history-table :deep(.v-table__wrapper) {
-  max-height: calc(80vh - 100px);
+  height: 80vh;
   overflow-y: auto;
 }
 </style>
