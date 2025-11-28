@@ -22,14 +22,15 @@
       </v-row>
     </v-card-title>
     <v-divider />
-    <v-card-text class="pa-0">
+    <v-card-text class="pa-0 content-area">
       <v-progress-linear
         v-if="loading"
         indeterminate
         color="primary"
+        class="loading-bar"
       />
       <v-row
-        v-else-if="historyData.length === 0"
+        v-if="!loading && historyData.length === 0"
         no-gutters
         class="pa-4"
       >
@@ -43,20 +44,35 @@
         </v-col>
       </v-row>
       <v-row
-        v-else
+        v-show="historyData.length > 0"
         no-gutters
+        class="history-container"
+        :class="{ 'loading-overlay': loading }"
       >
-        <v-col :cols="showRecordDetail ? 6 : 12">
-          <v-data-table
+        <v-col
+          :cols="showRecordDetail ? 6 : 12"
+          class="table-column"
+        >
+          <v-data-table-server
             v-model="selectedHistory"
+            v-model:page="currentPage"
+            v-model:items-per-page="pageSize"
+            v-model:sort-by="sortBy"
             :headers="getHeaders()"
             :items="historyData"
-            :items-per-page="25"
-            :items-per-page-options="[{ value: 25, title: '25' }]"
+            :items-length="totalElements"
+            :items-per-page-options="[
+              { value: 15, title: '15' },
+              { value: 25, title: '25' },
+              { value: 50, title: '50' },
+              { value: 100, title: '100' }
+            ]"
             :sort-by="[{ key: 'updateDate', order: 'desc' }]"
             class="history-table"
             density="compact"
             fixed-header
+            height="100%"
+            @update:options="handlePageChange"
           >
             <template #no-data>
               <v-row no-gutters>
@@ -88,11 +104,12 @@
                 </td>
               </tr>
             </template>
-          </v-data-table>
+          </v-data-table-server>
         </v-col>
         <v-col
           v-if="showRecordDetail"
           cols="6"
+          class="detail-column"
         >
           <StudentHistoryDetailPanel
             :student-history="selectedStudentHistory"
@@ -106,9 +123,9 @@
 
 <script>
 import ApiService from '@/common/apiService';
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import { formatIsoDateTime, formatDob, displayName } from '@/utils/format';
+import {displayName, formatDob, formatIsoDateTime} from '@/utils/format';
 import StudentHistoryDetailPanel from './StudentHistoryDetailPanel.vue';
 
 export default {
@@ -133,31 +150,43 @@ export default {
       selectedStudentHistory: null,
       studentPen: '',
       studentName: '',
+      currentPage: 1,
+      pageNumber: 0,
+      pageSize: 15,
+      totalElements: 0,
+      previousPage: 1,
+      previousPageSize: 15,
+      sortBy: [{ key: 'updateDate', order: 'desc' }],
+      previousSortBy: [{ key: 'updateDate', order: 'desc' }],
       fullHeaders: [
-        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
-        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
-        { title: 'Legal Name', key: 'legalName', value: 'legalName' },
-        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate', sortable: true },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser', sortable: true },
+        { title: 'Legal Name', key: 'legalName', value: 'legalName', sortable: false },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode', sortable: false }
       ],
       shortHeaders: [
-        { title: 'Updated Date', key: 'updateDate', value: 'updateDate' },
-        { title: 'Updated By', key: 'updateUser', value: 'updateUser' },
-        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode' }
+        { title: 'Updated Date', key: 'updateDate', value: 'updateDate', sortable: true },
+        { title: 'Updated By', key: 'updateUser', value: 'updateUser', sortable: true },
+        { title: 'Status', key: 'sdcSchoolCollectionStudentStatusCode', value: 'sdcSchoolCollectionStudentStatusCode', sortable: false }
       ]
     };
   },
   mounted() {
-    this.loadHistory();
+    this.loadHistory(0, 15, this.sortBy);
   },
   methods: {
-    async loadHistory() {
+    async loadHistory(page = 0, itemsPerPage = 15, sortBy = null) {
       this.loading = true;
       try {
+        const sortObj = sortBy && sortBy.length > 0
+          ? { [sortBy[0].key]: sortBy[0].order.toUpperCase() }
+          : { updateDate: 'DESC' };
+
         const params = {
           params: {
-            pageNumber: 0,
-            pageSize: 100,
-            sort: { updateDate: 'DESC' },
+            pageNumber: page,
+            pageSize: itemsPerPage,
+            sort: sortObj,
             sdcSchoolCollectionStudentID: this.sdcSchoolCollectionStudentID
           }
         };
@@ -167,9 +196,22 @@ export default {
           params
         );
 
-        this.historyData = response.data.content || [];
+        this.historyData = (response.data.content || []).map(item => ({
+          ...item,
+          isSelected: false
+        }));
+        this.totalElements = response.data.totalElements || 0;
+        this.pageNumber = response.data.number || 0;
+        this.pageSize = response.data.size || 15;
+        this.currentPage = (response.data.number || 0) + 1; // Convert to 1-based for UI
 
-        if (this.historyData.length > 0) {
+        // Update previous values to current loaded state
+        this.previousPage = this.currentPage;
+        this.previousPageSize = this.pageSize;
+        this.previousSortBy = sortBy && sortBy.length > 0 ? [...sortBy] : [{ key: 'updateDate', order: 'desc' }];
+
+        // Only set student info and select first item on initial load
+        if (this.historyData.length > 0 && page === 0 && !this.studentPen) {
           this.studentPen = this.historyData[0].studentPen || 'Unknown';
           this.studentName = displayName(
             this.historyData[0].legalFirstName,
@@ -183,8 +225,32 @@ export default {
         console.error('Error fetching student history:', error);
         this.setFailureAlert('An error occurred while loading student history. Please try again later.');
         this.historyData = [];
+        this.totalElements = 0;
       } finally {
         this.loading = false;
+      }
+    },
+    handlePageChange({ page, itemsPerPage, sortBy }) {
+      // v-data-table uses 1-based page numbers, backend uses 0-based
+      const backendPage = page - 1;
+
+      // Use sortBy from event, fallback to current if empty
+      const effectiveSortBy = (sortBy && sortBy.length > 0) ? sortBy : this.sortBy;
+
+      // Check if anything changed from the last loaded state
+      const pageChanged = page !== this.previousPage;
+      const pageSizeChanged = itemsPerPage !== this.previousPageSize;
+
+      // Compare actual sort values, not Proxy objects
+      const currentSortKey = effectiveSortBy[0]?.key;
+      const currentSortOrder = effectiveSortBy[0]?.order;
+      const previousSortKey = this.previousSortBy[0]?.key;
+      const previousSortOrder = this.previousSortBy[0]?.order;
+      const sortChanged = currentSortKey !== previousSortKey || currentSortOrder !== previousSortOrder;
+
+      if (pageChanged || pageSizeChanged || sortChanged) {
+        // v-model:sort-by will update this.sortBy automatically
+        this.loadHistory(backendPage, itemsPerPage, effectiveSortBy);
       }
     },
     getHeaders() {
@@ -228,8 +294,7 @@ export default {
 <style scoped>
 #studentHistoryCard {
   background-color: #f1f1f1;
-  min-height: 70vh;
-  max-height: 85vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
 }
@@ -249,9 +314,39 @@ export default {
   overflow: hidden;
 }
 
-#studentHistoryCard :deep(.v-card-text > .v-row) {
+.content-area {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.loading-overlay {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.history-container {
   flex: 1;
   min-height: 0;
+  max-height: 100%;
+}
+
+.table-column,
+.detail-column {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hoverTable:hover {
@@ -263,19 +358,11 @@ export default {
 }
 
 .history-table {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.history-table :deep(.v-table) {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  height: 80vh;
 }
 
 .history-table :deep(.v-table__wrapper) {
-  flex: 1;
+  max-height: calc(80vh - 4vh);
   overflow-y: auto;
 }
 </style>
