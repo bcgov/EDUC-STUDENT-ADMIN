@@ -862,6 +862,35 @@ echo Removing student-admin-service if exists
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID" \
   -H "Authorization: Bearer $TKN"
 
+# Function to retry API calls with exponential backoff
+retry_get_json() {
+  local url=$1
+  local description=$2
+  local max_attempts=10
+  local attempt=1
+  local delay=1
+  local result=""
+
+  while [ $attempt -le $max_attempts ]; do
+    result=$(curl -s "$url" \
+      -H "Authorization: Bearer $TKN" \
+      -H "Content-Type: application/json")
+
+    if [[ -n "$result" && "$result" != "null" && ! "$result" =~ "error" ]]; then
+      echo "$result"
+      return 0
+    fi
+
+    echo "Attempt $attempt/$max_attempts failed for $description, retrying in ${delay}s..." >&2
+    sleep $delay
+    attempt=$((attempt + 1))
+    delay=$((delay * 2))
+  done
+
+  echo "ERROR: Failed to retrieve $description after $max_attempts attempts" >&2
+  return 1
+}
+
 if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSecret" != "null" && "$studentAdminServiceClientSecret" != null) && ("$envValue" = "tools" || "$envValue" = "dev") ]]; then
   echo
   echo Creating client student-admin-service with secret
@@ -872,27 +901,39 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
 
   echo
   echo "Retrieving realm-management client ID"
-  realmMgmtClientID=$(curl -s \
+  realmMgmtClientID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=realm-management" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "realm-management client ID" \
     | jq -r '.[0].id')
+
+  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve realm-management client ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving student-admin-service client ID (post-create)"
-  studentAdminServiceClientID=$(curl -s \
+  studentAdminServiceClientID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "student-admin-service client ID" \
     | jq -r '.[0].id')
+
+  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve student-admin-service client ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving service account user for student-admin-service"
-  studentAdminServiceSAUserID=$(curl -s \
+  studentAdminServiceSAUserID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "service account user ID" \
     | jq -r '.id')
+
+  if [[ -z "$studentAdminServiceSAUserID" || "$studentAdminServiceSAUserID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve service account user ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving realm-management roles view-users and query-users"
@@ -938,27 +979,39 @@ else
 
   echo
   echo "Retrieving realm-management client ID"
-  realmMgmtClientID=$(curl -s \
+  realmMgmtClientID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=realm-management" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "realm-management client ID" \
     | jq -r '.[0].id')
+
+  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve realm-management client ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving student-admin-service client ID (post-create)"
-  studentAdminServiceClientID=$(curl -s \
+  studentAdminServiceClientID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "student-admin-service client ID" \
     | jq -r '.[0].id')
+
+  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve student-admin-service client ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving service account user for student-admin-service"
-  studentAdminServiceSAUserID=$(curl -s \
+  studentAdminServiceSAUserID=$(retry_get_json \
     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
+    "service account user ID" \
     | jq -r '.id')
+
+  if [[ -z "$studentAdminServiceSAUserID" || "$studentAdminServiceSAUserID" == "null" ]]; then
+    echo "ERROR: Failed to retrieve service account user ID"
+    exit 1
+  fi
 
   echo
   echo "Retrieving realm-management roles view-users and query-users"
