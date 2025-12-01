@@ -206,6 +206,12 @@ cacheService.loadAllEdxUsersToMap().then(() => {
   log.error('Error loading EDX Users during boot.', e);
 });
 
+cacheService.loadAllIdirUsersToMap().then(() => {
+  log.info('Loaded IDIR Users to memory.');
+}).catch((e) => {
+  log.error('Error loading IDIR Users during boot.', e);
+});
+
 WS.init(app, server);
 
 /**

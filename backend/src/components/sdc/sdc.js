@@ -309,6 +309,12 @@ async function getSDCSchoolCollectionStudentHistoryPaginated(req, res) {
           if (displayName) {
             value[field] = displayName;
           }
+        } else if (value[field]?.startsWith('ADMIN/')) {
+          const userId = value[field].substring(6);
+          const idirUsername = cacheService.getIdirUserById(userId);
+          if (idirUsername) {
+            value[field] = idirUsername;
+          }
         }
       });
 
