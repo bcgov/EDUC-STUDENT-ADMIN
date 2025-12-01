@@ -174,6 +174,9 @@ nconf.defaults({
     gradStudent: {
       rootURL: process.env.GRAD_STUDENT_URL
     },
+    keycloak: {
+      idirUsersURL: process.env.KC_DOMAIN ? process.env.KC_DOMAIN.replace('/auth/realms/master', '/auth/admin/realms/master/users?q=account_type:idir') : undefined
+    },
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
