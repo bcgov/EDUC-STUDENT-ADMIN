@@ -259,6 +259,13 @@ export default {
       return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
     },
     getRegistrationStatus(session) {
+      if(session.approvalInFlight){
+        return {
+          color: 'warning',
+          text: 'Processing Approval'
+        };
+      }
+      
       if (session.approvalStudentCertSignDate &&
           session.approvalAssessmentDesignSignDate &&
           session.approvalAssessmentAnalysisSignDate) {
