@@ -902,9 +902,9 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
   echo
   echo "Retrieving realm-management client ID"
   realmMgmtClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=realm-management" \
-    "realm-management client ID" \
-    | jq -r '.[0].id')
+    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+    "clients list" \
+    | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
 
   if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
     echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
@@ -913,9 +913,9 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
   echo
   echo "Retrieving student-admin-service client ID (post-create)"
   studentAdminServiceClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
-    "student-admin-service client ID" \
-    | jq -r '.[0].id')
+    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+    "clients list" \
+    | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
 
   if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
     echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
@@ -979,26 +979,9 @@ else
   echo
   echo "Retrieving realm-management client ID"
   realmMgmtClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=realm-management" \
-    "realm-management client ID" \
-    | jq -r '.[0].id')
-
-  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve realm-management client ID"
-    exit 1
-  fi
-
-  echo
-  echo "Retrieving student-admin-service client ID (post-create)"
-  studentAdminServiceClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
-    "student-admin-service client ID" \
-    | jq -r '.[0].id')
-
-  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve student-admin-service client ID"
-    exit 1
-  fi
+    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+    "clients list" \
+    | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
 
   if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
     echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
@@ -1007,8 +990,15 @@ else
   echo
   echo "Retrieving student-admin-service client ID (post-create)"
   studentAdminServiceClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
-    "student-admin-service client ID" \
+    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+    "clients list" \
+    | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
+
+  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
+    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
+  fi
+
+  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
     | jq -r '.[0].id')
 
   if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
