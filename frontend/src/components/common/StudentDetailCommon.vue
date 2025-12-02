@@ -136,7 +136,7 @@
             :model="traxStatus"
             :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
             colspan="1"
-            label="TRAX Status"
+            label="GRAD Status"
             :loading="loadingTraxData"
             :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"
           />
@@ -1584,7 +1584,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the GRAD status. Please try again later.');
         })
         .finally(() => {
           this.loadingTraxData = false;
