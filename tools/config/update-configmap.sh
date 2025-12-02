@@ -878,6 +878,7 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
+   echo "DEBUG: realmMgmtClientID = $realmMgmtClientID"
 
    echo
    echo "Retrieving student-admin-service client ID (post-create)"
@@ -886,6 +887,7 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
+   echo "DEBUG: studentAdminServiceClientID = $studentAdminServiceClientID"
 
    echo
    echo "Retrieving service account user for student-admin-service"
@@ -894,6 +896,7 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq -r '.id')
+   echo "DEBUG: studentAdminServiceSAUserID = $studentAdminServiceSAUserID"
 
    echo
    echo "Retrieving realm-management roles view-users and query-users"
@@ -944,6 +947,7 @@ else
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
+   echo "DEBUG: realmMgmtClientID = $realmMgmtClientID"
 
    echo
    echo "Retrieving student-admin-service client ID (post-create)"
@@ -952,6 +956,7 @@ else
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
+   echo "DEBUG: studentAdminServiceClientID = $studentAdminServiceClientID"
 
    echo
    echo "Retrieving service account user for student-admin-service"
@@ -960,6 +965,7 @@ else
      -H "Authorization: Bearer $TKN" \
      -H "Content-Type: application/json" \
      | jq -r '.id')
+   echo "DEBUG: studentAdminServiceSAUserID = $studentAdminServiceSAUserID"
 
    echo
    echo "Retrieving realm-management roles view-users and query-users"
