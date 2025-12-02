@@ -138,7 +138,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.penMatchResult || '-' }}
+              {{ studentHistory.mappedPenMatchResult || studentHistory.penMatchResult || '-' }}
             </v-col>
           </v-row>
 
@@ -228,7 +228,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.numberOfCourses || '-' }}
+              {{ studentHistory.mappedNoOfCourses || studentHistory.numberOfCourses || '-' }}
             </v-col>
           </v-row>
 
@@ -258,7 +258,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.enrolledProgramCodes || '-' }}
+              {{ studentHistory.mappedLanguageEnrolledProgram || studentHistory.enrolledProgramCodes || '-' }}
             </v-col>
           </v-row>
 
@@ -273,7 +273,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.careerProgramCode || '-' }}
+              {{ studentHistory.mappedCareerProgramCode || studentHistory.careerProgramCode || '-' }}
             </v-col>
           </v-row>
 
@@ -288,7 +288,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.specialEducationCategoryCode || '-' }}
+              {{ studentHistory.mappedSpedCode || studentHistory.specialEducationCategoryCode || '-' }}
             </v-col>
           </v-row>
 
@@ -303,7 +303,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.schoolFundingCode || '-' }}
+              {{ studentHistory.mappedSchoolFunding || studentHistory.schoolFundingCode || '-' }}
             </v-col>
           </v-row>
 
@@ -318,7 +318,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.nativeAncestryInd === 'Y' ? 'Yes' : studentHistory.nativeAncestryInd === 'N' ? 'No' : '-' }}
+              {{ studentHistory.mappedAncestryIndicator || studentHistory.nativeAncestryInd || '-' }}
             </v-col>
           </v-row>
 
@@ -333,7 +333,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.homeLanguageSpokenCode || '-' }}
+              {{ studentHistory.mappedHomelanguageCode || studentHistory.homeLanguageSpokenCode || '-' }}
             </v-col>
           </v-row>
 
@@ -348,7 +348,7 @@
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.bandCode || '-' }}
+              {{ studentHistory.mappedBandCode || studentHistory.bandCode || '-' }}
             </v-col>
           </v-row>
 
@@ -432,13 +432,13 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
-              French Ineligibility:
+              French Program Eligible:
             </v-col>
             <v-col
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.frenchProgramNonEligReasonCode || '-' }}
+              {{ studentHistory.frenchProgramEligible || '-' }}
             </v-col>
           </v-row>
 
@@ -447,13 +447,13 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
-              ELL Ineligibility:
+              ELL Program Eligible:
             </v-col>
             <v-col
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.ellNonEligReasonCode || '-' }}
+              {{ studentHistory.ellProgramEligible || '-' }}
             </v-col>
           </v-row>
 
@@ -462,13 +462,13 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
-              Indigenous Ineligibility:
+              Indigenous Program Eligible:
             </v-col>
             <v-col
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.indigenousSupportProgramNonEligReasonCode || '-' }}
+              {{ studentHistory.indProgramEligible || '-' }}
             </v-col>
           </v-row>
 
@@ -477,13 +477,13 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
-              Career Ineligibility:
+              Career Program Eligible:
             </v-col>
             <v-col
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.careerProgramNonEligReasonCode || '-' }}
+              {{ studentHistory.careerProgramEligible || '-' }}
             </v-col>
           </v-row>
 
@@ -492,13 +492,13 @@
               cols="4"
               class="pb-0 pt-0 field-label"
             >
-              Special Ed Ineligibility:
+              Special Ed Program Eligible:
             </v-col>
             <v-col
               cols="8"
               class="pb-0 pt-0"
             >
-              {{ studentHistory.specialEducationNonEligReasonCode || '-' }}
+              {{ studentHistory.spedProgramEligible || '-' }}
             </v-col>
           </v-row>
 
