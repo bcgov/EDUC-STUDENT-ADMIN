@@ -862,34 +862,6 @@ echo Removing student-admin-service if exists
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID" \
   -H "Authorization: Bearer $TKN"
 
-# Function to retry API calls with exponential backoff
-retry_get_json() {
-  local url=$1
-  local description=$2
-  local max_attempts=10
-  local attempt=1
-  local delay=1
-  local result=""
-
-  while [ $attempt -le $max_attempts ]; do
-    result=$(curl -s "$url" \
-      -H "Authorization: Bearer $TKN" \
-      -H "Content-Type: application/json")
-
-    if [[ -n "$result" && "$result" != "null" && "$result" != "[]" && ! "$result" =~ "error" ]]; then
-      echo "$result"
-      return 0
-    fi
-
-    echo "Attempt $attempt/$max_attempts failed for $description (got: ${result:0:100}), retrying in ${delay}s..." >&2
-    sleep $delay
-    attempt=$((attempt + 1))
-    delay=$((delay * 2))
-  done
-
-  echo "WARNING: Failed to retrieve $description after $max_attempts attempts, continuing anyway" >&2
-  return 1
-}
 
 if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSecret" != "null" && "$studentAdminServiceClientSecret" != null) && ("$envValue" = "tools" || "$envValue" = "dev") ]]; then
   echo
@@ -899,75 +871,64 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
     -H "Authorization: Bearer $TKN" \
     -d "{ \"clientId\" : \"student-admin-service\",\"secret\" : \"$studentAdminServiceClientSecret\", \"name\" : \"Student Admin Service Client\", \"description\" : \"Student admin user which logs into SOAM\", \"surrogateAuthRequired\" : false, \"enabled\" : true, \"clientAuthenticatorType\" : \"client-secret\", \"redirectUris\" : [ ], \"webOrigins\" : [ ], \"notBefore\" : 0, \"bearerOnly\" : false, \"consentRequired\" : false, \"standardFlowEnabled\" : false, \"implicitFlowEnabled\" : false, \"directAccessGrantsEnabled\" : false, \"serviceAccountsEnabled\" : true, \"publicClient\" : false, \"frontchannelLogout\" : false, \"protocol\" : \"openid-connect\", \"attributes\" : { \"saml.assertion.signature\" : \"false\", \"saml.multivalued.roles\" : \"false\", \"saml.force.post.binding\" : \"false\", \"saml.encrypt\" : \"false\", \"saml.server.signature\" : \"false\", \"saml.server.signature.keyinfo.ext\" : \"false\", \"exclude.session.state.from.auth.response\" : \"false\", \"saml_force_name_id_format\" : \"false\", \"saml.client.signature\" : \"false\", \"tls.client.certificate.bound.access.tokens\" : \"false\", \"saml.authnstatement\" : \"false\", \"display.on.consent.screen\" : \"false\", \"saml.onetimeuse.condition\" : \"false\" }, \"authenticationFlowBindingOverrides\" : { }, \"fullScopeAllowed\" : true, \"nodeReRegistrationTimeout\" : -1, \"protocolMappers\" : [ ], \"defaultClientScopes\" : [ \"web-origins\", \"role_list\", \"SEND_PEN_REQUEST_EMAIL\", \"WRITE_PEN_REQUEST\", \"profile\", \"roles\", \"email\", \"READ_PEN_REQUEST\", \"READ_PEN_REQUEST_STATUSES\", \"READ_PEN_DEMOGRAPHICS\", \"WRITE_DIGITALID\", \"READ_DIGITALID\", \"WRITE_STUDENT\", \"READ_STUDENT\", \"READ_STUDENT_CODES\", \"READ_DIGITALID_CODETABLE\", \"READ_DOCUMENT\", \"READ_DOCUMENT_TYPES\", \"WRITE_DOCUMENT\", \"READ_SDC_MINISTRY_REPORTS\", \"READ_STUDENT_PROFILE\", \"WRITE_STUDENT_PROFILE\", \"READ_DOCUMENT_STUDENT_PROFILE\", \"WRITE_DOCUMENT_STUDENT_PROFILE\", \"READ_DOCUMENT_TYPES_STUDENT_PROFILE\", \"READ_STUDENT_PROFILE_STATUSES\", \"READ_STUDENT_PROFILE_CODES\", \"SEND_STUDENT_PROFILE_EMAIL\",\"PEN_REQUEST_UNLINK_SAGA\",\"PEN_REQUEST_REJECT_SAGA\",\"READ_SECURE_EXCHANGE_DOCUMENT_REQUIREMENTS\", \"PEN_REQUEST_RETURN_SAGA\",\"PEN_REQUEST_COMPLETE_SAGA\",\"STUDENT_PROFILE_COMPLETE_SAGA\",\"STUDENT_PROFILE_REJECT_SAGA\",\"STUDENT_PROFILE_RETURN_SAGA\", \"READ_PEN_REQUEST_BATCH\", \"READ_PEN_MATCH\", \"WRITE_PEN_REQUEST_BATCH\", \"STUDENT_PROFILE_READ_SAGA\", \"GET_NEXT_PEN_NUMBER\", \"VALIDATE_STUDENT_DEMOGRAPHICS\",\"PEN_REQUEST_BATCH_NEW_PEN_SAGA\",\"PEN_REQUEST_BATCH_USER_MATCH_SAGA\",\"PEN_REQUEST_BATCH_READ_SAGA\", \"READ_VALIDATION_CODES\", \"READ_STUDENT_HISTORY\", \"READ_NICKNAMES\", \"READ_SCHOOL_FUNDING_GROUP_SNAPSHOT\", \"READ_SCHOOL\", \"READ_PEN_TRAX\", \"READ_SLD_STUDENT\",\"WRITE_POSSIBLE_MATCH\",\"DELETE_POSSIBLE_MATCH\",\"READ_POSSIBLE_MATCH\",\"READ_STUDENT_MERGE\" ,\"WRITE_STUDENT_MERGE\",\"READ_STUDENT_MERGE_CODES\",\"STUDENT_MERGE_COMPLETE_SAGA\",\"STUDENT_DEMERGE_COMPLETE_SAGA\",\"PEN_SERVICES_READ_SAGA\",\"READ_PEN_REQUEST_BATCH_BLOB\",\"STUDENT_SPLIT_PEN_SAGA\", \"PEN_REQUEST_BATCH_ARCHIVE_SAGA\", \"PEN_REQUEST_BATCH_REPOST_SAGA\", \"READ_PEN_COORDINATOR\", \"WRITE_PEN_COORDINATOR\", \"READ_PEN_MACRO\", \"WRITE_PEN_MACRO\", \"MACRO_READ_SAGA\",\"READ_PEN_REQUEST_STATS\", \"READ_STUDENT_PROFILE_STATS\", \"STUDENT_MOVE_SLD_SAGA\", \"NOMINAL_ROLL_READ_STUDENT\", \"NOMINAL_ROLL_WRITE_STUDENT\", \"NOMINAL_ROLL_DELETE_STUDENT\", \"NOMINAL_ROLL_UPLOAD_FILE\", \"NOMINAL_ROLL_VALIDATE\", \"NOMINAL_ROLL_POST_DATA_SAGA\", \"NOMINAL_ROLL_READ_SAGA\", \"READ_FED_PROV_CODE\", \"WRITE_FED_PROV_CODE\", \"NOMINAL_ROLL_CREATE_FED_PROV\", \"READ_SECURE_EXCHANGE\", \"WRITE_SECURE_EXCHANGE\", \"READ_SECURE_EXCHANGE_DOCUMENT\", \"WRITE_SECURE_EXCHANGE_DOCUMENT\", \"DELETE_SECURE_EXCHANGE_DOCUMENT\", \"READ_SECURE_EXCHANGE_CODES\", \"READ_SECURE_EXCHANGE_DOCUMENT_TYPES\", \"READ_SECURE_EXCHANGE_STATUSES\", \"READ_MINISTRY_TEAMS\", \"READ_EDX_USER_SCHOOLS\", \"DELETE_SECURE_EXCHANGE\", \"READ_EDX_USERS\", \"READ_PRIMARY_ACTIVATION_CODE\", \"WRITE_EDX_USER_SCHOOL\", \"WRITE_PRIMARY_ACTIVATION_CODE\", \"SCHOOL_USER_ACTIVATION_INVITE_SAGA\", \"CREATE_SECURE_EXCHANGE_SAGA\" , \"DELETE_EDX_USER_SCHOOL\", \"WRITE_EDX_USER_DISTRICT\", \"DELETE_EDX_USER_DISTRICT\", \"CREATE_SECURE_EXCHANGE_COMMENT_SAGA\", \"READ_DISTRICT\", \"WRITE_DISTRICT_CONTACT\", \"DISTRICT_USER_ACTIVATION_INVITE_SAGA\", \"DISTRICT_USER_ACTIVATION_INVITE_SAGA\", \"DELETE_SECURE_EXCHANGE_NOTE\", \"WRITE_SECURE_EXCHANGE_NOTE\", \"READ_SECURE_EXCHANGE_NOTE\", \"DELETE_SECURE_EXCHANGE_COMMENT\", \"WRITE_SECURE_EXCHANGE_COMMENT\", \"READ_SECURE_EXCHANGE_COMMENT\", \"DELETE_SECURE_EXCHANGE_STUDENT\", \"WRITE_SECURE_EXCHANGE_STUDENT\", \"READ_SECURE_EXCHANGE_STUDENT\", \"READ_INSTITUTE_CODES\", \"READ_INDEPENDENT_AUTHORITY\", \"WRITE_INDEPENDENT_AUTHORITY\", \"READ_SCHOOL_NOTE\", \"WRITE_SCHOOL_NOTE\", \"DELETE_SCHOOL_NOTE\", \"WRITE_SCHOOL_CONTACT\", \"WRITE_INDEPENDENT_AUTHORITY_CONTACT\", \"READ_INDEPENDENT_AUTHORITY_NOTE\", \"WRITE_INDEPENDENT_AUTHORITY_NOTE\", \"DELETE_INDEPENDENT_AUTHORITY_NOTE\", \"WRITE_SCHOOL\", \"WRITE_DISTRICT\", \"READ_DISTRICT_NOTE\", \"WRITE_DISTRICT_NOTE\", \"DELETE_DISTRICT_NOTE\", \"READ_SCHOOL_HISTORY\",\"MOVE_SCHOOL_SAGA\", \"CREATE_SCHOOL_SAGA\", \"READ_SCHOOL_CONTACT\", \"READ_DISTRICT_CONTACT\", \"READ_INDEPENDENT_AUTHORITY_CONTACT\", \"READ_SCHOOL_FUNDING_GROUP\", \"WRITE_SCHOOL_FUNDING_GROUP\", \"DELETE_SCHOOL_FUNDING_GROUP\", \"READ_SDC_COLLECTION\", \"READ_SDC_DISTRICT_COLLECTION\", \"READ_COLLECTION_CODES\", \"WRITE_COLLECTION_CODES\", \"WRITE_ACTIVATION_CODE\", \"READ_SDC_SCHOOL_COLLECTION_STUDENT\", \"WRITE_SDC_DISTRICT_COLLECTION\", \"WRITE_SDC_SCHOOL_COLLECTION_STUDENT\", \"WRITE_SDC_COLLECTION\", \"READ_ASSESSMENT_SESSIONS\", \"WRITE_ASSESSMENT_SESSIONS\", \"READ_ASSESSMENT_STUDENT\", \"WRITE_ASSESSMENT_STUDENT\", \"READ_ASSESSMENT_ASSESSMENT_KEYS\", \"WRITE_ASSESSMENT_ASSESSMENT_KEYS\", \"DELETE_SDC_SCHOOL_COLLECTION_STUDENT\", \"READ_REPORTING_PERIOD\", \"WRITE_REPORTING_PERIOD\" , \"READ_INCOMING_FILESET\", \"READ_GRAD_SCHOOL\", \"WRITE_GRAD_SCHOOL\", \"READ_GRAD_GRADUATION_STATUS\", \"READ_CHALLENGE_REPORTS\", \"WRITE_CHALLENGE_REPORTS\", \"READ_CHALLENGE_REPORTS_CODES\", \"WRITE_ASSESSMENT_FILES\", \"READ_ASSESSMENT_REPORT\"], \"optionalClientScopes\" : [ \"address\", \"phone\" ], \"access\" : { \"view\" : true, \"configure\" : true, \"manage\" : true } }"
 
-  echo
-  echo "Retrieving realm-management client ID"
-  realmMgmtClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
-    "clients list" \
-    | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
+   echo
+   echo "Retrieving realm-management client ID"
+   realmMgmtClientID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
 
-  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
-    echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
-  fi
+   echo
+   echo "Retrieving student-admin-service client ID (post-create)"
+   studentAdminServiceClientID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
 
-  echo
-  echo "Retrieving student-admin-service client ID (post-create)"
-  studentAdminServiceClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
-    "clients list" \
-    | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
+   echo
+   echo "Retrieving service account user for student-admin-service"
+   studentAdminServiceSAUserID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq -r '.id')
 
-  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
-    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
-  fi
+   echo
+   echo "Retrieving realm-management roles view-users and query-users"
+   viewUsersRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
-    echo
-    echo "Retrieving service account user for student-admin-service"
-    studentAdminServiceSAUserID=$(retry_get_json \
-      "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-      "service account user ID" \
-      | jq -r '.id')
+   queryUsersRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-    if [[ -n "$studentAdminServiceSAUserID" && "$studentAdminServiceSAUserID" != "null" ]]; then
-      echo
-      echo "Retrieving realm-management roles view-users and query-users"
-      viewUsersRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
+   echo
+   echo "Retrieving default-roles-master realm role"
+   defaultRolesMasterRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-      queryUsersRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
+   echo
+   echo "Assigning realm-management client roles to student-admin-service service account"
+   curl -sX POST \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     -d "[$viewUsersRole,$queryUsersRole]"
 
-      echo
-      echo "Retrieving default-roles-master realm role"
-      defaultRolesMasterRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
-
-      echo
-      echo "Assigning realm-management client roles to student-admin-service service account"
-      curl -sX POST \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json" \
-        -d "[$viewUsersRole,$queryUsersRole]"
-
-      echo
-      echo "Assigning default-roles-master realm role to student-admin-service service account"
-      curl -sX POST \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json" \
-        -d "[$defaultRolesMasterRole]"
-    else
-      echo "WARNING: Failed to retrieve service account user ID, skipping role assignment"
-    fi
-  fi
+   echo
+   echo "Assigning default-roles-master realm role to student-admin-service service account"
+   curl -sX POST \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     -d "[$defaultRolesMasterRole]"
 else
   echo
   echo Creating client student-admin-service without secret
@@ -977,81 +938,63 @@ else
     -d "{ \"clientId\" : \"student-admin-service\", \"name\" : \"Student Admin Service Client\", \"description\" : \"Student admin user which logs into SOAM\", \"surrogateAuthRequired\" : false, \"enabled\" : true, \"clientAuthenticatorType\" : \"client-secret\", \"redirectUris\" : [ ], \"webOrigins\" : [ ], \"notBefore\" : 0, \"bearerOnly\" : false, \"consentRequired\" : false, \"standardFlowEnabled\" : false, \"implicitFlowEnabled\" : false, \"directAccessGrantsEnabled\" : false, \"serviceAccountsEnabled\" : true, \"publicClient\" : false, \"frontchannelLogout\" : false, \"protocol\" : \"openid-connect\", \"attributes\" : { \"saml.assertion.signature\" : \"false\", \"saml.multivalued.roles\" : \"false\", \"saml.force.post.binding\" : \"false\", \"saml.encrypt\" : \"false\", \"saml.server.signature\" : \"false\", \"saml.server.signature.keyinfo.ext\" : \"false\", \"exclude.session.state.from.auth.response\" : \"false\", \"saml_force_name_id_format\" : \"false\", \"saml.client.signature\" : \"false\", \"tls.client.certificate.bound.access.tokens\" : \"false\", \"saml.authnstatement\" : \"false\", \"display.on.consent.screen\" : \"false\", \"saml.onetimeuse.condition\" : \"false\" }, \"authenticationFlowBindingOverrides\" : { }, \"fullScopeAllowed\" : true, \"nodeReRegistrationTimeout\" : -1, \"protocolMappers\" : [ ], \"defaultClientScopes\" : [ \"web-origins\", \"role_list\", \"SEND_PEN_REQUEST_EMAIL\", \"WRITE_PEN_REQUEST\", \"profile\", \"roles\", \"email\", \"READ_PEN_REQUEST\", \"READ_PEN_REQUEST_STATUSES\", \"READ_PEN_DEMOGRAPHICS\", \"WRITE_DIGITALID\", \"READ_DIGITALID\", \"WRITE_STUDENT\", \"READ_STUDENT\", \"READ_STUDENT_CODES\", \"READ_DIGITALID_CODETABLE\", \"READ_DOCUMENT\", \"READ_DOCUMENT_TYPES\", \"WRITE_DOCUMENT\", \"READ_STUDENT_PROFILE\", \"WRITE_STUDENT_PROFILE\", \"READ_SDC_MINISTRY_REPORTS\", \"READ_DOCUMENT_STUDENT_PROFILE\", \"WRITE_DOCUMENT_STUDENT_PROFILE\", \"READ_DOCUMENT_TYPES_STUDENT_PROFILE\", \"READ_STUDENT_PROFILE_STATUSES\", \"READ_STUDENT_PROFILE_CODES\", \"SEND_STUDENT_PROFILE_EMAIL\",\"PEN_REQUEST_UNLINK_SAGA\",\"PEN_REQUEST_REJECT_SAGA\",\"PEN_REQUEST_RETURN_SAGA\",\"PEN_REQUEST_COMPLETE_SAGA\",\"STUDENT_PROFILE_COMPLETE_SAGA\",\"READ_SECURE_EXCHANGE_DOCUMENT_REQUIREMENTS\",\"STUDENT_PROFILE_REJECT_SAGA\",\"STUDENT_PROFILE_RETURN_SAGA\", \"READ_PEN_REQUEST_BATCH\", \"READ_PEN_MATCH\", \"WRITE_PEN_REQUEST_BATCH\", \"STUDENT_PROFILE_READ_SAGA\", \"GET_NEXT_PEN_NUMBER\", \"VALIDATE_STUDENT_DEMOGRAPHICS\",\"PEN_REQUEST_BATCH_NEW_PEN_SAGA\",\"PEN_REQUEST_BATCH_USER_MATCH_SAGA\",\"PEN_REQUEST_BATCH_READ_SAGA\", \"READ_VALIDATION_CODES\", \"READ_STUDENT_HISTORY\", \"READ_NICKNAMES\", \"READ_SCHOOL_FUNDING_GROUP_SNAPSHOT\", \"READ_SCHOOL\", \"READ_PEN_TRAX\", \"READ_SLD_STUDENT\",\"WRITE_POSSIBLE_MATCH\",\"DELETE_POSSIBLE_MATCH\",\"READ_POSSIBLE_MATCH\",\"READ_STUDENT_MERGE\" ,\"WRITE_STUDENT_MERGE\",\"READ_STUDENT_MERGE_CODES\",\"STUDENT_MERGE_COMPLETE_SAGA\",\"STUDENT_DEMERGE_COMPLETE_SAGA\",\"PEN_SERVICES_READ_SAGA\",\"READ_PEN_REQUEST_BATCH_BLOB\",\"STUDENT_SPLIT_PEN_SAGA\", \"PEN_REQUEST_BATCH_ARCHIVE_SAGA\", \"PEN_REQUEST_BATCH_REPOST_SAGA\", \"READ_PEN_COORDINATOR\", \"WRITE_PEN_COORDINATOR\", \"READ_PEN_MACRO\", \"WRITE_PEN_MACRO\", \"MACRO_READ_SAGA\",\"READ_PEN_REQUEST_STATS\", \"READ_STUDENT_PROFILE_STATS\", \"STUDENT_MOVE_SLD_SAGA\", \"NOMINAL_ROLL_READ_STUDENT\", \"NOMINAL_ROLL_WRITE_STUDENT\", \"NOMINAL_ROLL_DELETE_STUDENT\", \"NOMINAL_ROLL_UPLOAD_FILE\", \"NOMINAL_ROLL_VALIDATE\", \"NOMINAL_ROLL_POST_DATA_SAGA\", \"NOMINAL_ROLL_READ_SAGA\", \"READ_FED_PROV_CODE\", \"WRITE_FED_PROV_CODE\", \"NOMINAL_ROLL_CREATE_FED_PROV\", \"READ_SECURE_EXCHANGE\", \"WRITE_SECURE_EXCHANGE\", \"READ_SECURE_EXCHANGE_DOCUMENT\", \"WRITE_SECURE_EXCHANGE_DOCUMENT\", \"DELETE_SECURE_EXCHANGE_DOCUMENT\", \"READ_SECURE_EXCHANGE_CODES\", \"READ_SECURE_EXCHANGE_DOCUMENT_TYPES\", \"READ_SECURE_EXCHANGE_STATUSES\", \"READ_MINISTRY_TEAMS\", \"READ_EDX_USER_SCHOOLS\", \"DELETE_SECURE_EXCHANGE\", \"READ_EDX_USERS\", \"READ_PRIMARY_ACTIVATION_CODE\", \"WRITE_PRIMARY_ACTIVATION_CODE\", \"WRITE_EDX_USER_SCHOOL\", \"SCHOOL_USER_ACTIVATION_INVITE_SAGA\", \"CREATE_SECURE_EXCHANGE_SAGA\", \"DELETE_EDX_USER_SCHOOL\", \"WRITE_EDX_USER_DISTRICT\", \"DELETE_EDX_USER_DISTRICT\", \"CREATE_SECURE_EXCHANGE_COMMENT_SAGA\", \"READ_DISTRICT\", \"WRITE_DISTRICT_CONTACT\", \"DISTRICT_USER_ACTIVATION_INVITE_SAGA\", \"DELETE_SECURE_EXCHANGE_NOTE\", \"WRITE_SECURE_EXCHANGE_NOTE\", \"READ_SECURE_EXCHANGE_NOTE\", \"DELETE_SECURE_EXCHANGE_COMMENT\", \"WRITE_SECURE_EXCHANGE_COMMENT\", \"READ_SECURE_EXCHANGE_COMMENT\", \"DELETE_SECURE_EXCHANGE_STUDENT\", \"WRITE_SECURE_EXCHANGE_STUDENT\", \"READ_SECURE_EXCHANGE_STUDENT\", \"READ_INSTITUTE_CODES\", \"READ_INDEPENDENT_AUTHORITY\", \"WRITE_INDEPENDENT_AUTHORITY\", \"READ_SCHOOL_NOTE\", \"WRITE_SCHOOL_NOTE\", \"DELETE_SCHOOL_NOTE\", \"WRITE_SCHOOL_CONTACT\", \"WRITE_INDEPENDENT_AUTHORITY_CONTACT\", \"READ_INDEPENDENT_AUTHORITY_NOTE\", \"WRITE_INDEPENDENT_AUTHORITY_NOTE\", \"DELETE_INDEPENDENT_AUTHORITY_NOTE\", \"WRITE_SCHOOL\", \"WRITE_DISTRICT\", \"READ_DISTRICT_NOTE\", \"WRITE_DISTRICT_NOTE\", \"DELETE_DISTRICT_NOTE\", \"READ_SCHOOL_HISTORY\", \"MOVE_SCHOOL_SAGA\", \"CREATE_SCHOOL_SAGA\", \"READ_SCHOOL_CONTACT\", \"READ_DISTRICT_CONTACT\", \"READ_INDEPENDENT_AUTHORITY_CONTACT\", \"READ_SCHOOL_FUNDING_GROUP\", \"WRITE_SCHOOL_FUNDING_GROUP\", \"DELETE_SCHOOL_FUNDING_GROUP\", \"READ_SDC_COLLECTION\", \"READ_SDC_DISTRICT_COLLECTION\", \"READ_COLLECTION_CODES\", \"WRITE_COLLECTION_CODES\", \"WRITE_SDC_DISTRICT_COLLECTION\", \"WRITE_ACTIVATION_CODE\", \"READ_SDC_SCHOOL_COLLECTION_STUDENT\", \"WRITE_SDC_SCHOOL_COLLECTION_STUDENT\", \"WRITE_SDC_COLLECTION\", \"READ_ASSESSMENT_SESSIONS\", \"WRITE_ASSESSMENT_SESSIONS\", \"READ_ASSESSMENT_STUDENT\", \"WRITE_ASSESSMENT_STUDENT\", \"READ_ASSESSMENT_ASSESSMENT_KEYS\", \"WRITE_ASSESSMENT_ASSESSMENT_KEYS\", \"DELETE_SDC_SCHOOL_COLLECTION_STUDENT\", \"READ_REPORTING_PERIOD\", \"WRITE_REPORTING_PERIOD\", \"READ_INCOMING_FILESET\", \"READ_GRAD_SCHOOL\", \"WRITE_GRAD_SCHOOL\", \"READ_GRAD_GRADUATION_STATUS\", \"READ_CHALLENGE_REPORTS\", \"WRITE_CHALLENGE_REPORTS\", \"READ_CHALLENGE_REPORTS_CODES\", \"WRITE_ASSESSMENT_FILES\", \"READ_ASSESSMENT_REPORT\"], \"optionalClientScopes\" : [ \"address\", \"phone\" ], \"access\" : { \"view\" : true, \"configure\" : true, \"manage\" : true } }"
 
   echo
-  echo "Retrieving realm-management client ID"
-  realmMgmtClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
-    "clients list" \
-    | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
+   echo "Retrieving realm-management client ID"
+   realmMgmtClientID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq '.[] | select(.clientId=="realm-management")' | jq -r '.id')
 
-  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
-    echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
-  fi
+   echo
+   echo "Retrieving student-admin-service client ID (post-create)"
+   studentAdminServiceClientID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
 
-  echo
-  echo "Retrieving student-admin-service client ID (post-create)"
-  studentAdminServiceClientID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
-    "clients list" \
-    | jq '.[] | select(.clientId=="student-admin-service")' | jq -r '.id')
+   echo
+   echo "Retrieving service account user for student-admin-service"
+   studentAdminServiceSAUserID=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     | jq -r '.id')
 
-  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
-    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
-  fi
+   echo
+   echo "Retrieving realm-management roles view-users and query-users"
+   viewUsersRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
-    | jq -r '.[0].id')
+   queryUsersRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
-    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
-  fi
+   echo
+   echo "Retrieving default-roles-master realm role"
+   defaultRolesMasterRole=$(curl -s \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json")
 
-  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
-    echo
-    echo "Retrieving service account user for student-admin-service"
-    studentAdminServiceSAUserID=$(retry_get_json \
-      "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-      "service account user ID" \
-      | jq -r '.id')
+   echo
+   echo "Assigning realm-management client roles to student-admin-service service account"
+   curl -sX POST \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     -d "[$viewUsersRole,$queryUsersRole]"
 
-    if [[ -n "$studentAdminServiceSAUserID" && "$studentAdminServiceSAUserID" != "null" ]]; then
-      echo
-      echo "Retrieving realm-management roles view-users and query-users"
-      viewUsersRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
-
-      queryUsersRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
-
-      echo
-      echo "Retrieving default-roles-master realm role"
-      defaultRolesMasterRole=$(curl -s \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json")
-
-      echo
-      echo "Assigning realm-management client roles to student-admin-service service account"
-      curl -sX POST \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json" \
-        -d "[$viewUsersRole,$queryUsersRole]"
-
-      echo
-      echo "Assigning default-roles-master realm role to student-admin-service service account"
-      curl -sX POST \
-        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
-        -H "Authorization: Bearer $TKN" \
-        -H "Content-Type: application/json" \
-        -d "[$defaultRolesMasterRole]"
-    else
-      echo "WARNING: Failed to retrieve service account user ID, skipping role assignment"
-    fi
-  fi
+   echo
+   echo "Assigning default-roles-master realm role to student-admin-service service account"
+   curl -sX POST \
+     "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
+     -H "Authorization: Bearer $TKN" \
+     -H "Content-Type: application/json" \
+     -d "[$defaultRolesMasterRole]"
 fi
 
 echo Fetching public key from SOAM
