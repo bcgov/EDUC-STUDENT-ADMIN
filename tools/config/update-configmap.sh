@@ -876,18 +876,18 @@ retry_get_json() {
       -H "Authorization: Bearer $TKN" \
       -H "Content-Type: application/json")
 
-    if [[ -n "$result" && "$result" != "null" && ! "$result" =~ "error" ]]; then
+    if [[ -n "$result" && "$result" != "null" && "$result" != "[]" && ! "$result" =~ "error" ]]; then
       echo "$result"
       return 0
     fi
 
-    echo "Attempt $attempt/$max_attempts failed for $description, retrying in ${delay}s..." >&2
+    echo "Attempt $attempt/$max_attempts failed for $description (got: ${result:0:100}), retrying in ${delay}s..." >&2
     sleep $delay
     attempt=$((attempt + 1))
     delay=$((delay * 2))
   done
 
-  echo "ERROR: Failed to retrieve $description after $max_attempts attempts" >&2
+  echo "WARNING: Failed to retrieve $description after $max_attempts attempts, continuing anyway" >&2
   return 1
 }
 
@@ -907,8 +907,7 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
     | jq -r '.[0].id')
 
   if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve realm-management client ID"
-    exit 1
+    echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
   fi
 
   echo
@@ -919,56 +918,56 @@ if [[ ("$studentAdminServiceClientSecret" != "" && "$studentAdminServiceClientSe
     | jq -r '.[0].id')
 
   if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve student-admin-service client ID"
-    exit 1
+    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
   fi
 
-  echo
-  echo "Retrieving service account user for student-admin-service"
-  studentAdminServiceSAUserID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-    "service account user ID" \
-    | jq -r '.id')
+  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
+    echo
+    echo "Retrieving service account user for student-admin-service"
+    studentAdminServiceSAUserID=$(retry_get_json \
+      "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
+      "service account user ID" \
+      | jq -r '.id')
 
-  if [[ -z "$studentAdminServiceSAUserID" || "$studentAdminServiceSAUserID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve service account user ID"
-    exit 1
+    if [[ -n "$studentAdminServiceSAUserID" && "$studentAdminServiceSAUserID" != "null" ]]; then
+      echo
+      echo "Retrieving realm-management roles view-users and query-users"
+      viewUsersRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
+
+      queryUsersRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
+
+      echo
+      echo "Retrieving default-roles-master realm role"
+      defaultRolesMasterRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
+
+      echo
+      echo "Assigning realm-management client roles to student-admin-service service account"
+      curl -sX POST \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json" \
+        -d "[$viewUsersRole,$queryUsersRole]"
+
+      echo
+      echo "Assigning default-roles-master realm role to student-admin-service service account"
+      curl -sX POST \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json" \
+        -d "[$defaultRolesMasterRole]"
+    else
+      echo "WARNING: Failed to retrieve service account user ID, skipping role assignment"
+    fi
   fi
-
-  echo
-  echo "Retrieving realm-management roles view-users and query-users"
-  viewUsersRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
-
-  queryUsersRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
-
-  echo
-  echo "Retrieving default-roles-master realm role"
-  defaultRolesMasterRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
-
-  echo
-  echo "Assigning realm-management client roles to student-admin-service service account"
-  curl -sX POST \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
-    -d "[$viewUsersRole,$queryUsersRole]"
-
-  echo
-  echo "Assigning default-roles-master realm role to student-admin-service service account"
-  curl -sX POST \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
-    -d "[$defaultRolesMasterRole]"
 else
   echo
   echo Creating client student-admin-service without secret
@@ -1001,52 +1000,68 @@ else
     exit 1
   fi
 
-  echo
-  echo "Retrieving service account user for student-admin-service"
-  studentAdminServiceSAUserID=$(retry_get_json \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
-    "service account user ID" \
-    | jq -r '.id')
-
-  if [[ -z "$studentAdminServiceSAUserID" || "$studentAdminServiceSAUserID" == "null" ]]; then
-    echo "ERROR: Failed to retrieve service account user ID"
-    exit 1
+  if [[ -z "$realmMgmtClientID" || "$realmMgmtClientID" == "null" ]]; then
+    echo "WARNING: Failed to retrieve realm-management client ID, skipping role assignment"
   fi
 
   echo
-  echo "Retrieving realm-management roles view-users and query-users"
-  viewUsersRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
+  echo "Retrieving student-admin-service client ID (post-create)"
+  studentAdminServiceClientID=$(retry_get_json \
+    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients?clientId=student-admin-service" \
+    "student-admin-service client ID" \
+    | jq -r '.[0].id')
 
-  queryUsersRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
+  if [[ -z "$studentAdminServiceClientID" || "$studentAdminServiceClientID" == "null" ]]; then
+    echo "WARNING: Failed to retrieve student-admin-service client ID, skipping role assignment"
+  fi
 
-  echo
-  echo "Retrieving default-roles-master realm role"
-  defaultRolesMasterRole=$(curl -s \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json")
+  if [[ -n "$realmMgmtClientID" && "$realmMgmtClientID" != "null" && -n "$studentAdminServiceClientID" && "$studentAdminServiceClientID" != "null" ]]; then
+    echo
+    echo "Retrieving service account user for student-admin-service"
+    studentAdminServiceSAUserID=$(retry_get_json \
+      "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminServiceClientID/service-account-user" \
+      "service account user ID" \
+      | jq -r '.id')
 
-  echo
-  echo "Assigning realm-management client roles to student-admin-service service account"
-  curl -sX POST \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
-    -d "[$viewUsersRole,$queryUsersRole]"
+    if [[ -n "$studentAdminServiceSAUserID" && "$studentAdminServiceSAUserID" != "null" ]]; then
+      echo
+      echo "Retrieving realm-management roles view-users and query-users"
+      viewUsersRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/view-users" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
 
-  echo
-  echo "Assigning default-roles-master realm role to student-admin-service service account"
-  curl -sX POST \
-    "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
-    -H "Authorization: Bearer $TKN" \
-    -H "Content-Type: application/json" \
-    -d "[$defaultRolesMasterRole]"
+      queryUsersRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$realmMgmtClientID/roles/query-users" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
+
+      echo
+      echo "Retrieving default-roles-master realm role"
+      defaultRolesMasterRole=$(curl -s \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles/default-roles-master" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json")
+
+      echo
+      echo "Assigning realm-management client roles to student-admin-service service account"
+      curl -sX POST \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/clients/$realmMgmtClientID" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json" \
+        -d "[$viewUsersRole,$queryUsersRole]"
+
+      echo
+      echo "Assigning default-roles-master realm role to student-admin-service service account"
+      curl -sX POST \
+        "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/users/$studentAdminServiceSAUserID/role-mappings/realm" \
+        -H "Authorization: Bearer $TKN" \
+        -H "Content-Type: application/json" \
+        -d "[$defaultRolesMasterRole]"
+    else
+      echo "WARNING: Failed to retrieve service account user ID, skipping role assignment"
+    fi
+  fi
 fi
 
 echo Fetching public key from SOAM
