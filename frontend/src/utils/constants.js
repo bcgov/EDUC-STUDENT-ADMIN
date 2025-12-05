@@ -462,7 +462,7 @@ export const SDC_REPORTS = Object.freeze(
         description: 'This report provides all student level data for each student within a particular independent school. It lists each student’s school, PEN, local ID, name, birthdate, and gender. Additionally, it shows student information in the following categories: adult, graduated, grade, funding code, courses for grad, support blocks, language program, years in ELL, career program, career code, Indigenous ancestry, Band code, Indigenous support program, and inclusive education.'
       },
       {
-        label: 'Independent Schools Grade Funding Group Enrolled Programs Headcounts (I1005)',
+        label: 'Independent Schools Grade Funding Group Enrolled Programs Headcounts',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/indy-school-grade-funding-group-enrolled-programs-headcounts/',
         description: 'This report provides all open independent schools, of all funding groups, reporting enrolment in any of the following programs: Core French, Programme Francophone, French Immersion, English Language Learning, Indigenous Language and Culture, Indigenous Support Services, Other Approved Indigenous Programs.'
       }
