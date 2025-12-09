@@ -165,6 +165,7 @@
       </div>
       <div
         v-if="hasEditPermission"
+        :class="{ 'disabled-section': disablePsychometricianRptCondition }"
         class="pl-2"
       >
         <v-row
@@ -275,6 +276,10 @@ export default {
     },
     disableProvincialCondition() {
       return !this.selectedSessionID;
+    },
+    disablePsychometricianRptCondition() {
+      let selectedSession = this.sessions.find(session => session.value === this.selectedSessionID);
+      return !this.selectedSessionID || selectedSession?.isOpen;
     },
     schoolIdentifierForReports() {
       return this.schoolNameNumberFilter;
