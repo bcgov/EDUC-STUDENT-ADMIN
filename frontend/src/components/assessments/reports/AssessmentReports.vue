@@ -278,8 +278,8 @@ export default {
       return !this.selectedSessionID;
     },
     disablePsychometricianRptCondition() {
-      let selectedSession = this.sessions.filter(session => session.value === this.selectedSessionID);
-      return !this.selectedSessionID || selectedSession[0]?.isOpen;
+      let selectedSession = this.sessions.find(session => session.value === this.selectedSessionID);
+      return !this.selectedSessionID || selectedSession?.isOpen;
     },
     schoolIdentifierForReports() {
       return this.schoolNameNumberFilter;
