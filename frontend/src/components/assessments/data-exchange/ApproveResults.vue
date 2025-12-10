@@ -259,7 +259,7 @@ export default {
       return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
     },
     getRegistrationStatus(session) {
-      if(session.approvalInFlight){
+      if(session.approvalInFlight === 'true'){
         return {
           color: 'warning',
           text: 'Processing Approval'
