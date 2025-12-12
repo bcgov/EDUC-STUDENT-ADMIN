@@ -240,6 +240,7 @@ import { sortBy } from 'lodash';
 import * as Rules from '../../../utils/institute/formRules';
 import {authStore} from '@/store/modules/auth';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {orderBy} from 'lodash/collection';
 
 export default {
   name: 'AssessmentReports',
@@ -301,13 +302,30 @@ export default {
   methods: {
     setupAssessmentSessions() {
       this.sessions = [];
-      this.schoolYearSessions.forEach(session => {
-        this.sessions.push({
-          title: session.courseMonth + '/' + session.courseYear,
-          value: session.sessionID,
-          isOpen: session.isOpen
+
+      let approvedSessions = this.schoolYearSessions.filter(session => session.completionDate !== null);
+      let activeSessions = this.schoolYearSessions.filter(session => session.isOpen);
+      if(activeSessions.length > 0) {
+        let currentSession = orderBy(activeSessions, ['activeUntilDate'], ['asc'])[0];
+        let sessionsForReporting = [currentSession, ...approvedSessions];
+        
+        sessionsForReporting.forEach(session => {
+          this.sessions.push({
+            title: session.courseMonth + '/' + session.courseYear,
+            value: session.sessionID,
+            isOpen: session.isOpen
+          });
         });
-      });
+      } else {
+        approvedSessions.forEach(session => {
+          this.sessions.push({
+            title: session.courseMonth + '/' + session.courseYear,
+            value: session.sessionID,
+            isOpen: session.isOpen
+          });
+        });
+      }
+      
       this.selectedSessionID = this.sessions[0].value;
     },
     setupSchoolLists() {

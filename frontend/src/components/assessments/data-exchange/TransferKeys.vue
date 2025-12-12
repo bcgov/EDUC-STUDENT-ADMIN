@@ -22,7 +22,7 @@
             :data="session.assessments"
             :selected-session="session"
           />
-          <v-row v-if="session.isOpen && hasEditPermission">
+          <v-row v-if="session.isOpen && hasEditPermission && isActiveSession">
             <v-col class="d-flex justify-end">
               <v-btn
                 id="uploadButton"
@@ -172,6 +172,7 @@ import AssessmentKeyTable from './AssessmentKeyTable.vue';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {orderBy} from 'lodash/collection';
 
 export default {
   name: 'TransferKeys',
@@ -220,13 +221,17 @@ export default {
       fileUploadPending: FILE_UPLOAD_STATUS.PENDING,
       fileUploadSuccess: FILE_UPLOAD_STATUS.UPLOADED,
       fileUploadError: FILE_UPLOAD_STATUS.ERROR,
-      assessmentTypeCode: ''
+      assessmentTypeCode: '',
+      activeSession: null
     };
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
     hasEditPermission() {
       return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_ASSESSMENT_KEYS_PERMISSION);
+    },
+    isActiveSession() {
+      return this.activeSession.sessionID === this.type;
     }
   },
   watch: {
@@ -241,6 +246,7 @@ export default {
           let openSession = value.filter(sch => sch.isOpen);
           if (openSession.length > 0) {
             this.type = openSession[0].sessionID;
+            this.activeSession = orderBy(openSession, ['activeUntilDate'], ['asc'])[0];
           } else {
             // Fallback to first session if no open sessions are found
             this.type = value[0].sessionID;

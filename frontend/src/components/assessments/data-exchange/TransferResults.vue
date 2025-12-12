@@ -137,7 +137,7 @@
                 </v-list>
               </v-menu>
               <v-btn
-                v-if="session.isOpen && hasEditPermission"
+                v-if="session.isOpen && hasEditPermission && isActiveSession"
                 id="uploadButton"
                 class="ml-3"
                 prepend-icon="mdi-file-upload"
@@ -309,7 +309,22 @@
                   item-title="desc"
                   label="Session"
                   variant="underlined"
-                />
+                >
+                  <template #selection="{ item }">
+                    <span> {{ item.desc }} </span>
+                  </template>
+                  <template #item="{props, item}">
+                    <v-list-item
+                      v-bind="props"
+                    >
+                    <template v-slot:append>
+                      <v-chip v-if="item?.raw?.isOpen" color="info">
+                        Ongoing
+                      </v-chip>
+                    </template>
+                    </v-list-item>
+                  </template>
+                </v-select>
               </v-col>
               <v-col cols="6">
                 <v-btn
@@ -340,10 +355,11 @@ import { Routes, FILE_UPLOAD_STATUS } from '@/utils/constants';
 import { getFileNameWithMaxNameLength } from '../../../utils/file';
 import ApiService from '@/common/apiService';
 import {formatDateTime} from '@/utils/format';
-import { LocalDate, DateTimeFormatter, Month } from '@js-joda/core';
+import { Month } from '@js-joda/core';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {orderBy} from 'lodash/collection';
 
 export default {
   name: 'TransferResults',
@@ -400,13 +416,17 @@ export default {
       assessmentTypeCode: '',
       resultsSummary: [],
       singleResult: false,
-      allowedforUpload: []
+      allowedforUpload: [],
+      activeSession: null
     };
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
     hasEditPermission() {
       return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_RESULTS_PERMISSION);
+    },
+    isActiveSession() {
+      return this.activeSession.sessionID === this.type;
     }
   },
   watch: {
@@ -423,6 +443,7 @@ export default {
             this.type = openSession[0].sessionID;
             this.selectedSessionID = openSession[0].sessionID;
             this.selectedSessionDesc = openSession[0].courseYear + '' + openSession[0].courseMonth;
+            this.activeSession = orderBy(openSession, ['activeUntilDate'], ['asc'])[0];
           } else {
             // Fallback to first session if no open sessions are found
             this.type = value[0].sessionID;
@@ -436,7 +457,15 @@ export default {
     sessions: {
       handler(value) {
         if(value.length > 0) {
-          this.allowedforUpload = value.filter(session => session.isOpen || (session.activeFromDate !== null && session.activeUntilDate!== null && LocalDate.now().isAfter(LocalDate.parse(session.activeFromDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && LocalDate.now().isAfter(LocalDate.parse(session.activeUntilDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+          let approvedSessions = value.filter(session => session.completionDate !== null);
+          let activeSessions = value.filter(session => session.isOpen);
+          if(activeSessions.length > 0) {
+            let currentSession = orderBy(activeSessions, ['activeUntilDate'], ['asc'])[0];
+            this.allowedforUpload = [currentSession, ...approvedSessions];
+          } else {
+            this.allowedforUpload = approvedSessions;
+          }
+          
           this.allowedforUpload.forEach(item => {
             item.desc = item.courseYear + '/' + item.courseMonth;
           });
