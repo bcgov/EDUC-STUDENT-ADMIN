@@ -134,6 +134,14 @@
                       PEN Issues for session
                     </v-list-item-title>
                   </v-list-item>
+                  <v-list-item
+                    v-if="session.isOpen"
+                    @click="downloadReport('random-sample')"
+                  >
+                    <v-list-item-title class="report-item">
+                      Random Sample of 20 Schools
+                    </v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
               <v-btn

@@ -245,7 +245,8 @@ const assessmentsReportTypeValues = [
   ['nme-key-summary', 'nme-key-summary'],
   ['nmf-key-summary', 'nmf-key-summary'],
   ['all-detailed-students-in-session-csv', 'all-detailed-students-in-session-csv'],
-  ['doar-prov-summary', 'doar-prov-summary']
+  ['doar-prov-summary', 'doar-prov-summary'],
+  ['random-sample', 'random-sample']
 ];
 const ASSESSMENTS_REPORT_TYPE_CODE_MAP = Object.freeze(new Map(assessmentsReportTypeValues));
 

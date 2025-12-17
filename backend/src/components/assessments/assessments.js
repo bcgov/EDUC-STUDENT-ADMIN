@@ -233,14 +233,28 @@ async function downloadReport(req, res) {
         message: 'Invalid report type provided'
       });
     }
-    let data = await getData(`${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`);
-    let session = req.query.sessionCode;
-    const fileDetails = getFileDetails(reportType, session, null);
+    
+    let url;
+    if(reportType !== 'random-sample'){
+      url = `${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/download/${createUpdateUser}`;
+      let data = await getData(url);
+      let session = req.query.sessionCode;
+      const fileDetails = getFileDetails(reportType, session, null);
 
-    setResponseHeaders(res, fileDetails);
-    const buffer = Buffer.from(data.documentData, 'base64');
-    return res.status(HttpStatus.OK).send(buffer);
+      setResponseHeaders(res, fileDetails);
+      const buffer = Buffer.from(data.documentData, 'base64');
+      return res.status(HttpStatus.OK).send(buffer);
+    }else{
+      url = `${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/randomSessionSchoolsZip`;
+      let data = await getData(url, {responseType: 'arraybuffer'});
+      let session = req.query.sessionCode;
+      const fileDetails = getFileDetails(reportType, session, null);
+
+      setResponseHeaders(res, fileDetails);
+      return res.status(HttpStatus.OK).send(data);
+    }
   } catch (e) {
+    console.log('Error: ' + e);
     return handleExceptionResponse(e, res);
   }
 }
@@ -448,6 +462,7 @@ function getFileDetails(reportType, session, mincode) {
     'nme-key-summary': { filename: `Key Summary-NME10-${session}.csv`, contentType: 'text/csv' },
     'nmf-key-summary': { filename: `Key Summary-NMF10-${session}.csv`, contentType: 'text/csv' },
     'doar-prov-summary': { filename: `ProvincialDOARSummary-${session}.pdf`, contentType: 'application/pdf' },
+    'random-sample': { filename: `Random-School-Samples-${session}.zip`, contentType: 'application/zip' },
     'DEFAULT': { filename: 'download.pdf', contentType: 'application/pdf' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
