@@ -453,6 +453,11 @@ export const SDC_REPORTS = Object.freeze(
         url: object.SDC_MINISTRY_REPORTS + '/headcount/school-address-report/',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/school-address-report/',
         description: 'This report offers the physical addresses of all schools in the province, regardless of school type. This report does not include offshore schools or schools in the Yukon and will only show information for schools that have submitted data in the given collection.'
+      },
+      {
+        label: 'ELL Students Fall Report',
+        csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/ell-students-fall-csv/',
+        description: 'This report provides English Language Learner (ELL) student data for all MyEducation schools. Report data will be from the most recent previous Fall collection relative to this collection. If this is a Fall collection, it will be this collection.'
       }
     ],
     independentReports: [
