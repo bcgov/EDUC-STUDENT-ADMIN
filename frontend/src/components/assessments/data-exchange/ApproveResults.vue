@@ -259,6 +259,9 @@ export default {
       return formatDateTime(dateString, 'uuuu-MM-dd\'T\'HH:mm:ss.SSS', 'uuuu/MM/dd HH:mm:ss', true);
     },
     getRegistrationStatus(session) {
+      console.log('Session: ' + JSON.stringify(session));
+      console.log('Session.approvalInFlight: ' + session.approvalInFlight);
+
       if(session.approvalInFlight === 'true'){
         return {
           color: 'warning',
