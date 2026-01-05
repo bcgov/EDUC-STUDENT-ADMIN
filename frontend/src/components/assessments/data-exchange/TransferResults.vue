@@ -319,17 +319,20 @@
                   variant="underlined"
                 >
                   <template #selection="{ item }">
-                    <span> {{ item.desc }} </span>
+                    <span> {{ item.title }} </span>
                   </template>
                   <template #item="{props, item}">
                     <v-list-item
                       v-bind="props"
                     >
-                    <template v-slot:append>
-                      <v-chip v-if="item?.raw?.isOpen" color="info">
-                        Ongoing
-                      </v-chip>
-                    </template>
+                      <template #append>
+                        <v-chip
+                          v-if="item?.raw?.isOpen"
+                          color="info"
+                        >
+                          Ongoing
+                        </v-chip>
+                      </template>
                     </v-list-item>
                   </template>
                 </v-select>
