@@ -139,7 +139,7 @@
                     @click="downloadReport('random-sample')"
                   >
                     <v-list-item-title class="report-item">
-                      Random Sample of School Reports
+                      Selection of Results by Assessment Reports
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
