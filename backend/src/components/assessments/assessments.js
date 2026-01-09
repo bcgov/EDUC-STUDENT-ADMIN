@@ -445,6 +445,8 @@ function getFileDetails(reportType, session, mincode) {
     'SCHOOL_STUDENTS_BY_ASSESSMENT': { filename: `SchoolStudentsByAssessment_${mincode}.pdf`, contentType: 'application/pdf' },
     'summary-by-form-for-session': { filename: `${session} Results Summary by Form-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'summary-by-grade-for-session': { filename: `${session} Results Summary by Grade-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'yukon-student-report': { filename: `${session} Yukon Students-${LocalDate.now()}.csv`, contentType: 'text/csv' },
+    'yukon-summary-report': { filename: `${session} Yukon Summary-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'all-detailed-students-in-session-csv': { filename: `${session} Detailed Results-${LocalDate.now()}.csv`, contentType: 'text/csv' },
     'ISR': { filename: 'Individual Student Report.pdf', contentType: 'application/pdf' },
     'nme10-item-analysis': { filename: `nme10-item-analysis-${session}.csv`, contentType: 'text/csv' },

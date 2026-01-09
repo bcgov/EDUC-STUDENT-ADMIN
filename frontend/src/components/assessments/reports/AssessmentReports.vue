@@ -125,11 +125,14 @@
             <v-list-item
               v-bind="props"
             >
-            <template v-slot:append>
-              <v-chip v-if="item?.raw?.isOpen" color="info">
-                Ongoing
-              </v-chip>
-            </template>
+              <template #append>
+                <v-chip
+                  v-if="item?.raw?.isOpen"
+                  color="info"
+                >
+                  Ongoing
+                </v-chip>
+              </template>
             </v-list-item>
           </template>
         </v-select>
@@ -150,13 +153,39 @@
             <v-card-title style="font-size: medium;">
               Other Reports
             </v-card-title>
-            <v-row class="pl-3 pb-3">
+            <v-row class="pl-3">
               <v-col
                 cols="12"
               >
                 <DownloadLink
                   label="Provincial DOAR Summary.pdf"
                   :download-action="() => downloadReport('doar-prov-summary')"
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              class="pl-3 pt-2"
+              no-gutters
+            >
+              <v-col
+                cols="12"
+              >
+                <DownloadLink
+                  label="Yukon Assessment Summary Counts.csv"
+                  :download-action="() => downloadReport('yukon-summary-report')"
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              class="pl-3 pt-2 pb-3"
+              no-gutters
+            >
+              <v-col
+                cols="12"
+              >
+                <DownloadLink
+                  label="Yukon Assessment Details.csv"
+                  :download-action="() => downloadReport('yukon-student-report')"
                 />
               </v-col>
             </v-row>

@@ -229,6 +229,8 @@ const assessmentsReportTypeValues = [
   ['SCHOOL_STUDENTS_BY_ASSESSMENT', 'SCHOOL_STUDENTS_BY_ASSESSMENT'],
   ['summary-by-form-for-session', 'summary-by-form-for-session'],
   ['summary-by-grade-for-session', 'summary-by-grade-for-session'],
+  ['yukon-summary-report', 'yukon-summary-report'],
+  ['yukon-student-report', 'yukon-student-report'],
   ['all-detailed-students-in-session-csv', 'all-detailed-students-in-session-csv'],
   ['NME10', 'nme10-item-analysis'],
   ['NMF10', 'nmf10-item-analysis'],
