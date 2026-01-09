@@ -55,7 +55,7 @@
                 <td>{{ session.assessmentRegistrationsExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
-                    v-if="hasEditPermission"
+                    v-if="hasEditPermission && isActiveSession"
                     :id="`assessmentDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -72,7 +72,7 @@
                 <td>{{ session.sessionWritingAttemptsExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
-                    v-if="hasEditPermission"
+                    v-if="hasEditPermission && isActiveSession"
                     :id="`sessionWritingDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -89,7 +89,7 @@
                 <td>{{ session.penMergesExportUserID }}</td>
                 <td class="text-right">
                   <v-btn
-                    v-if="hasEditPermission"
+                    v-if="hasEditPermission && isActiveSession"
                     :id="`penMergesDownload-${index}`"
                     prepend-icon="mdi-file-upload"
                     variant="elevated"
@@ -140,6 +140,7 @@ import {formatDateTime} from '@/utils/format';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
 import { PERMISSION, hasRequiredPermission } from '@/utils/constants/Permission';
+import {orderBy} from 'lodash/collection';
 
 export default {
   name: 'TransferRegistrations',
@@ -159,13 +160,17 @@ export default {
       selectedSession: null,
       confirmationReportType: '',
       confirmationDate: '',
-      previouslySelectedSessionID: null
+      previouslySelectedSessionID: null,
+      activeSession: null
     };
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
     hasEditPermission() {
       return hasRequiredPermission(this.userInfo, PERMISSION.MANAGE_ASSESSMENT_REGISTRATION_TRANSFER_PERMISSION);
+    },
+    isActiveSession() {
+      return this.activeSession.sessionID === this.type;
     }
   },
   watch: {
@@ -183,6 +188,7 @@ export default {
           let openSession = value.filter(sch => sch.isOpen);
           if (openSession.length > 0) {
             this.type = openSession[0].sessionID;
+            this.activeSession = orderBy(openSession, ['activeUntilDate'], ['asc'])[0];
           } else {
             // Fallback to first session if no open sessions are found
             this.type = value[0].sessionID;
