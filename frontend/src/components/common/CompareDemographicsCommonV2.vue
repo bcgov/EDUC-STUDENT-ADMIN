@@ -11,6 +11,7 @@
       :merged-to-student-i-d="mergedToStudentID"
       :merged-from-student-i-d="mergedFromStudentID"
       @merge-students-modal-open-emit="mergeStudentsModalOpenEmit"
+      @merge-students-swap-emit="mergeStudentsSwapEmit"
     />
     <v-card-title class="px-0 py-5">
       <v-row>
@@ -393,7 +394,7 @@ import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton.vue';
 import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {notificationsStore} from '@/store/modules/notifications';
@@ -471,7 +472,9 @@ export default {
       mergedFromStudentID: '',
       movedFromStudent: {},
       movedToStudent: {},
-      existingMergedStudentIdsMap: new Map()
+      existingMergedStudentIdsMap: new Map(),
+      truePenMessage: null,
+      truePen: null
     };
   },
   computed: {
@@ -528,7 +531,7 @@ export default {
       //Determine which is the oldest, which will be mergedToPen
       //If two PENs are merged and neither start with "1", or both start with "1" use the lowest number as the survivor
       //If two PENs are merged and one starts with "1" and other starts with something else, the other is the survivor
-      if((student1digit == '1' && student2digit == '1') || (student1digit != '1' && student2digit != '1')) {
+      if ((student1digit === '1' && student2digit === '1') || (student1digit !== '1' && student2digit !== '1')) {
         return (student1.pen > student2.pen) ? 1 : -1;
       } else {
         return (student1.pen < student2.pen) ? 1 : -1;
@@ -821,7 +824,7 @@ export default {
       // Determine which is the oldest, which will be mergedToPen
       //If two PENs are merged and neither start with "1", or both start with "1" use the lowest number as the survivor
       //If two PENs are merged and one starts with "1" and other starts with something else, the other is the survivor
-      if((student1digit == '1' && student2digit == '1') || (student1digit != '1' && student2digit != '1')) {
+      if ((student1digit === '1' && student2digit === '1') || (student1digit !== '1' && student2digit !== '1')) {
         [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['pen']);
       } else {
         [this.mergedFromStudent, this.mergedToStudent ] = _.sortBy(selectedStudents, ['pen']);
@@ -923,6 +926,10 @@ export default {
     },
     mergeStudentsModalOpenEmit(value) {
       this.mergeStudentsModalOpen = value;
+    },
+    mergeStudentsSwapEmit(value) {
+      this.mergedFromStudentID = value.toStudent;
+      this.mergedToStudentID = value.fromStudent;
     },
     getWarningMessage() {
       let warningMessage;
