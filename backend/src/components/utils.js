@@ -142,6 +142,11 @@ function handleExceptionResponse(e, res) {
       status: HttpStatus.UNAUTHORIZED,
       message: 'Token is not valid'
     });
+  } else if(e.status === 428 && e.data?.message) {
+    return res.status(HttpStatus.PRECONDITION_REQUIRED).json({
+      status: HttpStatus.PRECONDITION_REQUIRED,
+      message: e.data.message
+    });
   } else {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR',

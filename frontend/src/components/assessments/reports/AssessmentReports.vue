@@ -396,17 +396,53 @@ export default {
         });
     },
     async downloadStudentReport() {
-      this.isLoading = true;
       try {
         const url = `${Routes.assessments.BASE_REPORTS_URL}/student/${this.studentForSearch.studentID}/ISR/download`;
-        window.open(url);
+
+        const response = await ApiService.apiAxios.get(url, { responseType: 'blob' });
+
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = 'Individual Student Report.pdf';
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename=(.+)/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
       } catch (error) {
         console.error(error);
-        this.setFailureAlert(
-          error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to retrieve the student\'s report.'
-        );
-      } finally {
-        this.isLoading = false;
+
+        let errorMessage = 'An error occurred while trying to retrieve the student\'s report.';
+
+        if (error?.response?.data instanceof Blob && error?.response?.data?.type === 'application/json') {
+          try {
+            const text = await error.response.data.text();
+            const errorData = JSON.parse(text);
+
+            if (errorData?.message && errorData.message.includes('No assessments were found for student')) {
+              errorMessage = 'There are no assessment results for this student';
+            } else if (errorData?.message) {
+              errorMessage = errorData.message;
+            }
+          } catch (parseError) {
+            console.error('Error parsing error response:', parseError);
+          }
+        } else if (error?.response?.status === 428) {
+          errorMessage = 'There are no assessment results for this student';
+        } else if (error?.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+
+        this.setFailureAlert(errorMessage);
       }
     },
     async downloadReport(type) {
