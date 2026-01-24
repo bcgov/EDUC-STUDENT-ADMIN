@@ -296,7 +296,7 @@ async function getFilesetsPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-    let data = await getData(`${config.get('server:gdc:filesetURL')}/paginated`, params);
+    let data = await getData(`${config.get('server:gdc:filesetURL')}/paginated/final`, params);
 
     if (data.content && data.content.length > 0) {
       data.content = data.content.map(fileset => {

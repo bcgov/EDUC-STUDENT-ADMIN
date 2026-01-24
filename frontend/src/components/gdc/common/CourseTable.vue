@@ -21,7 +21,7 @@
           :style="{ cursor: column.sortable ? 'pointer' : 'default' }"
           @click="column.sortable && toggleSort(column)"
         >
-          <div class="v-data-table-header__content d-flex align-center">
+          <div>
             <span class="header-text mr-12">{{ column.title }}</span>
             <v-icon
               v-if="column.sortable"
