@@ -10,7 +10,8 @@
         :merged-to-student-i-d="mergedToStudentID"
         :merged-from-student-i-d="mergedFromStudentID"
         :title="PAGE_TITLES.MERGE_STUDENTS"
-        @mergeStudentsModalOpenEmit="mergeStudentsModalOpenEmit"
+        @merge-students-modal-open-emit="mergeStudentsModalOpenEmit"
+        @merge-students-swap-emit="mergeStudentsSwapEmit"
       />
     </v-card>
   </v-dialog>
@@ -19,7 +20,7 @@
 <script>
 
 import MergeStudentsCommon from '@/components/common/MergeStudentsCommon.vue';
-import { PAGE_TITLES } from '../../utils/constants';
+import {PAGE_TITLES} from '../../utils/constants';
 
 export default {
   name: 'MergeStudentModal',
@@ -40,6 +41,7 @@ export default {
       required: true
     },
   },
+  emits: ['merge-students-modal-open-emit', 'merge-students-swap-emit'],
   data() {
     return {
       PAGE_TITLES,
@@ -52,7 +54,7 @@ export default {
     },
     dialog(newValue) {
       if(!newValue && this.mergeStudentsModalOpen) {
-        this.$emit('mergeStudentsModalOpenEmit', newValue);
+        this.$emit('merge-students-modal-open-emit', newValue);
       }
     },
   },
@@ -61,7 +63,10 @@ export default {
   },
   methods: {
     mergeStudentsModalOpenEmit(value){
-      this.$emit('mergeStudentsModalOpenEmit', value);
+      this.$emit('merge-students-modal-open-emit', value);
+    },
+    mergeStudentsSwapEmit(value) {
+      this.$emit('merge-students-swap-emit', value);
     }
   }
 };
