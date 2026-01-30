@@ -347,11 +347,9 @@
           :validate-action="validateAction"
           :disable-merge="disableMerge"
           :disable-demerge="disableDemerge"
-          :disable-move-sld="disableMoveSld"
           :merge="merge"
           :demerge="demerge"
           :twin="twin"
-          :move-sld-records="moveSldRecords"
         />
       </v-card-actions>
     </div>
@@ -440,7 +438,7 @@ export default {
         'postalCode',
       ],
       headers: [
-        { id: 'table-checkbox', type: 'select', key: 'checkbox', sortable: false },
+        { id: 'table-checkbox', type: '', key: 'checkbox', sortable: false },
         {text: 'Date', value: 'snapshotDate', key: 'snapshotDate', sortable: false, tooltip: 'Activity Date'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
         {text: 'Surname', value: 'legalLastName', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
@@ -487,9 +485,9 @@ export default {
         this.$emit('update:selectedRecords', value);
       }
     },
-    checkedSldStudents() {
+    /*checkedSldStudents() {
       return Object.values(this.sldData).flatMap(records => records.filter(record => record.selected));
-    },
+    },*/
   },
   watch: {
     notification(val) {
@@ -687,7 +685,7 @@ export default {
       this.checkedStudents = this.checkedStudents.filter((item, idx) => idx !== index);
       this.validateAction();
       this.updateSldRowDisplay(student.pen, false);
-      this.resetSldSelection();
+      /*this.resetSldSelection();*/
     },
     updateSldRowDisplay(id, value) {
       this.sldDataTablesToDisplay[id] = value;
@@ -735,9 +733,9 @@ export default {
       }
       return true;
     },
-    disableMoveSld() {
+    /*disableMoveSld() {
       return this.isProcessing || this.checkedSldStudents.length <= 0;
-    },
+    },*/
     validateTwinRecordsExist(studentID, twinStudentID) {
       return getMatchedRecordsByStudent(studentID)
         .then(data => {
@@ -873,7 +871,7 @@ export default {
       }
       await this.executeDemerge();
     },
-    async moveSldRecords() {
+    /*async moveSldRecords() {
       let warningMessage = this.getWarningMessage();
       if (warningMessage) {
         this.setWarningAlert(warningMessage);
@@ -909,7 +907,7 @@ export default {
             this.setFailureAlert('Your request to move sld records could not be accepted, please try again later.');
           }
         });
-    },
+    },*/
     showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
       try {
         const student = JSON.parse(notificationData.eventPayload);
@@ -941,20 +939,21 @@ export default {
       }
       return warningMessage;
     },
-    sldSelectDisabled(assignedStudentID, isMergedSldRecord) {
+    /*sldSelectDisabled(assignedStudentID, isMergedSldRecord) {
       const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
-      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID)) || isMergedSldRecord;
-    },
-    resetSldSelection(){
+      /!*return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID)) || isMergedSldRecord;*!/
+      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || isMergedSldRecord;
+    },*/
+    /*resetSldSelection(){
       this.checkedSldStudents.forEach(record => record.selected = false);
-    },
+    },*/
     notifyMoveCompleteMessage() {
       this.setSuccessAlert('Success! Your request to move sld records is completed.');
       this.isProcessing = false;
       this.studentRecords.forEach(student => {
         this.getSldData(student);
       });
-      this.resetSldSelection();
+      /*this.resetSldSelection();*/
       this.$emit('refresh-sld-data');
     },
   },

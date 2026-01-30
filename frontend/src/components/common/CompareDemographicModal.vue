@@ -30,13 +30,13 @@
             secondary
             @click-action="[closeCompareModal(), clearError()]"
           />
-          <PrimaryButton
+<!--          <PrimaryButton
             id="moveSldBtn"
             text="Move Sld Record"
             primary
             :disabled="disableMoveSld()"
             @click-action="moveSldRecords()"
-          />
+          />-->
           <PrimaryButton
             id="twinBtn"
             text="Twin"

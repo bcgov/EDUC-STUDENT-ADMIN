@@ -1,3 +1,4 @@
+/*
 const { object, string, array } = require('yup');
 
 const moveSldSchema = object({
@@ -12,3 +13,4 @@ const moveSldSchema = object({
 module.exports = {
   moveSldSchema
 };
+*/
