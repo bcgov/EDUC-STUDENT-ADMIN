@@ -1039,17 +1039,6 @@ async function downloadSdcReport(req, res) {
   }
 }
 
-
-/*async function moveSld (req, res) {
-  try {
-    await postData(`${config.get('sdc:schoolCollectionStudentURL')}/move-sld`, req.body);
-    return res.status(HttpStatus.OK).json('');
-  } catch (e) {
-    logApiError(e, 'Error attempting to move sld record(s)');
-    return errorResponse(res);
-  }
-}*/
-
 async function removeSDCSchoolCollectionStudents(req, res) {
   try {
     let payload = {

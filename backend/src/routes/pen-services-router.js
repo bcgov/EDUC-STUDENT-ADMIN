@@ -19,6 +19,5 @@ router.get('/:id/student-merge', passport.authenticate('jwt', {session: false}, 
 router.post('/:id/student-merge-complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, mergeStudents);
 router.post('/:id/student-demerge-complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, demergeStudents);
 router.post('/:id/split-pen', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, splitPen);
-/*router.post('/:id/move-sld', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, moveSldRecords);*/
 
 module.exports = router;

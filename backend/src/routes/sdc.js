@@ -18,8 +18,7 @@ const {getCodes} = require('../components/utils');
 const PERMISSION = perm.PERMISSION;
 const permUtils = require('../components/permissionUtils');
 const auth = require('../components/auth');
-const validate = require('../components/validator');
-/*const { moveSldSchema } = require('../validations/sdc');*/
+//const validate = require('../components/validator');
 
 //cached code table calls
 router.get('/band-codes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_BAND_CODES, 'sdc:bandCodesURL'));
@@ -69,7 +68,6 @@ router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionStudentID/update-pe
 
 //update student
 router.post('/sdcSchoolCollectionStudent', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, updateAndValidateSdcSchoolCollectionStudent);
-/*router.post('/move-sld', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), validate(moveSldSchema), extendSession, moveSld);*/
 router.post('/sdcSchoolCollectionStudent/:sdcSchoolCollectionID/students/remove', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_STUDENT_DATA_COLLECTION_PERMISSION), extendSession, removeSDCSchoolCollectionStudents);
 
 //district collection

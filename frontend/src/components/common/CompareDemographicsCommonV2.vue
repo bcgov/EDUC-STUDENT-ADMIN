@@ -485,9 +485,6 @@ export default {
         this.$emit('update:selectedRecords', value);
       }
     },
-    /*checkedSldStudents() {
-      return Object.values(this.sldData).flatMap(records => records.filter(record => record.selected));
-    },*/
   },
   watch: {
     notification(val) {
@@ -733,9 +730,6 @@ export default {
       }
       return true;
     },
-    /*disableMoveSld() {
-      return this.isProcessing || this.checkedSldStudents.length <= 0;
-    },*/
     validateTwinRecordsExist(studentID, twinStudentID) {
       return getMatchedRecordsByStudent(studentID)
         .then(data => {
@@ -871,43 +865,6 @@ export default {
       }
       await this.executeDemerge();
     },
-    /*async moveSldRecords() {
-      let warningMessage = this.getWarningMessage();
-      if (warningMessage) {
-        this.setWarningAlert(warningMessage);
-        return;
-      }
-
-      this.movedFromStudent = this.studentRecords.find(student => this.checkedSldStudents.some(record => record.assignedStudentId === student.studentID));
-      this.movedToStudent = this.studentRecords.find(student => student.pen !== this.movedFromStudent.pen);
-
-      let result = await this.$refs.moveSldConfirmationDialog.open(null, null,
-        {color: '#fff', width: 580, closeIcon: true, dark: false, resolveText: 'Move'});
-      if (!result) {
-        return;
-      }
-
-      this.isProcessing = true;
-
-      const moveSldRequest = {
-        sdcSchoolCollectionIdsToUpdate: this.checkedSldStudents.map(record => record.sdcSchoolCollectionStudentID),
-        toStudentPen: this.movedToStudent?.pen
-      };
-      ApiService.apiAxios
-        .post(Routes['sdc'].BASE_URL + '/move-sld', moveSldRequest)
-        .then(() => {
-          this.notifyMoveCompleteMessage();
-        })
-        .catch(error => {
-          console.log(error);
-          this.isProcessing = false;
-          if (error?.response?.status === 409 && error?.response?.data?.message) {
-            this.setFailureAlert(error?.response?.data?.message);
-          } else {
-            this.setFailureAlert('Your request to move sld records could not be accepted, please try again later.');
-          }
-        });
-    },*/
     showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
       try {
         const student = JSON.parse(notificationData.eventPayload);
@@ -938,23 +895,6 @@ export default {
         }
       }
       return warningMessage;
-    },
-    /*sldSelectDisabled(assignedStudentID, isMergedSldRecord) {
-      const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
-      /!*return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.assignedStudentId.startsWith(assignedStudentID)) || isMergedSldRecord;*!/
-      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || isMergedSldRecord;
-    },*/
-    /*resetSldSelection(){
-      this.checkedSldStudents.forEach(record => record.selected = false);
-    },*/
-    notifyMoveCompleteMessage() {
-      this.setSuccessAlert('Success! Your request to move sld records is completed.');
-      this.isProcessing = false;
-      this.studentRecords.forEach(student => {
-        this.getSldData(student);
-      });
-      /*this.resetSldSelection();*/
-      this.$emit('refresh-sld-data');
     },
   },
 };

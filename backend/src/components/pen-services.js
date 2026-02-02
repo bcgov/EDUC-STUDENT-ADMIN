@@ -115,27 +115,6 @@ async function splitPen(req, res) {
   }
 }
 
-/*async function moveSldRecords(req, res) {
-  try {
-    let reqData = req.body;
-
-    const sagaReq = {
-      ...stripAuditColumns(reqData),
-    };
-
-    const sagaId = await postData(`${config.get('server:penServices:rootURL')}/move-sld-saga`, sagaReq, null, getUser(req).idir_username);
-    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_MOVE_SLD_SAGA', 'move SLD records', reqData.studentID);
-    
-    return res.status(200).json(sagaId);
-  } catch (e) {
-    logApiError(e, 'moveSldRecords', 'Error occurred while attempting to merge SLD records.');
-    if (e.status === HttpStatus.CONFLICT) {
-      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
-    }
-    return errorResponse(res);
-  }
-}*/
-
 function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation, studentID) {
   const event = {
     sagaId,
