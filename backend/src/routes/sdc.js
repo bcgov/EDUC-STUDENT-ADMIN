@@ -18,7 +18,7 @@ const {getCodes} = require('../components/utils');
 const PERMISSION = perm.PERMISSION;
 const permUtils = require('../components/permissionUtils');
 const auth = require('../components/auth');
-//const validate = require('../components/validator');
+const validate = require('../components/validator');
 
 //cached code table calls
 router.get('/band-codes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSDCData(constants.CACHE_KEYS.SDC_BAND_CODES, 'sdc:bandCodesURL'));

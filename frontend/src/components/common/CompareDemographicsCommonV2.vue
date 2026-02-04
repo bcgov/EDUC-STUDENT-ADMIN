@@ -682,7 +682,6 @@ export default {
       this.checkedStudents = this.checkedStudents.filter((item, idx) => idx !== index);
       this.validateAction();
       this.updateSldRowDisplay(student.pen, false);
-      /*this.resetSldSelection();*/
     },
     updateSldRowDisplay(id, value) {
       this.sldDataTablesToDisplay[id] = value;
