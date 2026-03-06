@@ -115,7 +115,7 @@ async function splitPen(req, res) {
   }
 }
 
-/*async function moveSldRecords(req, res) {
+async function moveSldRecords(req, res) {
   try {
     let reqData = req.body;
 
@@ -134,7 +134,7 @@ async function splitPen(req, res) {
     }
     return errorResponse(res);
   }
-}*/
+}
 
 function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation, studentID) {
   const event = {
@@ -153,5 +153,6 @@ module.exports = {
   mergeStudents,
   demergeStudents,
   splitPen,
+  moveSldRecords,
 };
 
