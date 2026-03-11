@@ -1081,8 +1081,8 @@ else
   disableSdcFunctionality=false
   EDUC_EDX_FRONTEND="https://educationdataexchange.gov.bc.ca"
   GRAD_ADMIN_FRONTEND="https://grad.gov.bc.ca"
-  disableAssessmentFunctionality=true
-  disableGDCFunctionality=true
+  disableAssessmentFunctionality=false
+  disableGDCFunctionality=false
   sldMigrationDate="2025-01-17"
 fi
 
