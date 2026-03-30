@@ -43,7 +43,7 @@
                 <v-text-field
                   id="newSchoolSafeNameInput"
                   v-model="moveSchoolObject.displayNameNoSpecialChars"
-                  :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(moveSchoolObject.displayName)]"
+                  :rules="[rules.noSpecialCharactersSchDisAuthName()]"
                   variant="underlined"
                   class="pt-0"
                   :maxlength="255"

@@ -39,22 +39,10 @@ const number = (message = 'Must be a number') => {
  * @returns {(value: string) => true|string}
  */
 const noSpecialCharactersSchDisAuthName = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^A-Za-z0-9\s-'.#():?&/@]/.test(v) || message;
+  v => !v || !/[^\p{L}\p{N}\p{M}\s'.#():?&/@-]/u.test(v) || message;
 
 const noSpecialCharactersAddress = (message = 'Special characters currently aren’t accepted, but we recognize their importance and are working on an update. For now, please remove or replace them.') =>
   v => !v || !/[^A-Za-z0-9\s-.#/]/.test(v) || message;
-
-const noSpecialCharactersContactTitle = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^A-Za-z.'\s-&()]/.test(v) || message;
-
-const noSpecialCharactersContactName = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^A-Za-z.'\s-]/.test(v) || message;
-
-const specialCharactersInSchDisName = (displayName, message = 'Required. Enter a school name without special characters.') =>{
-  if(/[^A-Za-z.'0-9#@&():?/\s-]/.test(displayName)) {
-    return required(message);
-  }
-};
 
 /**
  * Rule for phone numbers also works for fax numbers too
@@ -254,11 +242,8 @@ export {
   dateIsAfterOrEqualTo,
   number,
   noSpecialCharactersSchDisAuthName,
-  noSpecialCharactersContactName,
-  noSpecialCharactersContactTitle,
   noSpecialCharactersAddress,
   minLength,
-  specialCharactersInSchDisName,
   phoneNumber,
   postalCode,
   required,

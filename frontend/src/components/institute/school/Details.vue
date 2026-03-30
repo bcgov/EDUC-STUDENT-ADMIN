@@ -88,7 +88,7 @@
                 variant="underlined"
                 class="pr-13"
                 :maxlength="255"
-                :rules="[rules.noSpecialCharactersSchDisAuthName(), rules.specialCharactersInSchDisName(schoolDetailsCopy.displayName)]"
+                :rules="[rules.noSpecialCharactersSchDisAuthName()]"
                 @update:model-value="validateForm"
               />
             </v-col>
