@@ -50,7 +50,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>Manager, Graduation Assessment, SLB</td>
+                <td>Manager, Graduation Assessment</td>
                 <td>{{ session.approvalAssessmentAnalysisUserID }}</td>
                 <td>{{ formatDate(session.approvalAssessmentAnalysisSignDate) }}</td>
                 <td class="text-right">
@@ -66,7 +66,7 @@
                 </td>
               </tr>
               <tr>
-                <td>Director, Provincial Assessment, SLB</td>
+                <td>Director, Provincial Assessment</td>
                 <td>{{ session.approvalAssessmentDesignUserID }}</td>
                 <td>{{ formatDate(session.approvalAssessmentDesignSignDate) }}</td>
                 <td class="text-right">
@@ -82,7 +82,7 @@
                 </td>
               </tr>
               <tr>
-                <td>Manager, Student Certification, SIDENS</td>
+                <td>Manager, Student Certification</td>
                 <td>{{ session.approvalStudentCertUserID }}</td>
                 <td>{{ formatDate(session.approvalStudentCertSignDate) }}</td>
                 <td class="text-right">
