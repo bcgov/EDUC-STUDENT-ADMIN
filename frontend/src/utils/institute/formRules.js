@@ -33,13 +33,15 @@ const number = (message = 'Must be a number') => {
 };
 
 /**
- * Form input must not contain special characters
+ * Form input must not contain characters that are clearly invalid in a school/district/authority name.
+ * Uses a deny-list approach so that Indigenous place names with combining characters,
+ * diacritics, and modifier letters (e.g. Lək̓ʷəŋən, Sḵwx̱wú7mesh, Nlaka'pamux) are permitted.
  *
  * @param {String} [message]
  * @returns {(value: string) => true|string}
  */
 const noSpecialCharactersSchDisAuthName = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^\p{L}\p{N}\p{M}\s'.#():?&/@-]/u.test(v) || message;
+  v => !v || !/[<>{}[\]\\|]/.test(v) || message;
 
 const noSpecialCharactersAddress = (message = 'Special characters currently aren’t accepted, but we recognize their importance and are working on an update. For now, please remove or replace them.') =>
   v => !v || !/[^A-Za-z0-9\s-.#/]/.test(v) || message;
@@ -216,7 +218,7 @@ const penIsValid = (message = 'PEN is invalid') => {
 
     const sumOdds = odds.reduce((acc, val) => acc + val, 0);
 
-    let fullEvenString = "";
+    let fullEvenString = '';
     evens.forEach(num => fullEvenString += num);
 
     const doubledEvens = [];
@@ -230,7 +232,7 @@ const penIsValid = (message = 'PEN is invalid') => {
     const finalSum = sumEvens + sumOdds;
     const checkDigit = v[8];
 
-    return ((finalSum % 10 === 0 && checkDigit === "0") ||
+    return ((finalSum % 10 === 0 && checkDigit === '0') ||
         (10 - finalSum % 10 === parseInt(checkDigit, 10))) || message;
   };
 };
