@@ -457,7 +457,7 @@ export const SDC_REPORTS = Object.freeze(
       {
         label: 'ELL Students Fall Report',
         csvDownloadURL: object.SDC_MINISTRY_REPORTS + '/download/headcount/ell-students-fall-csv/',
-        description: 'This report provides English Language Learner (ELL) student data for all MyEducation schools. Report data will be from the most recent previous Fall collection relative to this collection. If this is a Fall collection, it will be this collection.'
+        description: 'This report provides English Language Learner (ELL) student data for all MyEducation schools. Student data will be from the most recent previous Fall collection relative to this collection, if this is a Fall collection, it will be this collection. Years in ELL data will always default to the most recent available, that means that while the students being pulled will be from a collection in time, the years in ELL value will always be the most recent value available (this value spans collections to provide a years in ELL count for the same student over many collections).'
       }
     ],
     independentReports: [
