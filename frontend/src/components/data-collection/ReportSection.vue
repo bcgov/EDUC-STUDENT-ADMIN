@@ -39,6 +39,22 @@
     </span>
   </v-row>
   <v-row
+    v-if="selectedReport?.csvStreamURL"
+    class="mt-2 mb-4"
+  >
+    <span>
+      <a
+        id="streamDownloadReport"
+        href="#"
+        :class="{ 'disabled-link': isStreamDownloading }"
+        @click.prevent="streamDownloadReport"
+      >
+        <v-icon>mdi-tray-arrow-down</v-icon>
+        {{ isStreamDownloading ? 'Downloading...' : 'Download CSV' }}
+      </a>
+    </span>
+  </v-row>
+  <v-row
     v-if="(reportData !== null || displayAllStudents) && selectedReport?.url"
     no-gutters
   >
@@ -156,7 +172,8 @@ export default {
       totalElements: 0,
       canLoadNext: false,
       canLoadPrevious: false,
-      config: null
+      config: null,
+      isStreamDownloading: false
     };
   },
   watch: {
@@ -235,6 +252,37 @@ export default {
         this.loadStudents();
       }
     },
+    async streamDownloadReport() {
+      if (this.isStreamDownloading) return;
+      this.isStreamDownloading = true;
+      try {
+        const response = await ApiService.apiAxios.get(
+          this.selectedReport.csvStreamURL + this.collectionID,
+          { responseType: 'blob' }
+        );
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = 'download.csv';
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (match && match[1]) {
+            filename = match[1].replace(/['"]/g, '');
+          }
+        }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while downloading the report. Please try again later.');
+      } finally {
+        this.isStreamDownloading = false;
+      }
+    },
   }
 };
 </script>
@@ -250,5 +298,10 @@ export default {
 
 :deep(#dataTable > div.v-table__wrapper > table > tbody > tr > td){
   font-size: 0.85rem;
+}
+
+.disabled-link {
+  pointer-events: none;
+  opacity: 0.5;
 }
 </style>
