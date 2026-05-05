@@ -1,5 +1,6 @@
 'use strict';
-const { logApiError, errorResponse, getData } = require('./utils');
+const { logApiError, errorResponse, getData, getCommonServiceStream } = require('./utils');
+const log = require('./logger');
 const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 let reportTypes = ['indy-inclusive-ed-enrollment-headcounts', 'school-enrollment-headcounts', 'indy-school-enrollment-headcounts', 'school-address-report', 'fsa-registration-report',
@@ -75,7 +76,63 @@ function setResponseHeaders(res, { filename, contentType }) {
   res.setHeader('Content-Type', contentType);
 }
 
+async function streamMinistrySDCReport(req, res) {
+  try {
+    if (!reportTypes.includes(req.params.reportType)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided.'
+      });
+    }
+    const url = `${config.get('sdc:ministrySDCReportsURL')}/${req.params.collectionID}/${req.params.reportType}/stream`;
+
+    const apiRes = await getCommonServiceStream(url, {}, req);
+
+    if (apiRes.headers['content-type']) {
+      res.setHeader('Content-Type', apiRes.headers['content-type']);
+    } else {
+      res.setHeader('Content-Type', 'text/csv');
+    }
+
+    if (apiRes.headers['content-disposition']) {
+      res.setHeader('Content-Disposition', apiRes.headers['content-disposition']);
+    } else {
+      res.setHeader('Content-Disposition', 'attachment; filename="ELLStudentsFallReport.csv"');
+    }
+
+    req.on('close', () => {
+      if (!res.writableEnded) {
+        apiRes.data.destroy();
+      }
+    });
+
+    apiRes.data.on('error', async (err) => {
+      await logApiError(err, 'streamMinistrySDCReport', 'Error streaming ministry SDC report.');
+      if (!res.headersSent) {
+        return errorResponse(res);
+      }
+      res.destroy(err);
+    });
+
+    res.on('error', (err) => {
+      log.error('Error writing to client response:', err);
+      apiRes.data.destroy();
+    });
+
+    apiRes.data.pipe(res);
+  } catch (e) {
+    await logApiError(e, 'streamMinistrySDCReport', 'Error occurred while attempting to stream ministry SDC report.');
+    if (!res.headersSent) {
+      if (e.data?.message) {
+        return errorResponse(res, e.data.message, e.status);
+      }
+      return errorResponse(res);
+    }
+    res.destroy(e);
+  }
+}
+
 module.exports = {
   getMinistrySDCReport,
-  downloadMinistrySDCReport
+  downloadMinistrySDCReport,
+  streamMinistrySDCReport
 };
