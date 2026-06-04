@@ -159,21 +159,57 @@
   </ConfirmationDialog>
   <ConfirmationDialog ref="confirmCloseCollectionWithIncompleteSchools">
     <template #message>
-      <p>
-        The following schools have not completed all steps yet. Posting and closing the July collection may remove their 1701 submissions.
-      </p>
-      <ul
-          id="incompleteJulySchoolCollectionList"
-          class="mb-4"
-      >
-        <li
-            v-for="school in incompleteJulySchoolCollections"
-            :key="school.key"
+      <div class="july-close-warning">
+        <v-alert
+            type="warning"
+            variant="tonal"
+            class="mb-4"
         >
-          {{ school.schoolName }} (Current status: {{ school.statusLabel }})
-        </li>
-      </ul>
-      <p>Do you want to continue posting and closing the collection?</p>
+          <div class="july-close-warning__alert-title">
+            {{ formatIncompleteSchoolsCount() }} still in progress
+          </div>
+          <div>
+            Posting and closing the July collection may remove 1701 submissions for schools that have not completed all steps.
+          </div>
+        </v-alert>
+
+        <div class="july-close-warning__list-header">
+          <span>Schools requiring attention</span>
+          <v-chip
+              color="#38598A"
+              text-color="white"
+              size="small"
+          >
+            {{ incompleteJulySchoolCollections.length }}
+          </v-chip>
+        </div>
+
+        <div
+            id="incompleteJulySchoolCollectionList"
+            class="july-close-warning__list"
+        >
+          <div
+              v-for="school in incompleteJulySchoolCollections"
+              :key="school.key"
+              class="july-close-warning__row"
+          >
+            <div class="july-close-warning__school-name">
+              {{ school.schoolName }}
+            </div>
+            <v-chip
+                :color="getSchoolCollectionStatusChipColor(school.statusCode)"
+                :text-color="getSchoolCollectionStatusChipTextColor(school.statusCode)"
+                size="small"
+            >
+              {{ school.statusLabel }}
+            </v-chip>
+          </div>
+        </div>
+
+        <p class="july-close-warning__footer">
+          Do you want to continue posting and closing the collection?
+        </p>
+      </div>
     </template>
   </ConfirmationDialog>
 </template>
@@ -445,9 +481,26 @@ export default {
           .map(school => ({
             key: school.sdcSchoolCollectionID || school.schoolID || school.schoolName,
             schoolName: school.schoolName || 'Unknown School',
+            statusCode: school.sdcSchoolCollectionStatusCode,
             statusLabel: this.schoolCollectionStatusCodesMap.get(school.sdcSchoolCollectionStatusCode)?.label || school.sdcSchoolCollectionStatusCode
           }))
           .sort((a, b) => a.schoolName.localeCompare(b.schoolName));
+    },
+    formatIncompleteSchoolsCount() {
+      const count = this.incompleteJulySchoolCollections.length;
+      return `${count} school${count === 1 ? '' : 's'}`;
+    },
+    getSchoolCollectionStatusChipColor(statusCode) {
+      if (statusCode === 'LOADFAIL') {
+        return '#D8292F';
+      }
+      if (['SUBMITTED', 'REVIEWED', 'VERIFIED', 'DUP_VRFD', 'P_DUP_POST', 'P_DUP_VRFD'].includes(statusCode)) {
+        return '#F4B183';
+      }
+      return '#38598A';
+    },
+    getSchoolCollectionStatusChipTextColor(statusCode) {
+      return ['SUBMITTED', 'REVIEWED', 'VERIFIED', 'DUP_VRFD', 'P_DUP_POST', 'P_DUP_VRFD'].includes(statusCode) ? 'black' : 'white';
     },
     async closeCollection() {
       let confirmation;
@@ -493,3 +546,62 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.july-close-warning__alert-title {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.july-close-warning__list-header {
+  align-items: center;
+  display: flex;
+  font-size: 0.95rem;
+  font-weight: 700;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.july-close-warning__list {
+  background: #f8fafc;
+  border: 1px solid #d9e2ec;
+  border-radius: 6px;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+.july-close-warning__row {
+  align-items: center;
+  border-bottom: 1px solid #e6edf5;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+}
+
+.july-close-warning__row:last-child {
+  border-bottom: none;
+}
+
+.july-close-warning__school-name {
+  color: #1f2933;
+  font-weight: 600;
+  line-height: 1.35;
+  padding-right: 1rem;
+}
+
+.july-close-warning__footer {
+  margin: 1rem 0 0;
+}
+
+@media screen and (max-width: 768px) {
+  .july-close-warning__row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .july-close-warning__school-name {
+    padding-right: 0;
+  }
+}
+</style>
