@@ -76,7 +76,10 @@
             Reports
           </v-tab>
         </v-tabs>
-        <v-window v-model="tab">
+        <v-window
+          v-model="tab"
+          class="overflow-visible"
+        >
           <v-window-item
             :value="'districtSubmissionsTab'"
             transition="false"
