@@ -31,7 +31,7 @@
       id="dataTable"
       :headers="headers"
       :items="summaryData?.rows"
-      class="elevation-1 rounded mb-4"
+      class="elevation-1 rounded mb-4 sticky-left-column"
       mobile-breakpoint="0"
     >
       <template #item.TOTAL="{ item }">
@@ -200,15 +200,15 @@ export default {
   },
 };
 </script>
-  <style scoped>
- :deep(.v-data-table-footer__items-per-page) {
+<style scoped>
+:deep(.v-data-table-footer__items-per-page) {
   display: none;
 }
 :deep(.v-data-table-footer) {
-       display: none;
- }
+  display: none;
+}
 
- :deep(#dataTable > div.v-table__wrapper > table > thead > tr > th > div > span){
+:deep(#dataTable > div.v-table__wrapper > table > thead > tr > th > div > span){
   font-size: 0.80rem;
   font-weight: bold;
 }
@@ -220,5 +220,10 @@ export default {
 :deep(#dataTable > div.v-table__wrapper > table > tbody > tr > td){
   font-size: 0.85rem;
 }
-  </style>
-  
+
+:deep(.sticky-left-column thead tr th:first-child),
+:deep(.sticky-left-column tbody tr td:first-child) {
+  position: sticky;
+  left: 0;
+}
+</style>
