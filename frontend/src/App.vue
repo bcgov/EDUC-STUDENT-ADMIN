@@ -196,4 +196,10 @@ export default {
   .viewer-open {
     padding-right: 0 !important;
   }
+
+  .sticky-left-column thead tr th:first-child,
+  .sticky-left-column tbody tr td:first-child {
+    position: sticky;
+    left: 0;
+  }
 </style>
