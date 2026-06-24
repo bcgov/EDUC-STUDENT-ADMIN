@@ -220,10 +220,4 @@ export default {
 :deep(#dataTable > div.v-table__wrapper > table > tbody > tr > td){
   font-size: 0.85rem;
 }
-
-:deep(.sticky-left-column thead tr th:first-child),
-:deep(.sticky-left-column tbody tr td:first-child) {
-  position: sticky;
-  left: 0;
-}
 </style>
