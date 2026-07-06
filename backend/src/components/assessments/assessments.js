@@ -305,6 +305,41 @@ async function downloadSchoolLevelReport(req, res) {
   }
 }
 
+async function checkReportAvailability(req, res) {
+  try {
+    const reportType = ASSESSMENTS_REPORT_TYPE_CODE_MAP.get(req.params.type);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+    if (reportType === 'random-sample') {
+      return res.status(HttpStatus.OK).json(true);
+    }
+    const url = `${config.get('server:assessments:rootURL')}/report/${req.params.sessionID}/${req.params.type}/available`;
+    const data = await getData(url);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    return handleExceptionResponse(e, res);
+  }
+}
+
+async function checkStudentReportAvailability(req, res) {
+  try {
+    const reportType = ASSESSMENTS_STUDENT_REPORT_TYPE_CODE_MAP.get(req.params.reportTypeCode);
+    if (!reportType) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid report type provided'
+      });
+    }
+    const url = `${config.get('server:assessments:rootURL')}/report/student/${req.params.studentID}/${reportType}/available`;
+    const data = await getData(url);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function uploadAssessmentKeyFile(req, res) {
   try {
     const userInfo = utils.getUser(req);
@@ -494,5 +529,7 @@ module.exports = {
   downloadXamFile,
   downloadSchoolLevelReport,
   approveResults,
-  downloadAssessmentStudentReport
+  downloadAssessmentStudentReport,
+  checkReportAvailability,
+  checkStudentReportAvailability
 };
