@@ -79,9 +79,17 @@
               class="mt-n2"
             >
               <DownloadLink
+                v-if="studentReportAvailable"
                 label="Student Report"
                 :download-action="downloadStudentReport"
               />
+              <v-card-text
+                v-else-if="studentReportAvailable === false"
+                style="color: gray; font-size: small"
+                class="pa-0"
+              >
+                No results available for the selected student.
+              </v-card-text>
             </v-col>
           </v-row>
         </div>
@@ -153,42 +161,62 @@
             <v-card-title style="font-size: medium;">
               Other Reports
             </v-card-title>
-            <v-row class="pl-3">
-              <v-col
-                cols="12"
-              >
-                <DownloadLink
-                  label="Provincial DOAR Summary.pdf"
-                  :download-action="() => downloadReport('doar-prov-summary')"
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              class="pl-3 pt-2"
-              no-gutters
+            <div
+              v-if="availabilityLoading"
+              class="d-flex justify-center pb-3"
             >
-              <v-col
-                cols="12"
+              <v-progress-circular
+                indeterminate
+                color="primary"
+                size="24"
+              />
+            </div>
+            <template v-else>
+              <div class="pb-3">
+                <v-row
+                  v-if="otherReportsAvailability['doar-prov-summary']"
+                  class="pl-3"
+                >
+                  <v-col cols="12">
+                    <DownloadLink
+                      label="Provincial DOAR Summary.pdf"
+                      :download-action="() => downloadReport('doar-prov-summary')"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-if="otherReportsAvailability['yukon-summary-report']"
+                  class="pl-3 pt-2"
+                  no-gutters
+                >
+                  <v-col cols="12">
+                    <DownloadLink
+                      label="Yukon Assessment Summary Counts.csv"
+                      :download-action="() => downloadReport('yukon-summary-report')"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-if="otherReportsAvailability['yukon-student-report']"
+                  class="pl-3 pt-2"
+                  no-gutters
+                >
+                  <v-col cols="12">
+                    <DownloadLink
+                      label="Yukon Assessment Details.csv"
+                      :download-action="() => downloadReport('yukon-student-report')"
+                    />
+                  </v-col>
+                </v-row>
+              </div>
+              <v-card-text
+                v-if="!otherReportsAvailability['doar-prov-summary'] && !otherReportsAvailability['yukon-summary-report'] && !otherReportsAvailability['yukon-student-report']"
+                style="color: gray; font-size: small"
+                class="mt-n3"
               >
-                <DownloadLink
-                  label="Yukon Assessment Summary Counts.csv"
-                  :download-action="() => downloadReport('yukon-summary-report')"
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              class="pl-3 pt-2 pb-3"
-              no-gutters
-            >
-              <v-col
-                cols="12"
-              >
-                <DownloadLink
-                  label="Yukon Assessment Details.csv"
-                  :download-action="() => downloadReport('yukon-student-report')"
-                />
-              </v-col>
-            </v-row>
+                No results available for the selected session.
+              </v-card-text>
+            </template>
           </v-card>
         </v-row>
       </div>
@@ -210,46 +238,72 @@
             <v-card-title style="font-size: medium;">
               Data for Item Analysis
             </v-card-title>
-            <v-row class="pl-3 pb-3">
-              <v-col
-                cols="6"
-                class="d-flex flex-column"
-              >
-                <DownloadLink
-                  label="NME10 for Item Analysis.csv"
-                  :download-action="() => downloadReport('NME10')"
-                />
-                <DownloadLink
-                  label="NMF10 for Item Analysis.csv"
-                  :download-action="() => downloadReport('NMF10')"
-                />
-                <DownloadLink
-                  label="LTE10 for Item Analysis.csv"
-                  :download-action="() => downloadReport('LTE10')"
-                />
-                <DownloadLink
-                  label="LTE12 for Item Analysis.csv"
-                  :download-action="() => downloadReport('LTE12')"
-                />
-              </v-col>
-              <v-col
-                cols="6"
-                class="d-flex flex-column"
-              >
-                <DownloadLink
-                  label="LTP10 for Item Analysis.csv"
-                  :download-action="() => downloadReport('LTP10')"
-                />
-                <DownloadLink
-                  label="LTP12 for Item Analysis.csv"
-                  :download-action="() => downloadReport('LTP12')"
-                />
-                <DownloadLink
-                  label="LTF12 for Item Analysis.csv"
-                  :download-action="() => downloadReport('LTF12')"
-                />
-              </v-col>
-            </v-row>
+            <div
+              v-if="availabilityLoading"
+              class="d-flex justify-center pb-3"
+            >
+              <v-progress-circular
+                indeterminate
+                color="primary"
+                size="24"
+              />
+            </div>
+            <template v-else-if="Object.values(itemAnalysisAvailability).some(Boolean)">
+              <v-row class="pl-3 pb-3">
+                <v-col
+                  cols="6"
+                  class="d-flex flex-column"
+                >
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['NME10']"
+                    label="NME10 for Item Analysis.csv"
+                    :download-action="() => downloadReport('NME10')"
+                  />
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['NMF10']"
+                    label="NMF10 for Item Analysis.csv"
+                    :download-action="() => downloadReport('NMF10')"
+                  />
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['LTE10']"
+                    label="LTE10 for Item Analysis.csv"
+                    :download-action="() => downloadReport('LTE10')"
+                  />
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['LTE12']"
+                    label="LTE12 for Item Analysis.csv"
+                    :download-action="() => downloadReport('LTE12')"
+                  />
+                </v-col>
+                <v-col
+                  cols="6"
+                  class="d-flex flex-column"
+                >
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['LTP10']"
+                    label="LTP10 for Item Analysis.csv"
+                    :download-action="() => downloadReport('LTP10')"
+                  />
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['LTP12']"
+                    label="LTP12 for Item Analysis.csv"
+                    :download-action="() => downloadReport('LTP12')"
+                  />
+                  <DownloadLink
+                    v-if="itemAnalysisAvailability['LTF12']"
+                    label="LTF12 for Item Analysis.csv"
+                    :download-action="() => downloadReport('LTF12')"
+                  />
+                </v-col>
+              </v-row>
+            </template>
+            <v-card-text
+              v-else
+              style="color: gray; font-size: small"
+              class="mt-n3 pb-3"
+            >
+              No results available for the selected session.
+            </v-card-text>
           </v-card>
         </v-row>
       </div>
@@ -296,6 +350,10 @@ export default {
       selectedSessionID: null,
       selectedSchoolLevelSessionID: null,
       sessions: [],
+      availabilityLoading: false,
+      studentReportAvailable: null,
+      otherReportsAvailability: {},
+      itemAnalysisAvailability: {},
     };
   },
   computed: {
@@ -323,6 +381,9 @@ export default {
         }
       },
       immediate: true
+    },
+    selectedSessionID() {
+      this.checkSessionReportAvailability();
     }
   },
   async created() {
@@ -356,6 +417,7 @@ export default {
       }
       
       this.selectedSessionID = this.sessions[0].value;
+      this.checkSessionReportAvailability();
     },
     setupSchoolLists() {
       this.schoolSearchNames = [];
@@ -364,6 +426,53 @@ export default {
         this.schoolSearchNames.push({schoolCodeName: schoolCodeName, schoolCodeValue: school.schoolID});
       });
       this.schoolSearchNames = sortBy(this.schoolSearchNames, ['schoolCodeName']);
+    },
+    async checkSessionReportAvailability() {
+      if (!this.selectedSessionID) {
+        this.otherReportsAvailability = {};
+        this.itemAnalysisAvailability = {};
+        return;
+      }
+      this.availabilityLoading = true;
+      const otherReportTypes = ['doar-prov-summary', 'yukon-summary-report', 'yukon-student-report'];
+      const itemAnalysisTypes = ['NME10', 'NMF10', 'LTE10', 'LTE12', 'LTP10', 'LTP12', 'LTF12'];
+      try {
+        const otherReportsResults = {};
+        const itemAnalysisResults = {};
+        await Promise.all([
+          ...otherReportTypes.map(async (type) => {
+            const { data } = await ApiService.apiAxios.get(
+              `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/available`
+            );
+            otherReportsResults[type] = data;
+          }),
+          ...(this.hasEditPermission ? itemAnalysisTypes.map(async (type) => {
+            const { data } = await ApiService.apiAxios.get(
+              `${Routes.assessments.BASE_URL}/${this.selectedSessionID}/report/${type}/available`
+            );
+            itemAnalysisResults[type] = data;
+          }) : [])
+        ]);
+        this.otherReportsAvailability = otherReportsResults;
+        this.itemAnalysisAvailability = itemAnalysisResults;
+      } catch (error) {
+        console.error('Error checking report availability', error);
+        this.otherReportsAvailability = {};
+        this.itemAnalysisAvailability = {};
+      } finally {
+        this.availabilityLoading = false;
+      }
+    },
+    async checkStudentReportAvailability(studentID) {
+      try {
+        const { data } = await ApiService.apiAxios.get(
+          `${Routes.assessments.BASE_REPORTS_URL}/student/${studentID}/ISR/available`
+        );
+        this.studentReportAvailable = data;
+      } catch (error) {
+        console.error('Error checking student report availability', error);
+        this.studentReportAvailable = null;
+      }
     },
     searchStudentForGivenPEN() {
       this.isSearchingStudent = true;
@@ -383,6 +492,7 @@ export default {
           };
           this.showPENSearchResultArea = true;
           this.isSearchingStudent = false;
+          this.checkStudentReportAvailability(response.data.studentID);
         })
         .catch(error => {
           console.log(error);

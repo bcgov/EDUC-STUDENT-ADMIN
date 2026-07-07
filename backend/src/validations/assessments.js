@@ -115,10 +115,20 @@ const approvalSchema = object({
   query: object().noUnknown(),
 }).noUnknown();
 
+const studentReportAvailabilitySchema = object({
+  params: object({
+    studentID:      string().nonNullable(),
+    reportTypeCode: string().nonNullable(),
+  }).noUnknown(),
+  query: object().noUnknown(),
+  body:  object().noUnknown(),
+}).noUnknown();
+
 module.exports = {
   putStudentAssessmentSchema,
   fileUploadSchema,
   postStudentAssessmentSchema,
   reportSchema,
-  approvalSchema
+  approvalSchema,
+  studentReportAvailabilitySchema
 };
