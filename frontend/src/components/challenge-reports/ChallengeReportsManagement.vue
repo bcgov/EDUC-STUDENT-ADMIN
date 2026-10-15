@@ -199,7 +199,7 @@
           <h3 class="subHeading pb-1">
             Preliminary Phase
           </h3>
-          <p>Starting the Preliminary Phase will send the Preliminary Email (using the parameters above) to Enrolment Data Collection administrators, informing them their Funding Report for Course Challenges is now available to review.</p>
+          <p>Starting the Preliminary Phase will send the Preliminary Email (using the parameters above) to Enrolment Data Collection administrators, informing them their Funding Report for Course Challenges is now available to review. Email copies are also sent to Student.Certification@gov.bc.ca, GRAD.Support@gov.bc.ca and Data.Management@gov.bc.ca.</p>
         </v-col>
       </v-row>
       <v-row>
@@ -231,6 +231,9 @@
             </li>
             <li>
               Notify the Financial Management Division (<b>EDUC.FundingAndAllocationUnit@gov.bc.ca</b>) and the Independent Schools Group (<b>faa.is@gov.bc.ca</b>) that the challenge report is available for download.
+            </li>
+            <li>
+              Email copies are also sent to Student.Certification@gov.bc.ca; GRAD.Support@gov.bc.ca and Data.Management@gov.bc.ca.
             </li>
           </ul>
         </v-col>
