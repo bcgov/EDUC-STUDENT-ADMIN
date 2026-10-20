@@ -44,6 +44,7 @@ env:
   HOST_ROUTE: ${{ secrets.SITE_URL }}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
