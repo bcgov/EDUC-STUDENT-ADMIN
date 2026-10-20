@@ -1038,6 +1038,12 @@ studentAdminServiceClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/real
   -H "Authorization: Bearer $TKN" \
   | jq -r '.value')
 
+# Do not overwrite working configuration when Keycloak returns no service secret.
+if [[ -z "$studentAdminServiceClientSecret" || "$studentAdminServiceClientSecret" == "null" ]]; then
+  echo "Unable to retrieve student-admin-service secret; leaving ConfigMap unchanged." >&2
+  exit 1
+fi
+
 echo Generating private and public keys
 ssh-keygen -b 4096 -t rsa -f tempStudentAdminBackendkey -m pem -q -N ""
 UI_PRIVATE_KEY_VAL="$(cat tempStudentAdminBackendkey)"
