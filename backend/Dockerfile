@@ -7,7 +7,7 @@ RUN chmod 755 /logs
 WORKDIR /opt/app-root/src
 RUN ln -s /logs .
 
-COPY package*.json ./
+COPY package*.json .npmrc ./
 RUN npm ci
 
 COPY . /opt/app-root/src
