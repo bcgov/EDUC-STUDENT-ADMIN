@@ -1,6 +1,6 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:18.16.0-alpine3.18 AS build-stage
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:22.23.4-alpine3.23 AS build-stage
 WORKDIR /frontend
-COPY package*.json ./
+COPY package*.json .npmrc ./
 RUN npm install
 COPY ./ .
 RUN npm run build
