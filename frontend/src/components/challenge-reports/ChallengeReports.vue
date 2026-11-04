@@ -18,6 +18,14 @@
             Manage Reporting Process
           </v-tab>
           <v-tab
+            v-if="hasPermissionToViewChallengeReportData"
+            id="reportDataTab"
+            value="reportDataTab"
+            prepend-icon="mdi-file-table-outline"
+          >
+            View Report Data
+          </v-tab>
+          <v-tab
             v-if="hasPermissionToViewChallengeReporting"
             id="schoolsTab"
             value="schoolsTab"
@@ -41,6 +49,14 @@
               <ChallengeReportsReportingProcess />
             </v-window-item>
             <v-window-item
+              v-if="hasPermissionToViewChallengeReportData"
+              value="reportDataTab"
+              transition="false"
+              reverse-transition="false"
+            >
+              <ChallengeReportsViewReportData />
+            </v-window-item>
+            <v-window-item
               v-if="hasPermissionToViewChallengeReporting"
               value="schoolsTab"
               transition="false"
@@ -62,6 +78,7 @@ import {PAGE_TITLES} from '@/utils/constants';
 import {formatDate} from '@/utils/format';
 import ChallengeReportsReportingProcess from '@/components/challenge-reports/ChallengeReportsManagement.vue';
 import ChallengeReportsMinistryReports from '@/components/challenge-reports/ChallengeReportsMinistryReports.vue';
+import ChallengeReportsViewReportData from '@/components/challenge-reports/ChallengeReportsViewReportData.vue';
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
@@ -70,7 +87,8 @@ export default {
   name: 'ChallengeReports',
   components: {
     ChallengeReportsMinistryReports,
-    ChallengeReportsReportingProcess
+    ChallengeReportsReportingProcess,
+    ChallengeReportsViewReportData
   },
   mixins: [alertMixin],
   data() {
@@ -86,6 +104,9 @@ export default {
     ...mapState(authStore, ['userInfo']),
     hasPermissionToViewChallengeReporting() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
+    },
+    hasPermissionToViewChallengeReportData() {
+      return this.hasRequiredPermission(this.userInfo, PERMISSION.CHALLENGE_REPORT_PERMISSION);
     },
     hasPermissionToManageChallengeReporting() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);
