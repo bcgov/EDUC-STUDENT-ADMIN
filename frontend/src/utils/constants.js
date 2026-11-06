@@ -224,7 +224,8 @@ let object = {
     BASE_URL: challengeReportsRoot,
     ACTIVE_PERIOD: challengeReportsRoot + '/active-period',
     START_CHALLENGE_REPORT_PHASE: challengeReportsRoot + '/startChallengeReportPhase',
-    DOWNLOAD_REPORT: challengeReportsRoot + '/report'
+    DOWNLOAD_REPORT: challengeReportsRoot + '/report',
+    DOWNLOAD_REPORT_DATA: challengeReportsRoot + '/report-data'
   },
   gradSchool: {
     BASE_URL: gradSchoolRoot,
