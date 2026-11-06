@@ -81,14 +81,12 @@
   </div>
 </template>
 <script>
-import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {Year} from '@js-joda/core';
-import alertMixin from '@/mixins/alertMixin';
+import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 
 export default {
   name: 'ChallengeReportsViewReportData',
-  mixins: [alertMixin],
   data() {
     return {
       loading: true,
@@ -132,22 +130,13 @@ export default {
     },
     async getActiveChallengeReportPeriod() {
       this.loading = true;
-      ApiService.apiAxios.get(`${Routes.challengeReports.ACTIVE_PERIOD}`)
-        .then((response) => {
-          this.activePeriod = response.data;
-          this.challengeReportsSessionStatus = this.activePeriod.challengeReportsSessionStatus;
-          this.schoolYear = Year.of(this.activePeriod.schoolYear).minusYears(1) + '/' + this.activePeriod.schoolYear;
-        })
-        .catch((error) => {
-          console.error(error);
-          this.setFailureAlert(
-            error?.response?.data?.message
-              ? error?.response?.data?.message
-              : 'An error occurred while trying to retrieve the status of Challenge Reports.'
-          );
-        }).finally(() => {
-          this.loading = false;
-        });
+      const activePeriod = await fetchActiveChallengeReportPeriod();
+      if (activePeriod) {
+        this.activePeriod = activePeriod;
+        this.challengeReportsSessionStatus = activePeriod.challengeReportsSessionStatus;
+        this.schoolYear = Year.of(activePeriod.schoolYear).minusYears(1) + '/' + activePeriod.schoolYear;
+      }
+      this.loading = false;
     }
   }
 };

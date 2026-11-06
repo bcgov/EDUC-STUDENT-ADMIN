@@ -275,6 +275,7 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {Year} from '@js-joda/core';
 import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
+import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 
 export default {
@@ -317,25 +318,16 @@ export default {
     },
     async getActiveChallengeReportPeriod() {
       this.loading = true;
-      ApiService.apiAxios.get(`${Routes.challengeReports.ACTIVE_PERIOD}`)
-        .then((response) => {
-          this.activePeriod = response.data;
-          this.challengeReportsSessionStatus = this.activePeriod.challengeReportsSessionStatus;
-          this.fundingRate = this.activePeriod.fundingRate;
-          this.finalDateForChanges = this.activePeriod.finalDateForChanges;
-          this.schoolYear = 'July 1,' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' to June 30,' + this.activePeriod.schoolYear ;
-          this.sdcCollections = 'September ' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' and February ' + this.activePeriod.schoolYear ;
-        })
-        .catch((error) => {
-          console.error(error);
-          this.setFailureAlert(
-            error?.response?.data?.message
-              ? error?.response?.data?.message
-              : 'An error occurred while trying to retrieve the status of Challenge Reports.'
-          );
-        }).finally(() => {
-          this.loading = false;
-        });
+      const activePeriod = await fetchActiveChallengeReportPeriod();
+      if (activePeriod) {
+        this.activePeriod = activePeriod;
+        this.challengeReportsSessionStatus = activePeriod.challengeReportsSessionStatus;
+        this.fundingRate = activePeriod.fundingRate;
+        this.finalDateForChanges = activePeriod.finalDateForChanges;
+        this.schoolYear = 'July 1,' + Year.of(activePeriod.schoolYear).minusYears(1) + ' to June 30,' + activePeriod.schoolYear ;
+        this.sdcCollections = 'September ' + Year.of(activePeriod.schoolYear).minusYears(1) + ' and February ' + activePeriod.schoolYear ;
+      }
+      this.loading = false;
     },
     updateSessionValues() {
       this.loading = true;
