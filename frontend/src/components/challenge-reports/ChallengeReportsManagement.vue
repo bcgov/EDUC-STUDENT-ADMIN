@@ -275,33 +275,52 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {Year} from '@js-joda/core';
 import {setFailureAlert, setSuccessAlert} from '@/components/composable/alertComposable';
-import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 
 export default {
   name: 'ChallengeReportsManagement',
   components: {ConfirmationDialog, PrimaryButton, DatePicker},
+  props: {
+    activePeriod: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['period-changed'],
   data() {
     return {
       isFormValid: false,
       fundingRate: null,
-      loading: true,
-      schoolYear: null,
-      sdcCollections: null,
-      challengeReportsSessionStatus: null,
+      loading: false,
       finalDateForChanges: null,
-      activePeriod: null,
       rules: Rules
     };
   },
   computed:{
     ...mapState(authStore, ['userInfo']),
+    challengeReportsSessionStatus() {
+      return this.activePeriod.challengeReportsSessionStatus;
+    },
+    schoolYear() {
+      return 'July 1,' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' to June 30,' + this.activePeriod.schoolYear;
+    },
+    sdcCollections() {
+      return 'September ' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' and February ' + this.activePeriod.schoolYear;
+    },
     hasChanges() {
       return this.fundingRate !== this.activePeriod.fundingRate || this.finalDateForChanges !== this.activePeriod.finalDateForChanges;
     },
   },
+  watch: {
+    activePeriod: {
+      handler(activePeriod) {
+        this.fundingRate = activePeriod.fundingRate;
+        this.finalDateForChanges = activePeriod.finalDateForChanges;
+      },
+      immediate: true
+    }
+  },
   mounted() {
-    this.getActiveChallengeReportPeriod();
     this.validateForm();
   },
   async created() {
@@ -314,20 +333,7 @@ export default {
     },
     formatDate,
     hasRequiredFields(){
-      return this.activePeriod && this.activePeriod.fundingRate && this.activePeriod.finalDateForChanges;
-    },
-    async getActiveChallengeReportPeriod() {
-      this.loading = true;
-      const activePeriod = await fetchActiveChallengeReportPeriod();
-      if (activePeriod) {
-        this.activePeriod = activePeriod;
-        this.challengeReportsSessionStatus = activePeriod.challengeReportsSessionStatus;
-        this.fundingRate = activePeriod.fundingRate;
-        this.finalDateForChanges = activePeriod.finalDateForChanges;
-        this.schoolYear = 'July 1,' + Year.of(activePeriod.schoolYear).minusYears(1) + ' to June 30,' + activePeriod.schoolYear ;
-        this.sdcCollections = 'September ' + Year.of(activePeriod.schoolYear).minusYears(1) + ' and February ' + activePeriod.schoolYear ;
-      }
-      this.loading = false;
+      return this.activePeriod.fundingRate && this.activePeriod.finalDateForChanges;
     },
     updateSessionValues() {
       this.loading = true;
@@ -336,13 +342,9 @@ export default {
       payload.finalDateForChanges = formatDate(this.finalDateForChanges, 'uuuu/MM/dd', 'uuuu-MM-dd') + 'T00:00:00';
 
       ApiService.apiAxios.put(`${Routes.challengeReports.ACTIVE_PERIOD}`, payload)
-        .then(response => {
-          this.activePeriod = response.data;
-          this.challengeReportsSessionStatus = this.activePeriod.challengeReportsSessionStatus;
-          this.fundingRate = this.activePeriod.fundingRate;
-          this.finalDateForChanges = this.activePeriod.finalDateForChanges;
-          this.schoolYear = 'July 1,' + Year.of(this.activePeriod.schoolYear).minusYears(1) + ' to June 30,' + this.activePeriod.schoolYear ;
+        .then(() => {
           setSuccessAlert('Success Updating Challenge Report details');
+          this.$emit('period-changed');
         })
         .catch(error => {
           setFailureAlert(error.response?.data?.message || error.message);
@@ -369,12 +371,14 @@ export default {
         .then(() => {
           setSuccessAlert('Success updating challenge report phase, reloading challenge report session...');
           setTimeout(() => {
-            this.getActiveChallengeReportPeriod();
+            this.$emit('period-changed');
+            this.loading = false;
           }, 3000);
         })
         .catch(error => {
           setFailureAlert(error.response?.data?.message || error.message);
           console.error('Update Failed:', error);
+          this.loading = false;
         });
     },
   }

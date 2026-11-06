@@ -1,17 +1,5 @@
 <template>
-  <div v-if="loading">
-    <v-row>
-      <v-col class="d-flex justify-center">
-        <v-progress-circular
-          :size="70"
-          :width="7"
-          color="primary"
-          indeterminate
-        />
-      </v-col>
-    </v-row>
-  </div>
-  <div v-else>
+  <div>
     <v-row>
       <v-col
         cols="12"
@@ -60,14 +48,24 @@
           class="mt-2"
         >
           <router-link
+            v-if="stage.available()"
             :id="stage.reportType + report.reportType"
             :to="{ path: downloadReportURL(stage.reportType + report.reportType) }"
             target="_blank"
-            :class="{ disabled: !stage.available() }"
           >
             <v-icon>mdi-tray-arrow-down</v-icon>
             {{ stage.label }} {{ report.title }} - {{ schoolYear }}
           </router-link>
+          <span
+            v-else
+            :id="stage.reportType + report.reportType"
+            class="disabled"
+            aria-disabled="true"
+          >
+            <v-icon>mdi-tray-arrow-down</v-icon>
+            {{ stage.label }} {{ report.title }} - {{ schoolYear }}
+            <span class="d-sr-only">(not yet available)</span>
+          </span>
           <span
             v-if="stage.asOf()"
             class="ml-2"
@@ -83,16 +81,17 @@
 <script>
 import {Routes} from '@/utils/constants';
 import {Year} from '@js-joda/core';
-import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 
 export default {
   name: 'ChallengeReportsViewReportData',
+  props: {
+    activePeriod: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      loading: true,
-      schoolYear: null,
-      challengeReportsSessionStatus: null,
-      activePeriod: null,
       reports: [
         {
           title: 'District Course Challenges Report Data',
@@ -110,7 +109,7 @@ export default {
           label: 'Preliminary',
           reportType: 'PRELIM',
           available: () => ['PRELIM', 'FINALIZED'].includes(this.challengeReportsSessionStatus),
-          asOf: () => this.challengeReportsSessionStatus === 'PRELIM' ? 'current data' : this.activePeriod?.preliminaryCompletionDate && `data as of ${this.activePeriod.preliminaryCompletionDate}`
+          asOf: () => this.challengeReportsSessionStatus === 'PRELIM' ? 'current data' : this.activePeriod.preliminaryCompletionDate && `data as of ${this.activePeriod.preliminaryCompletionDate}`
         },
         {
           label: 'Final',
@@ -121,22 +120,17 @@ export default {
       ]
     };
   },
-  mounted() {
-    this.getActiveChallengeReportPeriod();
+  computed: {
+    challengeReportsSessionStatus() {
+      return this.activePeriod.challengeReportsSessionStatus;
+    },
+    schoolYear() {
+      return Year.of(this.activePeriod.schoolYear).minusYears(1) + '/' + this.activePeriod.schoolYear;
+    }
   },
   methods: {
     downloadReportURL(reportType) {
       return `${Routes.challengeReports.DOWNLOAD_REPORT_DATA}/${reportType}`;
-    },
-    async getActiveChallengeReportPeriod() {
-      this.loading = true;
-      const activePeriod = await fetchActiveChallengeReportPeriod();
-      if (activePeriod) {
-        this.activePeriod = activePeriod;
-        this.challengeReportsSessionStatus = activePeriod.challengeReportsSessionStatus;
-        this.schoolYear = Year.of(activePeriod.schoolYear).minusYears(1) + '/' + activePeriod.schoolYear;
-      }
-      this.loading = false;
     }
   }
 };
@@ -148,6 +142,5 @@ export default {
 
 .disabled {
   opacity: 0.5;
-  pointer-events: none;
 }
 </style>

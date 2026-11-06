@@ -1,17 +1,5 @@
 <template>
-  <div v-if="loading">
-    <v-row>
-      <v-col class="d-flex justify-center">
-        <v-progress-circular
-          :size="70"
-          :width="7"
-          color="primary"
-          indeterminate
-        />
-      </v-col>
-    </v-row>
-  </div>
-  <div v-else>
+  <div>
     <v-row v-if="challengeReportsSessionStatus !== 'FINALIZED'">
       <v-col cols="9">
         <v-alert
@@ -21,104 +9,90 @@
         />
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="9">
-        <h3 class="subHeading pb-1">
-          District Funding Report for Course Challenges - {{ schoolYear }}
-        </h3>
-        <p>Includes the total, eligible successful course challenges for each district.</p>
-      </v-col>
-    </v-row>
-    <v-row
-      no-gutters
-      class="mt-2"
+    <template
+      v-for="report in reports"
+      :key="report.reportType"
     >
-      <v-col>
-        <span>
+      <v-row>
+        <v-col cols="9">
+          <h3 class="subHeading pb-1">
+            {{ report.title }} - {{ schoolYear }}
+          </h3>
+          <p>{{ report.description }}</p>
+        </v-col>
+      </v-row>
+      <v-row
+        no-gutters
+        class="mt-2"
+      >
+        <v-col>
           <router-link
-            id="downloadReport"
-            :to="{ path: publicReportDownloadReportURL()}"
+            v-if="isFinalized"
+            :id="report.reportType"
+            :to="{ path: downloadReportURL(report.reportType) }"
             target="_blank"
-            :class="{ disabled: challengeReportsSessionStatus !== 'FINALIZED' }"
           >
             <v-icon>mdi-tray-arrow-down</v-icon>
-            District Funding Report for Course Challenges - {{ schoolYear }}
+            {{ report.title }} - {{ schoolYear }}
           </router-link>
-        </span>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="9">
-        <h3 class="subHeading pb-1">
-          Independent School Funding Report for Course Challenges - {{ schoolYear }}
-        </h3>
-        <p>Includes all eligible course challenges for Independent and Independent First Nations schools.</p>
-      </v-col>
-    </v-row>
-    <v-row
-      no-gutters
-      class="mt-2"
-    >
-      <v-col>
-        <span>
-          <router-link
-            id="downloadReport"
-            :to="{ path: indyReportDownloadReportURL()}"
-            target="_blank"
-            :class="{ disabled: challengeReportsSessionStatus !== 'FINALIZED' }"
+          <span
+            v-else
+            :id="report.reportType"
+            class="disabled"
+            aria-disabled="true"
           >
             <v-icon>mdi-tray-arrow-down</v-icon>
-            Independent School Funding Report for Course Challenges - {{ schoolYear }}
-          </router-link>
-        </span>
-      </v-col>
-    </v-row>
+            {{ report.title }} - {{ schoolYear }}
+            <span class="d-sr-only">(not yet available)</span>
+          </span>
+        </v-col>
+      </v-row>
+    </template>
   </div>
 </template>
 <script>
-import {formatDate} from '@/utils/format';
-import {mapState} from 'pinia';
-import {authStore} from '@/store/modules/auth';
 import {Routes} from '@/utils/constants';
 import {Year} from '@js-joda/core';
-import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 
 export default {
   name: 'ChallengeReportsMinistryReports',
-  components: {},
+  props: {
+    activePeriod: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      isFormValid: false,
-      loading: true,
-      schoolYear: null,
-      challengeReportsSessionStatus: null,
-      activePeriod: null
+      reports: [
+        {
+          title: 'District Funding Report for Course Challenges',
+          description: 'Includes the total, eligible successful course challenges for each district.',
+          reportType: 'DISTRICT_FUNDING_REPORT'
+        },
+        {
+          title: 'Independent School Funding Report for Course Challenges',
+          description: 'Includes all eligible course challenges for Independent and Independent First Nations schools.',
+          reportType: 'INDEPENDENT_SCHOOL_FUNDING_REPORT'
+        }
+      ]
     };
   },
-  computed:{
-    ...mapState(authStore, ['userInfo'])
-  },
-  mounted() {
-    this.getActiveChallengeReportPeriod();
+  computed: {
+    challengeReportsSessionStatus() {
+      return this.activePeriod.challengeReportsSessionStatus;
+    },
+    isFinalized() {
+      return this.challengeReportsSessionStatus === 'FINALIZED';
+    },
+    schoolYear() {
+      return Year.of(this.activePeriod.schoolYear).minusYears(1) + '/' + this.activePeriod.schoolYear;
+    }
   },
   methods: {
-    formatDate,
-    indyReportDownloadReportURL() {
-      return `${Routes.challengeReports.DOWNLOAD_REPORT}/INDEPENDENT_SCHOOL_FUNDING_REPORT`;
-    },
-    publicReportDownloadReportURL() {
-      return `${Routes.challengeReports.DOWNLOAD_REPORT}/DISTRICT_FUNDING_REPORT`;
-    },
-    async getActiveChallengeReportPeriod() {
-      this.loading = true;
-      const activePeriod = await fetchActiveChallengeReportPeriod();
-      if (activePeriod) {
-        this.activePeriod = activePeriod;
-        this.challengeReportsSessionStatus = activePeriod.challengeReportsSessionStatus;
-        this.schoolYear = Year.of(activePeriod.schoolYear).minusYears(1) + '/' + activePeriod.schoolYear ;
-      }
-      this.loading = false;
-    },
+    downloadReportURL(reportType) {
+      return `${Routes.challengeReports.DOWNLOAD_REPORT}/${reportType}`;
+    }
   }
 };
 </script>
@@ -126,21 +100,8 @@ export default {
 .subHeading {
   color: #38598a;
 }
-.header {
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
-}
 
 .disabled {
   opacity: 0.5;
-  pointer-events: none;
-}
-
-li {
-  font-size: 14px;
-  margin-left: 1em;
-  list-style-type: initial;
 }
 </style>
