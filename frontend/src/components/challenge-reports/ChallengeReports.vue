@@ -142,9 +142,10 @@ export default {
     formatDate,
     async refreshActivePeriod() {
       this.loading = true;
-      const activePeriod = await fetchActiveChallengeReportPeriod();
-      if (activePeriod) {
-        this.activePeriod = activePeriod;
+      this.activePeriod = null;
+      const updatedActivePeriod = await fetchActiveChallengeReportPeriod();
+      if (updatedActivePeriod) {
+        this.activePeriod = updatedActivePeriod;
       }
       this.loading = false;
     },
