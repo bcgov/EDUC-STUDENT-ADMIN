@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const {getActiveChallengeReportsPeriod, updateActiveChallengeReportsSession, startChallengeReportPhase, downloadMinistryChallengeReport} = require('../components/challengeReports');
+const {getActiveChallengeReportsPeriod, updateActiveChallengeReportsSession, startChallengeReportPhase, downloadMinistryChallengeReport, downloadChallengeReportData} = require('../components/challengeReports');
 const { PERMISSION } = require('../util/Permission');
 const permUtils = require('../components/permissionUtils');
 const utils = require('../components/utils');
@@ -12,4 +12,5 @@ router.get('/active-period', passport.authenticate('jwt', {session: false}, unde
 router.put('/active-period', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION), extendSession, updateActiveChallengeReportsSession);
 router.post('/startChallengeReportPhase', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION), extendSession, startChallengeReportPhase);
 router.get('/report/:reportType', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION), extendSession, downloadMinistryChallengeReport);
+router.get('/report-data/:reportType', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION), extendSession, downloadChallengeReportData);
 module.exports = router;

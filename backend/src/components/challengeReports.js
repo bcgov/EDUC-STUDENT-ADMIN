@@ -6,6 +6,7 @@ const config = require('../config');
 const utils = require('./utils');
 const {Year, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 let reportTypes = ['DISTRICT_FUNDING_REPORT', 'INDEPENDENT_SCHOOL_FUNDING_REPORT'];
+let reportDataTypes = ['PRELIM_PROVINCIAL_DISTRICT_REPORT', 'FINAL_PROVINCIAL_DISTRICT_REPORT', 'PRELIM_PROVINCIAL_INDEPENDENT_REPORT', 'FINAL_PROVINCIAL_INDEPENDENT_REPORT'];
 
 async function getActiveChallengeReportsPeriod(req, res) {
   try {
@@ -78,8 +79,16 @@ async function startChallengeReportPhase(req, res) {
 }
 
 async function downloadMinistryChallengeReport(req, res) {
+  return downloadChallengeReport(req, res, reportTypes);
+}
+
+async function downloadChallengeReportData(req, res) {
+  return downloadChallengeReport(req, res, reportDataTypes);
+}
+
+async function downloadChallengeReport(req, res, allowedReportTypes) {
   try {
-    if(!reportTypes.includes(req.params.reportType)){
+    if(!allowedReportTypes.includes(req.params.reportType)){
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Invalid report type provided.'
       });
@@ -101,7 +110,7 @@ async function downloadMinistryChallengeReport(req, res) {
     const buffer = Buffer.from(data.documentData, 'base64');
     return res.status(200).send(buffer);
   } catch (e) {
-    await logApiError(e, 'downloadMinistryChallengeReport', 'Error occurred while attempting to download ministry challenge report.');
+    await logApiError(e, 'downloadChallengeReport', 'Error occurred while attempting to download challenge report.');
     return errorResponse(res);
   }
 }
@@ -110,6 +119,10 @@ function getFileDetails(reportType, schoolYear) {
   const mappings = {
     'DISTRICT_FUNDING_REPORT': { filename: 'District Funding Report for Course Challenges - ' + schoolYear + '.csv', contentType: 'text/csv' },
     'INDEPENDENT_SCHOOL_FUNDING_REPORT': { filename: 'Independent School Funding Report for Course Challenges - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'PRELIM_PROVINCIAL_DISTRICT_REPORT': { filename: 'Preliminary District Course Challenges Report Data - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'FINAL_PROVINCIAL_DISTRICT_REPORT': { filename: 'Final District Course Challenges Report Data - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'PRELIM_PROVINCIAL_INDEPENDENT_REPORT': { filename: 'Preliminary Independent School Course Challenges Report Data - ' + schoolYear + '.csv', contentType: 'text/csv' },
+    'FINAL_PROVINCIAL_INDEPENDENT_REPORT': { filename: 'Final Independent School Course Challenges Report Data - ' + schoolYear + '.csv', contentType: 'text/csv' },
     'DEFAULT': { filename: 'download.csv', contentType: 'text/csv' }
   };
   return mappings[reportType] || mappings['DEFAULT'];
@@ -134,5 +147,6 @@ module.exports = {
   getActiveChallengeReportsPeriod,
   updateActiveChallengeReportsSession,
   startChallengeReportPhase,
-  downloadMinistryChallengeReport
+  downloadMinistryChallengeReport,
+  downloadChallengeReportData
 };

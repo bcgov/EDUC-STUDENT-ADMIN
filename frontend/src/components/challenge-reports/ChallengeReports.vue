@@ -19,6 +19,14 @@
           </v-tab>
           <v-tab
             v-if="hasPermissionToViewChallengeReporting"
+            id="reportDataTab"
+            value="reportDataTab"
+            prepend-icon="mdi-file-table-outline"
+          >
+            View Report Data
+          </v-tab>
+          <v-tab
+            v-if="hasPermissionToViewChallengeReporting"
             id="schoolsTab"
             value="schoolsTab"
             prepend-icon="mdi-download-box-outline"
@@ -28,7 +36,24 @@
         </v-tabs>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row
+      v-if="!activePeriod"
+      no-gutters
+    >
+      <v-col class="d-flex justify-center mt-4">
+        <v-progress-circular
+          v-if="loading"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+        />
+      </v-col>
+    </v-row>
+    <v-row
+      v-else
+      no-gutters
+    >
       <v-col>
         <v-card-text>
           <v-window v-model="tab">
@@ -38,7 +63,18 @@
               transition="false"
               reverse-transition="false"
             >
-              <ChallengeReportsReportingProcess />
+              <ChallengeReportsReportingProcess
+                :active-period="activePeriod"
+                @period-changed="refreshActivePeriod"
+              />
+            </v-window-item>
+            <v-window-item
+              v-if="hasPermissionToViewChallengeReporting"
+              value="reportDataTab"
+              transition="false"
+              reverse-transition="false"
+            >
+              <ChallengeReportsViewReportData :active-period="activePeriod" />
             </v-window-item>
             <v-window-item
               v-if="hasPermissionToViewChallengeReporting"
@@ -46,7 +82,7 @@
               transition="false"
               reverse-transition="false"
             >
-              <ChallengeReportsMinistryReports />
+              <ChallengeReportsMinistryReports :active-period="activePeriod" />
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -62,6 +98,8 @@ import {PAGE_TITLES} from '@/utils/constants';
 import {formatDate} from '@/utils/format';
 import ChallengeReportsReportingProcess from '@/components/challenge-reports/ChallengeReportsManagement.vue';
 import ChallengeReportsMinistryReports from '@/components/challenge-reports/ChallengeReportsMinistryReports.vue';
+import ChallengeReportsViewReportData from '@/components/challenge-reports/ChallengeReportsViewReportData.vue';
+import {fetchActiveChallengeReportPeriod} from '@/components/composable/challengeReportsComposable';
 import {hasRequiredPermission, PERMISSION} from '@/utils/constants/Permission';
 import {mapState} from 'pinia';
 import {authStore} from '@/store/modules/auth';
@@ -70,13 +108,16 @@ export default {
   name: 'ChallengeReports',
   components: {
     ChallengeReportsMinistryReports,
-    ChallengeReportsReportingProcess
+    ChallengeReportsReportingProcess,
+    ChallengeReportsViewReportData
   },
   mixins: [alertMixin],
   data() {
     return {
       PAGE_TITLES: PAGE_TITLES,
       tab: null,
+      loading: true,
+      activePeriod: null,
       collectionObject: null,
       previousCollectionObject: null,
       activeCollectionSelected: true
@@ -91,8 +132,20 @@ export default {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);
     }
   },
+  mounted() {
+    this.refreshActivePeriod();
+  },
   methods: {
     formatDate,
+    async refreshActivePeriod() {
+      this.loading = true;
+      this.activePeriod = null;
+      const updatedActivePeriod = await fetchActiveChallengeReportPeriod();
+      if (updatedActivePeriod) {
+        this.activePeriod = updatedActivePeriod;
+      }
+      this.loading = false;
+    },
     hasRequiredPermission
   }
 };
