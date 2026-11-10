@@ -97,6 +97,9 @@ async function downloadMinistryChallengeReport(req, res) {
     }
 
     const fileDetails = getFileDetails(req.params.reportType, yearString);
+    if (dataSession.challengeReportsStatusCode === 'PRELIM') {
+      fileDetails.filename = 'Preliminary ' + fileDetails.filename;
+    }
     setResponseHeaders(res, fileDetails);
     const buffer = Buffer.from(data.documentData, 'base64');
     return res.status(200).send(buffer);

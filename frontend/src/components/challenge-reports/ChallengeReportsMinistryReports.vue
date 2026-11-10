@@ -17,7 +17,7 @@
         <v-alert
           type="info"
           variant="tonal"
-          text="Reports will be available for download once the data is finalized. Teams will be notified when ready."
+          :text="reportAvailabilityMessage"
         />
       </v-col>
     </v-row>
@@ -65,7 +65,7 @@
             id="downloadReport"
             :to="{ path: indyReportDownloadReportURL()}"
             target="_blank"
-            :class="{ disabled: challengeReportsSessionStatus !== 'FINALIZED' }"
+            :class="{ disabled: !['PRELIM', 'FINALIZED'].includes(challengeReportsSessionStatus) }"
           >
             <v-icon>mdi-tray-arrow-down</v-icon>
             Independent School Funding Report for Course Challenges - {{ schoolYear }}
@@ -96,7 +96,13 @@ export default {
     };
   },
   computed:{
-    ...mapState(authStore, ['userInfo'])
+    ...mapState(authStore, ['userInfo']),
+    reportAvailabilityMessage() {
+      if (this.challengeReportsSessionStatus === 'PRELIM') {
+        return 'The Independent School Funding Report has preliminary data, which may change until the data is finalized. The District Funding Report will be available once the data is finalized. Teams will be notified when ready.';
+      }
+      return 'Reports will be available for download once the data is finalized. Teams will be notified when ready.';
+    }
   },
   mounted() {
     this.getActiveChallengeReportPeriod();
