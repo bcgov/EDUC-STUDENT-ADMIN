@@ -18,7 +18,7 @@
             Manage Reporting Process
           </v-tab>
           <v-tab
-            v-if="hasPermissionToViewChallengeReportData"
+            v-if="hasPermissionToViewChallengeReporting"
             id="reportDataTab"
             value="reportDataTab"
             prepend-icon="mdi-file-table-outline"
@@ -69,7 +69,7 @@
               />
             </v-window-item>
             <v-window-item
-              v-if="hasPermissionToViewChallengeReportData"
+              v-if="hasPermissionToViewChallengeReporting"
               value="reportDataTab"
               transition="false"
               reverse-transition="false"
@@ -127,9 +127,6 @@ export default {
     ...mapState(authStore, ['userInfo']),
     hasPermissionToViewChallengeReporting() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION);
-    },
-    hasPermissionToViewChallengeReportData() {
-      return this.hasRequiredPermission(this.userInfo, PERMISSION.CHALLENGE_REPORT_PERMISSION);
     },
     hasPermissionToManageChallengeReporting() {
       return this.hasRequiredPermission(this.userInfo, PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION);

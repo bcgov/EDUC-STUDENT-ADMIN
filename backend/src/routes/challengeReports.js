@@ -12,5 +12,5 @@ router.get('/active-period', passport.authenticate('jwt', {session: false}, unde
 router.put('/active-period', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION), extendSession, updateActiveChallengeReportsSession);
 router.post('/startChallengeReportPhase', passport.authenticate('jwt', {session: false}, undefined), permUtils.checkUserHasPermission(PERMISSION.EDIT_GRAD_DATA_COLLECTION_PERMISSION), extendSession, startChallengeReportPhase);
 router.get('/report/:reportType', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION), extendSession, downloadMinistryChallengeReport);
-router.get('/report-data/:reportType', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.CHALLENGE_REPORT_PERMISSION), extendSession, downloadChallengeReportData);
+router.get('/report-data/:reportType', auth.refreshJWT, permUtils.checkUserHasPermission(PERMISSION.REPORTS_SDC_HEADCOUNTS_PERMISSION), extendSession, downloadChallengeReportData);
 module.exports = router;
