@@ -129,6 +129,61 @@ async function getSchoolYearReportingInsights(req, res) {
   }
 }
 
+const GRAD_SCHOOL_CATEGORY_CODES = ['PUBLIC', 'INDEPEND', 'INDP_FNS', 'FED_BAND', 'OFFSHORE', 'YUKON'];
+
+async function getSchoolYearSubmissionStatus(req, res) {
+  try {
+    const gdcRootURL = `${config.get('server:gdc:rootURL')}/reporting-period/${req.params.reportingPeriodID}`;
+    const gdcParams = {
+      params: {
+        categoryCode: ''
+      }
+    };
+    const [reportingPeriod, gdcData] = await Promise.all([
+      getData(gdcRootURL),
+      getData(`${gdcRootURL}/school-submission-counts`, gdcParams)
+    ]);
+    const schYrStart = LocalDateTime.parse(reportingPeriod.schYrStart);
+    const schYrEnd = LocalDateTime.parse(reportingPeriod.schYrEnd);
+
+    // Mirrors GDC's findSchoolSubmissionsInLast30Days: recent means on/after the later of schYrStart or 30 days ago
+    const thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+    const recentCutoff = schYrStart.isAfter(thirtyDaysAgo) ? schYrStart : thirtyDaysAgo;
+
+    const submissionsBySchoolID = new Map((gdcData?.schoolSubmissions ?? []).map(item => [item.schoolID, item]));
+    const getStatus = (gdcEntry) => {
+      if (!gdcEntry?.lastSubmissionDate) {
+        return 'NO_SUBMISSION';
+      }
+      return LocalDateTime.parse(gdcEntry.lastSubmissionDate).isBefore(recentCutoff) ? 'NO_RECENT_SUBMISSION' : 'SUBMITTED';
+    };
+
+    const schoolIDsByCategory = await Promise.all(GRAD_SCHOOL_CATEGORY_CODES.map(async categoryCode => ({
+      categoryCode,
+      schoolIDs: await getSchoolIDsForReportingInsightsInPeriod(categoryCode, schYrStart, schYrEnd)
+    })));
+
+    const rows = schoolIDsByCategory
+      .flatMap(({ categoryCode, schoolIDs }) => schoolIDs.map(schoolID => {
+        const schoolData = cacheService.getSchoolBySchoolID(schoolID);
+        const gdcEntry = submissionsBySchoolID.get(schoolID);
+        return {
+          schoolID: schoolID,
+          schoolName: `${schoolData.mincode} - ${schoolData.schoolName}`,
+          schoolCategoryCode: categoryCode,
+          totalSubmissions: gdcEntry ? gdcEntry.submissionCount : 0,
+          lastSubmission: gdcEntry ? gdcEntry.lastSubmissionDate : null,
+          status: getStatus(gdcEntry)
+        };
+      }))
+      .sort((a, b) => a.schoolName.localeCompare(b.schoolName, undefined, { sensitivity: 'base' }));
+    return res.status(200).json(rows);
+  } catch (e) {
+    await logApiError(e, 'getSchoolYearSubmissionStatus', 'Error occurred while attempting to GET GDC school submission status.');
+    return handleExceptionResponse(e, res);
+  }
+}
+
 async function getSchoolIDsForReportingInsightsInPeriod(schoolCategory, periodStartDate, periodEndDate) {
   let schools = cacheService.getAllSchoolsJSON();
   let gradSchools = cacheService.getGradSchoolsMap();
@@ -370,5 +425,6 @@ module.exports = {
   getDemographicStudentByPenIncomingFilesetIdAndSchoolId,
   getSummerReportingInsights,
   getSchoolYearReportingInsights,
-  getSchoolSubmissionCounts
+  getSchoolSubmissionCounts,
+  getSchoolYearSubmissionStatus
 };
