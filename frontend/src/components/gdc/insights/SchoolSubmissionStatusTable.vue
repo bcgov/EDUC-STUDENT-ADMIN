@@ -44,7 +44,7 @@
       :items="filteredData"
       :search="search"
       :sort-by="[{ key: 'statusOrder', order: 'asc' }]"
-      class="elevation-1"
+      class="elevation-1 submission-status-table"
       density="compact"
     >
       <template #item.lastSubmission="{ item }">
@@ -182,11 +182,11 @@ export default {
 </script>
 
 <style scoped>
-:deep(th) {
-  color: #38598a !important;
+.submission-status-table :deep(.v-table__wrapper > table > thead > tr > th) {
+  color: #38598a;
 }
 
-:deep(.v-data-table-footer__items-per-page) {
-  display: none !important;
+.submission-status-table :deep(.v-data-table-footer .v-data-table-footer__items-per-page) {
+  display: none;
 }
 </style>
