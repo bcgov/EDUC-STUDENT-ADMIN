@@ -61,7 +61,33 @@
           </template>
         </v-expansion-panel-text>
       </v-expansion-panel>
+    </v-expansion-panels>
 
+    <v-expansion-panels
+      v-if="showSubmissionStatusPanel"
+      v-model="submissionStatusPanel"
+    >
+      <v-expansion-panel
+        class="border"
+        value="SubmissionStatus"
+      >
+        <v-expansion-panel-title prepend-icon="mdi-school-outline">
+          <h4>School Submission Status</h4>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <v-row class="sub-heading mb-1">
+            <v-col>
+              Transcript eligible schools expected to submit during the School Year Reporting Period, and whether they have submitted graduation data files. Schools without a submission in the last 30 days should be followed up with.
+            </v-col>
+          </v-row>
+          <SchoolSubmissionStatusTable :collection-object="collectionObject" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <v-expansion-panels
+      v-model="type"
+    >
       <v-expansion-panel
         v-if="!showSchoolCategoryTable || type === 'Summer'"
         class="border"
@@ -128,11 +154,13 @@ import {
   getStatusColorGdcSession,
 } from '@/utils/institute/status';
 import SchoolCategoryTable from '@/components/gdc/insights/SchoolCategoryTable.vue';
+import SchoolSubmissionStatusTable from '@/components/gdc/insights/SchoolSubmissionStatusTable.vue';
 
 export default {
   name: 'CollectionInsights',
   components: {
     SchoolCategoryTable,
+    SchoolSubmissionStatusTable,
     SummaryTable,
   },
   mixins: [alertMixin],
@@ -164,14 +192,18 @@ export default {
       showSchoolCategoryTable: false,
       selectedCategoryForDetail: null,
       availableCategoriesForDetail: [],
+      submissionStatusPanel: null,
     };
   },
   computed: {
-
+    showSubmissionStatusPanel() {
+      return this.panel1Status === 'Ongoing' && !this.showSchoolCategoryTable;
+    },
   },
   watch: {
     collectionObject: {
       handler(value) {
+        this.submissionStatusPanel = null;
         if(value) {
           this.findReportingPeriodStatus();
           this.getReportingSummary();
