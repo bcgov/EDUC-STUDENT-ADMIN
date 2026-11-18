@@ -75,7 +75,7 @@ import { debounce } from 'lodash';
 const STATUSES = Object.freeze({
   NO_SUBMISSION: { label: 'No Submission', color: 'error', order: 0 },
   NO_RECENT_SUBMISSION: { label: 'No Submission in Last 30 Days', color: 'warning', order: 1 },
-  SUBMITTED: { label: 'Submitted', color: 'success', order: 2 },
+  SUBMITTED: { label: 'Submitted in the Last 30 Days', color: 'success', order: 2 },
 });
 
 const CATEGORY_LABELS = Object.freeze(
