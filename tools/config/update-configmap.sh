@@ -1135,6 +1135,7 @@ FLB_CONFIG="[SERVICE]
    Mem_Buf_Limit 20MB
    Buffer_Chunk_Size 5MB
    Buffer_Max_Size 5MB
+   Skip_Long_Lines On
 [FILTER]
    Name record_modifier
    Match *
